@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClass | Premium SaaS LMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { brandBlue: '#004a80', brandOrange: '#f7941d' } } } }
+    </script>
+    <style>
+        :root { --text-main: #fdfbf7; --bg-main: #050505; --glass-bg: rgba(15, 15, 15, 0.9); --input-bg: #111; }
+        .light { --text-main: #002e50; --bg-main: #fdfbf7; --glass-bg: rgba(255, 255, 255, 0.85); --input-bg: #fff; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: 0.4s; overflow-x: hidden; }
+        .glass { background: var(--glass-bg); backdrop-filter: blur(30px); border: 1px solid rgba(128, 128, 128, 0.1); }
+        .btn-brand { background: linear-gradient(135deg, #004a80 0%, #f7941d 100%); background-size: 200% auto; transition: 0.5s; color: white !important; font-weight: 800; text-transform: uppercase; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+        .btn-brand:hover { background-position: right center; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 74, 128, 0.2); }
+        .tab-btn { padding: 12px 20px; font-weight: 800; text-transform: uppercase; font-size: 10px; border-radius: 12px; transition: 0.3s; opacity: 0.4; color: var(--text-main); }
+        .tab-btn.active { background: rgba(247, 148, 29, 0.1); color: #f7941d; opacity: 1; border: 1px solid rgba(247, 148, 29, 0.2); }
+        .input-field { background: var(--input-bg); border: 1px solid rgba(128, 128, 128, 0.2); color: var(--text-main); outline: none; padding: 1rem; border-radius: 14px; width: 100%; }
+        #toast-box { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
+        .toast-pill { background: #111; color: #fff; padding: 0.6rem 1.5rem; border-radius: 99px; border: 1px solid rgba(255,255,255,0.1); font-size: 10px; font-weight: 800; text-transform: uppercase; animation: popUp 0.3s forwards; }
+        #media-vault .plyr__video-embed iframe { transform: scale(1.4); pointer-events: none; }
+        .plyr--full-ui.plyr--video .plyr__control--overlaid { background: #f7941d; }
+        .plyr--video .plyr__controls { background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 0 0 14px 14px; }
+        .grid-btn-active { background: rgba(247, 148, 29, 0.2) !important; border: 1px solid rgba(247, 148, 29, 0.3) !important; color: #f7941d !important; }
+        @keyframes popUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="selection:bg-brandOrange/30">
+    <div id="toast-box"></div>
+
+    <div id="custom-modal" class="hidden fixed inset-0 z-[2500] bg-black/95 backdrop-blur-md flex items-center justify-center p-6">
+        <div id="modal-content" class="w-full max-w-md glass p-10 rounded-[3rem] border border-brandOrange/20 shadow-2xl overflow-y-auto max-h-[90vh]"></div>
+    </div>
+
+    <div id="media-vault" class="hidden fixed inset-0 z-[2000] bg-black flex items-center justify-center">
+        <button onclick="closeVault()" class="absolute top-6 right-6 bg-white/10 hover:bg-red-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-black z-[2100]">✕</button>
+        <div class="w-full max-w-5xl overflow-hidden rounded-2xl shadow-2xl">
+             <div id="player" data-plyr-provider="youtube" data-plyr-embed-id=""></div>
+        </div>
+    </div>
+
+    <div id="group-chat-window" class="hidden fixed inset-0 bg-black/95 z-[6000] flex flex-col">
+        <div class="p-5 glass flex justify-between items-center border-b border-white/5">
+            <h2 id="group-chat-title" class="text-2xl font-black italic">Group</h2>
+            <button onclick="closeGroupChat()" class="text-2xl">✕</button>
+        </div>
+        <div id="group-chat-messages" class="flex-1 overflow-y-auto p-6 space-y-6"></div>
+        <div class="p-4 flex gap-4 glass border-t border-white/5">
+            <input id="group-message-input" class="input-field flex-1" placeholder="Message...">
+            <button onclick="sendGroupMessage()" class="btn-brand px-8">Send</button>
+        </div>
+    </div>
+
+    <div id="app">
+        <div id="auth-screen" class="hidden min-h-screen flex items-center justify-center p-6">
+            <div class="w-full max-w-md glass p-10 rounded-[3.5rem] text-center shadow-2xl">
+                <img src="https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg" class="h-20 mx-auto mb-6 rounded-2xl">
+                <h1 class="text-4xl font-black mb-8 italic">Open<span class="text-brandOrange">Class</span></h1>
+                <div id="signup-fields" class="hidden space-y-4 mb-4">
+                    <input type="text" id="reg-name" placeholder="Full Name" class="input-field">
+                    <select id="reg-role" class="input-field">
+                        <option value="student">Student Account</option>
+                        <option value="teacher">Teacher Account</option>
+                    </select>
+                </div>
+                <div class="space-y-4">
+                    <input type="email" id="auth-email" placeholder="Email" class="input-field">
+                    <input type="password" id="auth-pass" placeholder="Password" class="input-field">
+                    <button onclick="handleAuth()" id="primary-auth-btn" class="w-full py-4 btn-brand">Sign In</button>
+                    <button onclick="handleGoogle()" class="w-full py-4 glass dark:text-white text-[#002e50] rounded-2xl font-bold uppercase text-[10px] flex items-center justify-center gap-4 border border-zinc-500/20">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5"> 
+                        Continue with Google
+                    </button>
+                    <button onclick="toggleAuth()" id="toggle-auth-btn" class="w-full text-[10px] text-zinc-500 font-bold uppercase mt-6 hover:text-brandOrange">Create Profile</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="verify-screen" class="hidden min-h-screen flex items-center justify-center p-6 relative">
+            <button onclick="showScreen('auth-screen')" class="absolute top-10 right-10 text-2xl font-black text-white/30 hover:text-white">✕</button>
+            <div class="w-full max-w-md glass p-10 rounded-[3.5rem] text-center border-brandOrange/20 shadow-2xl">
+                <h2 class="text-3xl font-black mb-4 italic">Verify Code</h2>
+                <p id="verify-note" class="text-zinc-500 text-[10px] mb-8 uppercase font-bold"></p>
+                <input type="number" id="otp-input" placeholder="000000" class="input-field text-center text-5xl font-black mb-6">
+                <button onclick="checkOTP()" class="w-full py-5 btn-brand shadow-xl">Verify</button>
+            </div>
+        </div>
+
+        <div id="dashboard" class="hidden min-h-screen flex flex-col">
+            <nav class="p-5 glass border-b border-white/5 sticky top-0 z-[1000] flex flex-col md:flex-row gap-6 justify-between px-10 items-center">
+                <div class="flex items-center gap-4 cursor-pointer" onclick="navigate('home')">
+                    <img src="https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg" class="h-10 rounded-xl">
+                    <h2 class="text-2xl font-black italic tracking-tighter">Open<span class="text-brandOrange">Class</span></h2>
+                </div>
+                
+                <div class="flex gap-1 glass p-1 rounded-2xl">
+                    <button id="tab-home" onclick="setTab('home')" class="tab-btn active">Home</button>
+                    <button id="tab-groups" onclick="setTab('groups')" class="tab-btn">Groups</button>
+                    <button id="tab-courses" onclick="setTab('courses')" class="tab-btn">Courses</button>
+                    <button id="tab-content" onclick="setTab('content')" class="tab-btn">Content</button>
+                </div>
+
+                <div class="flex items-center gap-6 w-full md:w-auto relative">
+                    <div class="relative w-full md:w-96 group">
+                        <div class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="8" cy="8" r="6" /><path d="M13 13l4 4" /></svg></div>
+                        <input type="text" id="g-search" oninput="reactiveSearch(this.value)" placeholder="Search campus..." class="input-field rounded-2xl pl-12 pr-6 py-2.5 text-sm w-full">
+                    </div>
+                    <button onclick="toggleMode()" class="p-2 glass rounded-xl">🌓</button>
+                    <div id="nav-profile-pic" class="w-10 h-10 rounded-full border-2 overflow-hidden hidden md:block"></div>
+                    <button onclick="logout()" class="text-[10px] font-black text-red-500 uppercase px-4 py-2 border border-red-500/20 rounded-xl">Logout</button>
+                </div>
+            </nav>
+            <main id="main-content" class="p-10 max-w-7xl mx-auto w-full flex-grow"></main>
+        </div>
+    </div>
+
+    <div id="onboarding-screen" class="hidden min-h-screen flex items-center justify-center p-6 relative">
+        <button onclick="logout()" class="absolute top-10 right-10 text-2xl font-black text-white/30 hover:text-white">✕</button>
+        <div class="w-full max-w-md glass p-10 rounded-[3.5rem] border-brandOrange/20 shadow-2xl text-center">
+            <h2 class="text-3xl font-black mb-6 italic">Finalize Profile</h2>
+            <div class="space-y-4">
+                <input type="text" id="ob-name" placeholder="Full Name" class="input-field">
+                <select id="ob-role" class="input-field">
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                </select>
+                <input type="password" id="ob-pass" placeholder="Secure Password" class="input-field">
+                <button onclick="finalizeProfile()" class="w-full py-5 btn-brand">Activate</button>
+            </div>
+        </div>
+    </div>
+
+    <div onclick="toggleAIChat()" class="fixed bottom-6 right-6 z-[5000] w-16 h-16 rounded-full btn-brand flex items-center justify-center text-3xl cursor-pointer shadow-2xl">🤖</div>
+    <div id="ai-chat-window" class="hidden fixed bottom-24 right-6 w-[380px] h-[600px] glass rounded-[2rem] z-[5000] overflow-hidden flex flex-col border border-brandOrange/20">
+        <div class="p-5 border-b border-white/10 flex justify-between items-center"><h2 class="font-black text-lg italic text-brandOrange">OpenClass AI</h2><button onclick="toggleAIChat()">✕</button></div>
+        <div id="ai-messages" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
+        <div class="p-4 border-t border-white/10 flex gap-3"><input id="ai-input" type="text" placeholder="Ask AI..." class="input-field flex-1"><button onclick="sendAIMessage()" class="btn-brand px-5 rounded-xl">Send</button></div>
+    </div>
+
+    <script type="module">
+        import * as Core from "./app.js";
+        import { aiConfig } from "./config.js";
+
+        let profile = null, isSignup = false, otpCode = null, tempUser = null, activeGroupId = null, currentTab = 'home', videoPlayer = null;
+        let currentVideoContext = null;
+
+        // Keybindings
+        window.addEventListener('keydown', (e) => {
+            if (!videoPlayer || ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+            if (e.code === 'Space') { e.preventDefault(); videoPlayer.togglePlay(); }
+            else if (e.code === 'ArrowRight') videoPlayer.forward(10);
+            else if (e.code === 'ArrowLeft') videoPlayer.rewind(10);
+        });
+
+        function setupPlayer(videoId, metadata) {
+            currentVideoContext = metadata;
+            const container = document.getElementById('player');
+            container.innerHTML = "";
+            const playerDiv = document.createElement('div');
+            playerDiv.id = 'player-instance';
+            playerDiv.setAttribute('data-plyr-provider', 'youtube');
+            playerDiv.setAttribute('data-plyr-embed-id', videoId);
+            container.appendChild(playerDiv);
+            if (videoPlayer) videoPlayer.destroy();
+            videoPlayer = new Plyr('#player-instance', {
+                autoplay: true,
+                youtube: { noCookie: true, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1, controls: 0, disablekb: 1 }
+            });
+        }
+
+        window.setTab = (t) => {
+            currentTab = t;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${t}`).classList.add('active');
+            loadHome();
+        };
+
+        window.reactiveSearch = (val) => { if (val.length < 2) return; navigate('search', val); };
+        window.onpopstate = (e) => { if (profile) renderContent(e.state?.p || 'home', e.state?.q || ''); };
+        window.navigate = (p, q = '') => { history.pushState({ p, q }, '', `#${p}`); renderContent(p, q); };
+
+        async function renderContent(p, q) {
+            if (p === 'home') loadHome();
+            else if (p === 'search') loadSearch(q);
+            else if (p === 'profile') viewTeacher(q);
+        }
+
+        window.loadHome = async () => {
+            const main = document.getElementById('main-content');
+            if (!profile) return;
+            if (profile.role === 'teacher') {
+                const [contentSnap, followersSnap, courseSnap, groupSnap] = await Promise.all([
+                    Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "==", profile.teacherId))),
+                    Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "array-contains", profile.teacherId))),
+                    Core.getDocs(Core.query(Core.collection(Core.db, "courses"), Core.where("teacherId", "==", profile.teacherId))),
+                    Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId", "==", profile.teacherId)))
+                ]);
+                let totalViews = 0;
+                contentSnap.forEach(d => totalViews += (d.data().views || 0));
+                main.innerHTML = `
+                <div class="grid lg:grid-cols-4 gap-10">
+                    <div class="space-y-6 lg:sticky lg:top-32 h-fit">
+                        <div class="glass p-8 rounded-[3rem] border border-brandBlue/30 text-center shadow-xl">
+                            <img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-brandBlue p-1 object-cover">
+                            <h3 class="text-xl font-black italic">${profile.name}</h3>
+                            <p class="text-[10px] font-bold opacity-40 uppercase tracking-widest mb-6">${profile.teacherId}</p>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-white/5 p-4 rounded-3xl text-center"><p class="text-[9px] opacity-30 font-bold uppercase">Followers</p><p class="text-2xl font-black">${followersSnap.size}</p></div>
+                                <div class="bg-white/5 p-4 rounded-3xl text-center"><p class="text-[9px] opacity-30 font-bold uppercase">Views</p><p class="text-2xl font-black">${totalViews}</p></div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 glass p-4 rounded-[2rem]">
+                            <button id="btn-create" onclick="switchTeacherView('create')" class="teacher-grid-btn p-4 rounded-xl bg-white/5 text-[9px] font-black uppercase transition-all">Hub Setup</button>
+                            <button id="btn-course" onclick="switchTeacherView('course')" class="teacher-grid-btn p-4 rounded-xl bg-white/5 text-[9px] font-black uppercase transition-all">Launch Course</button>
+                            <button id="btn-requests" onclick="switchTeacherView('requests')" class="teacher-grid-btn p-4 rounded-xl bg-white/5 text-[9px] font-black uppercase transition-all">Requests</button>
+                            <button id="btn-publish" onclick="switchTeacherView('publish')" class="teacher-grid-btn p-4 rounded-xl bg-white/5 text-[9px] font-black uppercase transition-all grid-btn-active">Publish</button>
+                        </div>
+                        <div id="teacher-action-area" class="glass p-6 rounded-[2rem] space-y-4">
+                            <input id="up-t" placeholder="Title" class="input-field text-xs p-3">
+                            <input id="up-u" placeholder="URL" class="input-field text-xs p-3">
+                            <select id="up-y" class="input-field text-xs p-3"><option value="video">Video</option><option value="live">Live</option><option value="file">Material</option></select>
+                            <button onclick="publishContent()" class="w-full py-3 btn-brand text-xs">Publish Now</button>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-3 space-y-6"><div id="tab-display" class="min-h-[500px]"></div></div>
+                </div>`;
+                const box = document.getElementById('tab-display');
+                if (currentTab === 'home') {
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Creator Insights</h3><div class="grid md:grid-cols-3 gap-6 mb-10"><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 uppercase font-black">Uploads</p><h2 class="text-4xl font-black">${contentSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 uppercase font-black">Courses</p><h2 class="text-4xl font-black">${courseSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 uppercase font-black">Groups</p><h2 class="text-4xl font-black">${groupSnap.size}</h2></div></div><div id="feed" class="space-y-4"></div>`;
+                    renderFeed(contentSnap.docs, true);
+                } else if (currentTab === 'groups') {
+                    renderGroups(groupSnap.docs, true);
+                } else if (currentTab === 'courses') {
+                    renderCourses(courseSnap.docs, true);
+                } else if (currentTab === 'content') {
+                    renderFeed(contentSnap.docs, true);
+                }
+            } else {
+                main.innerHTML = `<div id="tab-display" class="max-w-4xl mx-auto min-h-[600px]"></div>`;
+                const box = document.getElementById('tab-display');
+                if (currentTab === 'home') {
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Suggested</h3><div id="suggested-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div><h3 class="text-2xl font-black italic mb-6">Updates</h3><div id="feed" class="space-y-6"></div>`;
+                    const allContent = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(6)));
+                    renderFeed(allContent.docs, false, 'suggested-feed');
+                    if (profile.subs?.length) {
+                        const subContent = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs)));
+                        renderFeed(subContent.docs, false, 'feed');
+                    }
+                } else if (currentTab === 'groups') {
+                    box.innerHTML = `<div class="glass p-8 rounded-[3rem] mb-10"><h3 class="text-2xl font-black mb-4">Join Hub</h3><div class="flex gap-4"><input id="hub-code" placeholder="OC-XXXXXX" class="input-field"><button onclick="joinGroup()" class="btn-brand px-10">Join</button></div></div><div id="student-groups" class="space-y-4"></div>`;
+                    loadGroups();
+                } else if (currentTab === 'courses') {
+                    const coSnap = await Core.getDocs(Core.collection(Core.db, "courses"));
+                    renderCourses(coSnap.docs, false);
+                } else if (currentTab === 'content') {
+                    if(profile.subs?.length) {
+                        const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs)));
+                        renderFeed(snap.docs, false);
+                    }
+                }
+            }
+        };
+
+        window.loadSearch = async (q) => {
+            const main = document.getElementById('main-content');
+            if (!q) return loadHome();
+            main.innerHTML = `<div class="space-y-4">${Array(3).fill('<div class="skeleton h-20 rounded-2xl opacity-10 bg-white"></div>').join('')}</div>`;
+            const [uS, cS, gS] = await Promise.all([Core.getDocs(Core.collection(Core.db, "users")), Core.getDocs(Core.collection(Core.db, "content")), Core.getDocs(Core.collection(Core.db, "groups"))]);
+            const teachers = uS.docs.filter(d => d.data().role === 'teacher' && (d.data().name.toLowerCase().includes(q.toLowerCase()) || d.data().teacherId === q));
+            const content = cS.docs.filter(d => d.data().title.toLowerCase().includes(q.toLowerCase()));
+            const groups = gS.docs.filter(d => d.data().code === q || d.data().name.toLowerCase().includes(q.toLowerCase()));
+            main.innerHTML = `<div class="space-y-12">${teachers.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Instructors</h3><div class="grid gap-4">${teachers.map(m => `<div onclick="viewTeacher('${m.data().teacherId}')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center cursor-pointer group"><div class="flex items-center gap-6"><img src="${m.data().photo || ''}" class="w-16 h-16 rounded-2xl object-cover bg-brandBlue shadow-lg"><div><h3 class="text-xl font-black italic">${m.data().name}</h3><p class="text-[10px] opacity-30 font-bold">${m.data().teacherId}</p></div></div><p class="text-brandBlue font-black uppercase text-[10px]">Biography →</p></div>`).join('')}</div></div>` : ''}${groups.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Groups</h3><div class="grid gap-4">${groups.map(g => `<div class="glass p-6 rounded-[2.5rem] flex justify-between items-center border border-white/5"><div><span class="text-[9px] text-brandOrange font-black uppercase tracking-widest">${g.data().type}</span><h3 class="text-xl font-black mt-1">${g.data().name}</h3><p class="text-xs opacity-50">${g.data().code}</p></div><button onclick="handleHubSearchJoin('${g.id}','${g.data().code}')" class="btn-brand px-8 py-2 text-[10px]">Access</button></div>`).join('')}</div></div>` : ''}${content.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Lessons</h3><div class="grid gap-4">${content.map(d => renderResourceCard(d, false)).join('')}</div></div>` : ''}</div>`;
+        };
+
+        window.handleHubSearchJoin = (id, code) => { setTab('groups'); setTimeout(() => { document.getElementById('hub-code').value = code; joinGroup(); }, 500); };
+
+        window.switchTeacherView = async (v) => {
+            document.querySelectorAll('.teacher-grid-btn').forEach(btn => btn.classList.remove('grid-btn-active'));
+            document.getElementById(`btn-${v}`).classList.add('grid-btn-active');
+            const area = document.getElementById('teacher-action-area');
+            if (v === 'create') area.innerHTML = `<select id="group-type" class="input-field text-xs p-3 mb-2"><option value="public">Public</option><option value="private">Private</option></select><input id="group-name" placeholder="Hub Name" class="input-field text-xs p-3 mb-4"><button onclick="createGroup()" class="w-full py-3 btn-brand text-xs">Create Hub</button>`;
+            else if (v === 'course') area.innerHTML = `<input id="c-title" placeholder="Course Title" class="input-field text-xs p-3 mb-2"><textarea id="c-desc" placeholder="Details" class="input-field h-24 text-xs p-3 mb-2"></textarea><div id="course-vids" class="space-y-2"><div class="flex gap-2"><input placeholder="Video Title" class="input-field text-xs p-3 cv-t"><input placeholder="YouTube Link" class="input-field text-xs p-3 cv-u"><button onclick="addVidField()" class="bg-brandOrange text-white px-4 rounded-xl font-bold">+</button></div></div><input id="c-price" placeholder="Price ₹" class="input-field text-xs p-3 mt-2 mb-2"><button onclick="launchCourse()" class="w-full py-3 btn-brand text-xs">Launch</button>`;
+            else if (v === 'publish') area.innerHTML = `<input id="up-t" placeholder="Title" class="input-field text-xs p-3 mb-2"><input id="up-u" placeholder="URL" class="input-field text-xs p-3 mb-2"><select id="up-y" class="input-field text-xs p-3 mb-2"><option value="video">Video</option><option value="live">Live</option><option value="file">Material</option></select><button onclick="publishContent()" class="w-full py-3 btn-brand text-xs">Publish Now</button>`;
+            else if (v === 'requests') {
+                area.innerHTML = `<div id="request-list" class="space-y-3 mt-4 text-[10px] opacity-30 text-center font-bold">Scanning...</div>`;
+                const groups = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId", "==", profile.teacherId)));
+                let html = '';
+                groups.forEach(g => { const d = g.data(); if(d.pending?.length) d.pending.forEach(p => { html += `<div class="bg-white/5 p-4 rounded-xl flex flex-col gap-2 border border-white/5"><div><p class="text-[8px] text-brandOrange font-black">${d.name}</p><p class="font-bold text-[10px]">${p.name}</p></div><div class="flex gap-2"><button onclick="modReq('${g.id}','${p.uid}','${p.name}',true)" class="flex-1 py-1.5 bg-green-600 rounded-lg text-[8px] font-black">Accept</button><button onclick="modReq('${g.id}','${p.uid}','${p.name}',false)" class="flex-1 py-1.5 bg-red-600 rounded-lg text-[8px] font-black">Deny</button></div></div>`; }); });
+                document.getElementById('request-list').innerHTML = html || 'No Requests';
+            }
+        };
+
+        window.addVidField = () => {
+            const div = document.createElement('div');
+            div.className = "flex gap-2";
+            div.innerHTML = `<input placeholder="Video Title" class="input-field text-xs p-3 cv-t"><input placeholder="YouTube Link" class="input-field text-xs p-3 cv-u"><button onclick="this.parentElement.remove()" class="bg-red-500/20 text-red-500 px-4 rounded-xl font-bold">×</button>`;
+            document.getElementById('course-vids').appendChild(div);
+        };
+
+        window.modReq = async (gid, uid, name, accept) => { const ref = Core.doc(Core.db, "groups", gid); if(accept) await Core.updateDoc(ref, { members: Core.arrayUnion(uid), pending: Core.arrayRemove({ uid, name }) }); else await Core.updateDoc(ref, { pending: Core.arrayRemove({ uid, name }) }); switchTeacherView('requests'); };
+
+        window.handleAuth = async () => {
+            const e = document.getElementById('auth-email').value, p = document.getElementById('auth-pass').value;
+            if (isSignup) {
+                tempUser = { e, p, n: document.getElementById('reg-name').value, r: document.getElementById('reg-role').value };
+                otpCode = Math.floor(100000 + Math.random() * 900000);
+                try { await Core.sendOTP(e, otpCode); document.getElementById('verify-note').innerText = `OTP to ${e}`; showScreen('verify-screen'); } catch(err) { toast("Email Error", "error"); }
+            } else { try { await Core.signInWithEmailAndPassword(Core.auth, e, p); } catch (err) { toast(err.message, "error"); } }
+        };
+
+        window.checkOTP = async () => {
+            if (document.getElementById('otp-input').value == otpCode) {
+                try {
+                    const { e, p, n, r } = tempUser;
+                    const cred = await Core.createUserWithEmailAndPassword(Core.auth, e, p);
+                    await Core.setDoc(Core.doc(Core.db, "users", cred.user.uid), { name: n, role: r, teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), email: e, subs: [], photo: "", joined: new Date().toLocaleDateString() });
+                    location.reload();
+                } catch(err) { toast(err.message, "error"); }
+            } else toast("Wrong Code", "error");
+        };
+
+        window.toggleAuth = () => { isSignup = !isSignup; document.getElementById('signup-fields').classList.toggle('hidden'); document.getElementById('primary-auth-btn').innerText = isSignup ? "Verify Email" : "Sign In"; document.getElementById('toggle-auth-btn').innerText = isSignup ? "Already have account? Login" : "Create Profile"; };
+        window.handleGoogle = () => Core.signInWithPopup(Core.auth, Core.provider);
+        window.logout = () => Core.signOut(Core.auth).then(() => location.reload());
+
+        window.finalizeProfile = async () => {
+            const n = document.getElementById('ob-name').value, p = document.getElementById('ob-pass').value, r = document.getElementById('ob-role').value;
+            if (!n || !p) return toast("Empty fields", "error");
+            try {
+                await Core.updatePassword(Core.auth.currentUser, p);
+                await Core.setDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { name: n, role: r, teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), email: Core.auth.currentUser.email, subs: [], photo: Core.auth.currentUser.photoURL || "" });
+                location.reload();
+            } catch(e) { toast(e.message, "error"); }
+        };
+
+        window.createGroup = async () => {
+            const n = document.getElementById('group-name').value;
+            if (!n) return toast("Enter Name");
+            const c = "OC-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+            await Core.addDoc(Core.collection(Core.db, "groups"), { name: n, type: document.getElementById('group-type').value, code: c, teacherId: profile.teacherId, teacherName: profile.name, members: [Core.auth.currentUser.uid], pending: [], createdAt: Core.serverTimestamp() });
+            toast(`Created: ${c}`); loadHome();
+        };
+
+        window.launchCourse = async () => {
+            const t = document.getElementById('c-title').value, d = document.getElementById('c-desc').value, p = document.getElementById('c-price').value;
+            const vt = Array.from(document.querySelectorAll('.cv-t')).map(i => i.value);
+            const vu = Array.from(document.querySelectorAll('.cv-u')).map(i => i.value);
+            if (!t || !vu[0]) return toast("Required Fields Missing", "error");
+            
+            const playlist = vt.map((title, i) => ({ title, url: vu[i] }));
+            const code = "HUB-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+            
+            // Auto Create Group for Course
+            const gRef = await Core.addDoc(Core.collection(Core.db, "groups"), { 
+                name: `${t} (Community)`, type: 'private', code, teacherId: profile.teacherId, teacherName: profile.name, members: [Core.auth.currentUser.uid], pending: [], createdAt: Core.serverTimestamp() 
+            });
+
+            await Core.addDoc(Core.collection(Core.db, "courses"), { 
+                title: t, description: d, thumbnail: Core.getThumbnail(vu[0]), playlist, price: p, teacherId: profile.teacherId, teacherName: profile.name, groupId: gRef.id, createdAt: Core.serverTimestamp() 
+            });
+            toast("Course & Community Hub Launched!"); loadHome();
+        };
+
+        window.joinGroup = async () => {
+            const c = (document.getElementById('hub-code')?.value || document.getElementById('g-search').value).trim().toUpperCase();
+            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("code", "==", c)));
+            if (snap.empty) return toast("Not Found", "error");
+            const g = snap.docs[0], d = g.data();
+            if (d.members.includes(Core.auth.currentUser.uid)) return toast("Already In");
+            if (d.type === 'public') await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
+            else await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { pending: Core.arrayUnion({ uid: Core.auth.currentUser.uid, name: profile.name }) });
+            toast("Requested"); loadHome();
+        };
+
+        window.openResource = async (id, url, title) => {
+            if(id && id !== 'null') await Core.updateDoc(Core.doc(Core.db, "content", id), { views: Core.increment(1) });
+            let vid = "";
+            if (url.includes('v=')) vid = url.split('v=')[1].split('&')[0];
+            else if (url.includes('youtu.be/')) vid = url.split('/').pop().split('?')[0];
+            else if (url.includes('/live/')) vid = url.split('/live/')[1].split('?')[0];
+            document.getElementById('media-vault').classList.remove('hidden');
+            setupPlayer(vid, { title, link: url });
+        };
+
+        window.openCourse = async (id) => {
+            const snap = await Core.getDoc(Core.doc(Core.db, "courses", id));
+            const c = snap.data();
+            const isT = c.teacherId === profile.teacherId;
+            const content = document.getElementById('modal-content');
+            content.innerHTML = `
+                <img src="${c.thumbnail}" class="w-full h-48 object-cover rounded-3xl mb-6 shadow-2xl">
+                <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-black italic text-brandOrange">${c.title}</h2>${isT ? `<button onclick="delC('${id}')" class="text-red-500 font-black uppercase text-[10px]">Delete</button>` : ''}</div>
+                <p class="opacity-70 mb-6 text-xs">${c.description}</p>
+                <div class="space-y-3 mb-8">
+                    <p class="text-[9px] font-black uppercase opacity-40">Course Playlist</p>
+                    ${c.playlist.map((v, i) => `
+                        <div onclick="openResource('null','${v.url}','${v.title}')" class="bg-white/5 p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-white/10 border border-white/5">
+                            <p class="text-xs font-bold">${i+1}. ${v.title}</p>
+                            <span class="text-[10px] text-brandOrange font-black uppercase tracking-tighter">Play</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="flex gap-4">
+                    <button onclick="enrollCourse('${id}','${c.groupId}')" class="flex-1 py-5 btn-brand shadow-xl">Enroll (₹${c.price})</button>
+                </div>
+            `;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        };
+
+        window.enrollCourse = async (cid, gid) => {
+            // Auto Join Linked Community Hub
+            await Core.updateDoc(Core.doc(Core.db, "groups", gid), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
+            toast("Payment Simulated! Enrolled in Course and Hub.");
+            document.getElementById('custom-modal').classList.add('hidden');
+        };
+
+        window.delC = async (id) => { if(confirm("Delete?")) { await Core.deleteDoc(Core.doc(Core.db,"courses",id)); document.getElementById('custom-modal').classList.add('hidden'); loadHome(); } };
+
+        function renderFeed(docs, isT, target = 'feed') { 
+            const container = document.getElementById(target) || document.getElementById('tab-display');
+            if (container) container.innerHTML = docs.map(d => renderResourceCard(d, isT)).join(''); 
+        }
+
+        function renderCourses(docs, isT) {
+            const container = document.getElementById('courses-feed') || document.getElementById('tab-display');
+            if (container) container.innerHTML = `<div class="grid md:grid-cols-2 gap-6">${docs.map(doc => {
+                const c = doc.data();
+                return `<div class="glass p-6 rounded-[2.5rem] border border-white/5"><img src="${c.thumbnail}" class="w-full h-52 object-cover rounded-2xl mb-4"><div><h2 class="text-xl font-black italic mb-2">${c.title}</h2><div class="flex justify-between items-center"><h3 class="text-lg font-black text-brandOrange">₹${c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2 text-xs">View Course</button></div></div></div>`;
+            }).join('')}</div>`;
+        }
+
+        function renderResourceCard(d, isT) {
+            const i = d.data();
+            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative"><img src="${Core.getThumbnail(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md">${i.type === 'live' ? '<span class="absolute top-2 left-2 bg-red-600 text-[8px] font-black px-2 py-0.5 rounded-full animate-pulse">LIVE</span>' : ''}</div><div><h4 class="font-black text-lg italic truncate">${i.title}</h4><p class="text-[9px] opacity-40 uppercase font-bold">${i.tName} • ${i.views || 0} Views</p></div></div><div class="flex gap-2 w-full md:w-auto"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand light:bg-brandOrange dark:bg-white light:text-white dark:text-black px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Watch</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
+        }
+        window.delR = async (id) => { if(confirm("Delete?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); loadHome(); } };
+        window.editR = (id,t,u) => { document.getElementById('modal-content').innerHTML = `<h3 class="text-xl font-black mb-4 italic">Edit Content</h3><input id="ed-t" value="${t}" class="input-field mb-2 text-xs"><input id="ed-u" value="${u}" class="input-field mb-4 text-xs"><button onclick="saveR('${id}')" class="w-full py-4 btn-brand text-xs">Save Changes</button>`; document.getElementById('custom-modal').classList.remove('hidden'); };
+        window.saveR = async (id) => { await Core.updateDoc(Core.doc(Core.db,"content",id), {title:document.getElementById('ed-t').value, url:document.getElementById('ed-u').value}); document.getElementById('custom-modal').classList.add('hidden'); loadHome(); };
+
+        window.publishContent = async () => {
+            const t = document.getElementById('up-t').value, u = document.getElementById('up-u').value, y = document.getElementById('up-y').value;
+            if (!t || !u) return toast("Fill fields", "error");
+            await Core.addDoc(Core.collection(Core.db, "content"), { title: t, url: u, type: y, tId: profile.teacherId, tName: profile.name, views: 0, date: Core.serverTimestamp() });
+            toast("Posted!"); loadHome();
+        };
+
+        window.openGroupChat = (id, name) => {
+            activeGroupId = id; document.getElementById('group-chat-window').classList.remove('hidden');
+            document.getElementById('group-chat-title').innerText = name;
+            const q = Core.query(Core.collection(Core.db, "groupMessages"), Core.where("groupId", "==", id), Core.orderBy("createdAt", "asc"));
+            Core.onSnapshot(q, (snap) => {
+                document.getElementById('group-chat-messages').innerHTML = snap.docs.map(m => {
+                    const d = m.data(); const isM = d.senderId === Core.auth.currentUser.uid;
+                    return `<div class="flex ${isM ? 'flex-row-reverse' : 'flex-row'} items-end gap-3"><img src="${d.senderPhoto || 'https://ui-avatars.com/api/?name='+d.sender}" class="w-8 h-8 rounded-full border border-white/10"><div class="flex flex-col ${isM ? 'items-end' : 'items-start'}"><p class="text-[8px] opacity-40 uppercase font-black px-2 mb-1 text-zinc-500">${d.sender}</p><div class="inline-block p-4 rounded-2xl ${isM ? 'bg-brandOrange text-white' : 'bg-white/10'} text-sm shadow-xl">${d.text}</div></div></div>`;
+                }).join('');
+                document.getElementById('group-chat-messages').scrollTop = 99999;
+            });
+        };
+
+        window.sendGroupMessage = async () => {
+            const i = document.getElementById('group-message-input'), t = i.value.trim();
+            if (!t || !activeGroupId) return;
+            await Core.addDoc(Core.collection(Core.db, "groupMessages"), { groupId: activeGroupId, senderId: Core.auth.currentUser.uid, sender: profile.name, senderPhoto: profile.photo || '', text: t, createdAt: Core.serverTimestamp() });
+            i.value = '';
+        };
+
+        window.sendAIMessage = async () => {
+            const i = document.getElementById('ai-input'), m = i.value.trim();
+            if (!m) return;
+            const chat = document.getElementById('ai-messages');
+            chat.innerHTML += `<div class="ml-auto bg-brandOrange text-white p-4 rounded-2xl max-w-[80%] text-sm">${m}</div>`;
+            i.value = '';
+            const context = `User: ${profile?.name}. Current Video: ${currentVideoContext ? currentVideoContext.title : 'None'}.`;
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${aiConfig.geminiKey}`, {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: `${context} Answer: ${m}` }] }] })
+                });
+                const data = await res.json();
+                chat.innerHTML += `<div class="bg-white/10 p-4 rounded-2xl max-w-[80%] text-sm">${data.candidates[0].content.parts[0].text}</div>`;
+                chat.scrollTop = chat.scrollHeight;
+            } catch (e) { toast("AI Offline", "error"); }
+        };
+
+        window.viewTeacher = async (tId) => {
+            const main = document.getElementById('main-content');
+            const [uS, cS, coS] = await Promise.all([Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId", "==", tId))), Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "==", tId))), Core.getDocs(Core.query(Core.collection(Core.db, "courses"), Core.where("teacherId", "==", tId)))]);
+            if(uS.empty) return navigate('home');
+            const tD = uS.docs[0].data(), isF = profile.subs?.includes(tId);
+            main.innerHTML = `<div class="space-y-10"><div class="glass p-10 rounded-[4rem] border border-brandBlue/30 flex flex-col md:flex-row justify-between items-center gap-10 shadow-2xl"><div class="flex items-center gap-8"><img src="${tD.photo || ''}" class="w-24 h-24 rounded-full border-4 border-brandBlue object-cover bg-brandBlue shadow-2xl"><div><h2 class="text-4xl font-black italic tracking-tighter">${tD.name}</h2><p class="text-sm font-bold text-brandBlue uppercase opacity-60">${tD.teacherId}</p></div></div><button onclick="handleSub('${tId}', ${isF})" class="px-10 py-4 ${isF ? 'bg-zinc-800' : 'btn-brand'} rounded-2xl font-black text-xs uppercase">${isF ? 'Unfollow' : 'Follow'}</button></div><h3 class="text-2xl font-black mb-6">Courses</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div><h3 class="text-2xl font-black mb-6">Lessons</h3><div id="feed" class="space-y-4"></div></div>`;
+            renderFeed(cS.docs, false); renderCourses(coS.docs);
+        };
+
+        window.handleSub = async (tId, isF) => {
+            await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { subs: isF ? Core.arrayRemove(tId) : Core.arrayUnion(tId) });
+            profile.subs = isF ? profile.subs.filter(i => i !== tId) : [...(profile.subs||[]), tId];
+            viewTeacher(tId);
+        };
+
+        Core.onAuthStateChanged(Core.auth, async (user) => {
+            if (user) {
+                const docSnap = await Core.getDoc(Core.doc(Core.db, "users", user.uid));
+                if (!docSnap.exists()) showScreen('onboarding-screen');
+                else {
+                    profile = docSnap.data();
+                    const pic = document.getElementById('nav-profile-pic');
+                    if (profile.photo) pic.innerHTML = `<img src="${profile.photo}" class="w-full h-full object-cover">`;
+                    pic.className = `w-10 h-10 rounded-full border-2 overflow-hidden hidden md:block ${profile.role === 'teacher' ? 'border-brandBlue' : 'border-brandOrange'}`;
+                    showScreen('dashboard'); navigate(window.location.hash.substring(1) || 'home');
+                }
+            } else showScreen('auth-screen');
+        });
+
+        window.toggleAIChat = () => document.getElementById('ai-chat-window').classList.toggle('hidden');
+        window.closeGroupChat = () => document.getElementById('group-chat-window').classList.add('hidden');
+        window.toggleMode = () => { document.documentElement.classList.toggle('light'); localStorage.setItem('oc_theme', document.documentElement.classList.contains('light')); };
+        window.closeVault = () => { document.getElementById('media-vault').classList.add('hidden'); currentVideoContext = null; if(videoPlayer) videoPlayer.destroy(); };
+        function showScreen(id) { ['auth-screen', 'verify-screen', 'onboarding-screen', 'dashboard'].forEach(s => document.getElementById(s).classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
+        function toast(m, type = "s") { const b = document.getElementById('toast-box'), d = document.createElement('div'); d.className = 'toast-pill'; if (type === "error") d.style.borderColor = "red"; d.innerText = m; b.appendChild(d); setTimeout(() => d.remove(), 2500); }
+        if (localStorage.getItem('oc_theme') === 'true') document.documentElement.classList.add('light');
+
+        async function loadGroups() {
+            const container = document.getElementById('student-groups'); if (!container) return;
+            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "groups")));
+            container.innerHTML = snap.docs.filter(d => d.data().members?.includes(Core.auth.currentUser.uid) || d.data().teacherId === profile.teacherId).map(docSnap => {
+                const g = docSnap.data();
+                return `<div class="glass p-6 rounded-[2rem] flex justify-between items-center border border-white/5 hover:border-brandOrange/20 transition-all group"><div><span class="text-[9px] text-brandOrange font-black uppercase tracking-widest">${g.type}</span><h3 class="text-xl font-black">${g.name}</h3><p class="text-xs opacity-40">${g.code}</p></div><div class="flex gap-2"><button onclick="openGroupChat('${docSnap.id}', '${g.name}')" class="btn-brand px-6 py-2 text-[10px]">Open Hub</button></div></div>`;
+            }).join('');
+        }
+
+        function renderGroups(docs, isT) {
+            const container = document.getElementById('student-groups') || document.getElementById('tab-display'); if(!container) return;
+            container.innerHTML = `<div class="space-y-4">${docs.map(d => {
+                const g = d.data();
+                return `<div class="glass p-6 rounded-[2rem] flex justify-between items-center group border border-white/5 hover:border-brandBlue/20 transition-all"><div><span class="text-[9px] text-brandBlue font-black uppercase tracking-widest">${g.type}</span><h3 class="text-xl font-black">${g.name}</h3><p class="text-xs opacity-40">${g.code}</p></div><div class="flex gap-2"><button onclick="openGroupChat('${d.id}', '${g.name}')" class="btn-brand px-6 py-2 text-[10px]">Manage</button><button onclick="delG('${d.id}')" class="bg-red-500/10 text-red-500 p-2 rounded-xl hover:bg-red-500 hover:text-white transition-all">🗑</button></div></div>`;
+            }).join('')}</div>`;
+        }
+        window.delG = async (id) => { if(confirm("Delete?")) { await Core.deleteDoc(Core.doc(Core.db, "groups", id)); loadHome(); } };
+        window.onclick = (e) => { if (e.target === document.getElementById('custom-modal')) document.getElementById('custom-modal').classList.add('hidden'); };
+    </script>
+</body>
+</html>
