@@ -19,17 +19,57 @@
         .light { --text-main: #002e50; --bg-main: #fdfbf7; --glass-bg: rgba(255, 255, 255, 0.85); --input-bg: #fff; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: 0.4s; overflow-x: hidden; }
         .glass { background: var(--glass-bg); backdrop-filter: blur(30px); border: 1px solid rgba(128, 128, 128, 0.1); }
+        
         .btn-brand { background: linear-gradient(135deg, #004a80 0%, #f7941d 100%); background-size: 200% auto; transition: 0.5s; color: white !important; font-weight: 800; text-transform: uppercase; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
         .btn-brand:hover { background-position: right center; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 74, 128, 0.2); }
+        
         .tab-btn { padding: 12px 20px; font-weight: 800; text-transform: uppercase; font-size: 10px; border-radius: 12px; transition: 0.3s; opacity: 0.4; color: var(--text-main); }
         .tab-btn.active { background: rgba(247, 148, 29, 0.1); color: #f7941d; opacity: 1; border: 1px solid rgba(247, 148, 29, 0.2); }
+        
         .input-field { background: var(--input-bg); border: 1px solid rgba(128, 128, 128, 0.2); color: var(--text-main); outline: none; padding: 1rem; border-radius: 14px; width: 100%; }
+        
         #toast-box { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
         .toast-pill { background: #111; color: #fff; padding: 0.6rem 1.5rem; border-radius: 99px; border: 1px solid rgba(255,255,255,0.1); font-size: 10px; font-weight: 800; text-transform: uppercase; animation: popUp 0.3s forwards; }
+        
+        /* Anti-YouTube UI Shield */
         #media-vault .plyr__video-embed iframe { transform: scale(1.4); pointer-events: none; }
         .plyr--full-ui.plyr--video .plyr__control--overlaid { background: #f7941d; }
         .plyr--video .plyr__controls { background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 0 0 14px 14px; }
+        
+        /* Grid Button Highlighting */
         .grid-btn-active { background: rgba(247, 148, 29, 0.2) !important; border: 1px solid rgba(247, 148, 29, 0.3) !important; color: #f7941d !important; }
+
+        /* ADVANCED ANTI-THEFT BLANK SCREEN OVERLAY */
+        #anti-theft-blank {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: #000;
+            z-index: 2900;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 0.1em;
+        }
+
+        /* SECURE MOVING WATERMARK */
+        #secure-watermark {
+            position: absolute;
+            z-index: 2800;
+            pointer-events: none;
+            font-weight: 800;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.15);
+            mix-blend-mode: difference;
+            white-space: nowrap;
+            user-select: none;
+            transition: all 1s ease-in-out;
+        }
+
         @keyframes popUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -41,8 +81,11 @@
     </div>
 
     <div id="media-vault" class="hidden fixed inset-0 z-[2000] bg-black flex items-center justify-center">
-        <button onclick="closeVault()" class="absolute top-6 right-6 bg-white/10 hover:bg-red-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-black z-[2100]">✕</button>
-        <div class="w-full max-w-5xl overflow-hidden rounded-2xl shadow-2xl">
+        <button onclick="closeVault()" class="absolute top-6 right-6 bg-white/10 hover:bg-red-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-black z-[3100]">✕</button>
+        <div class="w-full max-w-5xl overflow-hidden rounded-2xl shadow-2xl relative">
+             <div id="anti-theft-blank">⚠️ Screen Capture / Tab Inactivity Detected</div>
+             <div id="secure-watermark"></div>
+             
              <div id="player" data-plyr-provider="youtube" data-plyr-embed-id=""></div>
         </div>
     </div>
@@ -118,6 +161,7 @@
                     <button onclick="logout()" class="text-[10px] font-black text-red-500 uppercase px-4 py-2 border border-red-500/20 rounded-xl">Logout</button>
                 </div>
             </nav>
+            <nav id="secondary-nav" class="hidden bg-black/20 border-b border-white/5 p-2 px-10 flex gap-4 text-xs font-bold text-zinc-400"></nav>
             <main id="main-content" class="p-10 max-w-7xl mx-auto w-full flex-grow"></main>
         </div>
     </div>
@@ -151,6 +195,7 @@
 
         let profile = null, isSignup = false, otpCode = null, tempUser = null, activeGroupId = null, currentTab = 'home', videoPlayer = null;
         let currentVideoContext = null;
+        let watermarkInterval = null;
 
         // Keybindings
         window.addEventListener('keydown', (e) => {
@@ -158,6 +203,77 @@
             if (e.code === 'Space') { e.preventDefault(); videoPlayer.togglePlay(); }
             else if (e.code === 'ArrowRight') videoPlayer.forward(10);
             else if (e.code === 'ArrowLeft') videoPlayer.rewind(10);
+        });
+
+        // --- HARDENED ANTI-THEFT MONITORING ENGINE ---
+        function activateAntiTheftShields() {
+            const blankOverlay = document.getElementById('anti-theft-blank');
+            const watermarkEl = document.getElementById('secure-watermark');
+
+            // 1. Inject User Email Identity into Content Container
+            if (profile && profile.email) {
+                watermarkEl.innerText = profile.email;
+                moveWatermark();
+                clearInterval(watermarkInterval);
+                watermarkInterval = setInterval(moveWatermark, 4000);
+            }
+
+            // 2. Clear Clipboard to prevent snippet pasting
+            navigator.clipboard?.writeText?.("Protected by OpenClass Secure Shield.");
+
+            // 3. Prevent Focus and Tab switching evasion
+            window.addEventListener('blur', engageShield);
+            document.addEventListener('visibilitychange', handleVisibility);
+            
+            function engageShield() {
+                if (videoPlayer && videoPlayer.playing) {
+                    videoPlayer.pause();
+                }
+                blankOverlay.style.display = 'flex';
+            }
+
+            function handleVisibility() {
+                if (document.visibilityState === 'hidden') engageShield();
+                else blankOverlay.style.display = 'none';
+            }
+
+            // Save reference to safely remove later
+            window._disengageShields = () => {
+                window.removeEventListener('blur', engageShield);
+                document.removeEventListener('visibilitychange', handleVisibility);
+                clearInterval(watermarkInterval);
+                blankOverlay.style.display = 'none';
+                watermarkEl.innerText = "";
+            };
+        }
+
+        function moveWatermark() {
+            const watermarkEl = document.getElementById('secure-watermark');
+            if (!watermarkEl || watermarkEl.innerText === "") return;
+            const topPos = Math.floor(Math.random() * 75) + 5; 
+            const leftPos = Math.floor(Math.random() * 70) + 5;
+            watermarkEl.style.top = `${topPos}%`;
+            watermarkEl.style.left = `${leftPos}%`;
+        }
+
+        // Global Anti-Screenshot Key Interception
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'PrintScreen') {
+                navigator.clipboard?.writeText?.("Screenshots are blocked on this domain.");
+                toast("Screenshots Disabled for Safety", "error");
+            }
+        });
+
+        window.addEventListener('keydown', (e) => {
+            // Block Snip tool shortcuts (Win + Shift + S / Cmd + Shift + 4)
+            if ((e.metaKey || e.ctrlKey || e.shiftKey) && (e.key === 'S' || e.key === 's' || e.key === '4')) {
+                const blankOverlay = document.getElementById('anti-theft-blank');
+                if (blankOverlay && document.getElementById('media-vault').classList.contains('hidden') === false) {
+                    if (videoPlayer) videoPlayer.pause();
+                    blankOverlay.style.display = 'flex';
+                    toast("Capture Attempt Countered", "error");
+                }
+            }
         });
 
         function setupPlayer(videoId, metadata) {
@@ -169,11 +285,16 @@
             playerDiv.setAttribute('data-plyr-provider', 'youtube');
             playerDiv.setAttribute('data-plyr-embed-id', videoId);
             container.appendChild(playerDiv);
+            
             if (videoPlayer) videoPlayer.destroy();
+            
             videoPlayer = new Plyr('#player-instance', {
                 autoplay: true,
                 youtube: { noCookie: true, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1, controls: 0, disablekb: 1 }
             });
+
+            // Engage active visual block layers
+            activateAntiTheftShields();
         }
 
         window.setTab = (t) => {
@@ -203,8 +324,7 @@
                     Core.getDocs(Core.query(Core.collection(Core.db, "courses"), Core.where("teacherId", "==", profile.teacherId))),
                     Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId", "==", profile.teacherId)))
                 ]);
-                let totalViews = 0;
-                contentSnap.forEach(d => totalViews += (d.data().views || 0));
+                let totalViews = 0; contentSnap.forEach(d => totalViews += (d.data().views || 0));
                 main.innerHTML = `
                 <div class="grid lg:grid-cols-4 gap-10">
                     <div class="space-y-6 lg:sticky lg:top-32 h-fit">
@@ -234,13 +354,16 @@
                 </div>`;
                 const box = document.getElementById('tab-display');
                 if (currentTab === 'home') {
-                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Creator Insights</h3><div class="grid md:grid-cols-3 gap-6 mb-10"><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 uppercase font-black">Uploads</p><h2 class="text-4xl font-black">${contentSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 uppercase font-black">Courses</p><h2 class="text-4xl font-black">${courseSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 uppercase font-black">Groups</p><h2 class="text-4xl font-black">${groupSnap.size}</h2></div></div><div id="feed" class="space-y-4"></div>`;
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Creator Insights</h3><div class="grid md:grid-cols-3 gap-6 mb-10"><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 font-black">Uploads</p><h2 class="text-4xl font-black">${contentSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 font-black">Courses</p><h2 class="text-4xl font-black">${courseSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 font-black">Groups</p><h2 class="text-4xl font-black">${groupSnap.size}</h2></div></div><div id="feed" class="space-y-4"></div>`;
                     renderFeed(contentSnap.docs, true);
                 } else if (currentTab === 'groups') {
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Your Hubs</h3><div id="student-groups" class="space-y-4"></div>`;
                     renderGroups(groupSnap.docs, true);
                 } else if (currentTab === 'courses') {
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Course Catalogue</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6"></div>`;
                     renderCourses(courseSnap.docs, true);
                 } else if (currentTab === 'content') {
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Published Material</h3><div id="feed" class="space-y-4"></div>`;
                     renderFeed(contentSnap.docs, true);
                 }
             } else {
@@ -299,8 +422,7 @@
         };
 
         window.addVidField = () => {
-            const div = document.createElement('div');
-            div.className = "flex gap-2";
+            const div = document.createElement('div'); div.className = "flex gap-2";
             div.innerHTML = `<input placeholder="Video Title" class="input-field text-xs p-3 cv-t"><input placeholder="YouTube Link" class="input-field text-xs p-3 cv-u"><button onclick="this.parentElement.remove()" class="bg-red-500/20 text-red-500 px-4 rounded-xl font-bold">×</button>`;
             document.getElementById('course-vids').appendChild(div);
         };
@@ -342,8 +464,7 @@
         };
 
         window.createGroup = async () => {
-            const n = document.getElementById('group-name').value;
-            if (!n) return toast("Enter Name");
+            const n = document.getElementById('group-name').value; if (!n) return toast("Enter Name");
             const c = "OC-" + Math.random().toString(36).substring(2, 8).toUpperCase();
             await Core.addDoc(Core.collection(Core.db, "groups"), { name: n, type: document.getElementById('group-type').value, code: c, teacherId: profile.teacherId, teacherName: profile.name, members: [Core.auth.currentUser.uid], pending: [], createdAt: Core.serverTimestamp() });
             toast(`Created: ${c}`); loadHome();
@@ -354,15 +475,11 @@
             const vt = Array.from(document.querySelectorAll('.cv-t')).map(i => i.value);
             const vu = Array.from(document.querySelectorAll('.cv-u')).map(i => i.value);
             if (!t || !vu[0]) return toast("Required Fields Missing", "error");
-            
             const playlist = vt.map((title, i) => ({ title, url: vu[i] }));
             const code = "HUB-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-            
-            // Auto Create Group for Course
             const gRef = await Core.addDoc(Core.collection(Core.db, "groups"), { 
                 name: `${t} (Community)`, type: 'private', code, teacherId: profile.teacherId, teacherName: profile.name, members: [Core.auth.currentUser.uid], pending: [], createdAt: Core.serverTimestamp() 
             });
-
             await Core.addDoc(Core.collection(Core.db, "courses"), { 
                 title: t, description: d, thumbnail: Core.getThumbnail(vu[0]), playlist, price: p, teacherId: profile.teacherId, teacherName: profile.name, groupId: gRef.id, createdAt: Core.serverTimestamp() 
             });
@@ -416,7 +533,6 @@
         };
 
         window.enrollCourse = async (cid, gid) => {
-            // Auto Join Linked Community Hub
             await Core.updateDoc(Core.doc(Core.db, "groups", gid), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
             toast("Payment Simulated! Enrolled in Course and Hub.");
             document.getElementById('custom-modal').classList.add('hidden');
@@ -522,7 +638,14 @@
         window.toggleAIChat = () => document.getElementById('ai-chat-window').classList.toggle('hidden');
         window.closeGroupChat = () => document.getElementById('group-chat-window').classList.add('hidden');
         window.toggleMode = () => { document.documentElement.classList.toggle('light'); localStorage.setItem('oc_theme', document.documentElement.classList.contains('light')); };
-        window.closeVault = () => { document.getElementById('media-vault').classList.add('hidden'); currentVideoContext = null; if(videoPlayer) videoPlayer.destroy(); };
+        
+        window.closeVault = () => { 
+            document.getElementById('media-vault').classList.add('hidden'); 
+            currentVideoContext = null; 
+            if(window._disengageShields) window._disengageShields();
+            if(videoPlayer) videoPlayer.destroy(); 
+        };
+        
         function showScreen(id) { ['auth-screen', 'verify-screen', 'onboarding-screen', 'dashboard'].forEach(s => document.getElementById(s).classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
         function toast(m, type = "s") { const b = document.getElementById('toast-box'), d = document.createElement('div'); d.className = 'toast-pill'; if (type === "error") d.style.borderColor = "red"; d.innerText = m; b.appendChild(d); setTimeout(() => d.remove(), 2500); }
         if (localStorage.getItem('oc_theme') === 'true') document.documentElement.classList.add('light');
