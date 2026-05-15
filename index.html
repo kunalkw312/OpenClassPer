@@ -31,12 +31,15 @@
         #toast-box { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
         .toast-pill { background: #111; color: #fff; padding: 0.6rem 1.5rem; border-radius: 99px; border: 1px solid rgba(255,255,255,0.1); font-size: 10px; font-weight: 800; text-transform: uppercase; animation: popUp 0.3s forwards; }
         
+        /* Anti-YouTube UI Shield */
         #media-vault .plyr__video-embed iframe { transform: scale(1.4); pointer-events: none; }
         .plyr--full-ui.plyr--video .plyr__control--overlaid { background: #f7941d; }
         .plyr--video .plyr__controls { background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 0 0 14px 14px; }
         
+        /* Grid Button Highlighting */
         .grid-btn-active { background: rgba(247, 148, 29, 0.2) !important; border: 1px solid rgba(247, 148, 29, 0.3) !important; color: #f7941d !important; }
 
+        /* ADVANCED ANTI-THEFT BLANK SCREEN OVERLAY */
         #anti-theft-blank {
             display: none;
             position: absolute;
@@ -53,6 +56,7 @@
             letter-spacing: 0.1em;
         }
 
+        /* SECURE MOVING WATERMARK */
         #secure-watermark {
             position: absolute;
             z-index: 2800;
@@ -78,22 +82,17 @@
 
     <div id="media-vault" class="hidden fixed inset-0 z-[2000] bg-black flex items-center justify-center">
         <button onclick="closeVault()" class="absolute top-6 right-6 bg-white/10 hover:bg-red-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-black z-[3100]">✕</button>
-        <div class="w-full max-w-5xl overflow-hidden rounded-2xl shadow-2xl relative bg-zinc-900 flex items-center justify-center min-h-[50vh]">
+        <div class="w-full max-w-5xl overflow-hidden rounded-2xl shadow-2xl relative">
              <div id="anti-theft-blank">⚠️ Screen Capture / Tab Inactivity Detected</div>
              <div id="secure-watermark"></div>
-             <div id="player-container" class="w-full h-full">
-                 <div id="player" data-plyr-provider="youtube" data-plyr-embed-id=""></div>
-             </div>
-             <div id="file-preview-frame" class="hidden w-full h-[80vh] p-4 overflow-auto flex items-center justify-center"></div>
+             
+             <div id="player" data-plyr-provider="youtube" data-plyr-embed-id=""></div>
         </div>
     </div>
 
     <div id="group-chat-window" class="hidden fixed inset-0 bg-black/95 z-[6000] flex flex-col">
         <div class="p-5 glass flex justify-between items-center border-b border-white/5">
-            <div class="flex items-center gap-4">
-                <h2 id="group-chat-title" class="text-2xl font-black italic">Group</h2>
-                <button id="btn-group-mods" class="text-xs uppercase bg-white/10 px-3 py-1 rounded-full font-bold tracking-wider hover:bg-brandOrange/20">Members</button>
-            </div>
+            <h2 id="group-chat-title" class="text-2xl font-black italic">Group</h2>
             <button onclick="closeGroupChat()" class="text-2xl">✕</button>
         </div>
         <div id="group-chat-messages" class="flex-1 overflow-y-auto p-6 space-y-6"></div>
@@ -153,20 +152,16 @@
                 </div>
 
                 <div class="flex items-center gap-6 w-full md:w-auto relative">
-                    <button id="cart-nav-trigger" onclick="openCartView()" class="hidden text-sm mr-2 p-2 bg-white/5 rounded-xl hover:text-brandOrange">🛒 Cart (<span id="cart-count">0</span>)</button>
                     <div class="relative w-full md:w-96 group">
                         <div class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="8" cy="8" r="6" /><path d="M13 13l4 4" /></svg></div>
                         <input type="text" id="g-search" oninput="reactiveSearch(this.value)" placeholder="Search campus..." class="input-field rounded-2xl pl-12 pr-6 py-2.5 text-sm w-full">
                     </div>
                     <button onclick="toggleMode()" class="p-2 glass rounded-xl">🌓</button>
-                    //profile update
-                    <div id="nav-profile-pic"
-                     onclick="openProfilePopup()"
-                     class="w-10 h-10 rounded-full border-2 overflow-hidden hidden md:block cursor-pointer hover:scale-110 transition-all">
-                    </div>
+                    <div id="nav-profile-pic" class="w-10 h-10 rounded-full border-2 overflow-hidden hidden md:block"></div>
                     <button onclick="logout()" class="text-[10px] font-black text-red-500 uppercase px-4 py-2 border border-red-500/20 rounded-xl">Logout</button>
                 </div>
             </nav>
+            <nav id="secondary-nav" class="hidden bg-black/20 border-b border-white/5 p-2 px-10 flex gap-4 text-xs font-bold text-zinc-400"></nav>
             <main id="main-content" class="p-10 max-w-7xl mx-auto w-full flex-grow"></main>
         </div>
     </div>
@@ -193,53 +188,16 @@
         <div id="ai-messages" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
         <div class="p-4 border-t border-white/10 flex gap-3"><input id="ai-input" type="text" placeholder="Ask AI..." class="input-field flex-1"><button onclick="sendAIMessage()" class="btn-brand px-5 rounded-xl">Send</button></div>
     </div>
-    //Profile update
-<div id="profile-popup" class="hidden fixed inset-0 z-[7000] bg-black/70 backdrop-blur-sm flex items-center justify-center p-6">
-    
-    <div class="glass p-8 rounded-[2rem] w-full max-w-md border border-brandOrange/20 shadow-2xl">
-        
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-black italic">Edit Profile</h2>
-            <button onclick="closeProfilePopup()" class="text-2xl">✕</button>
-        </div>
-
-        <!-- PROFILE IMAGE -->
-        <div class="flex flex-col items-center mb-6">
-            <div id="popup-profile-preview" class="w-28 h-28 rounded-full overflow-hidden border-4 border-brandOrange mb-4">
-                <img id="popup-profile-img"
-                    src=""
-                    class="w-full h-full object-cover">
-            </div>
-
-            <input type="file"
-                id="profile-image-input"
-                accept="image/*"
-                class="text-xs">
-        </div>
-
-        <!-- NAME -->
-        <div class="space-y-4">
-            <input type="text"
-                id="profile-name-input"
-                placeholder="Enter Name"
-                class="input-field">
-
-            <button onclick="saveProfileChanges()"
-                class="w-full py-4 btn-brand">
-                Save Changes
-            </button>
-        </div>
-
-    </div>
-</div>
 
     <script type="module">
         import * as Core from "./app.js";
         import { aiConfig } from "./config.js";
 
         let profile = null, isSignup = false, otpCode = null, tempUser = null, activeGroupId = null, currentTab = 'home', videoPlayer = null;
-        let currentVideoContext = null, watermarkInterval = null, localCart = [], groupTrackingTimes = {};
+        let currentVideoContext = null;
+        let watermarkInterval = null;
 
+        // Keybindings
         window.addEventListener('keydown', (e) => {
             if (!videoPlayer || ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
             if (e.code === 'Space') { e.preventDefault(); videoPlayer.togglePlay(); }
@@ -247,10 +205,12 @@
             else if (e.code === 'ArrowLeft') videoPlayer.rewind(10);
         });
 
+        // --- HARDENED ANTI-THEFT MONITORING ENGINE ---
         function activateAntiTheftShields() {
             const blankOverlay = document.getElementById('anti-theft-blank');
             const watermarkEl = document.getElementById('secure-watermark');
 
+            // 1. Inject User Email Identity into Content Container
             if (profile && profile.email) {
                 watermarkEl.innerText = profile.email;
                 moveWatermark();
@@ -258,51 +218,73 @@
                 watermarkInterval = setInterval(moveWatermark, 4000);
             }
 
-            navigator.clipboard?.writeText?.("Protected Content.");
+            // 2. Clear Clipboard to prevent snippet pasting
+            navigator.clipboard?.writeText?.("Protected by OpenClass Secure Shield.");
 
+            // 3. Prevent Focus and Tab switching evasion
             window.addEventListener('blur', engageShield);
             document.addEventListener('visibilitychange', handleVisibility);
             
             function engageShield() {
-                if (videoPlayer && videoPlayer.playing) videoPlayer.pause();
+                if (videoPlayer && videoPlayer.playing) {
+                    videoPlayer.pause();
+                }
                 blankOverlay.style.display = 'flex';
             }
+
             function handleVisibility() {
                 if (document.visibilityState === 'hidden') engageShield();
                 else blankOverlay.style.display = 'none';
             }
 
+            // Save reference to safely remove later
             window._disengageShields = () => {
                 window.removeEventListener('blur', engageShield);
                 document.removeEventListener('visibilitychange', handleVisibility);
                 clearInterval(watermarkInterval);
                 blankOverlay.style.display = 'none';
-                if(watermarkEl) watermarkEl.innerText = "";
+                watermarkEl.innerText = "";
             };
         }
 
         function moveWatermark() {
             const watermarkEl = document.getElementById('secure-watermark');
             if (!watermarkEl || watermarkEl.innerText === "") return;
-            watermarkEl.style.top = `${Math.floor(Math.random() * 75) + 5}%`;
-            watermarkEl.style.left = `${Math.floor(Math.random() * 70) + 5}%`;
+            const topPos = Math.floor(Math.random() * 75) + 5; 
+            const leftPos = Math.floor(Math.random() * 70) + 5;
+            watermarkEl.style.top = `${topPos}%`;
+            watermarkEl.style.left = `${leftPos}%`;
         }
 
+        // Global Anti-Screenshot Key Interception
         window.addEventListener('keyup', (e) => {
             if (e.key === 'PrintScreen') {
-                navigator.clipboard?.writeText?.("Screenshots are blocked.");
-                toast("Protected Environment", "error");
+                navigator.clipboard?.writeText?.("Screenshots are blocked on this domain.");
+                toast("Screenshots Disabled for Safety", "error");
+            }
+        });
+
+        window.addEventListener('keydown', (e) => {
+            // Block Snip tool shortcuts (Win + Shift + S / Cmd + Shift + 4)
+            if ((e.metaKey || e.ctrlKey || e.shiftKey) && (e.key === 'S' || e.key === 's' || e.key === '4')) {
+                const blankOverlay = document.getElementById('anti-theft-blank');
+                if (blankOverlay && document.getElementById('media-vault').classList.contains('hidden') === false) {
+                    if (videoPlayer) videoPlayer.pause();
+                    blankOverlay.style.display = 'flex';
+                    toast("Capture Attempt Countered", "error");
+                }
             }
         });
 
         function setupPlayer(videoId, metadata) {
             currentVideoContext = metadata;
-            const container = document.getElementById('player-container');
-            const fileFrame = document.getElementById('file-preview-frame');
-            
-            container.classList.remove('hidden');
-            fileFrame.classList.add('hidden');
-            container.innerHTML = '<div id="player-instance"></div>';
+            const container = document.getElementById('player');
+            container.innerHTML = "";
+            const playerDiv = document.createElement('div');
+            playerDiv.id = 'player-instance';
+            playerDiv.setAttribute('data-plyr-provider', 'youtube');
+            playerDiv.setAttribute('data-plyr-embed-id', videoId);
+            container.appendChild(playerDiv);
             
             if (videoPlayer) videoPlayer.destroy();
             
@@ -310,32 +292,15 @@
                 autoplay: true,
                 youtube: { noCookie: true, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1, controls: 0, disablekb: 1 }
             });
-            videoPlayer.source = { type: 'video', sources: [{ src: videoId, provider: 'youtube' }] };
-            activateAntiTheftShields();
-        }
 
-        function setupFilePreview(url) {
-            const container = document.getElementById('player-container');
-            const fileFrame = document.getElementById('file-preview-frame');
-            container.classList.add('hidden');
-            fileFrame.classList.remove('hidden');
-            
-            const fileExt = url.split('.').pop().toLowerCase().split('?')[0];
-            if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'].includes(fileExt) || url.includes('image/upload')) {
-                fileFrame.innerHTML = `<img src="${url}" class="max-w-full max-h-[70vh] rounded-xl object-contain shadow-2xl">`;
-            } else if (fileExt === 'pdf') {
-                fileFrame.innerHTML = `<iframe src="${url}" class="w-full h-[75vh] rounded-xl border-none"></iframe>`;
-            } else {
-                fileFrame.innerHTML = `<div class="text-center p-8"><p class="mb-4 font-bold">Study Document Reference</p><a href="${url}" target="_blank" class="btn-brand px-6 py-2 text-xs inline-block">Open Resource Link</a></div>`;
-            }
+            // Engage active visual block layers
             activateAntiTheftShields();
         }
 
         window.setTab = (t) => {
             currentTab = t;
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            const activeTabElement = document.getElementById(`tab-${t}`);
-            if(activeTabElement) activeTabElement.classList.add('active');
+            document.getElementById(`tab-${t}`).classList.add('active');
             loadHome();
         };
 
@@ -352,9 +317,7 @@
         window.loadHome = async () => {
             const main = document.getElementById('main-content');
             if (!profile) return;
-            
             if (profile.role === 'teacher') {
-                document.getElementById('cart-nav-trigger').classList.add('hidden');
                 const [contentSnap, followersSnap, courseSnap, groupSnap] = await Promise.all([
                     Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "==", profile.teacherId))),
                     Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "array-contains", profile.teacherId))),
@@ -370,7 +333,7 @@
                             <h3 class="text-xl font-black italic">${profile.name}</h3>
                             <p class="text-[10px] font-bold opacity-40 uppercase tracking-widest mb-6">${profile.teacherId}</p>
                             <div class="grid grid-cols-2 gap-4">
-                                <div onclick="openFollowersManagement()" class="bg-white/5 p-4 rounded-3xl text-center cursor-pointer hover:bg-white/10 transition-all"><p class="text-[9px] opacity-30 font-bold uppercase">Followers</p><p class="text-2xl font-black text-brandBlue">${followersSnap.size}</p></div>
+                                <div class="bg-white/5 p-4 rounded-3xl text-center"><p class="text-[9px] opacity-30 font-bold uppercase">Followers</p><p class="text-2xl font-black">${followersSnap.size}</p></div>
                                 <div class="bg-white/5 p-4 rounded-3xl text-center"><p class="text-[9px] opacity-30 font-bold uppercase">Views</p><p class="text-2xl font-black">${totalViews}</p></div>
                             </div>
                         </div>
@@ -382,8 +345,8 @@
                         </div>
                         <div id="teacher-action-area" class="glass p-6 rounded-[2rem] space-y-4">
                             <input id="up-t" placeholder="Title" class="input-field text-xs p-3">
-                            <input id="up-u" placeholder="Resource Access URL" class="input-field text-xs p-3">
-                            <select id="up-y" class="input-field text-xs p-3"><option value="video">Recorded Module</option><option value="live">Live Stream</option><option value="file">Asset Material Document</option></select>
+                            <input id="up-u" placeholder="URL" class="input-field text-xs p-3">
+                            <select id="up-y" class="input-field text-xs p-3"><option value="video">Video</option><option value="live">Live</option><option value="file">Material</option></select>
                             <button onclick="publishContent()" class="w-full py-3 btn-brand text-xs">Publish Now</button>
                         </div>
                     </div>
@@ -394,17 +357,16 @@
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Creator Insights</h3><div class="grid md:grid-cols-3 gap-6 mb-10"><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 font-black">Uploads</p><h2 class="text-4xl font-black">${contentSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 font-black">Courses</p><h2 class="text-4xl font-black">${courseSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 font-black">Groups</p><h2 class="text-4xl font-black">${groupSnap.size}</h2></div></div><div id="feed" class="space-y-4"></div>`;
                     renderFeed(contentSnap.docs, true);
                 } else if (currentTab === 'groups') {
-                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Your Hub communities</h3><div id="student-groups" class="space-y-4"></div>`;
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Your Hubs</h3><div id="student-groups" class="space-y-4"></div>`;
                     renderGroups(groupSnap.docs, true);
                 } else if (currentTab === 'courses') {
-                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Course Management</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6"></div>`;
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Course Catalogue</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6"></div>`;
                     renderCourses(courseSnap.docs, true);
                 } else if (currentTab === 'content') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Published Material</h3><div id="feed" class="space-y-4"></div>`;
                     renderFeed(contentSnap.docs, true);
                 }
             } else {
-                document.getElementById('cart-nav-trigger').classList.remove('hidden');
                 main.innerHTML = `<div id="tab-display" class="max-w-4xl mx-auto min-h-[600px]"></div>`;
                 const box = document.getElementById('tab-display');
                 if (currentTab === 'home') {
@@ -428,61 +390,33 @@
                     }
                 }
             }
-            trackGroupMessages();
         };
 
-        window.openFollowersManagement = async () => {
-            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "array-contains", profile.teacherId)));
-            const content = document.getElementById('modal-content');
-            content.innerHTML = `<h3 class="text-xl font-black mb-4 italic">Followers Records</h3><div class="space-y-3 max-h-[50vh] overflow-y-auto">
-                ${snap.docs.map(d => `<div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
-                    <div><p class="font-bold text-sm">${d.data().name}</p><p class="text-[10px] opacity-40">${d.data().email}</p></div>
-                    <button onclick="removeFollower('${d.id}')" class="bg-red-500/10 text-red-500 text-[10px] uppercase font-bold px-3 py-1 rounded-lg hover:bg-red-500 hover:text-white transition-all">Remove</button>
-                </div>`).join('') || '<p class="opacity-30 text-center text-xs">No entries found</p>'}
-            </div>`;
-            document.getElementById('custom-modal').classList.remove('hidden');
+        window.loadSearch = async (q) => {
+            const main = document.getElementById('main-content');
+            if (!q) return loadHome();
+            main.innerHTML = `<div class="space-y-4">${Array(3).fill('<div class="skeleton h-20 rounded-2xl opacity-10 bg-white"></div>').join('')}</div>`;
+            const [uS, cS, gS] = await Promise.all([Core.getDocs(Core.collection(Core.db, "users")), Core.getDocs(Core.collection(Core.db, "content")), Core.getDocs(Core.collection(Core.db, "groups"))]);
+            const teachers = uS.docs.filter(d => d.data().role === 'teacher' && (d.data().name.toLowerCase().includes(q.toLowerCase()) || d.data().teacherId === q));
+            const content = cS.docs.filter(d => d.data().title.toLowerCase().includes(q.toLowerCase()));
+            const groups = gS.docs.filter(d => d.data().code === q || d.data().name.toLowerCase().includes(q.toLowerCase()));
+            main.innerHTML = `<div class="space-y-12">${teachers.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Instructors</h3><div class="grid gap-4">${teachers.map(m => `<div onclick="viewTeacher('${m.data().teacherId}')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center cursor-pointer group"><div class="flex items-center gap-6"><img src="${m.data().photo || ''}" class="w-16 h-16 rounded-2xl object-cover bg-brandBlue shadow-lg"><div><h3 class="text-xl font-black italic">${m.data().name}</h3><p class="text-[10px] opacity-30 font-bold">${m.data().teacherId}</p></div></div><p class="text-brandBlue font-black uppercase text-[10px]">Biography →</p></div>`).join('')}</div></div>` : ''}${groups.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Groups</h3><div class="grid gap-4">${groups.map(g => `<div class="glass p-6 rounded-[2.5rem] flex justify-between items-center border border-white/5"><div><span class="text-[9px] text-brandOrange font-black uppercase tracking-widest">${g.data().type}</span><h3 class="text-xl font-black mt-1">${g.data().name}</h3><p class="text-xs opacity-50">${g.data().code}</p></div><button onclick="handleHubSearchJoin('${g.id}','${g.data().code}')" class="btn-brand px-8 py-2 text-[10px]">Access</button></div>`).join('')}</div></div>` : ''}${content.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Lessons</h3><div class="grid gap-4">${content.map(d => renderResourceCard(d, false)).join('')}</div></div>` : ''}</div>`;
         };
 
-        window.removeFollower = async (uid) => {
-            if(confirm("Disconnect follower profile?")) {
-                await Core.updateDoc(Core.doc(Core.db, "users", uid), { subs: Core.arrayRemove(profile.teacherId) });
-                toast("Follower detached profile connection"); openFollowersManagement(); loadHome();
-            }
-        };
-
-        window.openCartView = () => {
-            const content = document.getElementById('modal-content');
-            let total = 0;
-            content.innerHTML = `<h3 class="text-xl font-black mb-4 italic">Shopping Vault</h3><div class="space-y-3 mb-6">
-                ${localCart.map((item, i) => { total += parseFloat(item.price || 0); return `<div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
-                    <div><p class="font-bold text-sm">${item.title}</p><p class="text-xs text-brandOrange font-black">₹${item.price}</p></div>
-                    <button onclick="localCart.splice(${i},1); openCartView(); updateCartUI();" class="text-xs text-red-500">✕</button>
-                </div>`; }).join('') || '<p class="opacity-30 text-center py-6 text-xs">Cart Workspace Empty</p>'}
-            </div>
-            <div class="flex justify-between items-center font-bold border-t border-white/5 pt-4 mb-6"><p>Summary Total</p><p class="text-xl text-brandOrange">₹${total}</p></div>
-            <button onclick="localCart=[]; updateCartUI(); document.getElementById('custom-modal').classList.add('hidden'); toast('Enrollment Sync Simulated Success!');" class="w-full py-4 btn-brand text-xs">Checkout Simulation</button>`;
-            document.getElementById('custom-modal').classList.remove('hidden');
-        };
-
-        function updateCartUI() {
-            document.getElementById('cart-count').innerText = localCart.length;
-        }
+        window.handleHubSearchJoin = (id, code) => { setTab('groups'); setTimeout(() => { document.getElementById('hub-code').value = code; joinGroup(); }, 500); };
 
         window.switchTeacherView = async (v) => {
-            const items = document.querySelectorAll('.teacher-grid-btn');
-            if(items && items.length) items.forEach(btn => btn.classList.remove('grid-btn-active'));
-            const targetedBtn = document.getElementById(`btn-${v}`);
-            if(targetedBtn) targetedBtn.classList.add('grid-btn-active');
-            
+            document.querySelectorAll('.teacher-grid-btn').forEach(btn => btn.classList.remove('grid-btn-active'));
+            document.getElementById(`btn-${v}`).classList.add('grid-btn-active');
             const area = document.getElementById('teacher-action-area');
             if (v === 'create') area.innerHTML = `<select id="group-type" class="input-field text-xs p-3 mb-2"><option value="public">Public</option><option value="private">Private</option></select><input id="group-name" placeholder="Hub Name" class="input-field text-xs p-3 mb-4"><button onclick="createGroup()" class="w-full py-3 btn-brand text-xs">Create Hub</button>`;
             else if (v === 'course') area.innerHTML = `<input id="c-title" placeholder="Course Title" class="input-field text-xs p-3 mb-2"><textarea id="c-desc" placeholder="Details" class="input-field h-24 text-xs p-3 mb-2"></textarea><div id="course-vids" class="space-y-2"><div class="flex gap-2"><input placeholder="Video Title" class="input-field text-xs p-3 cv-t"><input placeholder="YouTube Link" class="input-field text-xs p-3 cv-u"><button onclick="addVidField()" class="bg-brandOrange text-white px-4 rounded-xl font-bold">+</button></div></div><input id="c-price" placeholder="Price ₹" class="input-field text-xs p-3 mt-2 mb-2"><button onclick="launchCourse()" class="w-full py-3 btn-brand text-xs">Launch</button>`;
-            else if (v === 'publish') area.innerHTML = `<input id="up-t" placeholder="Title" class="input-field text-xs p-3 mb-2"><input id="up-u" placeholder="Resource Access URL" class="input-field text-xs p-3 mb-2"><select id="up-y" class="input-field text-xs p-3 mb-2"><option value="video">Recorded Module</option><option value="live">Live Stream</option><option value="file">Asset Material Document</option></select><button onclick="publishContent()" class="w-full py-3 btn-brand text-xs">Publish Now</button>`;
+            else if (v === 'publish') area.innerHTML = `<input id="up-t" placeholder="Title" class="input-field text-xs p-3 mb-2"><input id="up-u" placeholder="URL" class="input-field text-xs p-3 mb-2"><select id="up-y" class="input-field text-xs p-3 mb-2"><option value="video">Video</option><option value="live">Live</option><option value="file">Material</option></select><button onclick="publishContent()" class="w-full py-3 btn-brand text-xs">Publish Now</button>`;
             else if (v === 'requests') {
                 area.innerHTML = `<div id="request-list" class="space-y-3 mt-4 text-[10px] opacity-30 text-center font-bold">Scanning...</div>`;
                 const groups = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId", "==", profile.teacherId)));
                 let html = '';
-                groups.forEach(g => { const d = g.data(); if(d.pending?.length) d.pending.forEach(p => { html += `<div class="bg-white/5 p-4 rounded-xl flex flex-col gap-2 border border-white/5"><div><p class="text-[8px] text-brandOrange font-black">${d.name}</p><p class="font-bold text-[10px]">${p.name}</p></div><div class="flex gap-2"><button onclick="modReq('${g.id}','${p.uid}','${p.name}',true)" class="flex-1 py-1.5 bg-green-600 rounded-lg text-[8px] font-black text-white">Accept</button><button onclick="modReq('${g.id}','${p.uid}','${p.name}',false)" class="flex-1 py-1.5 bg-red-600 rounded-lg text-[8px] font-black text-white">Deny</button></div></div>`; }); });
+                groups.forEach(g => { const d = g.data(); if(d.pending?.length) d.pending.forEach(p => { html += `<div class="bg-white/5 p-4 rounded-xl flex flex-col gap-2 border border-white/5"><div><p class="text-[8px] text-brandOrange font-black">${d.name}</p><p class="font-bold text-[10px]">${p.name}</p></div><div class="flex gap-2"><button onclick="modReq('${g.id}','${p.uid}','${p.name}',true)" class="flex-1 py-1.5 bg-green-600 rounded-lg text-[8px] font-black">Accept</button><button onclick="modReq('${g.id}','${p.uid}','${p.name}',false)" class="flex-1 py-1.5 bg-red-600 rounded-lg text-[8px] font-black">Deny</button></div></div>`; }); });
                 document.getElementById('request-list').innerHTML = html || 'No Requests';
             }
         };
@@ -500,7 +434,7 @@
             if (isSignup) {
                 tempUser = { e, p, n: document.getElementById('reg-name').value, r: document.getElementById('reg-role').value };
                 otpCode = Math.floor(100000 + Math.random() * 900000);
-                try { await Core.sendOTP(e, otpCode); document.getElementById('verify-note').innerText = `OTP sent to ${e}`; showScreen('verify-screen'); } catch(err) { toast("Email Error", "error"); }
+                try { await Core.sendOTP(e, otpCode); document.getElementById('verify-note').innerText = `OTP to ${e}`; showScreen('verify-screen'); } catch(err) { toast("Email Error", "error"); }
             } else { try { await Core.signInWithEmailAndPassword(Core.auth, e, p); } catch (err) { toast(err.message, "error"); } }
         };
 
@@ -515,7 +449,7 @@
             } else toast("Wrong Code", "error");
         };
 
-        window.toggleAuth = () => { isSignup = !isSignup; document.getElementById('signup-fields').classList.toggle('hidden'); document.getElementById('primary-auth-btn').innerText = isSignup ? "Verify Email" : "Sign In"; document.getElementById('toggle-auth-btn').innerText = isSignup ? "Login instead" : "Create Profile"; };
+        window.toggleAuth = () => { isSignup = !isSignup; document.getElementById('signup-fields').classList.toggle('hidden'); document.getElementById('primary-auth-btn').innerText = isSignup ? "Verify Email" : "Sign In"; document.getElementById('toggle-auth-btn').innerText = isSignup ? "Already have account? Login" : "Create Profile"; };
         window.handleGoogle = () => Core.signInWithPopup(Core.auth, Core.provider);
         window.logout = () => Core.signOut(Core.auth).then(() => location.reload());
 
@@ -563,20 +497,14 @@
             toast("Requested"); loadHome();
         };
 
-        window.openResource = async (id, url, title, type = 'video') => {
+        window.openResource = async (id, url, title) => {
             if(id && id !== 'null') await Core.updateDoc(Core.doc(Core.db, "content", id), { views: Core.increment(1) });
-            
-            if (type === 'file' || (!url.includes('youtube.com') && !url.includes('youtu.be'))) {
-                document.getElementById('media-vault').classList.remove('hidden');
-                setupFilePreview(url);
-            } else {
-                let vid = "";
-                if (url.includes('v=')) vid = url.split('v=')[1].split('&')[0];
-                else if (url.includes('youtu.be/')) vid = url.split('/').pop().split('?')[0];
-                else if (url.includes('/live/')) vid = url.split('/live/')[1].split('?')[0];
-                document.getElementById('media-vault').classList.remove('hidden');
-                setupPlayer(vid, { title, link: url });
-            }
+            let vid = "";
+            if (url.includes('v=')) vid = url.split('v=')[1].split('&')[0];
+            else if (url.includes('youtu.be/')) vid = url.split('/').pop().split('?')[0];
+            else if (url.includes('/live/')) vid = url.split('/live/')[1].split('?')[0];
+            document.getElementById('media-vault').classList.remove('hidden');
+            setupPlayer(vid, { title, link: url });
         };
 
         window.openCourse = async (id) => {
@@ -591,15 +519,14 @@
                 <div class="space-y-3 mb-8">
                     <p class="text-[9px] font-black uppercase opacity-40">Course Playlist</p>
                     ${c.playlist.map((v, i) => `
-                        <div onclick="openResource('null','${v.url}','${v.title}','video')" class="bg-white/5 p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-white/10 border border-white/5">
+                        <div onclick="openResource('null','${v.url}','${v.title}')" class="bg-white/5 p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-white/10 border border-white/5">
                             <p class="text-xs font-bold">${i+1}. ${v.title}</p>
                             <span class="text-[10px] text-brandOrange font-black uppercase tracking-tighter">Play</span>
                         </div>
                     `).join('')}
                 </div>
-                <div class="flex gap-2">
-                    <button onclick="localCart.push({id:'${id}', title:'${c.title}', price:'${c.price}'}); updateCartUI(); toast('Added to Shopping Cart Workspace'); document.getElementById('custom-modal').classList.add('hidden');" class="flex-1 py-4 bg-zinc-800 rounded-xl font-bold uppercase text-xs">Add To Cart</button>
-                    <button onclick="enrollCourse('${id}','${c.groupId}')" class="flex-1 py-4 btn-brand shadow-xl text-xs">Simulate Buy (₹${c.price})</button>
+                <div class="flex gap-4">
+                    <button onclick="enrollCourse('${id}','${c.groupId}')" class="flex-1 py-5 btn-brand shadow-xl">Enroll (₹${c.price})</button>
                 </div>
             `;
             document.getElementById('custom-modal').classList.remove('hidden');
@@ -607,11 +534,11 @@
 
         window.enrollCourse = async (cid, gid) => {
             await Core.updateDoc(Core.doc(Core.db, "groups", gid), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
-            toast("Simulated Enrollment Realized Complete!");
+            toast("Payment Simulated! Enrolled in Course and Hub.");
             document.getElementById('custom-modal').classList.add('hidden');
         };
 
-        window.delC = async (id) => { if(confirm("Delete Course catalogue profile?")) { await Core.deleteDoc(Core.doc(Core.db,"courses",id)); document.getElementById('custom-modal').classList.add('hidden'); loadHome(); } };
+        window.delC = async (id) => { if(confirm("Delete?")) { await Core.deleteDoc(Core.doc(Core.db,"courses",id)); document.getElementById('custom-modal').classList.add('hidden'); loadHome(); } };
 
         function renderFeed(docs, isT, target = 'feed') { 
             const container = document.getElementById(target) || document.getElementById('tab-display');
@@ -628,11 +555,9 @@
 
         function renderResourceCard(d, isT) {
             const i = d.data();
-            let previewThumb = Core.getThumbnail(i.url);
-            if(i.type === 'file') previewThumb = "https://images.unsplash.com/photo-1568667256549-094345857637?auto=format&fit=crop&w=150&q=80";
-            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative"><img src="${previewThumb}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md">${i.type === 'live' ? '<span class="absolute top-2 left-2 bg-red-600 text-[8px] font-black px-2 py-0.5 rounded-full animate-pulse">LIVE</span>' : ''}</div><div><h4 class="font-black text-lg italic truncate">${i.title}</h4><p class="text-[9px] opacity-40 uppercase font-bold">${i.tName} • ${i.views || 0} Views</p></div></div><div class="flex gap-2 w-full md:w-auto"><button onclick="openResource('${d.id}','${i.url}','${i.title}','${i.type}')" class="flex-grow md:flex-none btn-brand light:bg-brandOrange dark:bg-white light:text-white dark:text-black px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Open</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
+            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative"><img src="${Core.getThumbnail(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md">${i.type === 'live' ? '<span class="absolute top-2 left-2 bg-red-600 text-[8px] font-black px-2 py-0.5 rounded-full animate-pulse">LIVE</span>' : ''}</div><div><h4 class="font-black text-lg italic truncate">${i.title}</h4><p class="text-[9px] opacity-40 uppercase font-bold">${i.tName} • ${i.views || 0} Views</p></div></div><div class="flex gap-2 w-full md:w-auto"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand light:bg-brandOrange dark:bg-white light:text-white dark:text-black px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Watch</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
         }
-        window.delR = async (id) => { if(confirm("Delete Resource?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); loadHome(); } };
+        window.delR = async (id) => { if(confirm("Delete?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); loadHome(); } };
         window.editR = (id,t,u) => { document.getElementById('modal-content').innerHTML = `<h3 class="text-xl font-black mb-4 italic">Edit Content</h3><input id="ed-t" value="${t}" class="input-field mb-2 text-xs"><input id="ed-u" value="${u}" class="input-field mb-4 text-xs"><button onclick="saveR('${id}')" class="w-full py-4 btn-brand text-xs">Save Changes</button>`; document.getElementById('custom-modal').classList.remove('hidden'); };
         window.saveR = async (id) => { await Core.updateDoc(Core.doc(Core.db,"content",id), {title:document.getElementById('ed-t').value, url:document.getElementById('ed-u').value}); document.getElementById('custom-modal').classList.add('hidden'); loadHome(); };
 
@@ -644,16 +569,8 @@
         };
 
         window.openGroupChat = (id, name) => {
-            activeGroupId = id; 
-            document.getElementById('group-chat-window').classList.remove('hidden');
+            activeGroupId = id; document.getElementById('group-chat-window').classList.remove('hidden');
             document.getElementById('group-chat-title').innerText = name;
-            
-            document.getElementById('btn-group-mods').onclick = () => openGroupMembersManagement(id);
-            
-            localStorage.setItem(`oc_group_read_${id}`, new Date().getTime());
-            const trackingBadge = document.getElementById(`badge-${id}`);
-            if(trackingBadge) trackingBadge.classList.add('hidden');
-
             const q = Core.query(Core.collection(Core.db, "groupMessages"), Core.where("groupId", "==", id), Core.orderBy("createdAt", "asc"));
             Core.onSnapshot(q, (snap) => {
                 document.getElementById('group-chat-messages').innerHTML = snap.docs.map(m => {
@@ -664,56 +581,10 @@
             });
         };
 
-        window.openGroupMembersManagement = async (gid) => {
-            const gDoc = await Core.getDoc(Core.doc(Core.db, "groups", gid));
-            const gData = gDoc.data();
-            const content = document.getElementById('modal-content');
-            
-            const isCreator = gData.teacherId === profile.teacherId;
-            
-            if(!gData.members || !gData.members.length) {
-                content.innerHTML = `<h3 class="text-xl font-black mb-4">Hub Members</h3><p class="opacity-40 text-xs">No entries found</p>`;
-                document.getElementById('custom-modal').classList.remove('hidden');
-                return;
-            }
-
-            const usersSnap = await Core.getDocs(Core.collection(Core.db, "users"));
-            const memberProfiles = usersSnap.docs.filter(d => gData.members.includes(d.id));
-
-            content.innerHTML = `<h3 class="text-xl font-black mb-4 italic">Hub Community Roster</h3><div class="space-y-3">
-                ${memberProfiles.map(m => `<div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
-                    <div><p class="font-bold text-sm">${m.data().name}</p><p class="text-[10px] opacity-40">${m.data().role}</p></div>
-                    ${isCreator && m.id !== Core.auth.currentUser.uid ? `<button onclick="kickGroupMember('${gid}','${m.id}')" class="text-xs text-red-500 uppercase font-bold bg-red-500/10 px-2 py-1 rounded-lg">Kick</button>` : ''}
-                </div>`).join('')}
-            </div>`;
-            document.getElementById('custom-modal').classList.remove('hidden');
-        };
-
-        window.kickGroupMember = async (gid, uid) => {
-            if(confirm("Expel participant user profiles from community circle?")) {
-                await Core.updateDoc(Core.doc(Core.db, "groups", gid), { members: Core.arrayRemove(uid) });
-                toast("Member kicked from group conversation"); document.getElementById('custom-modal').classList.add('hidden'); loadHome();
-            }
-        };
-
-        function trackGroupMessages() {
-            Core.onSnapshot(Core.collection(Core.db, "groupMessages"), (snap) => {
-                snap.docs.forEach(m => {
-                    const data = m.data();
-                    const lastRead = localStorage.getItem(`oc_group_read_${data.groupId}`) || 0;
-                    if (data.createdAt && data.createdAt.toMillis() > lastRead && data.senderId !== Core.auth.currentUser.uid) {
-                        const badge = document.getElementById(`badge-${data.groupId}`);
-                        if(badge) badge.classList.remove('hidden');
-                    }
-                });
-            });
-        }
-
         window.sendGroupMessage = async () => {
             const i = document.getElementById('group-message-input'), t = i.value.trim();
             if (!t || !activeGroupId) return;
             await Core.addDoc(Core.collection(Core.db, "groupMessages"), { groupId: activeGroupId, senderId: Core.auth.currentUser.uid, sender: profile.name, senderPhoto: profile.photo || '', text: t, createdAt: Core.serverTimestamp() });
-            localStorage.setItem(`oc_group_read_${activeGroupId}`, new Date().getTime());
             i.value = '';
         };
 
@@ -721,34 +592,18 @@
             const i = document.getElementById('ai-input'), m = i.value.trim();
             if (!m) return;
             const chat = document.getElementById('ai-messages');
-            chat.innerHTML += `<div class="ml-auto bg-brandOrange text-white p-4 rounded-2xl max-w-[80%] text-sm shadow-xl">${m}</div>`;
+            chat.innerHTML += `<div class="ml-auto bg-brandOrange text-white p-4 rounded-2xl max-w-[80%] text-sm">${m}</div>`;
             i.value = '';
-            
-            let videoPromptPayload = "No active streaming object loaded.";
-            if (currentVideoContext && currentVideoContext.link) {
-                videoPromptPayload = `Context Link payload references standard item resource named "${currentVideoContext.title}" available at URL target vector: ${currentVideoContext.link}`;
-            }
-
-            const prompt = {
-                contents: [{
-                    parts: [{
-                        text: `Context Framework: Logged profile name: ${profile?.name || 'Guest User'} (Role tier assigned: ${profile?.role || 'Prospect Student'}). ${videoPromptPayload}
-                        System Mandate: Act as the context-intelligent OpenClass engine. Target answer context structures comprehensively utilizing context reference URL indicators.
-                        Query string parameter payload: ${m}`
-                    }]
-                }]
-            };
-
+            const context = `User: ${profile?.name}. Current Video: ${currentVideoContext ? currentVideoContext.title : 'None'}.`;
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${aiConfig.geminiKey}`, {
-                    method: "POST", 
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(prompt)
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: `${context} Answer: ${m}` }] }] })
                 });
                 const data = await res.json();
-                chat.innerHTML += `<div class="bg-white/10 p-4 rounded-2xl max-w-[80%] text-sm shadow-xl border border-white/5">${data.candidates[0].content.parts[0].text}</div>`;
+                chat.innerHTML += `<div class="bg-white/10 p-4 rounded-2xl max-w-[80%] text-sm">${data.candidates[0].content.parts[0].text}</div>`;
                 chat.scrollTop = chat.scrollHeight;
-            } catch (e) { toast("AI connection tracking disruption", "error"); }
+            } catch (e) { toast("AI Offline", "error"); }
         };
 
         window.viewTeacher = async (tId) => {
@@ -800,15 +655,7 @@
             const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "groups")));
             container.innerHTML = snap.docs.filter(d => d.data().members?.includes(Core.auth.currentUser.uid) || d.data().teacherId === profile.teacherId).map(docSnap => {
                 const g = docSnap.data();
-                return `<div class="glass p-6 rounded-[2rem] flex justify-between items-center border border-white/5 hover:border-brandOrange/20 transition-all group relative">
-                    <div>
-                        <span class="absolute top-4 right-4 w-2 h-2 bg-brandOrange rounded-full hidden" id="badge-${docSnap.id}"></span>
-                        <span class="text-[9px] text-brandOrange font-black uppercase tracking-widest">${g.type}</span>
-                        <h3 class="text-xl font-black">${g.name}</h3>
-                        <p class="text-xs opacity-40">${g.code}</p>
-                    </div>
-                    <button onclick="openGroupChat('${docSnap.id}', '${g.name}')" class="btn-brand px-6 py-2 text-[10px]">Open Hub</button>
-                </div>`;
+                return `<div class="glass p-6 rounded-[2rem] flex justify-between items-center border border-white/5 hover:border-brandOrange/20 transition-all group"><div><span class="text-[9px] text-brandOrange font-black uppercase tracking-widest">${g.type}</span><h3 class="text-xl font-black">${g.name}</h3><p class="text-xs opacity-40">${g.code}</p></div><div class="flex gap-2"><button onclick="openGroupChat('${docSnap.id}', '${g.name}')" class="btn-brand px-6 py-2 text-[10px]">Open Hub</button></div></div>`;
             }).join('');
         }
 
@@ -816,96 +663,11 @@
             const container = document.getElementById('student-groups') || document.getElementById('tab-display'); if(!container) return;
             container.innerHTML = `<div class="space-y-4">${docs.map(d => {
                 const g = d.data();
-                return `<div class="glass p-6 rounded-[2rem] flex justify-between items-center group border border-white/5 hover:border-brandBlue/20 transition-all relative">
-                    <div>
-                        <span class="absolute top-4 right-4 w-2 h-2 bg-brandOrange rounded-full hidden" id="badge-${d.id}"></span>
-                        <span class="text-[9px] text-brandBlue font-black uppercase tracking-widest">${g.type}</span>
-                        <h3 class="text-xl font-black">${g.name}</h3>
-                        <p class="text-xs opacity-40">${g.code}</p>
-                    </div>
-                    <div class="flex gap-2"><button onclick="openGroupChat('${d.id}', '${g.name}')" class="btn-brand px-6 py-2 text-[10px]">Manage</button><button onclick="delG('${d.id}')" class="bg-red-500/10 text-red-500 p-2 rounded-xl hover:bg-red-500 hover:text-white transition-all">🗑</button></div>
-                </div>`;
+                return `<div class="glass p-6 rounded-[2rem] flex justify-between items-center group border border-white/5 hover:border-brandBlue/20 transition-all"><div><span class="text-[9px] text-brandBlue font-black uppercase tracking-widest">${g.type}</span><h3 class="text-xl font-black">${g.name}</h3><p class="text-xs opacity-40">${g.code}</p></div><div class="flex gap-2"><button onclick="openGroupChat('${d.id}', '${g.name}')" class="btn-brand px-6 py-2 text-[10px]">Manage</button><button onclick="delG('${d.id}')" class="bg-red-500/10 text-red-500 p-2 rounded-xl hover:bg-red-500 hover:text-white transition-all">🗑</button></div></div>`;
             }).join('')}</div>`;
         }
-        window.delG = async (id) => { if(confirm("Delete Hub Community?")) { await Core.deleteDoc(Core.doc(Core.db, "groups", id)); loadHome(); } };
-        // OPEN PROFILE POPUP
-window.openProfilePopup = () => {
-
-    document.getElementById('profile-popup').classList.remove('hidden');
-
-    document.getElementById('profile-name-input').value = profile.name || "";
-
-    document.getElementById('popup-profile-img').src =
-        profile.photo ||
-        "https://ui-avatars.com/api/?name=" + profile.name;
-};
-
-// CLOSE POPUP
-window.closeProfilePopup = () => {
-    document.getElementById('profile-popup').classList.add('hidden');
-};
-
-// IMAGE PREVIEW
-document.addEventListener('change', (e) => {
-
-    if (e.target.id === 'profile-image-input') {
-
-        const file = e.target.files[0];
-
-        if (file) {
-
-            const reader = new FileReader();
-
-            reader.onload = function(event) {
-
-                document.getElementById('popup-profile-img').src =
-                    event.target.result;
-            };
-
-            reader.readAsDataURL(file);
-        }
-    }
-});
-
-// SAVE PROFILE
-window.saveProfileChanges = async () => {
-
-    const updatedName =
-        document.getElementById('profile-name-input').value;
-
-    const updatedPhoto =
-        document.getElementById('popup-profile-img').src;
-
-    try {
-
-        await Core.updateDoc(
-            Core.doc(Core.db, "users", Core.auth.currentUser.uid),
-            {
-                name: updatedName,
-                photo: updatedPhoto
-            }
-        );
-
-        profile.name = updatedName;
-        profile.photo = updatedPhoto;
-
-        // UPDATE NAVBAR IMAGE
-        document.getElementById('nav-profile-pic').innerHTML =
-            `<img src="${updatedPhoto}" class="w-full h-full object-cover">`;
-
-        toast("Profile Updated");
-
-        closeProfilePopup();
-
-        loadHome();
-
-    } catch(err) {
-
-        toast("Profile Update Failed", "error");
-    }
-};
- window.onclick = (e) => { if (e.target === document.getElementById('custom-modal')) document.getElementById('custom-modal').classList.add('hidden'); };
+        window.delG = async (id) => { if(confirm("Delete?")) { await Core.deleteDoc(Core.doc(Core.db, "groups", id)); loadHome(); } };
+        window.onclick = (e) => { if (e.target === document.getElementById('custom-modal')) document.getElementById('custom-modal').classList.add('hidden'); };
     </script>
-   
 </body>
 </html>
