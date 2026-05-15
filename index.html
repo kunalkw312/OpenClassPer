@@ -50,7 +50,7 @@
              <div id="anti-theft-blank">⚠️ Secure Environment Active | Capture Prevented</div>
              <div id="secure-watermark"></div>
              <div id="player-container" class="w-full h-full aspect-video">
-                 <div id="player" data-plyr-provider="youtube" data-plyr-embed-id=""></div>
+                 <div id="player"></div>
              </div>
              <div id="file-preview-frame" class="hidden w-full h-[80vh] p-4 overflow-auto flex items-center justify-center bg-zinc-950"></div>
         </div>
@@ -58,7 +58,10 @@
 
     <div id="group-chat-window" class="hidden fixed inset-0 bg-black/95 z-[6000] flex flex-col">
         <div class="p-5 glass flex justify-between items-center border-b border-white/5">
-            <h2 id="group-chat-title" class="text-2xl font-black italic">Group</h2>
+            <div class="flex items-center gap-4">
+                <h2 id="group-chat-title" class="text-2xl font-black italic">Group</h2>
+                <button id="btn-group-mods" class="text-xs uppercase bg-white/10 px-3 py-1 rounded-full font-bold tracking-wider hover:bg-brandOrange/20">Manage Roster</button>
+            </div>
             <button onclick="closeGroupChat()" class="text-2xl">✕</button>
         </div>
         <div id="group-chat-messages" class="flex-1 overflow-y-auto p-6 space-y-6"></div>
@@ -117,13 +120,13 @@
                     <button id="tab-content" onclick="setTab('content')" class="tab-btn">Content</button>
                 </div>
 
-                <div class="flex items-center gap-6 w-full md:w-auto relative">
-                    <button id="cart-nav-trigger" onclick="openCartWorkspaceView()" class="hidden text-xs py-2 px-4 rounded-xl bg-brandOrange/10 border border-brandOrange/20 font-black uppercase text-brandOrange tracking-wider">🛒 Inventory (<span id="cart-items-count">0</span>)</button>
-                    <div class="relative w-full md:w-96 group">
+                <div class="flex items-center gap-4 w-full md:w-auto relative">
+                    <div class="relative w-full md:w-80 group">
                         <div class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="8" cy="8" r="6" /><path d="M13 13l4 4" /></svg></div>
                         <input type="text" id="g-search" oninput="reactiveSearch(this.value)" placeholder="Search campus..." class="input-field rounded-2xl pl-12 pr-6 py-2.5 text-sm w-full">
                     </div>
                     <button onclick="toggleMode()" class="p-2 glass rounded-xl">🌓</button>
+                    <button id="cart-nav-trigger" onclick="openCartWorkspaceView()" class="hidden text-xs py-3 px-4 rounded-xl bg-brandOrange/10 border border-brandOrange/20 font-black uppercase text-brandOrange tracking-wider">🛒 Basket (<span id="cart-items-count">0</span>)</button>
                     <div id="nav-profile-pic" class="w-10 h-10 rounded-full border-2 overflow-hidden hidden md:block"></div>
                     <button onclick="logout()" class="text-[10px] font-black text-red-500 uppercase px-4 py-2 border border-red-500/20 rounded-xl">Logout</button>
                 </div>
@@ -148,26 +151,12 @@
         </div>
     </div>
 
-    <div onclick="toggleAIChat()" class="fixed bottom-6 right-6 z-[5000] w-16 h-16 rounded-full btn-brand flex items-center justify-center text-3xl cursor-pointer shadow-2xl">🤖</div>
-    <div id="ai-chat-window" class="hidden fixed bottom-24 right-6 w-[380px] h-[600px] glass rounded-[2rem] z-[5000] overflow-hidden flex flex-col border border-brandOrange/20">
-        <div class="p-5 border-b border-white/10 flex justify-between items-center"><h2 class="font-black text-lg italic text-brandOrange">OpenClass AI</h2><button onclick="toggleAIChat()">✕</button></div>
-        <div id="ai-messages" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
-        <div class="p-4 border-t border-white/10 flex gap-3"><input id="ai-input" type="text" placeholder="Ask AI..." class="input-field flex-1"><button onclick="sendAIMessage()" class="btn-brand px-5 rounded-xl">Send</button></div>
-    </div>
-
     <script type="module">
         import * as Core from "./app.js";
         import { aiConfig } from "./config.js";
 
         let profile = null, isSignup = false, otpCode = null, tempUser = null, activeGroupId = null, currentTab = 'home', videoPlayer = null;
         let currentVideoContext = null, watermarkInterval = null, checkoutBasket = [];
-
-        window.addEventListener('keydown', (e) => {
-            if (!videoPlayer || ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
-            if (e.code === 'Space') { e.preventDefault(); videoPlayer.togglePlay(); }
-            else if (e.code === 'ArrowRight') videoPlayer.forward(10);
-            else if (e.code === 'ArrowLeft') videoPlayer.rewind(10);
-        });
 
         function activateAntiTheftShields() {
             const blankOverlay = document.getElementById('anti-theft-blank');
@@ -179,8 +168,6 @@
                 clearInterval(watermarkInterval);
                 watermarkInterval = setInterval(moveWatermark, 4000);
             }
-
-            navigator.clipboard?.writeText?.("Protected Video Space.");
 
             window.addEventListener('blur', engageShield);
             document.addEventListener('visibilitychange', handleVisibility);
@@ -209,13 +196,6 @@
             watermarkEl.style.top = `${Math.floor(Math.random() * 75) + 5}%`;
             watermarkEl.style.left = `${Math.floor(Math.random() * 70) + 5}%`;
         }
-
-        window.addEventListener('keyup', (e) => {
-            if (e.key === 'PrintScreen') {
-                navigator.clipboard?.writeText?.("Capture blocked.");
-                toast("Screenshots Blocked", "error");
-            }
-        });
 
         function setupPlayer(videoId, metadata) {
             currentVideoContext = metadata;
@@ -277,15 +257,14 @@
             
             if (profile.role === 'teacher') {
                 document.getElementById('cart-nav-trigger').classList.add('hidden');
-                const [contentSnap, followersSnap, courseSnap, groupSnap] = await Promise.all([
+                const [contentSnap, followersSnap, courseSnap, groupSnap, followingSnap] = await Promise.all([
                     Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "==", profile.teacherId))),
                     Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "array-contains", profile.teacherId))),
                     Core.getDocs(Core.query(Core.collection(Core.db, "courses"), Core.where("teacherId", "==", profile.teacherId))),
-                    Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId", "==", profile.teacherId)))
+                    Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId", "==", profile.teacherId))),
+                    Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "==", profile.teacherId)))
                 ]);
                 let totalViews = 0; contentSnap.forEach(d => totalViews += (d.data().views || 0));
-                
-                // Sorting newest updates at top mapping logic
                 const structuredContent = contentSnap.docs.sort((a,b) => (b.data().date?.toMillis() || 0) - (a.data().date?.toMillis() || 0));
 
                 main.innerHTML = `
@@ -296,8 +275,8 @@
                             <h3 class="text-xl font-black italic">${profile.name}</h3>
                             <p class="text-[10px] font-bold opacity-40 uppercase tracking-widest mb-6">${profile.teacherId}</p>
                             <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-white/5 p-4 rounded-3xl text-center"><p class="text-[9px] opacity-30 font-bold uppercase">Followers</p><p class="text-2xl font-black text-brandBlue">${followersSnap.size}</p></div>
-                                <div class="bg-white/5 p-4 rounded-3xl text-center"><p class="text-[9px] opacity-30 font-bold uppercase">Views</p><p class="text-2xl font-black">${totalViews}</p></div>
+                                <div onclick="openNetworkManagementModal('followers')" class="bg-white/5 p-4 rounded-3xl text-center cursor-pointer hover:bg-white/10 transition-all"><p class="text-[9px] opacity-30 font-bold uppercase">Followers</p><p class="text-2xl font-black text-brandBlue">${followersSnap.size}</p></div>
+                                <div onclick="openNetworkManagementModal('following')" class="bg-white/5 p-4 rounded-3xl text-center cursor-pointer hover:bg-white/10 transition-all"><p class="text-[9px] opacity-30 font-bold uppercase">Following</p><p class="text-2xl font-black text-brandBlue">${profile.subs?.length || 0}</p></div>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-2 glass p-4 rounded-[2rem]">
@@ -318,13 +297,13 @@
                 
                 const box = document.getElementById('tab-display');
                 if (currentTab === 'home') {
-                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Creator Insights</h3><div class="grid md:grid-cols-3 gap-6 mb-10"><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 uppercase font-black">Uploads</p><h2 class="text-4xl font-black">${contentSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 uppercase font-black">Courses</p><h2 class="text-4xl font-black">${courseSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 uppercase font-black">Groups</p><h2 class="text-4xl font-black">${groupSnap.size}</h2></div></div><div id="feed" class="space-y-4"></div>`;
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Creator Insights</h3><div class="grid md:grid-cols-3 gap-6 mb-10"><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 font-black">Uploads</p><h2 class="text-4xl font-black">${contentSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 font-black">Courses</p><h2 class="text-4xl font-black">${courseSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 font-black">Groups</p><h2 class="text-4xl font-black">${groupSnap.size}</h2></div></div><div id="feed" class="space-y-4"></div>`;
                     renderFeed(structuredContent, true);
                 } else if (currentTab === 'groups') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Your Communities</h3><div id="student-groups" class="space-y-4"></div>`;
                     renderGroups(groupSnap.docs, true);
                 } else if (currentTab === 'courses') {
-                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Course Catalogue Profile</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6"></div>`;
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Course Catalogue</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6"></div>`;
                     renderCourses(courseSnap.docs, true);
                 } else if (currentTab === 'content') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Library Index</h3><div id="feed" class="space-y-4"></div>`;
@@ -332,10 +311,23 @@
                 }
             } else {
                 document.getElementById('cart-nav-trigger').classList.remove('hidden');
-                main.innerHTML = `<div id="tab-display" class="max-w-4xl mx-auto min-h-[600px]"></div>`;
+                main.innerHTML = `
+                <div class="grid lg:grid-cols-4 gap-10">
+                    <div class="space-y-6 lg:sticky lg:top-32 h-fit">
+                        <div class="glass p-8 rounded-[3rem] border border-brandOrange/30 text-center shadow-xl">
+                            <img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-brandOrange p-1 object-cover">
+                            <h3 class="text-xl font-black italic">${profile.name}</h3>
+                            <div class="grid grid-cols-1 mt-4">
+                                <div onclick="openNetworkManagementModal('following')" class="bg-white/5 p-4 rounded-3xl text-center cursor-pointer hover:bg-white/10 transition-all"><p class="text-[9px] opacity-30 font-bold uppercase">Following</p><p class="text-2xl font-black text-brandOrange">${profile.subs?.length || 0}</p></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-3"><div id="tab-display" class="min-h-[600px]"></div></div>
+                </div>`;
+
                 const box = document.getElementById('tab-display');
                 if (currentTab === 'home') {
-                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Suggested Learning Modules</h3><div id="suggested-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div><h3 class="text-2xl font-black italic mb-6">Recent Updates</h3><div id="feed" class="space-y-6"></div>`;
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Suggested</h3><div id="suggested-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div><h3 class="text-2xl font-black italic mb-6">Updates</h3><div id="feed" class="space-y-6"></div>`;
                     const allContent = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(6)));
                     renderFeed(allContent.docs, false, 'suggested-feed');
                     if (profile.subs?.length) {
@@ -360,6 +352,47 @@
                     }
                 }
             }
+            trackGroupMessages();
+        };
+
+        window.openNetworkManagementModal = async (type) => {
+            const content = document.getElementById('modal-content');
+            content.innerHTML = `<h3 class="text-xl font-black mb-4 italic capitalize">${type} Directory</h3><div id="network-list" class="space-y-3 max-h-[50vh] overflow-y-auto">Scanning...</div>`;
+            document.getElementById('custom-modal').classList.remove('hidden');
+
+            if (type === 'followers') {
+                const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "array-contains", profile.teacherId)));
+                document.getElementById('network-list').innerHTML = snap.docs.map(d => `
+                    <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
+                        <div><p class="font-bold text-sm">${d.data().name}</p><p class="text-[10px] opacity-40">${d.data().email}</p></div>
+                        <button onclick="disconnectUserRelation('${d.id}', 'follower')" class="bg-red-500/10 text-red-500 text-[10px] uppercase font-bold px-3 py-1 rounded-lg hover:bg-red-500 hover:text-white transition-all">Remove</button>
+                    </div>`).join('') || '<p class="opacity-30 text-center text-xs">No entries</p>';
+            } else {
+                if(!profile.subs || !profile.subs.length) {
+                    document.getElementById('network-list').innerHTML = '<p class="opacity-30 text-center text-xs">Not following anyone</p>';
+                    return;
+                }
+                const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId", "in", profile.subs)));
+                document.getElementById('network-list').innerHTML = snap.docs.map(d => `
+                    <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
+                        <div><p class="font-bold text-sm">${d.data().name}</p><p class="text-[10px] opacity-40">${d.data().teacherId}</p></div>
+                        <button onclick="disconnectUserRelation('${d.data().teacherId}', 'following')" class="bg-red-500/10 text-red-500 text-[10px] uppercase font-bold px-3 py-1 rounded-lg hover:bg-red-500 hover:text-white transition-all">Unfollow</button>
+                    </div>`).join('') || '<p class="opacity-30 text-center text-xs">No entries</p>';
+            }
+        };
+
+        window.disconnectUserRelation = async (targetId, mode) => {
+            if(confirm(`Perform connection breakdown for this execution?`)) {
+                if(mode === 'follower') {
+                    await Core.updateDoc(Core.doc(Core.db, "users", targetId), { subs: Core.arrayRemove(profile.teacherId) });
+                } else {
+                    await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { subs: Core.arrayRemove(targetId) });
+                    profile.subs = profile.subs.filter(x => x !== targetId);
+                }
+                toast("Connection updated successfully");
+                document.getElementById('custom-modal').classList.add('hidden');
+                loadHome();
+            }
         };
 
         window.openCartWorkspaceView = () => {
@@ -372,7 +405,7 @@
                         const fee = parseFloat(item.price) || 0;
                         grandTotal += fee;
                         return `<div class="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/5">
-                            <div><p class="font-bold text-sm text-zinc-800 dark:text-zinc-200">${item.title}</p><p class="text-xs font-black text-brandOrange">${fee > 0 ? '₹' + fee : 'FREE'}</p></div>
+                            <div><p class="font-bold text-sm">${item.title}</p><p class="text-xs font-black text-brandOrange">${fee > 0 ? '₹' + fee : 'FREE'}</p></div>
                             <button onclick="checkoutBasket.splice(${index},1); openCartWorkspaceView(); fontWorkspaceCounter();" class="text-xs text-red-500 font-bold p-1">✕</button>
                         </div>`;
                     }).join('') || '<p class="opacity-30 text-center py-8 text-xs font-bold uppercase tracking-widest">Inventory empty</p>'}
@@ -380,9 +413,54 @@
                 <div class="flex justify-between items-center border-t border-white/5 pt-4 mb-6 font-black text-sm">
                     <p class="uppercase tracking-wider opacity-40">Grand Total Fee</p><p class="text-xl text-brandOrange">₹${grandTotal}</p>
                 </div>
-                <button onclick="checkoutBasket=[]; fontWorkspaceCounter(); document.getElementById('custom-modal').classList.add('hidden'); toast('Acquisition Sim Complete!');" class="w-full py-4 btn-brand text-xs">Simulate Settlement</button>
+                <button onclick="openSimulationPaymentGateway(${grandTotal})" class="w-full py-4 btn-brand text-xs">Proceed to Payment Simulation</button>
             `;
             document.getElementById('custom-modal').classList.remove('hidden');
+        };
+
+        window.openSimulationPaymentGateway = (amount) => {
+            const content = document.getElementById('modal-content');
+            content.innerHTML = `
+                <div class="text-center space-y-6">
+                    <div class="w-16 h-16 bg-brandOrange/10 text-brandOrange rounded-full flex items-center justify-center mx-auto text-2xl font-black">💳</div>
+                    <div>
+                        <h3 class="text-2xl font-black tracking-tight">SaaS Payment Gateway</h3>
+                        <p class="text-xs opacity-50 uppercase tracking-wider mt-1 font-bold">Secure Sandbox Environment</p>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-left flex justify-between items-center">
+                        <p class="text-xs font-bold opacity-60">Payable Balance</p>
+                        <p class="text-2xl font-black text-brandOrange">₹${amount}</p>
+                    </div>
+                    <div class="space-y-3">
+                        <input type="text" placeholder="Dummy Card Holder Name" class="input-field text-xs" value="Kunal Wadaskar">
+                        <input type="text" placeholder="1234 5678 9101 1121" class="input-field text-xs text-center tracking-widest" disabled>
+                        <div class="grid grid-cols-2 gap-3">
+                            <input type="text" placeholder="MM/YY" class="input-field text-xs text-center" disabled>
+                            <input type="password" placeholder="***" class="input-field text-xs text-center" disabled>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 pt-2">
+                        <button onclick="openCartWorkspaceView()" class="flex-1 py-4 glass text-xs font-black uppercase rounded-xl">Cancel</button>
+                        <button onclick="executePaymentGatewayAuthorization()" class="flex-1 py-4 btn-brand text-xs">Authorize Transaction</button>
+                    </div>
+                </div>
+            `;
+        };
+
+        window.executePaymentGatewayAuthorization = async () => {
+            toast("Verifying Sandbox tokens...");
+            setTimeout(async () => {
+                for (const course of checkoutBasket) {
+                    if (course.groupId) {
+                        await Core.updateDoc(Core.doc(Core.db, "groups", course.groupId), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
+                    }
+                }
+                checkoutBasket = [];
+                fontWorkspaceCounter();
+                document.getElementById('custom-modal').classList.add('hidden');
+                toast("Payment Realized! Unlocked content streams.");
+                loadHome();
+            }, 2000);
         };
 
         function fontWorkspaceCounter() {
@@ -393,7 +471,7 @@
             const main = document.getElementById('main-content');
             if (!q) return loadHome();
             main.innerHTML = `<div class="space-y-4">${Array(3).fill('<div class="skeleton h-20 rounded-2xl opacity-10 bg-white"></div>').join('')}</div>`;
-            const [uS, cS, gS] = await Promise.all([Core.getDocs(Core.collection(Core.db, "users")), Core.getDocs(Core.collection(Core.db, "content")), Core.getDocs(Core.collection(Core.db, "groups"))]);
+            const [uS, cS, gS] = await Promise.all([Core.getDocs(Core.collection(Core.db, "users")), Core.getDocs(Core.query(Core.collection(Core.db, "content"))), Core.getDocs(Core.query(Core.collection(Core.db, "groups")))]);
             
             const teachers = uS.docs.filter(d => d.data().role === 'teacher' && (d.data().name.toLowerCase().includes(q.toLowerCase()) || d.data().teacherId === q));
             const content = cS.docs.filter(d => d.data().title.toLowerCase().includes(q.toLowerCase()));
@@ -401,7 +479,7 @@
             
             main.innerHTML = `
             <div class="space-y-12">
-                ${teachers.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Instructors</h3><div class="grid gap-4">${teachers.map(m => `<div onclick="viewTeacher('${m.data().teacherId}')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center cursor-pointer group"><div class="flex items-center gap-6"><img src="${m.data().photo || ''}" class="w-16 h-16 rounded-2xl object-cover bg-brandBlue shadow-lg"><div><h3 class="text-xl font-black italic text-zinc-800 dark:text-zinc-100">${m.data().name}</h3><p class="text-[10px] opacity-30 font-bold">${m.data().teacherId}</p></div></div><p class="text-brandBlue font-black uppercase text-[10px]">Biography →</p></div>`).join('')}</div></div>` : ''}
+                ${teachers.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Instructors</h3><div class="grid gap-4">${teachers.map(m => `<div onclick="viewTeacher('${m.data().teacherId}')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center cursor-pointer group"><div class="flex items-center gap-6"><img src="${m.data().photo || ''}" class="w-16 h-16 rounded-2xl object-cover bg-brandBlue shadow-lg"><div><h3 class="text-xl font-black italic">${m.data().name}</h3><p class="text-[10px] opacity-30 font-bold">${m.data().teacherId}</p></div></div><p class="text-brandBlue font-black uppercase text-[10px]">Biography →</p></div>`).join('')}</div></div>` : ''}
                 ${groups.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Groups</h3><div class="grid gap-4">${groups.map(g => `<div class="glass p-6 rounded-[2.5rem] flex justify-between items-center border border-white/5"><div><span class="text-[9px] text-brandOrange font-black uppercase tracking-widest">${g.data().type}</span><h3 class="text-xl font-black mt-1">${g.data().name}</h3><p class="text-xs opacity-50">${g.data().code}</p></div><button onclick="handleHubSearchJoin('${g.id}','${g.data().code}')" class="btn-brand px-8 py-2 text-[10px]">Access</button></div>`).join('')}</div></div>` : ''}
                 ${content.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Lessons</h3><div class="grid gap-4">${content.map(d => renderResourceCard(d, false)).join('')}</div></div>` : ''}
             </div>`;
@@ -455,7 +533,7 @@
             } else toast("Wrong Code", "error");
         };
 
-        window.toggleAuth = () => { isSignup = !isSignup; document.getElementById('signup-fields').classList.toggle('hidden'); document.getElementById('primary-auth-btn').innerText = isSignup ? "Verify Email" : "Sign In"; document.getElementById('toggle-auth-btn').innerText = isSignup ? "Already have account? Login" : "Create Profile"; };
+        window.toggleAuth = () => { isSignup = !isSignup; document.getElementById('signup-fields').classList.toggle('hidden'); document.getElementById('primary-auth-btn').innerText = isSignup ? "Verify Email" : "Sign In"; document.getElementById('toggle-auth-btn').innerText = isSignup ? "Login instead" : "Create Profile"; };
         window.handleGoogle = () => Core.signInWithPopup(Core.auth, Core.provider);
         window.logout = () => Core.signOut(Core.auth).then(() => location.reload());
 
@@ -528,7 +606,7 @@
             const isFree = parseFloat(c.price || 0) === 0;
             
             content.innerHTML = `
-                <img src="${c.thumbnail}" class="w-full h-48 object-cover rounded-3xl mb-6 shadow-2xl">
+                <img src="${c.thumbnail}" class="w-full h-auto max-h-60 object-cover rounded-3xl mb-6 shadow-2xl">
                 <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-black italic text-brandOrange">${c.title}</h2>${isT ? `<button onclick="delC('${id}')" class="text-red-500 font-black uppercase text-[10px]">Delete</button>` : ''}</div>
                 <p class="opacity-70 mb-6 text-xs text-zinc-700 dark:text-zinc-300">${c.description}</p>
                 <div class="space-y-3 mb-8 max-h-40 overflow-y-auto">
@@ -541,34 +619,34 @@
                     `).join('')}
                 </div>
                 <div class="flex gap-2">
-                    ${!isFree ? `<button onclick="checkoutBasket.push({id:'${id}', title:'${c.title}', price:'${c.price}'}); fontWorkspaceCounter(); toast('Workspace item stacked'); document.getElementById('custom-modal').classList.add('hidden');" class="flex-1 py-4 bg-zinc-800 rounded-xl font-bold uppercase text-xs text-white">Add To Cart</button>` : ''}
-                    <button onclick="enrollCourse('${id}','${c.groupId}')" class="flex-1 py-4 btn-brand shadow-xl text-xs">${isFree ? 'Enroll Free' : 'Buy Now (₹' + c.price + ')'}</button>
+                    ${!isFree ? `<button onclick="checkoutBasket.push({id:'${id}', title:'${c.title}', price:'${c.price}', groupId:'${c.groupId || ''}'}); fontWorkspaceCounter(); toast('Added to Shopping Basket'); document.getElementById('custom-modal').classList.add('hidden');" class="flex-1 py-4 bg-zinc-800 rounded-xl font-bold uppercase text-xs text-white">Add To Cart</button>` : ''}
+                    <button onclick="${isFree ? `enrollCourse('${id}','${c.groupId}')` : `openSimulationPaymentGateway(${c.price}, [{id:'${id}', title:'${c.title}', price:'${c.price}', groupId:'${c.groupId || ''}'}])`}" class="flex-1 py-4 btn-brand shadow-xl text-xs">${isFree ? 'Enroll Free' : 'Buy Now (₹' + c.price + ')'}</button>
                 </div>
             `;
             document.getElementById('custom-modal').classList.remove('hidden');
         };
 
         window.enrollCourse = async (cid, gid) => {
-            await Core.updateDoc(Core.doc(Core.db, "groups", gid), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
-            toast("Sync Complete! Course communities active.");
+            if(gid) await Core.updateDoc(Core.doc(Core.db, "groups", gid), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
+            toast("Free Enrollment processed successfully!");
             document.getElementById('custom-modal').classList.add('hidden');
             loadHome();
         };
 
-        window.delC = async (id) => { if(confirm("Delete Course item from cluster records?")) { await Core.deleteDoc(Core.doc(Core.db,"courses",id)); document.getElementById('custom-modal').classList.add('hidden'); loadHome(); } };
+        window.delC = async (id) => { if(confirm("Delete Course catalogue profile?")) { await Core.deleteDoc(Core.doc(Core.db,"courses",id)); document.getElementById('custom-modal').classList.add('hidden'); loadHome(); } };
 
         function renderFeed(docs, isT, target = 'feed') { 
             const container = document.getElementById(target) || document.getElementById('tab-display');
             if (container) container.innerHTML = docs.map(d => renderResourceCard(d, isT)).join(''); 
         }
 
-        // Sorting newest courses systematically at top mapping logic
         function renderCourses(docs, isT) {
             const container = document.getElementById('courses-feed') || document.getElementById('tab-display');
+            // FLUID HEIGHT CLASS INTEGRATED DIRECTLY TO COVER ASYMMETRICAL WRAPPERS
             if (container) container.innerHTML = `<div class="grid md:grid-cols-2 gap-6">${docs.map(doc => {
                 const c = doc.data();
                 const costVal = parseFloat(c.price || 0);
-                return `<div class="glass p-6 rounded-[2.5rem] border border-white/5 hover:border-brandOrange/30 transition-all"><img src="${c.thumbnail}" class="w-full h-52 object-cover rounded-2xl mb-4"><div><h2 class="text-xl font-black italic mb-2">${c.title}</h2><div class="flex justify-between items-center"><h3 class="text-lg font-black text-brandOrange">${costVal > 0 ? '₹' + costVal : 'FREE TIER'}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2 text-xs">View Course</button></div></div></div>`;
+                return `<div class="glass p-6 rounded-[2.5rem] border border-white/5 hover:border-brandOrange/30 transition-all flex flex-col justify-between h-full"><div class="w-full"><img src="${c.thumbnail}" class="w-full h-auto max-h-48 object-cover rounded-2xl mb-4"><h2 class="text-xl font-black italic mb-2">${c.title}</h2><p class="text-xs opacity-50 mb-4 line-clamp-2">${c.description || ''}</p></div><div class="flex justify-between items-center mt-auto border-t border-white/5 pt-4"><h3 class="text-lg font-black text-brandOrange">${costVal > 0 ? '₹' + costVal : 'FREE'}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2 text-xs">View Course</button></div></div>`;
             }).join('')}</div>`;
         }
 
@@ -578,8 +656,8 @@
             if(i.type === 'file') previewThumb = "https://images.unsplash.com/photo-1568667256549-094345857637?auto=format&fit=crop&w=150&q=80";
             return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative"><img src="${previewThumb}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md">${i.type === 'live' ? '<span class="absolute top-2 left-2 bg-red-600 text-[8px] font-black px-2 py-0.5 rounded-full animate-pulse">LIVE</span>' : ''}</div><div><h4 class="font-black text-lg italic truncate">${i.title}</h4><p class="text-[9px] opacity-40 uppercase font-bold">${i.tName} • ${i.views || 0} Views</p></div></div><div class="flex gap-2 w-full md:w-auto"><button onclick="openResource('${d.id}','${i.url}','${i.title}','${i.type}')" class="flex-grow md:flex-none btn-brand light:bg-brandOrange dark:bg-white light:text-white dark:text-black px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Open</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
         }
-        window.delR = async (id) => { if(confirm("Delete Resource completely?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); loadHome(); } };
-        window.editR = (id,t,u) => { document.getElementById('modal-content').innerHTML = `<h3 class="text-xl font-black mb-4 italic">Edit Content Asset</h3><input id="ed-t" value="${t}" class="input-field mb-2 text-xs"><input id="ed-u" value="${u}" class="input-field mb-4 text-xs"><button onclick="saveR('${id}')" class="w-full py-4 btn-brand text-xs">Save Changes</button>`; document.getElementById('custom-modal').classList.remove('hidden'); };
+        window.delR = async (id) => { if(confirm("Delete Resource?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); loadHome(); } };
+        window.editR = (id,t,u) => { document.getElementById('modal-content').innerHTML = `<h3 class="text-xl font-black mb-4 italic">Edit Content</h3><input id="ed-t" value="${t}" class="input-field mb-2 text-xs"><input id="ed-u" value="${u}" class="input-field mb-4 text-xs"><button onclick="saveR('${id}')" class="w-full py-4 btn-brand text-xs">Save Changes</button>`; document.getElementById('custom-modal').classList.remove('hidden'); };
         window.saveR = async (id) => { await Core.updateDoc(Core.doc(Core.db,"content",id), {title:document.getElementById('ed-t').value, url:document.getElementById('ed-u').value}); document.getElementById('custom-modal').classList.add('hidden'); loadHome(); };
 
         window.publishContent = async () => {
@@ -593,9 +671,11 @@
             activeGroupId = id; document.getElementById('group-chat-window').classList.remove('hidden');
             document.getElementById('group-chat-title').innerText = name;
             
+            document.getElementById('btn-group-mods').onclick = () => openGroupMembersManagement(id);
+            
             localStorage.setItem(`oc_group_read_${id}`, new Date().getTime());
-            const badgeElement = document.getElementById(`badge-${id}`);
-            if(badgeElement) badgeElement.classList.add('hidden');
+            const trackingBadge = document.getElementById(`badge-${id}`);
+            if(trackingBadge) trackingBadge.classList.add('hidden');
 
             const q = Core.query(Core.collection(Core.db, "groupMessages"), Core.where("groupId", "==", id), Core.orderBy("createdAt", "asc"));
             Core.onSnapshot(q, (snap) => {
@@ -607,12 +687,35 @@
             });
         };
 
-        window.sendGroupMessage = async () => {
-            const i = document.getElementById('group-message-input'), t = i.value.trim();
-            if (!t || !activeGroupId) return;
-            await Core.addDoc(Core.collection(Core.db, "groupMessages"), { groupId: activeGroupId, senderId: Core.auth.currentUser.uid, sender: profile.name, senderPhoto: profile.photo || '', text: t, createdAt: Core.serverTimestamp() });
-            localStorage.setItem(`oc_group_read_${activeGroupId}`, new Date().getTime());
-            i.value = '';
+        window.openGroupMembersManagement = async (gid) => {
+            const gDoc = await Core.getDoc(Core.doc(Core.db, "groups", gid));
+            const gData = gDoc.data();
+            const content = document.getElementById('modal-content');
+            const isCreator = gData.teacherId === profile.teacherId;
+            
+            if(!gData.members || !gData.members.length) {
+                content.innerHTML = `<h3 class="text-xl font-black mb-4">Hub Members</h3><p class="opacity-40 text-xs">No entries found</p>`;
+                document.getElementById('custom-modal').classList.remove('hidden');
+                return;
+            }
+
+            const usersSnap = await Core.getDocs(Core.collection(Core.db, "users"));
+            const memberProfiles = usersSnap.docs.filter(d => gData.members.includes(d.id));
+
+            content.innerHTML = `<h3 class="text-xl font-black mb-4 italic">Hub Community Roster</h3><div class="space-y-3 max-h-60 overflow-y-auto">
+                ${memberProfiles.map(m => `<div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
+                    <div><p class="font-bold text-sm text-zinc-800 dark:text-zinc-200">${m.data().name}</p><p class="text-[10px] opacity-40">${m.data().email || 'No Email Specified'}</p></div>
+                    ${isCreator && m.id !== Core.auth.currentUser.uid ? `<button onclick="kickGroupMember('${gid}','${m.id}')" class="text-xs text-red-500 uppercase font-bold bg-red-500/10 px-3 py-1 rounded-lg hover:bg-red-500 hover:text-white transition-all">Expel</button>` : ''}
+                </div>`).join('')}
+            </div>`;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        };
+
+        window.kickGroupMember = async (gid, uid) => {
+            if(confirm("Expel participant user profiles from community circle?")) {
+                await Core.updateDoc(Core.doc(Core.db, "groups", gid), { members: Core.arrayRemove(uid) });
+                toast("Member kicked successfully."); document.getElementById('custom-modal').classList.add('hidden'); loadHome();
+            }
         };
 
         function trackGroupMessages() {
@@ -628,7 +731,14 @@
             });
         }
 
-        // --- DEEP CONTEXT VERIFIED AI INTEGRATION ---
+        window.sendGroupMessage = async () => {
+            const i = document.getElementById('group-message-input'), t = i.value.trim();
+            if (!t || !activeGroupId) return;
+            await Core.addDoc(Core.collection(Core.db, "groupMessages"), { groupId: activeGroupId, senderId: Core.auth.currentUser.uid, sender: profile.name, senderPhoto: profile.photo || '', text: t, createdAt: Core.serverTimestamp() });
+            localStorage.setItem(`oc_group_read_${activeGroupId}`, new Date().getTime());
+            i.value = '';
+        };
+
         window.sendAIMessage = async () => {
             const i = document.getElementById('ai-input'), m = i.value.trim();
             if (!m) return;
@@ -636,18 +746,17 @@
             chat.innerHTML += `<div class="ml-auto bg-brandOrange text-white p-4 rounded-2xl max-w-[80%] text-sm shadow-xl">${m}</div>`;
             i.value = '';
             
-            let referenceObjectPrompt = "No active educational media link is currently loaded inside the dashboard frame context view.";
+            let videoPromptPayload = "No active video context linked.";
             if (currentVideoContext && currentVideoContext.link) {
-                referenceObjectPrompt = `The student is currently watching this resource asset: "${currentVideoContext.title}" directly accessible at YouTube URL link target: ${currentVideoContext.link}`;
+                videoPromptPayload = `Active asset link URL context target vector: ${currentVideoContext.link}`;
             }
 
+            // RESTRUCTURED TO AVOID API FAULT CODES (400 BAD REQUEST)
             const promptPayload = {
                 contents: [{
                     role: "user",
                     parts: [{
-                        text: `Context Framework setup tracking: Profile: ${profile?.name}. Rank: ${profile?.role}. Lesson space tracker metadata context: ${referenceObjectPrompt}. 
-                        Instruction guidelines: You are the expert automated OpenClass AI copilot assistant. Synthesize concise answers that relate conceptually to the referenced tracking URL context link when questioned about its meaning. Keep answers extremely short and simple.
-                        Query command payload text data value: ${m}`
+                        text: `User Identity details: ${profile?.name || 'Anonymous Student'}. Active Video context tracking: ${videoPromptPayload}. Deliver answers succinctly. Prompt message text value string parameters: ${m}`
                     }]
                 }]
             };
@@ -662,10 +771,10 @@
                 if(data.candidates && data.candidates[0].content.parts[0].text) {
                     chat.innerHTML += `<div class="bg-white/10 p-4 rounded-2xl max-w-[80%] text-sm shadow-xl border border-white/5">${data.candidates[0].content.parts[0].text}</div>`;
                 } else {
-                    chat.innerHTML += `<div class="bg-white/5 p-4 rounded-2xl max-w-[80%] text-sm opacity-50">Response packet structural layout anomaly.</div>`;
+                    chat.innerHTML += `<div class="bg-white/5 p-4 rounded-2xl max-w-[80%] text-sm opacity-50">Anomalous engine feedback.</div>`;
                 }
                 chat.scrollTop = chat.scrollHeight;
-            } catch (e) { toast("AI response pipeline down", "error"); }
+            } catch (e) { toast("AI context processing error", "error"); }
         };
 
         window.viewTeacher = async (tId) => {
@@ -744,7 +853,7 @@
                 </div>`;
             }).join('')}</div>`;
         }
-        window.delG = async (id) => { if(confirm("Delete Hub?")) { await Core.deleteDoc(Core.doc(Core.db, "groups", id)); loadHome(); } };
+        window.delG = async (id) => { if(confirm("Delete Hub Community?")) { await Core.deleteDoc(Core.doc(Core.db, "groups", id)); loadHome(); } };
         window.onclick = (e) => { if (e.target === document.getElementById('custom-modal')) document.getElementById('custom-modal').classList.add('hidden'); };
     </script>
 </body>
