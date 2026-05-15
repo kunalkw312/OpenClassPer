@@ -19,27 +19,20 @@
         .light { --text-main: #002e50; --bg-main: #fdfbf7; --glass-bg: rgba(255, 255, 255, 0.85); --input-bg: #fff; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: 0.4s; overflow-x: hidden; }
         .glass { background: var(--glass-bg); backdrop-filter: blur(30px); border: 1px solid rgba(128, 128, 128, 0.1); }
-        
         .btn-brand { background: linear-gradient(135deg, #004a80 0%, #f7941d 100%); background-size: 200% auto; transition: 0.5s; color: white !important; font-weight: 800; text-transform: uppercase; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
         .btn-brand:hover { background-position: right center; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 74, 128, 0.2); }
-        
         .tab-btn { padding: 12px 20px; font-weight: 800; text-transform: uppercase; font-size: 10px; border-radius: 12px; transition: 0.3s; opacity: 0.4; color: var(--text-main); }
         .tab-btn.active { background: rgba(247, 148, 29, 0.1); color: #f7941d; opacity: 1; border: 1px solid rgba(247, 148, 29, 0.2); }
-        
         .input-field { background: var(--input-bg); border: 1px solid rgba(128, 128, 128, 0.2); color: var(--text-main); outline: none; padding: 1rem; border-radius: 14px; width: 100%; }
-        
         #toast-box { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
         .toast-pill { background: #111; color: #fff; padding: 0.6rem 1.5rem; border-radius: 99px; border: 1px solid rgba(255,255,255,0.1); font-size: 10px; font-weight: 800; text-transform: uppercase; animation: popUp 0.3s forwards; }
         
-        /* Anti-YouTube UI Shield */
         #media-vault .plyr__video-embed iframe { transform: scale(1.4); pointer-events: none; }
         .plyr--full-ui.plyr--video .plyr__control--overlaid { background: #f7941d; }
         .plyr--video .plyr__controls { background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 0 0 14px 14px; }
-        
-        /* Grid Button Highlighting */
         .grid-btn-active { background: rgba(247, 148, 29, 0.2) !important; border: 1px solid rgba(247, 148, 29, 0.3) !important; color: #f7941d !important; }
 
-        /* ADVANCED ANTI-THEFT BLANK SCREEN OVERLAY */
+        /* ADVANCED HARDENED SCREEN EXTRACTION DEFENSE BANNER OVERLAY */
         #anti-theft-blank {
             display: none;
             position: absolute;
@@ -52,22 +45,24 @@
             color: #fff;
             font-weight: 800;
             text-transform: uppercase;
-            font-size: 14px;
+            font-size: 13px;
             letter-spacing: 0.1em;
+            text-align: center;
+            padding: 2rem;
         }
 
-        /* SECURE MOVING WATERMARK */
+        /* SECURE CONSTANTLY ROTATING POSITION DISTORTION WATERMARK EFFECT */
         #secure-watermark {
             position: absolute;
             z-index: 2800;
             pointer-events: none;
             font-weight: 800;
-            font-size: 18px;
-            color: rgba(255, 255, 255, 0.15);
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.13);
             mix-blend-mode: difference;
             white-space: nowrap;
             user-select: none;
-            transition: all 1s ease-in-out;
+            transition: all 0.8s ease-in-out;
         }
 
         @keyframes popUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -82,11 +77,13 @@
 
     <div id="media-vault" class="hidden fixed inset-0 z-[2000] bg-black flex items-center justify-center">
         <button onclick="closeVault()" class="absolute top-6 right-6 bg-white/10 hover:bg-red-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-black z-[3100]">✕</button>
-        <div class="w-full max-w-5xl overflow-hidden rounded-2xl shadow-2xl relative">
-             <div id="anti-theft-blank">⚠️ Screen Capture / Tab Inactivity Detected</div>
+        <div class="w-full max-w-5xl overflow-hidden rounded-2xl shadow-2xl relative bg-zinc-900 flex items-center justify-center min-h-[50vh]">
+             <div id="anti-theft-blank">⚠️ Secure Vault Shield Engaged: Capture/Inactivity Defended</div>
              <div id="secure-watermark"></div>
-             
-             <div id="player" data-plyr-provider="youtube" data-plyr-embed-id=""></div>
+             <div id="player-view-wrapper" class="w-full h-full aspect-video">
+                 <div id="player" data-plyr-provider="youtube" data-plyr-embed-id=""></div>
+             </div>
+             <div id="universal-file-frame" class="hidden w-full h-[75vh] p-4 overflow-auto flex items-center justify-center bg-zinc-950"></div>
         </div>
     </div>
 
@@ -182,11 +179,9 @@
         </div>
     </div>
 
-    <div onclick="toggleAIChat()" class="fixed bottom-6 right-6 z-[5000] w-16 h-16 rounded-full btn-brand flex items-center justify-center text-3xl cursor-pointer shadow-2xl">🤖</div>
-    <div id="ai-chat-window" class="hidden fixed bottom-24 right-6 w-[380px] h-[600px] glass rounded-[2rem] z-[5000] overflow-hidden flex flex-col border border-brandOrange/20">
-        <div class="p-5 border-b border-white/10 flex justify-between items-center"><h2 class="font-black text-lg italic text-brandOrange">OpenClass AI</h2><button onclick="toggleAIChat()">✕</button></div>
-        <div id="ai-messages" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
-        <div class="p-4 border-t border-white/10 flex gap-3"><input id="ai-input" type="text" placeholder="Ask AI..." class="input-field flex-1"><button onclick="sendAIMessage()" class="btn-brand px-5 rounded-xl">Send</button></div>
+    <div id="ai-dock-hub" class="fixed bottom-6 right-6 z-[5000] flex flex-col items-end gap-3">
+        <button id="cart-float-btn" onclick="renderCartModal()" class="hidden w-14 h-14 rounded-full bg-zinc-900 border border-brandOrange/40 text-xl items-center justify-center shadow-2xl hover:scale-105 transition-all">🛒</button>
+        <div onclick="toggleAIChat()" class="w-16 h-16 rounded-full btn-brand flex items-center justify-center text-3xl cursor-pointer shadow-2xl">🤖</div>
     </div>
 
     <script type="module">
@@ -194,113 +189,121 @@
         import { aiConfig } from "./config.js";
 
         let profile = null, isSignup = false, otpCode = null, tempUser = null, activeGroupId = null, currentTab = 'home', videoPlayer = null;
-        let currentVideoContext = null;
-        let watermarkInterval = null;
+        let currentVideoContext = null, watermarkInterval = null;
 
-        // Keybindings
-        window.addEventListener('keydown', (e) => {
-            if (!videoPlayer || ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
-            if (e.code === 'Space') { e.preventDefault(); videoPlayer.togglePlay(); }
-            else if (e.code === 'ArrowRight') videoPlayer.forward(10);
-            else if (e.code === 'ArrowLeft') videoPlayer.rewind(10);
-        });
-
-        // --- HARDENED ANTI-THEFT MONITORING ENGINE ---
+        // --- HARDENED INTEGRATED SECURITY MONITOR SYSTEM ---
         function activateAntiTheftShields() {
             const blankOverlay = document.getElementById('anti-theft-blank');
             const watermarkEl = document.getElementById('secure-watermark');
 
-            // 1. Inject User Email Identity into Content Container
             if (profile && profile.email) {
                 watermarkEl.innerText = profile.email;
                 moveWatermark();
                 clearInterval(watermarkInterval);
-                watermarkInterval = setInterval(moveWatermark, 4000);
+                watermarkInterval = setInterval(moveWatermark, 3500);
             }
 
-            // 2. Clear Clipboard to prevent snippet pasting
-            navigator.clipboard?.writeText?.("Protected by OpenClass Secure Shield.");
+            try { navigator.clipboard?.writeText?.("[Protected Resource Asset Content]"); } catch(e){}
 
-            // 3. Prevent Focus and Tab switching evasion
             window.addEventListener('blur', engageShield);
             document.addEventListener('visibilitychange', handleVisibility);
             
             function engageShield() {
-                if (videoPlayer && videoPlayer.playing) {
-                    videoPlayer.pause();
+                if (videoPlayer && typeof videoPlayer.pause === 'function') {
+                    try { videoPlayer.pause(); } catch(err){}
                 }
-                blankOverlay.style.display = 'flex';
+                if (blankOverlay) blankOverlay.style.style.display = 'flex';
             }
 
             function handleVisibility() {
                 if (document.visibilityState === 'hidden') engageShield();
-                else blankOverlay.style.display = 'none';
+                else if (blankOverlay) blankOverlay.style.display = 'none';
             }
 
-            // Save reference to safely remove later
             window._disengageShields = () => {
                 window.removeEventListener('blur', engageShield);
                 document.removeEventListener('visibilitychange', handleVisibility);
                 clearInterval(watermarkInterval);
-                blankOverlay.style.display = 'none';
-                watermarkEl.innerText = "";
+                if (blankOverlay) blankOverlay.style.display = 'none';
+                if (watermarkEl) watermarkEl.innerText = "";
             };
         }
 
         function moveWatermark() {
             const watermarkEl = document.getElementById('secure-watermark');
             if (!watermarkEl || watermarkEl.innerText === "") return;
-            const topPos = Math.floor(Math.random() * 75) + 5; 
-            const leftPos = Math.floor(Math.random() * 70) + 5;
-            watermarkEl.style.top = `${topPos}%`;
-            watermarkEl.style.left = `${leftPos}%`;
+            watermarkEl.style.top = `${Math.floor(Math.random() * 70) + 10}%`;
+            watermarkEl.style.left = `${Math.floor(Math.random() * 65) + 10}%`;
         }
 
-        // Global Anti-Screenshot Key Interception
         window.addEventListener('keyup', (e) => {
             if (e.key === 'PrintScreen') {
-                navigator.clipboard?.writeText?.("Screenshots are blocked on this domain.");
-                toast("Screenshots Disabled for Safety", "error");
+                try { navigator.clipboard?.writeText?.("[Security Redacted Screen View Capture Blocked]"); } catch(err){}
+                toast("System Screenshots Restricted For Security", "error");
             }
         });
 
         window.addEventListener('keydown', (e) => {
-            // Block Snip tool shortcuts (Win + Shift + S / Cmd + Shift + 4)
-            if ((e.metaKey || e.ctrlKey || e.shiftKey) && (e.key === 'S' || e.key === 's' || e.key === '4')) {
+            if ((e.metaKey || e.ctrlKey || e.shiftKey) && ['S', 's', '4', '3'].includes(e.key)) {
                 const blankOverlay = document.getElementById('anti-theft-blank');
-                if (blankOverlay && document.getElementById('media-vault').classList.contains('hidden') === false) {
-                    if (videoPlayer) videoPlayer.pause();
+                if (blankOverlay && !document.getElementById('media-vault').classList.contains('hidden')) {
+                    try { if(videoPlayer) videoPlayer.pause(); } catch(err){}
                     blankOverlay.style.display = 'flex';
-                    toast("Capture Attempt Countered", "error");
+                    toast("External Grab Capture Method Intercepted", "error");
                 }
             }
         });
 
         function setupPlayer(videoId, metadata) {
             currentVideoContext = metadata;
-            const container = document.getElementById('player');
-            container.innerHTML = "";
-            const playerDiv = document.createElement('div');
-            playerDiv.id = 'player-instance';
-            playerDiv.setAttribute('data-plyr-provider', 'youtube');
-            playerDiv.setAttribute('data-plyr-embed-id', videoId);
-            container.appendChild(playerDiv);
+            const playerWrapper = document.getElementById('player-view-wrapper');
+            const fileFrame = document.getElementById('universal-file-frame');
             
-            if (videoPlayer) videoPlayer.destroy();
+            playerWrapper.classList.remove('hidden');
+            fileFrame.classList.add('hidden');
+            playerWrapper.innerHTML = '<div id="player-instance"></div>';
+            
+            if (videoPlayer) {
+                try { videoPlayer.destroy(); } catch(e){}
+            }
             
             videoPlayer = new Plyr('#player-instance', {
                 autoplay: true,
                 youtube: { noCookie: true, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1, controls: 0, disablekb: 1 }
             });
+            videoPlayer.source = { type: 'video', sources: [{ src: videoId, provider: 'youtube' }] };
+            activateAntiTheftShields();
+        }
 
-            // Engage active visual block layers
+        function setupFilePreview(url) {
+            const playerWrapper = document.getElementById('player-view-wrapper');
+            const fileFrame = document.getElementById('universal-file-frame');
+            
+            playerWrapper.classList.add('hidden');
+            fileFrame.classList.remove('hidden');
+            
+            const fileExt = url.split('.').pop().toLowerCase().split('?')[0];
+            const inlineImageUploadMatch = url.includes('image/upload') || url.includes('img') || url.includes('jpg') || url.includes('png');
+            
+            if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'].includes(fileExt) || inlineImageUploadMatch) {
+                fileFrame.innerHTML = `<div class="p-4 flex flex-col items-center"><img src="${url}" class="max-w-full max-h-[65vh] rounded-xl object-contain shadow-2xl border border-white/5"></div>`;
+            } else if (fileExt === 'pdf') {
+                fileFrame.innerHTML = `<iframe src="${url}" class="w-full h-[70vh] rounded-xl border-none bg-zinc-900"></iframe>`;
+            } else {
+                fileFrame.innerHTML = `
+                <div class="text-center p-12 bg-white/5 rounded-3xl border border-white/5 max-w-md">
+                    <p class="mb-6 font-bold text-sm tracking-tight">Study Asset Document Reference</p>
+                    <a href="${url}" target="_blank" class="px-8 py-3 bg-brandOrange text-white rounded-xl font-bold uppercase text-[10px] inline-block tracking-wider hover:bg-brandOrange/80 transition-all">Open Content Link</a>
+                </div>`;
+            }
             activateAntiTheftShields();
         }
 
         window.setTab = (t) => {
             currentTab = t;
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`tab-${t}`).classList.add('active');
+            const activeTabElement = document.getElementById(`tab-${t}`);
+            if (activeTabElement) activeTabElement.classList.add('active');
             loadHome();
         };
 
@@ -317,6 +320,15 @@
         window.loadHome = async () => {
             const main = document.getElementById('main-content');
             if (!profile) return;
+
+            // Manage Floating Add-To-Cart trigger layout visibility states
+            const floatCartBtn = document.getElementById('cart-float-btn');
+            if (profile.role === 'student') {
+                if (floatCartBtn) floatCartBtn.classList.remove('hidden');
+            } else {
+                if (floatCartBtn) floatCartBtn.classList.add('hidden');
+            }
+
             if (profile.role === 'teacher') {
                 const [contentSnap, followersSnap, courseSnap, groupSnap] = await Promise.all([
                     Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "==", profile.teacherId))),
@@ -324,16 +336,19 @@
                     Core.getDocs(Core.query(Core.collection(Core.db, "courses"), Core.where("teacherId", "==", profile.teacherId))),
                     Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId", "==", profile.teacherId)))
                 ]);
-                let totalViews = 0; contentSnap.forEach(d => totalViews += (d.data().views || 0));
+
+                let totalViews = 0; 
+                contentSnap.forEach(d => totalViews += (d.data().views || 0));
+
                 main.innerHTML = `
                 <div class="grid lg:grid-cols-4 gap-10">
                     <div class="space-y-6 lg:sticky lg:top-32 h-fit">
                         <div class="glass p-8 rounded-[3rem] border border-brandBlue/30 text-center shadow-xl">
-                            <img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-brandBlue p-1 object-cover">
+                            <img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-brandBlue p-1 object-cover bg-zinc-900">
                             <h3 class="text-xl font-black italic">${profile.name}</h3>
                             <p class="text-[10px] font-bold opacity-40 uppercase tracking-widest mb-6">${profile.teacherId}</p>
                             <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-white/5 p-4 rounded-3xl text-center"><p class="text-[9px] opacity-30 font-bold uppercase">Followers</p><p class="text-2xl font-black">${followersSnap.size}</p></div>
+                                <div class="bg-white/5 p-4 rounded-3xl text-center"><p class="text-[9px] opacity-30 font-bold uppercase">Followers</p><p class="text-2xl font-black text-brandBlue">${followersSnap.size}</p></div>
                                 <div class="bg-white/5 p-4 rounded-3xl text-center"><p class="text-[9px] opacity-30 font-bold uppercase">Views</p><p class="text-2xl font-black">${totalViews}</p></div>
                             </div>
                         </div>
@@ -345,86 +360,120 @@
                         </div>
                         <div id="teacher-action-area" class="glass p-6 rounded-[2rem] space-y-4">
                             <input id="up-t" placeholder="Title" class="input-field text-xs p-3">
-                            <input id="up-u" placeholder="URL" class="input-field text-xs p-3">
-                            <select id="up-y" class="input-field text-xs p-3"><option value="video">Video</option><option value="live">Live</option><option value="file">Material</option></select>
+                            <input id="up-u" placeholder="Resource URL / File Link" class="input-field text-xs p-3">
+                            <select id="up-y" class="input-field text-xs p-3"><option value="video">Recorded Video</option><option value="live">Live Stream</option><option value="file">File Asset / Material</option></select>
                             <button onclick="publishContent()" class="w-full py-3 btn-brand text-xs">Publish Now</button>
                         </div>
                     </div>
                     <div class="lg:col-span-3 space-y-6"><div id="tab-display" class="min-h-[500px]"></div></div>
                 </div>`;
+                
                 const box = document.getElementById('tab-display');
                 if (currentTab === 'home') {
-                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Creator Insights</h3><div class="grid md:grid-cols-3 gap-6 mb-10"><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 font-black">Uploads</p><h2 class="text-4xl font-black">${contentSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 font-black">Courses</p><h2 class="text-4xl font-black">${courseSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 font-black">Groups</p><h2 class="text-4xl font-black">${groupSnap.size}</h2></div></div><div id="feed" class="space-y-4"></div>`;
-                    renderFeed(contentSnap.docs, true);
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Creator Insights</h3><div class="grid md:grid-cols-3 gap-6 mb-10"><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 uppercase font-black">Uploads</p><h2 class="text-4xl font-black">${contentSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 uppercase font-black">Courses</p><h2 class="text-4xl font-black">${courseSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 uppercase font-black">Groups</p><h2 class="text-4xl font-black">${groupSnap.size}</h2></div></div><div id="feed" class="space-y-4"></div>`;
+                    
+                    // Sort Newest At Top using Firebase serverTimestamp dates
+                    const contentSorted = contentSnap.docs.sort((x, y) => (y.data().date?.toMillis() || 0) - (x.data().date?.toMillis() || 0));
+                    renderFeed(contentSorted, true);
                 } else if (currentTab === 'groups') {
-                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Your Hubs</h3><div id="student-groups" class="space-y-4"></div>`;
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Your Hub Communities</h3><div id="student-groups" class="space-y-4"></div>`;
                     renderGroups(groupSnap.docs, true);
                 } else if (currentTab === 'courses') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Course Catalogue</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6"></div>`;
                     renderCourses(courseSnap.docs, true);
                 } else if (currentTab === 'content') {
-                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Published Material</h3><div id="feed" class="space-y-4"></div>`;
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Published Resource Archive</h3><div id="feed" class="space-y-4"></div>`;
                     renderFeed(contentSnap.docs, true);
                 }
             } else {
                 main.innerHTML = `<div id="tab-display" class="max-w-4xl mx-auto min-h-[600px]"></div>`;
                 const box = document.getElementById('tab-display');
                 if (currentTab === 'home') {
-                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Suggested</h3><div id="suggested-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div><h3 class="text-2xl font-black italic mb-6">Updates</h3><div id="feed" class="space-y-6"></div>`;
-                    const allContent = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(6)));
-                    renderFeed(allContent.docs, false, 'suggested-feed');
-                    if (profile.subs?.length) {
-                        const subContent = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs)));
-                        renderFeed(subContent.docs, false, 'feed');
-                    }
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Suggested Framework Modules</h3><div id="suggested-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div><h3 class="text-2xl font-black italic mb-6">Updates from Following</h3><div id="feed" class="space-y-6"></div>`;
+                    
+                    const [allContent, subContent] = await Promise.all([
+                        Core.getDocs(Core.collection(Core.db, "content")),
+                        profile.subs?.length ? Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs))) : Promise.resolve({docs:[]})
+                    ]);
+                    
+                    const suggestedSorted = allContent.docs.sort((x, y) => (y.data().date?.toMillis() || 0) - (x.data().date?.toMillis() || 0)).slice(0, 4);
+                    renderFeed(suggestedSorted, false, 'suggested-feed');
+                    
+                    const subSorted = subContent.docs.sort((x, y) => (y.data().date?.toMillis() || 0) - (x.data().date?.toMillis() || 0));
+                    renderFeed(subSorted, false, 'feed');
                 } else if (currentTab === 'groups') {
                     box.innerHTML = `<div class="glass p-8 rounded-[3rem] mb-10"><h3 class="text-2xl font-black mb-4">Join Hub</h3><div class="flex gap-4"><input id="hub-code" placeholder="OC-XXXXXX" class="input-field"><button onclick="joinGroup()" class="btn-brand px-10">Join</button></div></div><div id="student-groups" class="space-y-4"></div>`;
                     loadGroups();
                 } else if (currentTab === 'courses') {
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">All Course Catalogue Units</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6"></div>`;
                     const coSnap = await Core.getDocs(Core.collection(Core.db, "courses"));
                     renderCourses(coSnap.docs, false);
                 } else if (currentTab === 'content') {
-                    if(profile.subs?.length) {
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Global Streaming Feed</h3><div id="feed" class="space-y-4"></div>`;
+                    if (profile.subs?.length) {
                         const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs)));
-                        renderFeed(snap.docs, false);
+                        const contentSorted = snap.docs.sort((x, y) => (y.data().date?.toMillis() || 0) - (x.data().date?.toMillis() || 0));
+                        renderFeed(contentSorted, false);
+                    } else {
+                        document.getElementById('feed').innerHTML = '<div class="text-center py-20 opacity-20 font-bold uppercase tracking-wider text-xs">No active content streams available</div>';
                     }
                 }
             }
         };
 
+        // --- FULLY RESTORED UNIFIED SEARCH ROUTER ENGINE ---
         window.loadSearch = async (q) => {
             const main = document.getElementById('main-content');
             if (!q) return loadHome();
             main.innerHTML = `<div class="space-y-4">${Array(3).fill('<div class="skeleton h-20 rounded-2xl opacity-10 bg-white"></div>').join('')}</div>`;
-            const [uS, cS, gS] = await Promise.all([Core.getDocs(Core.collection(Core.db, "users")), Core.getDocs(Core.collection(Core.db, "content")), Core.getDocs(Core.collection(Core.db, "groups"))]);
+            
+            const [uS, cS, gS] = await Promise.all([
+                Core.getDocs(Core.collection(Core.db, "users")),
+                Core.getDocs(Core.collection(Core.db, "content")),
+                Core.getDocs(Core.collection(Core.db, "groups"))
+            ]);
+            
             const teachers = uS.docs.filter(d => d.data().role === 'teacher' && (d.data().name.toLowerCase().includes(q.toLowerCase()) || d.data().teacherId === q));
             const content = cS.docs.filter(d => d.data().title.toLowerCase().includes(q.toLowerCase()));
             const groups = gS.docs.filter(d => d.data().code === q || d.data().name.toLowerCase().includes(q.toLowerCase()));
-            main.innerHTML = `<div class="space-y-12">${teachers.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Instructors</h3><div class="grid gap-4">${teachers.map(m => `<div onclick="viewTeacher('${m.data().teacherId}')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center cursor-pointer group"><div class="flex items-center gap-6"><img src="${m.data().photo || ''}" class="w-16 h-16 rounded-2xl object-cover bg-brandBlue shadow-lg"><div><h3 class="text-xl font-black italic">${m.data().name}</h3><p class="text-[10px] opacity-30 font-bold">${m.data().teacherId}</p></div></div><p class="text-brandBlue font-black uppercase text-[10px]">Biography →</p></div>`).join('')}</div></div>` : ''}${groups.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Groups</h3><div class="grid gap-4">${groups.map(g => `<div class="glass p-6 rounded-[2.5rem] flex justify-between items-center border border-white/5"><div><span class="text-[9px] text-brandOrange font-black uppercase tracking-widest">${g.data().type}</span><h3 class="text-xl font-black mt-1">${g.data().name}</h3><p class="text-xs opacity-50">${g.data().code}</p></div><button onclick="handleHubSearchJoin('${g.id}','${g.data().code}')" class="btn-brand px-8 py-2 text-[10px]">Access</button></div>`).join('')}</div></div>` : ''}${content.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Lessons</h3><div class="grid gap-4">${content.map(d => renderResourceCard(d, false)).join('')}</div></div>` : ''}</div>`;
+            
+            main.innerHTML = `
+            <div class="space-y-12 animate-in fade-in duration-300">
+                ${teachers.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Instructors</h3><div class="grid gap-4">${teachers.map(m => `
+                    <div onclick="navigate('profile', '${m.data().teacherId}')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center cursor-pointer hover:border-brandBlue/40 transition-all group">
+                        <div class="flex items-center gap-6"><img src="${m.data().photo || 'https://ui-avatars.com/api/?name='+m.data().name}" class="w-16 h-16 rounded-2xl object-cover bg-brandBlue shadow-lg">
+                        <div><h3 class="text-xl font-black italic tracking-tighter">${m.data().name}</h3><p class="text-[10px] opacity-30 font-bold">${m.data().teacherId}</p></div></div>
+                        <p class="text-brandBlue font-black uppercase text-[10px]">Biography →</p></div>`).join('')}</div></div>` : ''}
+                
+                ${groups.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Groups</h3><div class="grid gap-4">${groups.map(g => `
+                    <div class="glass p-6 rounded-[2.5rem] flex justify-between items-center border border-white/5">
+                        <div><span class="text-[9px] text-brandOrange font-black uppercase tracking-widest">${g.data().type}</span><h3 class="text-xl font-black mt-1">${g.data().name}</h3><p class="text-xs opacity-50">${g.data().code}</p></div>
+                        <button onclick="handleHubSearchJoin('${g.id}','${g.data().code}')" class="btn-brand px-8 py-2 text-[10px]">Access</button></div>`).join('')}</div></div>` : ''}
+                
+                ${content.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Lessons</h3><div class="grid gap-4">${content.map(d => renderResourceCard(d, false)).join('')}</div></div>` : ''}
+                
+                ${!teachers.length && !groups.length && !content.length ? '<div class="text-center py-20 opacity-20 font-black uppercase tracking-widest text-xs">No records found matching search queries</div>' : ''}
+            </div>`;
         };
 
-        window.handleHubSearchJoin = (id, code) => { setTab('groups'); setTimeout(() => { document.getElementById('hub-code').value = code; joinGroup(); }, 500); };
+        window.handleHubSearchJoin = (id, code) => { setTab('groups'); setTimeout(() => { document.getElementById('hub-code').value = code; joinGroup(); }, 400); };
 
         window.switchTeacherView = async (v) => {
             document.querySelectorAll('.teacher-grid-btn').forEach(btn => btn.classList.remove('grid-btn-active'));
-            document.getElementById(`btn-${v}`).classList.add('grid-btn-active');
+            const targetEl = document.getElementById(`btn-${v}`);
+            if(targetEl) targetEl.classList.add('grid-btn-active');
+            
             const area = document.getElementById('teacher-action-area');
             if (v === 'create') area.innerHTML = `<select id="group-type" class="input-field text-xs p-3 mb-2"><option value="public">Public</option><option value="private">Private</option></select><input id="group-name" placeholder="Hub Name" class="input-field text-xs p-3 mb-4"><button onclick="createGroup()" class="w-full py-3 btn-brand text-xs">Create Hub</button>`;
-            else if (v === 'course') area.innerHTML = `<input id="c-title" placeholder="Course Title" class="input-field text-xs p-3 mb-2"><textarea id="c-desc" placeholder="Details" class="input-field h-24 text-xs p-3 mb-2"></textarea><div id="course-vids" class="space-y-2"><div class="flex gap-2"><input placeholder="Video Title" class="input-field text-xs p-3 cv-t"><input placeholder="YouTube Link" class="input-field text-xs p-3 cv-u"><button onclick="addVidField()" class="bg-brandOrange text-white px-4 rounded-xl font-bold">+</button></div></div><input id="c-price" placeholder="Price ₹" class="input-field text-xs p-3 mt-2 mb-2"><button onclick="launchCourse()" class="w-full py-3 btn-brand text-xs">Launch</button>`;
-            else if (v === 'publish') area.innerHTML = `<input id="up-t" placeholder="Title" class="input-field text-xs p-3 mb-2"><input id="up-u" placeholder="URL" class="input-field text-xs p-3 mb-2"><select id="up-y" class="input-field text-xs p-3 mb-2"><option value="video">Video</option><option value="live">Live</option><option value="file">Material</option></select><button onclick="publishContent()" class="w-full py-3 btn-brand text-xs">Publish Now</button>`;
+            else if (v === 'course') area.innerHTML = `<input id="c-title" placeholder="Course Title" class="input-field text-xs p-3 mb-2"><textarea id="c-desc" placeholder="Details" class="input-field h-24 text-xs p-3 mb-2"></textarea><input id="c-url" placeholder="Main Video Playlist/Video URL" class="input-field text-xs p-3 mb-2"><input id="c-price" placeholder="Price ₹" class="input-field text-xs p-3 mb-2"><button onclick="launchCourse()" class="w-full py-3 btn-brand text-xs">Launch Course</button>`;
+            else if (v === 'publish') area.innerHTML = `<input id="up-t" placeholder="Title" class="input-field text-xs p-3 mb-2"><input id="up-u" placeholder="Resource Stream Target URL" class="input-field text-xs p-3 mb-2"><select id="up-y" class="input-field text-xs p-3 mb-2"><option value="video">Recorded Video</option><option value="live">Live Stream</option><option value="file">File Asset / Material</option></select><button onclick="publishContent()" class="w-full py-3 btn-brand text-xs">Publish Now</button>`;
             else if (v === 'requests') {
-                area.innerHTML = `<div id="request-list" class="space-y-3 mt-4 text-[10px] opacity-30 text-center font-bold">Scanning...</div>`;
+                area.innerHTML = `<div id="request-list" class="space-y-3 mt-4 text-[10px] opacity-30 text-center font-bold">Scanning Area...</div>`;
                 const groups = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId", "==", profile.teacherId)));
                 let html = '';
-                groups.forEach(g => { const d = g.data(); if(d.pending?.length) d.pending.forEach(p => { html += `<div class="bg-white/5 p-4 rounded-xl flex flex-col gap-2 border border-white/5"><div><p class="text-[8px] text-brandOrange font-black">${d.name}</p><p class="font-bold text-[10px]">${p.name}</p></div><div class="flex gap-2"><button onclick="modReq('${g.id}','${p.uid}','${p.name}',true)" class="flex-1 py-1.5 bg-green-600 rounded-lg text-[8px] font-black">Accept</button><button onclick="modReq('${g.id}','${p.uid}','${p.name}',false)" class="flex-1 py-1.5 bg-red-600 rounded-lg text-[8px] font-black">Deny</button></div></div>`; }); });
-                document.getElementById('request-list').innerHTML = html || 'No Requests';
+                groups.forEach(g => { const d = g.data(); if(d.pending?.length) d.pending.forEach(p => { html += `<div class="bg-white/5 p-4 rounded-xl flex flex-col gap-2 border border-white/5"><div><p class="text-[8px] text-brandOrange font-black">${d.name}</p><p class="font-bold text-[10px]">${p.name}</p></div><div class="flex gap-2"><button onclick="modReq('${g.id}','${p.uid}','${p.name}',true)" class="flex-1 py-1.5 bg-green-600 rounded-lg text-[8px] font-black text-white">Accept</button><button onclick="modReq('${g.id}','${p.uid}','${p.name}',false)" class="flex-1 py-1.5 bg-red-600 rounded-lg text-[8px] font-black text-white">Deny</button></div></div>`; }); });
+                document.getElementById('request-list').innerHTML = html || 'No Pending Verification Invitations';
             }
-        };
-
-        window.addVidField = () => {
-            const div = document.createElement('div'); div.className = "flex gap-2";
-            div.innerHTML = `<input placeholder="Video Title" class="input-field text-xs p-3 cv-t"><input placeholder="YouTube Link" class="input-field text-xs p-3 cv-u"><button onclick="this.parentElement.remove()" class="bg-red-500/20 text-red-500 px-4 rounded-xl font-bold">×</button>`;
-            document.getElementById('course-vids').appendChild(div);
         };
 
         window.modReq = async (gid, uid, name, accept) => { const ref = Core.doc(Core.db, "groups", gid); if(accept) await Core.updateDoc(ref, { members: Core.arrayUnion(uid), pending: Core.arrayRemove({ uid, name }) }); else await Core.updateDoc(ref, { pending: Core.arrayRemove({ uid, name }) }); switchTeacherView('requests'); };
@@ -434,7 +483,7 @@
             if (isSignup) {
                 tempUser = { e, p, n: document.getElementById('reg-name').value, r: document.getElementById('reg-role').value };
                 otpCode = Math.floor(100000 + Math.random() * 900000);
-                try { await Core.sendOTP(e, otpCode); document.getElementById('verify-note').innerText = `OTP to ${e}`; showScreen('verify-screen'); } catch(err) { toast("Email Error", "error"); }
+                try { await Core.sendOTP(e, otpCode); document.getElementById('verify-note').innerText = `Verification string target sent to ${e}`; showScreen('verify-screen'); } catch(err) { toast("Email Notification Transmission Failure", "error"); }
             } else { try { await Core.signInWithEmailAndPassword(Core.auth, e, p); } catch (err) { toast(err.message, "error"); } }
         };
 
@@ -446,7 +495,7 @@
                     await Core.setDoc(Core.doc(Core.db, "users", cred.user.uid), { name: n, role: r, teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), email: e, subs: [], photo: "", joined: new Date().toLocaleDateString() });
                     location.reload();
                 } catch(err) { toast(err.message, "error"); }
-            } else toast("Wrong Code", "error");
+            } else toast("Validation Code Error Match", "error");
         };
 
         window.toggleAuth = () => { isSignup = !isSignup; document.getElementById('signup-fields').classList.toggle('hidden'); document.getElementById('primary-auth-btn').innerText = isSignup ? "Verify Email" : "Sign In"; document.getElementById('toggle-auth-btn').innerText = isSignup ? "Already have account? Login" : "Create Profile"; };
@@ -455,7 +504,7 @@
 
         window.finalizeProfile = async () => {
             const n = document.getElementById('ob-name').value, p = document.getElementById('ob-pass').value, r = document.getElementById('ob-role').value;
-            if (!n || !p) return toast("Empty fields", "error");
+            if (!n || !p) return toast("Required framework fields empty", "error");
             try {
                 await Core.updatePassword(Core.auth.currentUser, p);
                 await Core.setDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { name: n, role: r, teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), email: Core.auth.currentUser.email, subs: [], photo: Core.auth.currentUser.photoURL || "" });
@@ -464,84 +513,100 @@
         };
 
         window.createGroup = async () => {
-            const n = document.getElementById('group-name').value; if (!n) return toast("Enter Name");
+            const n = document.getElementById('group-name').value; if (!n) return toast("Enter Name parameters");
             const c = "OC-" + Math.random().toString(36).substring(2, 8).toUpperCase();
             await Core.addDoc(Core.collection(Core.db, "groups"), { name: n, type: document.getElementById('group-type').value, code: c, teacherId: profile.teacherId, teacherName: profile.name, members: [Core.auth.currentUser.uid], pending: [], createdAt: Core.serverTimestamp() });
-            toast(`Created: ${c}`); loadHome();
+            toast(`Created Community: ${c}`); loadHome();
         };
 
         window.launchCourse = async () => {
-            const t = document.getElementById('c-title').value, d = document.getElementById('c-desc').value, p = document.getElementById('c-price').value;
-            const vt = Array.from(document.querySelectorAll('.cv-t')).map(i => i.value);
-            const vu = Array.from(document.querySelectorAll('.cv-u')).map(i => i.value);
-            if (!t || !vu[0]) return toast("Required Fields Missing", "error");
-            const playlist = vt.map((title, i) => ({ title, url: vu[i] }));
-            const code = "HUB-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-            const gRef = await Core.addDoc(Core.collection(Core.db, "groups"), { 
-                name: `${t} (Community)`, type: 'private', code, teacherId: profile.teacherId, teacherName: profile.name, members: [Core.auth.currentUser.uid], pending: [], createdAt: Core.serverTimestamp() 
-            });
-            await Core.addDoc(Core.collection(Core.db, "courses"), { 
-                title: t, description: d, thumbnail: Core.getThumbnail(vu[0]), playlist, price: p, teacherId: profile.teacherId, teacherName: profile.name, groupId: gRef.id, createdAt: Core.serverTimestamp() 
-            });
-            toast("Course & Community Hub Launched!"); loadHome();
+            const t = document.getElementById('c-title').value, u = document.getElementById('c-url').value, p = document.getElementById('c-price').value;
+            if (!t || !u) return toast("Required parameters missing", "error");
+            const th = Core.getThumbnail(u);
+            await Core.addDoc(Core.collection(Core.db, "courses"), { title: t, description: document.getElementById('c-desc').value, thumbnail: th, playlistUrl: u, price: p, teacherId: profile.teacherId, teacherName: profile.name, createdAt: Core.serverTimestamp() });
+            toast("SaaS Course Module Launched!"); loadHome();
         };
 
         window.joinGroup = async () => {
             const c = (document.getElementById('hub-code')?.value || document.getElementById('g-search').value).trim().toUpperCase();
             const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("code", "==", c)));
-            if (snap.empty) return toast("Not Found", "error");
+            if (snap.empty) return toast("Hub Community profile missing", "error");
             const g = snap.docs[0], d = g.data();
-            if (d.members.includes(Core.auth.currentUser.uid)) return toast("Already In");
+            if (d.members.includes(Core.auth.currentUser.uid)) return toast("Already dynamic member layer");
             if (d.type === 'public') await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
             else await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { pending: Core.arrayUnion({ uid: Core.auth.currentUser.uid, name: profile.name }) });
-            toast("Requested"); loadHome();
+            toast("Sync Access Connection requested"); loadHome();
         };
 
-        window.openResource = async (id, url, title) => {
+        window.openResource = async (id, url, title, type = 'video') => {
             if(id && id !== 'null') await Core.updateDoc(Core.doc(Core.db, "content", id), { views: Core.increment(1) });
-            let vid = "";
-            if (url.includes('v=')) vid = url.split('v=')[1].split('&')[0];
-            else if (url.includes('youtu.be/')) vid = url.split('/').pop().split('?')[0];
-            else if (url.includes('/live/')) vid = url.split('/live/')[1].split('?')[0];
-            document.getElementById('media-vault').classList.remove('hidden');
-            setupPlayer(vid, { title, link: url });
+            
+            // Universal Resource Router Engine (Fix for images, external links, PDFs)
+            if (type === 'file' || (!url.includes('youtube.com') && !url.includes('youtu.be') && !url.includes('v='))) {
+                document.getElementById('media-vault').classList.remove('hidden');
+                setupFilePreview(url);
+            } else {
+                let vid = "";
+                if (url.includes('v=')) vid = url.split('v=')[1].split('&')[0];
+                else if (url.includes('youtu.be/')) vid = url.split('/').pop().split('?')[0];
+                else if (url.includes('/live/')) vid = url.split('/live/')[1].split('?')[0];
+                document.getElementById('media-vault').classList.remove('hidden');
+                setupPlayer(vid, { title, link: url });
+            }
         };
 
         window.openCourse = async (id) => {
             const snap = await Core.getDoc(Core.doc(Core.db, "courses", id));
             const c = snap.data();
-            const isT = c.teacherId === profile.teacherId;
-            const content = document.getElementById('modal-content');
-            content.innerHTML = `
-                <img src="${c.thumbnail}" class="w-full h-48 object-cover rounded-3xl mb-6 shadow-2xl">
-                <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-black italic text-brandOrange">${c.title}</h2>${isT ? `<button onclick="delC('${id}')" class="text-red-500 font-black uppercase text-[10px]">Delete</button>` : ''}</div>
-                <p class="opacity-70 mb-6 text-xs">${c.description}</p>
-                <div class="space-y-3 mb-8">
-                    <p class="text-[9px] font-black uppercase opacity-40">Course Playlist</p>
-                    ${c.playlist.map((v, i) => `
-                        <div onclick="openResource('null','${v.url}','${v.title}')" class="bg-white/5 p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-white/10 border border-white/5">
-                            <p class="text-xs font-bold">${i+1}. ${v.title}</p>
-                            <span class="text-[10px] text-brandOrange font-black uppercase tracking-tighter">Play</span>
-                        </div>
-                    `).join('')}
-                </div>
-                <div class="flex gap-4">
-                    <button onclick="enrollCourse('${id}','${c.groupId}')" class="flex-1 py-5 btn-brand shadow-xl">Enroll (₹${c.price})</button>
-                </div>
-            `;
+            document.getElementById('modal-content').innerHTML = `
+                <img src="${c.thumbnail}" class="w-full h-60 object-cover rounded-3xl mb-6 shadow-2xl">
+                <div class="flex justify-between items-center mb-4"><h2 class="text-3xl font-black italic text-brandOrange">${c.title}</h2>${c.teacherId === profile.teacherId ? `<button onclick="delC('${id}')" class="text-red-500 font-black uppercase text-[10px]">Delete</button>` : ''}</div>
+                <p class="opacity-70 mb-6 text-sm">${c.description || 'Premium syllabus outline workspace archive content.'}</p>
+                <div class="flex justify-between items-center mb-6"><div><p class="text-xs opacity-40">Instructor</p><h4 class="font-black">${c.teacherName}</h4></div><div class="text-right"><p class="text-xs opacity-40">Course Value</p><h3 class="text-2xl font-black text-brandOrange">₹${c.price}</h3></div></div>
+                <div class="flex gap-3">
+                    <button onclick="addToCart('${id}', '${c.title}', '${c.price}')" class="flex-1 py-4 bg-zinc-800 rounded-xl font-bold uppercase text-[10px] tracking-wider hover:bg-zinc-700 transition-all">Add to Cart</button>
+                    <button onclick="openResource('null','${c.playlistUrl}','${c.title}','video')" class="flex-1 py-4 btn-brand text-[10px]">Instant Access</button>
+                </div>`;
             document.getElementById('custom-modal').classList.remove('hidden');
         };
 
-        window.enrollCourse = async (cid, gid) => {
-            await Core.updateDoc(Core.doc(Core.db, "groups", gid), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
-            toast("Payment Simulated! Enrolled in Course and Hub.");
+        // --- HARDENED SIMULATED TRANSACTION CART LOGIC ---
+        window.addToCart = (id, title, price) => {
+            const exists = localCart.some(item => item.id === id);
+            if (exists) return toast("Item module already added in active cart context", "error");
+            localCart.push({ id, title, price });
+            toast(`Added "${title}" to your Shopping Cart workspace`);
             document.getElementById('custom-modal').classList.add('hidden');
         };
 
-        window.delC = async (id) => { if(confirm("Delete?")) { await Core.deleteDoc(Core.doc(Core.db,"courses",id)); document.getElementById('custom-modal').classList.add('hidden'); loadHome(); } };
+        window.renderCartModal = () => {
+            const content = document.getElementById('modal-content');
+            let grandTotal = 0;
+            
+            content.innerHTML = `
+                <h3 class="text-2xl font-black mb-6 italic tracking-tight text-brandOrange">Shopping Cart Workspace</h3>
+                <div class="space-y-3 mb-6 max-h-48 overflow-y-auto pr-1">
+                    ${localCart.map((item, index) => {
+                        grandTotal += parseFloat(item.price || 0);
+                        return `
+                        <div class="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5">
+                            <div><p class="font-bold text-sm text-zinc-800 dark:text-zinc-200">${item.title}</p><p class="text-xs text-brandOrange font-bold">₹${item.price}</p></div>
+                            <button onclick="localCart.splice(${index}, 1); renderCartModal();" class="text-xs text-red-500 hover:scale-110 transition-all p-2">✕</button>
+                        </div>`;
+                    }).join('') || '<div class="text-center py-8 opacity-20 font-bold uppercase tracking-wider text-xs">No course catalog blocks selected</div>'}
+                </div>
+                <div class="flex justify-between items-center font-bold border-t border-white/5 pt-4 mb-6"><p class="text-sm opacity-50">Grand Total Value</p><p class="text-2xl text-brandOrange">₹${grandTotal}</p></div>
+                <div class="flex gap-3">
+                    <button onclick="document.getElementById('custom-modal').classList.add('hidden')" class="flex-1 py-4 bg-zinc-800 rounded-xl font-bold uppercase text-[10px]">Keep Exploring</button>
+                    <button onclick="localCart=[]; document.getElementById('custom-modal').classList.add('hidden'); toast('SaaS Simulated checkout processed successfully'); loadHome();" class="flex-1 py-4 btn-brand text-[10px]" ${localCart.length === 0 ? 'disabled' : ''}>Complete Checkout</button>
+                </div>`;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        };
+
+        window.delC = async (id) => { if(confirm("Delete catalog item?")) { await Core.deleteDoc(Core.doc(Core.db,"courses",id)); document.getElementById('custom-modal').classList.add('hidden'); loadHome(); } };
 
         function renderFeed(docs, isT, target = 'feed') { 
-            const container = document.getElementById(target) || document.getElementById('tab-display');
+            const container = document.getElementById(target);
             if (container) container.innerHTML = docs.map(d => renderResourceCard(d, isT)).join(''); 
         }
 
@@ -549,23 +614,28 @@
             const container = document.getElementById('courses-feed') || document.getElementById('tab-display');
             if (container) container.innerHTML = `<div class="grid md:grid-cols-2 gap-6">${docs.map(doc => {
                 const c = doc.data();
-                return `<div class="glass p-6 rounded-[2.5rem] border border-white/5"><img src="${c.thumbnail}" class="w-full h-52 object-cover rounded-2xl mb-4"><div><h2 class="text-xl font-black italic mb-2">${c.title}</h2><div class="flex justify-between items-center"><h3 class="text-lg font-black text-brandOrange">₹${c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2 text-xs">View Course</button></div></div></div>`;
+                return `<div class="glass p-6 rounded-[2.5rem] border border-white/5 group hover:border-brandOrange/30 transition-all"><img src="${c.thumbnail}" class="w-full h-52 object-cover rounded-2xl mb-4 shadow-md"><div><h2 class="text-xl font-black italic mb-2 truncate">${c.title}</h2><div class="flex justify-between items-center"><h3 class="text-lg font-black text-brandOrange">₹${c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2 text-xs">Explore Card</button></div></div></div>`;
             }).join('')}</div>`;
         }
 
         function renderResourceCard(d, isT) {
             const i = d.data();
-            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative"><img src="${Core.getThumbnail(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md">${i.type === 'live' ? '<span class="absolute top-2 left-2 bg-red-600 text-[8px] font-black px-2 py-0.5 rounded-full animate-pulse">LIVE</span>' : ''}</div><div><h4 class="font-black text-lg italic truncate">${i.title}</h4><p class="text-[9px] opacity-40 uppercase font-bold">${i.tName} • ${i.views || 0} Views</p></div></div><div class="flex gap-2 w-full md:w-auto"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand light:bg-brandOrange dark:bg-white light:text-white dark:text-black px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Watch</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
+            let displayThumbnail = Core.getThumbnail(i.url);
+            if (i.type === 'file') {
+                displayThumbnail = "https://images.unsplash.com/photo-1568667256549-094345857637?auto=format&fit=crop&w=300&q=80";
+            }
+            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative"><img src="${displayThumbnail}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md">${i.type === 'live' ? '<span class="absolute top-2 left-2 bg-red-600 text-[8px] font-black px-2 py-0.5 rounded-full animate-pulse">LIVE</span>' : ''}</div><div><h4 class="font-black text-lg italic truncate max-w-xs">${i.title}</h4><p class="text-[9px] opacity-40 uppercase font-bold">${i.tName} • ${i.views || 0} Views</p></div></div><div class="flex gap-2 w-full md:w-auto"><button onclick="openResource('${d.id}','${i.url}','${i.title}','${i.type}')" class="flex-grow md:flex-none bg-white light:bg-zinc-200 text-black px-10 py-3 rounded-2xl font-black text-[10px] uppercase tracking-wider">Watch</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
         }
-        window.delR = async (id) => { if(confirm("Delete?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); loadHome(); } };
-        window.editR = (id,t,u) => { document.getElementById('modal-content').innerHTML = `<h3 class="text-xl font-black mb-4 italic">Edit Content</h3><input id="ed-t" value="${t}" class="input-field mb-2 text-xs"><input id="ed-u" value="${u}" class="input-field mb-4 text-xs"><button onclick="saveR('${id}')" class="w-full py-4 btn-brand text-xs">Save Changes</button>`; document.getElementById('custom-modal').classList.remove('hidden'); };
+
+        window.delR = async (id) => { if(confirm("Delete asset content block?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); loadHome(); } };
+        window.editR = (id,t,u) => { document.getElementById('modal-content').innerHTML = `<h3 class="text-xl font-black mb-4">Edit Resource Block</h3><input id="ed-t" value="${t}" class="input-field mb-2 text-xs"><input id="ed-u" value="${u}" class="input-field mb-4 text-xs"><button onclick="saveR('${id}')" class="w-full py-4 btn-brand text-xs">Save Changes</button>`; document.getElementById('custom-modal').classList.remove('hidden'); };
         window.saveR = async (id) => { await Core.updateDoc(Core.doc(Core.db,"content",id), {title:document.getElementById('ed-t').value, url:document.getElementById('ed-u').value}); document.getElementById('custom-modal').classList.add('hidden'); loadHome(); };
 
         window.publishContent = async () => {
             const t = document.getElementById('up-t').value, u = document.getElementById('up-u').value, y = document.getElementById('up-y').value;
-            if (!t || !u) return toast("Fill fields", "error");
+            if (!t || !u) return toast("Resource payload fields empty", "error");
             await Core.addDoc(Core.collection(Core.db, "content"), { title: t, url: u, type: y, tId: profile.teacherId, tName: profile.name, views: 0, date: Core.serverTimestamp() });
-            toast("Posted!"); loadHome();
+            toast("Success asset loading distributed"); loadHome();
         };
 
         window.openGroupChat = (id, name) => {
@@ -575,7 +645,7 @@
             Core.onSnapshot(q, (snap) => {
                 document.getElementById('group-chat-messages').innerHTML = snap.docs.map(m => {
                     const d = m.data(); const isM = d.senderId === Core.auth.currentUser.uid;
-                    return `<div class="flex ${isM ? 'flex-row-reverse' : 'flex-row'} items-end gap-3"><img src="${d.senderPhoto || 'https://ui-avatars.com/api/?name='+d.sender}" class="w-8 h-8 rounded-full border border-white/10"><div class="flex flex-col ${isM ? 'items-end' : 'items-start'}"><p class="text-[8px] opacity-40 uppercase font-black px-2 mb-1 text-zinc-500">${d.sender}</p><div class="inline-block p-4 rounded-2xl ${isM ? 'bg-brandOrange text-white' : 'bg-white/10'} text-sm shadow-xl">${d.text}</div></div></div>`;
+                    return `<div class="flex ${isM ? 'flex-row-reverse' : 'flex-row'} items-end gap-3"><img src="${d.senderPhoto || 'https://ui-avatars.com/api/?name='+d.sender}" class="w-8 h-8 rounded-full border border-white/10 shadow-lg"><div class="flex flex-col ${isM ? 'items-end' : 'items-start'}"><p class="text-[8px] opacity-40 uppercase font-black px-2 mb-1 text-zinc-500">${d.sender}</p><div class="inline-block p-4 rounded-2xl ${isM ? 'bg-brandOrange text-white' : 'bg-white/10'} text-sm shadow-xl">${d.text}</div></div></div>`;
                 }).join('');
                 document.getElementById('group-chat-messages').scrollTop = 99999;
             });
@@ -588,22 +658,46 @@
             i.value = '';
         };
 
+        // --- STABLE GEMINI CHAT STRUCTURAL MAPPING ---
         window.sendAIMessage = async () => {
-            const i = document.getElementById('ai-input'), m = i.value.trim();
+            const i = document.getElementById('ai-dock-hub').querySelector('#ai-input') || document.getElementById('ai-input');
+            const m = i.value.trim();
             if (!m) return;
             const chat = document.getElementById('ai-messages');
-            chat.innerHTML += `<div class="ml-auto bg-brandOrange text-white p-4 rounded-2xl max-w-[80%] text-sm">${m}</div>`;
+            chat.innerHTML += `<div class="ml-auto bg-brandOrange text-white p-4 rounded-2xl max-w-[80%] text-sm shadow-xl">${m}</div>`;
             i.value = '';
-            const context = `User: ${profile?.name}. Current Video: ${currentVideoContext ? currentVideoContext.title : 'None'}.`;
+            
+            let assetUrlContext = "None loaded currently.";
+            if (currentVideoContext && currentVideoContext.link) {
+                assetUrlContext = `Target context resource location: "${currentVideoContext.title}" available at direct link vector: ${currentVideoContext.link}`;
+            }
+
+            const frameIdentityContext = `Account User profile name: ${profile?.name}. Current view tab workspace position: Tab ${currentTab}. ${assetUrlContext}`;
+            
+            // Fixed correct query format matching strict generative object structure arrays
+            const verifiedPayloadStructure = {
+                contents: [{
+                    role: "user",
+                    parts: [{
+                        text: `Context parameters mapping framework: ${frameIdentityContext}. Core Directives: You are OpenClass AI. Keep outputs exceptionally structured, small, concise, productive, and simple. Query value parameter string input: ${m}`
+                    }]
+                }]
+            };
+
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${aiConfig.geminiKey}`, {
-                    method: "POST", headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: `${context} Answer: ${m}` }] }] })
+                    method: "POST", 
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(verifiedPayloadStructure)
                 });
                 const data = await res.json();
-                chat.innerHTML += `<div class="bg-white/10 p-4 rounded-2xl max-w-[80%] text-sm">${data.candidates[0].content.parts[0].text}</div>`;
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    chat.innerHTML += `<div class="bg-white/10 p-4 rounded-2xl max-w-[80%] text-sm shadow-xl border border-white/5">${data.candidates[0].content.parts[0].text}</div>`;
+                } else {
+                    chat.innerHTML += `<div class="bg-white/5 text-xs p-4 rounded-xl opacity-40">Conversational frame loading error tracking parameter fallback context match.</div>`;
+                }
                 chat.scrollTop = chat.scrollHeight;
-            } catch (e) { toast("AI Offline", "error"); }
+            } catch (e) { toast("AI Framework offline communication tracing fault", "error"); }
         };
 
         window.viewTeacher = async (tId) => {
@@ -611,7 +705,7 @@
             const [uS, cS, coS] = await Promise.all([Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId", "==", tId))), Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "==", tId))), Core.getDocs(Core.query(Core.collection(Core.db, "courses"), Core.where("teacherId", "==", tId)))]);
             if(uS.empty) return navigate('home');
             const tD = uS.docs[0].data(), isF = profile.subs?.includes(tId);
-            main.innerHTML = `<div class="space-y-10"><div class="glass p-10 rounded-[4rem] border border-brandBlue/30 flex flex-col md:flex-row justify-between items-center gap-10 shadow-2xl"><div class="flex items-center gap-8"><img src="${tD.photo || ''}" class="w-24 h-24 rounded-full border-4 border-brandBlue object-cover bg-brandBlue shadow-2xl"><div><h2 class="text-4xl font-black italic tracking-tighter">${tD.name}</h2><p class="text-sm font-bold text-brandBlue uppercase opacity-60">${tD.teacherId}</p></div></div><button onclick="handleSub('${tId}', ${isF})" class="px-10 py-4 ${isF ? 'bg-zinc-800' : 'btn-brand'} rounded-2xl font-black text-xs uppercase">${isF ? 'Unfollow' : 'Follow'}</button></div><h3 class="text-2xl font-black mb-6">Courses</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div><h3 class="text-2xl font-black mb-6">Lessons</h3><div id="feed" class="space-y-4"></div></div>`;
+            main.innerHTML = `<div class="space-y-10"><div class="glass p-10 rounded-[4rem] border border-brandBlue/30 flex flex-col md:flex-row justify-between items-center gap-10 shadow-2xl"><div class="flex items-center gap-8"><img src="${tD.photo || 'https://ui-avatars.com/api/?name='+tD.name}" class="w-24 h-24 rounded-full border-4 border-brandBlue object-cover bg-zinc-900 shadow-2xl"><div><h2 class="text-4xl font-black italic tracking-tighter">${tD.name}</h2><p class="text-sm font-bold text-brandBlue uppercase opacity-60">${tD.teacherId}</p></div></div><button onclick="handleSub('${tId}', ${isF})" class="px-10 py-4 ${isF ? 'bg-zinc-800' : 'btn-brand'} rounded-2xl font-black text-xs uppercase">${isF ? 'Unfollow' : 'Follow'}</button></div><h3 class="text-2xl font-black mb-6">Courses</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div><h3 class="text-2xl font-black mb-6">Lessons</h3><div id="feed" class="space-y-4"></div></div>`;
             renderFeed(cS.docs, false); renderCourses(coS.docs);
         };
 
@@ -643,7 +737,7 @@
             document.getElementById('media-vault').classList.add('hidden'); 
             currentVideoContext = null; 
             if(window._disengageShields) window._disengageShields();
-            if(videoPlayer) videoPlayer.destroy(); 
+            if(videoPlayer && typeof videoPlayer.destroy === 'function') videoPlayer.destroy(); 
         };
         
         function showScreen(id) { ['auth-screen', 'verify-screen', 'onboarding-screen', 'dashboard'].forEach(s => document.getElementById(s).classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
