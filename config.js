@@ -16,5 +16,5 @@ export const emailConfig = {
 };
 
 export const aiConfig = {
-    geminiKey: "AIzaSyCqBDOMptlRVgh4JET7IjVs0axXSUqQKlE"
+    geminiKey: "AIzaSyBaCaZufr9ho2acn5GiQwmdyFmXzysMN8M"
 };
