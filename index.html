@@ -68,6 +68,9 @@
         .plyr--fullscreen-active #anti-theft-blank { display: none; z-index: 2147483647 !important; }
         .plyr--fullscreen-active #secure-watermark { z-index: 2147483646 !important; }
 
+        .search-container { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 40px; }
+        .search-container.expanded { width: 280px; }
+
         @keyframes popUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -75,6 +78,7 @@
     <div id="toast-box"></div>
 
     <div id="custom-modal" class="hidden fixed inset-0 z-[2500] bg-black/95 backdrop-blur-md flex items-center justify-center p-6">
+        <div class="absolute top-6 left-6 text-white/50 cursor-pointer hover:text-white font-bold flex items-center gap-2" onclick="closeCustomModal()">← BACK</div>
         <div id="modal-content" class="w-full max-w-xl glass p-10 rounded-[3rem] border border-brandOrange/20 shadow-2xl overflow-y-auto max-h-[90vh]"></div>
     </div>
 
@@ -92,6 +96,7 @@
     <div id="group-chat-window" class="hidden fixed inset-0 bg-black/95 z-[6000] flex flex-col">
         <div class="p-5 glass flex justify-between items-center border-b border-white/5">
             <div class="flex items-center gap-4">
+                <button class="text-white/50 hover:text-white mr-2" onclick="closeGroupChat()">← BACK</button>
                 <h2 id="group-chat-title" class="text-2xl font-black italic">Group</h2>
                 <button id="group-roster-btn" class="text-xs font-bold text-brandOrange uppercase border border-brandOrange/20 px-3 py-1 rounded-lg hover:bg-brandOrange/10">Manage Members</button>
             </div>
@@ -140,41 +145,41 @@
         </div>
 
         <div id="dashboard" class="hidden min-h-screen flex flex-col">
-            <nav class="p-5 glass border-b border-white/5 sticky top-0 z-[1000] flex flex-col md:flex-row gap-6 justify-between px-10 items-center">
-                <div class="flex items-center gap-4 cursor-pointer" onclick="navigate('home')">
-                    <img src="https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg" class="h-10 rounded-xl">
-                    <h2 class="text-2xl font-black italic tracking-tighter">Open<span class="text-brandOrange">Class</span></h2>
+            <nav class="p-5 glass border-b border-white/5 sticky top-0 z-[1000] flex flex-row gap-4 justify-between px-6 md:px-10 items-center">
+                <div class="flex items-center gap-3 cursor-pointer select-none" onclick="navigate('home')" id="nav-branding-block">
+                    <img src="https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg" class="h-8 md:h-10 rounded-xl">
+                    <h2 class="text-xl md:text-2xl font-black italic tracking-tighter">Open<span class="text-brandOrange">Class</span></h2>
                 </div>
                 
-                <div class="flex gap-1 glass p-1 rounded-2xl">
-                    <button id="tab-home" onclick="setTab('home')" class="tab-btn active">Home</button>
-                    <button id="tab-groups" onclick="setTab('groups')" class="tab-btn">Groups</button>
-                    <button id="tab-courses" onclick="setTab('courses')" class="tab-btn">Courses</button>
-                    <button id="tab-content" onclick="setTab('content')" class="tab-btn">Content</button>
+                <div class="flex gap-0.5 md:gap-1 glass p-1 rounded-2xl" id="nav-tabs-block">
+                    <button id="tab-home" onclick="setTab('home')" class="tab-btn active px-2.5 md:px-5 py-2">Home</button>
+                    <button id="tab-groups" onclick="setTab('groups')" class="tab-btn px-2.5 md:px-5 py-2">Groups</button>
+                    <button id="tab-courses" onclick="setTab('courses')" class="tab-btn px-2.5 md:px-5 py-2">Courses</button>
+                    <button id="tab-content" onclick="setTab('content')" class="tab-btn px-2.5 md:px-5 py-2">Content</button>
                 </div>
 
-                <div class="flex items-center gap-4 md:gap-6 w-full md:w-auto justify-between md:justify-end relative">
-                    <div class="relative w-full md:w-64 group hidden sm:block">
-                        <div class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="8" cy="8" r="6" /><path d="M13 13l4 4" /></svg></div>
-                        <input type="text" id="g-search" oninput="reactiveSearch(this.value)" placeholder="Search campus..." class="input-field rounded-2xl pl-12 pr-6 py-2.5 text-sm w-full">
+                <div class="flex items-center gap-3 md:gap-4 justify-end relative z-10">
+                    <div class="search-container relative flex items-center h-10 overflow-hidden rounded-2xl bg-white/5 border border-white/10" id="search-wrapper-node">
+                        <button onclick="toggleExpandableSearch()" class="w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-white shrink-0 outline-none">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="8" cy="8" r="6" /><path d="M13 13l4 4" /></svg>
+                        </button>
+                        <input type="text" id="g-search" oninput="reactiveSearch(this.value)" placeholder="Search campus..." class="bg-transparent text-sm w-full outline-none pr-4 text-white hidden">
                     </div>
                     
-                    <div class="flex items-center gap-3 md:gap-4 ml-auto md:ml-0">
-                        <button onclick="showCart()" class="p-2 glass rounded-xl relative">🛒 <span id="cart-pill" class="hidden absolute -top-1 -right-1 bg-brandOrange text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center">0</span></button>
-                        
-                        <!-- Notifications Bell Control Module -->
-                        <button onclick="openNotificationCenter()" class="p-2 glass rounded-xl relative">🔔 <span id="notif-pill" class="hidden absolute -top-1 -right-1 bg-brandBlue text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center">0</span></button>
-                        
-                        <button onclick="toggleMode()" class="p-2 glass rounded-xl">🌓</button>
-                        
-                        <!-- Fixed Profile Trigger Element: Permanently visible on mobile viewports -->
-                        <div id="nav-profile-pic" onclick="openProfileManagementSuite()" class="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 overflow-hidden cursor-pointer block"></div>
-                        
-                        <button onclick="logout()" class="text-[9px] font-black text-red-500 uppercase px-3 py-2 border border-red-500/20 rounded-xl">Logout</button>
+                    <div id="nav-action-icons-row" class="flex items-center gap-3 md:gap-4">
+                        <button onclick="showNotificationsHub()" class="p-2 glass rounded-xl relative text-lg outline-none">
+                            🔔<span id="notify-pill" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center animate-pulse">0</span>
+                        </button>
+                        <button onclick="showCart()" class="p-2 glass rounded-xl relative text-lg outline-none">
+                            🛒<span id="cart-pill" class="hidden absolute -top-1 -right-1 bg-brandOrange text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                        </button>
+                        <button onclick="toggleMode()" class="p-2 glass rounded-xl text-lg hidden md:block outline-none">🌓</button>
+                        <div id="nav-profile-pic" onclick="showProfileSettings()" class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 overflow-hidden cursor-pointer block select-none"></div>
+                        <button onclick="logout()" class="text-[9px] font-black text-red-500 uppercase px-3 py-2 border border-red-500/20 rounded-xl hidden md:block">Logout</button>
                     </div>
                 </div>
             </nav>
-            <main id="main-content" class="p-10 max-w-7xl mx-auto w-full flex-grow"></main>
+            <main id="main-content" class="p-4 md:p-10 max-w-7xl mx-auto w-full flex-grow"></main>
         </div>
     </div>
 
@@ -194,8 +199,8 @@
         </div>
     </div>
 
-    <div onclick="toggleAIChat()" class="fixed bottom-6 right-6 z-[5000] w-16 h-16 rounded-full btn-brand flex items-center justify-center text-3xl cursor-pointer shadow-2xl">🤖</div>
-    <div id="ai-chat-window" class="hidden fixed bottom-24 right-6 w-[380px] h-[600px] glass rounded-[2rem] z-[5000] overflow-hidden flex flex-col border border-brandOrange/20">
+    <div onclick="toggleAIChat()" class="fixed bottom-6 right-6 z-[5000] w-16 h-16 rounded-full btn-brand flex items-center justify-center text-3xl cursor-pointer shadow-2xl select-none">🤖</div>
+    <div id="ai-chat-window" class="hidden fixed bottom-24 right-6 w-[340px] md:w-[380px] h-[550px] md:h-[600px] glass rounded-[2rem] z-[5000] overflow-hidden flex flex-col border border-brandOrange/20">
         <div class="p-5 border-b border-white/10 flex justify-between items-center"><h2 class="font-black text-lg italic text-brandOrange">OpenClass AI</h2><button onclick="toggleAIChat()">✕</button></div>
         <div id="ai-messages" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
         <div class="p-4 border-t border-white/10 flex gap-3"><input id="ai-input" type="text" placeholder="Ask AI..." class="input-field flex-1"><button onclick="sendAIMessage()" class="btn-brand px-5 rounded-xl">Send</button></div>
@@ -206,7 +211,7 @@
         import { aiConfig } from "./config.js";
 
         let profile = null, isSignup = false, otpCode = null, tempUser = null, activeGroupId = null, currentTab = 'home', videoPlayer = null;
-        let currentVideoContext = null, watermarkInterval = null, groupMessageTrackers = {};
+        let currentVideoContext = null, watermarkInterval = null, groupMessageTrackers = {}, notificationsMap = [];
         
         let cart = [];
         try {
@@ -214,7 +219,6 @@
             if(preservedCart) { cart = JSON.parse(preservedCart); }
         } catch(e) { cart = []; }
 
-        // --- ANTI-THEFT PROTECTION MATRIX ---
         function activateAntiTheftShields() {
             const blankOverlay = document.getElementById('anti-theft-blank');
             const watermarkEl = document.getElementById('secure-watermark');
@@ -290,7 +294,194 @@
             }
         });
 
-        // --- HARDENED ASSET PROCESSING INTERFACE ---
+        // --- EXPANDABLE SEARCH ENGINE TOOLKIT ---
+        window.toggleExpandableSearch = () => {
+            const wrapper = document.getElementById('search-wrapper-node');
+            const input = document.getElementById('g-search');
+            const iconsRow = document.getElementById('nav-action-icons-row');
+            const tabsBlock = document.getElementById('nav-tabs-block');
+            
+            if(wrapper.classList.contains('expanded')) {
+                wrapper.classList.remove('expanded');
+                input.classList.add('hidden');
+                input.value = "";
+                if(window.innerWidth < 768) {
+                    iconsRow.classList.remove('hidden');
+                    tabsBlock.classList.remove('hidden');
+                }
+            } else {
+                wrapper.classList.add('expanded');
+                input.classList.remove('hidden');
+                input.focus();
+                if(window.innerWidth < 768) {
+                    iconsRow.classList.add('hidden');
+                    tabsBlock.classList.add('hidden');
+                }
+            }
+        };
+
+        // --- NOTIFICATION HUB PLATFORM MAP ---
+        window.showNotificationsHub = () => {
+            const modal = document.getElementById('custom-modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('hidden');
+            
+            if(notificationsMap.length === 0) {
+                content.innerHTML = `<div class="text-center py-10"><p class="text-sm font-bold opacity-30 uppercase">No updates detected</p></div>`;
+                return;
+            }
+            
+            content.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-black italic">Live Activity Hub</h3>
+                    <button onclick="clearNotifications()" class="text-[10px] uppercase font-black text-brandOrange border border-brandOrange/20 px-3 py-1 rounded-xl hover:bg-brandOrange/5">Clear Matrix</button>
+                </div>
+                <div class="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
+                    ${notificationsMap.map(n => `
+                        <div class="p-4 rounded-2xl border border-white/5 bg-white/5 text-xs">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-brandOrange uppercase text-[9px] tracking-wider">${n.type}</span>
+                                <span class="opacity-30 text-[9px]">${n.time}</span>
+                            </div>
+                            <p class="opacity-80">${n.text}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        };
+
+        window.clearNotifications = () => {
+            notificationsMap = [];
+            document.getElementById('notify-pill').classList.add('hidden');
+            toast("Notification registry cleared");
+            closeCustomModal();
+        };
+
+        function pushSystemNotification(type, text) {
+            notificationsMap.unshift({ type, text, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
+            const pill = document.getElementById('notify-pill');
+            if(pill) {
+                pill.innerText = notificationsMap.length;
+                pill.classList.remove('hidden');
+            }
+        }
+
+        // --- EXTENDED FILE LOGO EXTRACTION MAPPING ---
+        window.getFileBadge = (url) => {
+            if (!url) return '';
+            const clean = url.toLowerCase().trim();
+            let badgeText = "FILE";
+            let color = "bg-zinc-700 text-white";
+            
+            if (clean.includes('.pdf')) { badgeText = "PDF"; color = "bg-red-600 text-white"; }
+            else if (clean.match(/\.(mp4|webm|ogg|mov|avi)/) || clean.includes('youtube.com') || clean.includes('youtu.be')) { badgeText = "VIDEO"; color = "bg-brandBlue text-white"; }
+            else if (clean.match(/\.(jpeg|jpg|gif|png|webp|svg)/)) { badgeText = "IMG"; color = "bg-green-600 text-white"; }
+            else if (clean.includes('firebasestorage')) { badgeText = "CLOUD"; color = "bg-purple-600 text-white"; }
+            
+            return `<span class="absolute bottom-2 right-2 ${color} text-[8px] font-black tracking-widest px-2 py-0.5 rounded-md shadow-md uppercase border border-white/10 z-10">${badgeText}</span>`;
+        };
+
+        // --- PROFILE SETTINGS HUB WITH ANNIHILATION ENGINE ---
+        window.showProfileSettings = () => {
+            const modal = document.getElementById('custom-modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('hidden');
+            
+            content.innerHTML = `
+                <h3 class="text-2xl font-black italic mb-6">Profile Settings Workspace</h3>
+                <div class="space-y-6">
+                    <div class="text-center relative">
+                        <img id="profile-hub-preview" src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-24 h-24 rounded-full mx-auto border-4 border-brandOrange p-1 object-cover bg-black">
+                        <label class="block mt-3 text-[10px] font-black uppercase text-brandOrange tracking-wider cursor-pointer hover:underline">
+                            Upload Custom Matrix Image
+                            <input type="file" id="hub-avatar-file" class="hidden" accept="image/*" onchange="processLocalAvatarUpload(this)">
+                        </label>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-[9px] font-bold uppercase opacity-40 ml-2">Identity Signature label</p>
+                        <input type="text" id="profile-hub-name" value="${profile.name}" class="input-field">
+                    </div>
+                    <button onclick="saveProfileWorkspaceChanges()" class="w-full py-4 btn-brand text-xs">Commit Updates</button>
+                    
+                    <div class="pt-6 border-t border-red-500/10 mt-10">
+                        <h4 class="text-xs font-black uppercase text-red-500 tracking-wider mb-2">Destructive Operations Matrix</h4>
+                        <p class="text-[11px] opacity-50 mb-4 leading-relaxed">Account purging drops all credential licenses, course indices, managed synchronization records, and identity traces across the live instance mapping nodes.</p>
+                        <button onclick="triggerAccountPurgePipeline()" class="w-full py-3 bg-red-600/10 text-red-500 border border-red-600/20 rounded-2xl text-[10px] font-black uppercase hover:bg-red-600 hover:text-white transition-all">Annihilate Account Profile</button>
+                    </div>
+                </div>
+            `;
+        };
+
+        window.processLocalAvatarUpload = (input) => {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                document.getElementById('profile-hub-preview').src = reader.result;
+                window._tempHubAvatarBuffer = reader.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.saveProfileWorkspaceChanges = async () => {
+            const updatedName = document.getElementById('profile-hub-name').value.trim();
+            if(!updatedName) return toast("Identity label criteria blank", "error");
+            
+            let updatePayload = { name: updatedName };
+            if(window._tempHubAvatarBuffer) {
+                updatePayload.photo = window._tempHubAvatarBuffer;
+            }
+            
+            await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), updatePayload);
+            toast("Identity variables synchronized onto active nodes");
+            location.reload();
+        };
+
+        window.triggerAccountPurgePipeline = async () => {
+            if(!confirm("STAGE 1 WARNING: Are you fully prepared to execute an irreversible profile purge? All campus group mappings and structural nodes will be severed.")) return;
+            if(!confirm("STAGE 2 SECURITY ENFORCEMENT: Final validation directive. Re-playing authentication logs post-handshake cannot restore this index structure. Continue?")) return;
+            
+            const dynamicVerificationToken = Math.floor(100000 + Math.random() * 900000);
+            toast("Routing synchronization challenge code...");
+            
+            try {
+                await Core.sendOTP(profile.email, dynamicVerificationToken);
+                const modal = document.getElementById('custom-modal');
+                const content = document.getElementById('modal-content');
+                
+                content.innerHTML = `
+                    <div class="text-center p-4">
+                        <h3 class="text-2xl font-black text-red-500 uppercase tracking-widest mb-4">Purge Gate Check</h3>
+                        <p class="text-xs opacity-60 mb-6">Enter the handshake verification payload sent to ${profile.email} to close your account index.</p>
+                        <input type="number" id="purge-token-input" placeholder="000000" class="input-field text-center text-4xl font-black mb-6">
+                        <button onclick="finalizeDestructivePurge(${dynamicVerificationToken})" class="w-full py-4 bg-red-600 text-white font-black uppercase rounded-2xl tracking-widest text-xs">Execute Irreversible Destruction</button>
+                    </div>
+                `;
+            } catch(e) {
+                toast("Verification proxy network timeout", "error");
+            }
+        };
+
+        window.finalizeDestructivePurge = async (matchToken) => {
+            const inputVal = document.getElementById('purge-token-input').value;
+            if(inputVal != matchToken) return toast("Handshake vector validation rejection", "error");
+            
+            toast("Annihilating cluster indices...");
+            await Core.deleteDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid));
+            
+            // Core logic verification cleanup interface hook
+            if(Core.auth.currentUser) {
+                try {
+                    await Core.auth.currentUser.delete();
+                } catch(e) {
+                    // Fallback configuration strategy if tokens are expired/stale
+                    await Core.signOut(Core.auth);
+                }
+            }
+            localStorage.removeItem('oc_cart_manifest');
+            location.reload();
+        };
+
         window.getSmartPreview = (url) => {
             if (!url) return "https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg";
             const cleanUrl = url.toLowerCase().trim();
@@ -299,14 +490,6 @@
             if (cleanUrl.includes('youtu.be/')) return `https://img.youtube.com/vi/${url.split('/').pop().split('?')[0]}/mqdefault.jpg`;
             if (cleanUrl.includes('/live/')) return `https://img.youtube.com/vi/${url.split('/live/')[1].split('?')[0]}/mqdefault.jpg`;
             return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop";
-        };
-
-        window.getFileTypeLogoBadge = (url) => {
-            const clean = url.toLowerCase().trim();
-            if (clean.includes('.pdf')) return `<span class="absolute bottom-2 left-2 bg-red-600 text-white font-black text-[8px] px-2 py-0.5 rounded shadow-md z-20">PDF</span>`;
-            if (clean.match(/\.(jpeg|jpg|gif|png|webp|svg)/)) return `<span class="absolute bottom-2 left-2 bg-blue-600 text-white font-black text-[8px] px-2 py-0.5 rounded shadow-md z-20">IMG</span>`;
-            if (clean.includes('youtube.com') || clean.includes('youtu.be') || clean.includes('.mp4')) return `<span class="absolute bottom-2 left-2 bg-brandOrange text-white font-black text-[8px] px-2 py-0.5 rounded shadow-md z-20">VIDEO</span>`;
-            return `<span class="absolute bottom-2 left-2 bg-zinc-700 text-white font-black text-[8px] px-2 py-0.5 rounded shadow-md z-20">FILE</span>`;
         };
 
         window.checkLiveStatus = (dateStr, startTimeStr, endTimeStr) => {
@@ -324,119 +507,6 @@
                 return 'recorded';
             }
         };
-
-        // --- ACCOUNT MANAGEMENT CENTER & VERIFICATION EXPLORER ---
-        window.openProfileManagementSuite = () => {
-            const modal = document.getElementById('custom-modal');
-            const content = document.getElementById('modal-content');
-            modal.classList.remove('hidden');
-            
-            content.innerHTML = `
-                <h3 class="text-2xl font-black italic mb-6 text-brandOrange">Profile Settings Hub</h3>
-                <div class="space-y-4 mb-8">
-                    <div>
-                        <label class="text-[9px] uppercase font-black opacity-40 ml-2">Update Display Name</label>
-                        <input id="profile-edit-name" type="text" value="${profile.name}" class="input-field mt-1 text-sm">
-                    </div>
-                    <div>
-                        <label class="text-[9px] uppercase font-black opacity-40 ml-2">Upload Profile Avatar (Image Link)</label>
-                        <input id="profile-edit-photo" type="text" value="${profile.photo || ''}" placeholder="https://example.com/avatar.jpg" class="input-field mt-1 text-sm">
-                    </div>
-                    <button onclick="saveProfileConfigurationChanges()" class="w-full py-4 btn-brand text-xs mt-2">Commit Vector Synthesis</button>
-                </div>
-                
-                <div class="border-t border-red-500/20 pt-6">
-                    <h4 class="text-sm font-black text-red-500 uppercase tracking-tighter mb-2">Danger Zone Allocation</h4>
-                    <p class="text-xs text-zinc-500 mb-4">Dissolving this profile node purges all records securely from the primary database cluster.</p>
-                    <button onclick="initializeAccountPurgeSequence()" class="w-full py-3 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white transition-all text-xs font-black uppercase rounded-2xl border border-red-600/20">Purge OpenClass Account Matrix</button>
-                </div>
-            `;
-        };
-
-        window.saveProfileConfigurationChanges = async () => {
-            const nextName = document.getElementById('profile-edit-name').value.trim();
-            const nextPhoto = document.getElementById('profile-edit-photo').value.trim();
-            if(!nextName) return toast("Name identifier required", "error");
-
-            await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), {
-                name: nextName,
-                photo: nextPhoto
-            });
-            toast("Profile parameters successfully written to cloud matrix");
-            location.reload();
-        };
-
-        window.initializeAccountPurgeSequence = async () => {
-            if(!confirm("CRITICAL WARNING: You are entering a destructive sequence. Proceed?")) return;
-            if(!confirm("FINAL STAGE MANDATE: Confirm absolute closure? All data pipelines will be disconnected.")) return;
-            
-            otpCode = Math.floor(100000 + Math.random() * 900000);
-            try {
-                await Core.sendOTP(profile.email, otpCode);
-                const content = document.getElementById('modal-content');
-                content.innerHTML = `
-                    <h3 class="text-2xl font-black text-red-500 mb-4 uppercase tracking-wider">Verification Lock Out</h3>
-                    <p class="text-xs text-zinc-400 mb-6">A structural lockout signature hash has been transmitted to ${profile.email}. Input validation passcode below to confirm.</p>
-                    <input type="number" id="purge-otp-input" placeholder="000000" class="input-field text-center text-4xl font-black mb-6">
-                    <button onclick="executeFinalDestructivePurge()" class="w-full py-4 bg-red-600 text-white font-black text-xs uppercase rounded-xl">Authorize Total Dissolution</button>
-                `;
-            } catch(e) {
-                toast("Purge relay handshake tracking interruption", "error");
-            }
-        };
-
-        window.executeFinalDestructivePurge = async () => {
-            const val = document.getElementById('purge-otp-input').value;
-            if(val == otpCode) {
-                await Core.deleteDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid));
-                toast("Node structural deletion complete.");
-                Core.signOut(Core.auth).then(() => location.reload());
-            } else {
-                toast("Handshake confirmation validation match rejected", "error");
-            }
-        };
-
-        // --- INTEGRATED OPERATION NOTIFICATION CENTER ---
-        window.openNotificationCenter = async () => {
-            const modal = document.getElementById('custom-modal');
-            const content = document.getElementById('modal-content');
-            modal.classList.remove('hidden');
-            
-            content.innerHTML = `<h3 class="text-2xl font-black italic mb-6 text-brandBlue">Notification Center Feed</h3><div id="notif-target-feed" class="space-y-4 text-xs font-bold opacity-40 text-center py-10">Scanning activity logs...</div>`;
-            
-            let html = '';
-            
-            // Query 1: Scanning for up-coming scheduled streams from teachers followed
-            if(profile.subs && profile.subs.length > 0) {
-                const liveSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs), Core.where("type", "==", "live")));
-                liveSnap.forEach(d => {
-                    const data = d.data();
-                    html += `<div class="glass p-4 rounded-2xl border-l-4 border-brandOrange flex flex-col gap-1"><span class="text-[8px] uppercase tracking-widest text-brandOrange font-black">Upcoming Broadcast Event</span><p class="font-bold text-sm">${data.title}</p><p class="text-[10px] text-zinc-500">Scheduled: ${data.liveDate} | ${data.liveStartTime} - ${data.liveEndTime || 'Open End'}</p></div>`;
-                });
-            }
-
-            // Query 2: If teacher profile account, pull list metrics of following audiences inside channel stream
-            if(profile.role === 'teacher') {
-                const followSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "array-contains", profile.teacherId)));
-                followSnap.forEach(u => {
-                    const ud = u.data();
-                    html += `<div class="glass p-4 rounded-2xl border-l-4 border-brandBlue flex justify-between items-center"><div><span class="text-[8px] uppercase tracking-widest text-brandBlue font-black">Audience Subscription Event</span><p class="font-bold text-sm">${ud.name} connected to your node stream</p></div></div>`;
-                });
-            }
-
-            document.getElementById('notif-target-feed').innerHTML = html || `<div class="text-center py-10 opacity-30 text-xs font-bold uppercase tracking-widest">Notification matrix clean</div>`;
-            document.getElementById('notif-pill').classList.add('hidden');
-        };
-
-        function updateNotificationCenterBadgeCount() {
-            let count = 0;
-            if(profile.subs && profile.subs.length > 0) count += 2; // Simulate state pipeline polling checks
-            const pill = document.getElementById('notif-pill');
-            if(count > 0 && pill) {
-                pill.innerText = count;
-                pill.classList.remove('hidden');
-            }
-        }
 
         function setupPlayer(videoId, metadata, rawUrl) {
             currentVideoContext = metadata;
@@ -511,7 +581,6 @@
             activateAntiTheftShields();
         }
 
-        // --- DASHBOARD DISPLAY PIPELINE ---
         window.setTab = (t) => {
             currentTab = t;
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -533,7 +602,6 @@
             const main = document.getElementById('main-content');
             if (!profile) return;
             updateCartPill();
-            updateNotificationCenterBadgeCount();
             if (profile.role === 'teacher') {
                 const [contentSnap, followersSnap, courseSnap, groupSnap] = await Promise.all([
                     Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "==", profile.teacherId))),
@@ -551,7 +619,7 @@
                 <div class="grid lg:grid-cols-4 gap-10">
                     <div class="space-y-6 lg:sticky lg:top-32 h-fit">
                         <div class="glass p-8 rounded-[3rem] border border-brandBlue/30 text-center shadow-xl">
-                            <img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-brandBlue p-1 object-cover">
+                            <img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-brandBlue p-1 object-cover bg-black">
                             <h3 class="text-xl font-black italic">${profile.name}</h3>
                             <p class="text-[10px] font-bold opacity-40 uppercase tracking-widest mb-6">${profile.teacherId}</p>
                             <div class="grid grid-cols-2 gap-4">
@@ -579,20 +647,12 @@
                                 <option value="live">Live Transmission</option>
                                 <option value="file">Document/Image Material</option>
                             </select>
-                            
-                            <!-- Dual Point Transmission Interval Fields -->
-                            <div id="live-schedule-fields" class="hidden space-y-2 p-3 border border-white/5 bg-black/20 rounded-xl">
-                                <p class="text-[8px] uppercase tracking-wider text-brandOrange font-bold font-mono">Transmission Planner</p>
+                            <div id="live-schedule-fields" class="hidden space-y-2 p-2 border border-white/5 bg-black/20 rounded-xl">
+                                <p class="text-[8px] uppercase tracking-wider text-brandOrange font-bold font-mono">Transmission Interval Scheduler</p>
                                 <input type="date" id="up-date" class="input-field text-xs p-2">
                                 <div class="grid grid-cols-2 gap-2">
-                                    <div>
-                                        <label class="text-[7px] text-zinc-500 font-bold uppercase block mb-1">Start Time</label>
-                                        <input type="time" id="up-start-time" class="input-field text-xs p-2">
-                                    </div>
-                                    <div>
-                                        <label class="text-[7px] text-zinc-500 font-bold uppercase block mb-1">End Time</label>
-                                        <input type="time" id="up-end-time" class="input-field text-xs p-2">
-                                    </div>
+                                    <input type="time" id="up-start-time" class="input-field text-xs p-2" title="Transmission Start Time">
+                                    <input type="time" id="up-end-time" class="input-field text-xs p-2" title="Transmission Boundary End Time">
                                 </div>
                             </div>
                             <button onclick="publishContent()" class="w-full py-3 btn-brand text-xs">Publish Now</button>
@@ -794,7 +854,7 @@
             const area = document.getElementById('teacher-action-area');
             if (v === 'create') area.innerHTML = `<select id="group-type" class="input-field text-xs p-3 mb-2"><option value="public">Public Campus Hub</option><option value="private">Private Gated Hub</option></select><input id="group-name" placeholder="Hub Name" class="input-field text-xs p-3 mb-4"><button onclick="createGroup()" class="w-full py-3 btn-brand text-xs">Create Hub</button>`;
             else if (v === 'course') area.innerHTML = `<input id="c-title" placeholder="Course Title" class="input-field text-xs p-3 mb-2"><textarea id="c-desc" placeholder="Syllabus Scope & Details" class="input-field h-24 text-xs p-3 mb-2"></textarea><select id="c-tier" onchange="document.getElementById('price-field-wrapper').style.display = this.value==='free'?'none':'block'" class="input-field text-xs p-3 mb-2"><option value="paid">Commercial Tier (Paid)</option><option value="free">Open Access Tier (Free)</option></select><div id="price-field-wrapper" class="mb-2"><input id="c-price" placeholder="Tuition Fee Price ₹" class="input-field text-xs p-3"></div><div id="course-vids" class="space-y-2"><div class="flex gap-2"><input placeholder="Syllabus Unit Title" class="input-field text-xs p-3 cv-t"><input placeholder="Syllabus Media URL" class="input-field text-xs p-3 cv-u"><button onclick="addVidField()" class="bg-brandOrange text-white px-4 rounded-xl font-bold">+</button></div></div><button onclick="launchCourse()" class="w-full py-3 btn-brand text-xs mt-4">Launch Course Module</button>`;
-            else if (v === 'publish') area.innerHTML = `<input id="up-t" placeholder="Asset Title" class="input-field text-xs p-3 mb-2"><input id="up-u" placeholder="Resource Access URL" class="input-field text-xs p-3 mb-2"><select id="up-y" onchange="togglePublishScheduleField(this.value)" class="input-field text-xs p-3 mb-2"><option value="video">Recorded Video Resource</option><option value="live">Live Transmission</option><option value="file">Document/Image Material</option></select><div id="live-schedule-fields" class="hidden space-y-2 p-3 border border-white/5 bg-black/20 rounded-xl mb-2"><p class="text-[8px] uppercase tracking-wider text-brandOrange font-bold font-mono">Transmission Planner</p><input type="date" id="up-date" class="input-field text-xs p-2"><div class="grid grid-cols-2 gap-2"><div><label class="text-[7px] text-zinc-500 font-bold uppercase block mb-1">Start Time</label><input type="time" id="up-start-time" class="input-field text-xs p-2"></div><div><label class="text-[7px] text-zinc-500 font-bold uppercase block mb-1">End Time</label><input type="time" id="up-end-time" class="input-field text-xs p-2"></div></div></div><button onclick="publishContent()" class="w-full py-3 btn-brand text-xs">Publish Now</button>`;
+            else if (v === 'publish') area.innerHTML = `<input id="up-t" placeholder="Asset Title" class="input-field text-xs p-3 mb-2"><input id="up-u" placeholder="Resource Access URL" class="input-field text-xs p-3 mb-2"><select id="up-y" onchange="togglePublishScheduleField(this.value)" class="input-field text-xs p-3 mb-2"><option value="video">Recorded Video Resource</option><option value="live">Live Transmission</option><option value="file">Document/Image Material</option></select><div id="live-schedule-fields" class="hidden space-y-2 p-2 border border-white/5 bg-black/20 rounded-xl mb-2"><p class="text-[8px] uppercase tracking-wider text-brandOrange font-bold font-mono">Transmission Interval Scheduler</p><input type="date" id="up-date" class="input-field text-xs p-2"><div class="grid grid-cols-2 gap-2"><input type="time" id="up-start-time" class="input-field text-xs p-2" title="Start Time"><input type="time" id="up-end-time" class="input-field text-xs p-2" title="End Time"></div></div><button onclick="publishContent()" class="w-full py-3 btn-brand text-xs">Publish Now</button>`;
             else if (v === 'requests') {
                 area.innerHTML = `<div id="request-list" class="space-y-3 mt-4 text-[10px] opacity-30 text-center font-bold">Scanning admissions...</div>`;
                 const groups = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId", "==", profile.teacherId)));
@@ -899,7 +959,7 @@
             const inCart = cart && cart.some(item => item.id === id);
             
             content.innerHTML = `
-                <img src="${c.thumbnail}" class="w-full h-56 object-cover rounded-3xl mb-6 shadow-2xl border border-white/10">
+                <img src="${c.thumbnail}" class="w-full h-auto max-h-64 object-cover rounded-3xl mb-6 shadow-2xl border border-white/10">
                 <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-black italic text-brandOrange">${c.title}</h2>${isT ? `<button onclick="delC('${id}')" class="text-red-500 font-black uppercase text-[10px]">Purge</button>` : ''}</div>
                 <p class="opacity-70 mb-6 text-xs leading-relaxed">${c.description}</p>
                 <div class="space-y-3 mb-8">
@@ -919,6 +979,13 @@
             document.getElementById('custom-modal').classList.remove('hidden');
         };
 
+        window.enrollCourse = async (cid, gid) => {
+            await Core.updateDoc(Core.doc(Core.db, "groups", gid), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
+            toast("License synced successfully! Roster operation active.");
+            document.getElementById('custom-modal').classList.add('hidden');
+            setTab('groups');
+        };
+
         window.delC = async (id) => { if(confirm("Confirm structural purge?")) { await Core.deleteDoc(Core.doc(Core.db,"courses",id)); document.getElementById('custom-modal').classList.add('hidden'); loadHome(); } };
 
         function renderFeed(docs, isT, target = 'feed') { 
@@ -930,7 +997,7 @@
             const container = document.getElementById('courses-feed') || document.getElementById('tab-display');
             if (container) container.innerHTML = `<div class="grid md:grid-cols-2 gap-6 w-full">${docs.map(doc => {
                 const c = doc.data();
-                return `<div class="glass p-6 rounded-[2.5rem] border border-white/5 flex flex-col justify-between"><img src="${c.thumbnail}" class="w-full h-52 object-cover rounded-2xl mb-4 border border-white/5"><div><h2 class="text-xl font-black italic mb-2 truncate">${c.title}</h2><div class="flex justify-between items-center mt-4"><h3 class="text-lg font-black text-brandOrange">${parseFloat(c.price)===0?'FREE':'₹'+c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2 text-xs">Inspect Module</button></div></div></div>`;
+                return `<div class="glass p-6 rounded-[2.5rem] border border-white/5 flex flex-col justify-between h-full"><div class="w-full flex items-center justify-center overflow-hidden rounded-2xl mb-4 bg-zinc-950/40"><img src="${c.thumbnail}" class="w-full h-auto max-h-52 object-cover border border-white/5"></div><div><h2 class="text-xl font-black italic mb-2 truncate">${c.title}</h2><div class="flex justify-between items-center mt-4"><h3 class="text-lg font-black text-brandOrange">${parseFloat(c.price)===0?'FREE':'₹'+c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2 text-xs">Inspect Module</button></div></div></div>`;
             }).join('')}</div>`;
         }
 
@@ -941,14 +1008,13 @@
             if (i.type === 'live') {
                 const status = window.checkLiveStatus(i.liveDate, i.liveStartTime, i.liveEndTime);
                 if (status === 'live') {
-                    liveStatusLabel = `<span class="flex items-center gap-1.5 bg-red-600/20 text-red-500 text-[8px] font-black px-2 py-0.5 rounded-full border border-red-500/20 z-10"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>LIVE NOW</span>`;
+                    liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-red-600/20 text-red-500 text-[8px] font-black px-2 py-0.5 rounded-full border border-red-500/20"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>LIVE NOW</span>`;
                 } else {
-                    liveStatusLabel = `<span class="flex items-center gap-1.5 bg-brandOrange/20 text-brandOrange text-[8px] font-black px-2 py-0.5 rounded-full border border-brandOrange/20 z-10"><span class="w-1.5 h-1.5 rounded-full bg-brandOrange"></span>RECORDED</span>`;
+                    liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-brandOrange/20 text-brandOrange text-[8px] font-black px-2 py-0.5 rounded-full border border-brandOrange/20"><span class="w-1.5 h-1.5 rounded-full bg-brandOrange"></span>RECORDED LIVE</span>`;
                 }
             }
 
-            // Injected window file type badges down onto the lower-left absolute border margin parameters
-            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative flex-shrink-0"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md border border-white/10">${liveStatusLabel}${window.getFileTypeLogoBadge(i.url)}</div><div class="overflow-hidden"><h4 class="font-black text-lg italic truncate max-w-xs md:max-w-md">${i.title}</h4><p class="text-[9px] opacity-40 uppercase font-bold tracking-widest mt-1">${i.tName} • ${i.views || 0} Views ${i.liveStartTime ? '• Interval: ' + i.liveDate + ' (' + i.liveStartTime + ' - ' + (i.liveEndTime || 'Open') + ')' : ''}</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Access File</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
+            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative flex-shrink-0 self-start md:self-center"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md border border-white/10">${window.getFileBadge(i.url)}</div><div class="overflow-hidden"><div class="flex flex-wrap items-center gap-2"><h4 class="font-black text-lg italic truncate max-w-xs md:max-w-md">${i.title}</h4> ${liveStatusLabel}</div><p class="text-[9px] opacity-40 uppercase font-bold tracking-widest mt-1">${i.tName} • ${i.views || 0} Views ${i.liveStartTime ? '• Interval Scheduled: ' + i.liveDate + ' [' + i.liveStartTime + ' - ' + (i.liveEndTime || 'End') + ']' : ''}</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Access File</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
         }
         
         window.delR = async (id) => { if(confirm("Confirm extraction removal?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); loadHome(); } };
@@ -968,6 +1034,7 @@
             }
 
             await Core.addDoc(Core.collection(Core.db, "content"), payload);
+            pushSystemNotification("CHRONO INDEX", `New configuration node published under path token: "${t}"`);
             toast("Asset uploaded onto chronological database map"); loadHome();
         };
 
@@ -988,7 +1055,7 @@
             Core.onSnapshot(q, (snap) => {
                 document.getElementById('group-chat-messages').innerHTML = snap.docs.map(m => {
                     const d = m.data(); const isM = d.senderId === Core.auth.currentUser.uid;
-                    return `<div class="flex ${isM ? 'flex-row-reverse' : 'flex-row'} items-end gap-3"><img src="${d.senderPhoto || 'https://ui-avatars.com/api/?name='+d.sender}" class="w-8 h-8 rounded-full border border-white/10 object-cover"><div class="flex flex-col ${isM ? 'items-end' : 'items-start'}"><p class="text-[8px] opacity-40 uppercase font-black px-2 mb-1 text-zinc-500">${d.sender}</p><div class="inline-block p-4 rounded-2xl ${isM ? 'bg-brandOrange text-white' : 'bg-white/10'} text-sm shadow-xl">${d.text}</div></div></div>`;
+                    return `<div class="flex ${isM ? 'flex-row-reverse' : 'flex-row'} items-end gap-3"><img src="${d.senderPhoto || 'https://ui-avatars.com/api/?name='+d.sender}" class="w-8 h-8 rounded-full border border-white/10 object-cover bg-black"><div class="flex flex-col ${isM ? 'items-end' : 'items-start'}"><p class="text-[8px] opacity-40 uppercase font-black px-2 mb-1 text-zinc-500">${d.sender}</p><div class="inline-block p-4 rounded-2xl ${isM ? 'bg-brandOrange text-white' : 'bg-white/10'} text-sm shadow-xl">${d.text}</div></div></div>`;
                 }).join('');
                 document.getElementById('group-chat-messages').scrollTop = 99999;
             });
@@ -1044,13 +1111,29 @@
             const contentSorted = cS.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
             const coursesSorted = coS.docs.sort((a,b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
 
-            main.innerHTML = `<div class="space-y-10"><div class="glass p-10 rounded-[4rem] border border-brandBlue/30 flex flex-col md:flex-row justify-between items-center gap-10 shadow-2xl"><div class="flex items-center gap-8"><img src="${tD.photo || 'https://ui-avatars.com/api/?name='+tD.name}" class="w-24 h-24 rounded-full border-4 border-brandBlue object-cover bg-brandBlue shadow-2xl"><div><h2 class="text-4xl font-black italic tracking-tighter">${tD.name}</h2><p class="text-sm font-bold text-brandBlue uppercase opacity-60">${tD.teacherId}</p></div></div><button onclick="handleSub('${tId}', ${isF})" class="px-10 py-4 ${isF ? 'bg-zinc-800' : 'btn-brand'} rounded-2xl font-black text-xs uppercase">${isF ? 'Unfollow Matrix' : 'Follow Instructor'}</button></div><h3 class="text-2xl font-black mb-6">Course Collections</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div><h3 class="text-2xl font-black mb-6">Syllabus Catalog Items</h3><div id="feed" class="space-y-4"></div></div>`;
+            main.innerHTML = `<div class="space-y-10">
+                <div class="glass p-6 md:p-10 rounded-[4rem] border border-brandBlue/30 flex flex-col md:flex-row justify-between items-center gap-6 shadow-2xl">
+                    <div class="flex items-center gap-6 md:gap-8">
+                        <img src="${tD.photo || 'https://ui-avatars.com/api/?name='+tD.name}" class="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-brandBlue object-cover bg-black shadow-2xl">
+                        <div>
+                            <h2 class="text-2xl md:text-4xl font-black italic tracking-tighter">${tD.name}</h2>
+                            <p class="text-xs md:text-sm font-bold text-brandBlue uppercase opacity-60">${tD.teacherId}</p>
+                        </div>
+                    </div>
+                    <button onclick="handleSub('${tId}', ${isF})" class="w-full md:w-auto px-10 py-4 ${isF ? 'bg-zinc-800' : 'btn-brand'} rounded-2xl font-black text-xs uppercase">${isF ? 'Unfollow Matrix' : 'Follow Instructor'}</button>
+                </div>
+                <h3 class="text-2xl font-black mb-6">Course Collections</h3>
+                <div id="courses-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div>
+                <h3 class="text-2xl font-black mb-6">Syllabus Catalog Items</h3>
+                <div id="feed" class="space-y-4"></div>
+            </div>`;
             renderFeed(contentSorted, false); renderCourses(coursesSorted);
         };
 
         window.handleSub = async (tId, isF) => {
             await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { subs: isF ? Core.arrayRemove(tId) : Core.arrayUnion(tId) });
             profile.subs = isF ? profile.subs.filter(i => i !== tId) : [...(profile.subs||[]), tId];
+            pushSystemNotification("ROSTER MUTATION", `Channel tracking state alignment changed for sync node: ${tId}`);
             viewTeacher(tId);
         };
 
@@ -1061,9 +1144,9 @@
                 else {
                     profile = docSnap.data();
                     const pic = document.getElementById('nav-profile-pic');
-                    if(pic) {
-                        pic.innerHTML = `<img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-full h-full object-cover">`;
-                        pic.className = `w-8 h-8 md:w-10 md:h-10 rounded-full border-2 overflow-hidden cursor-pointer block ${profile.role === 'teacher' ? 'border-brandBlue' : 'border-brandOrange'}`;
+                    if (pic) {
+                        pic.innerHTML = `<img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-full h-full object-cover bg-black">`;
+                        pic.className = `w-9 h-9 md:w-10 md:h-10 rounded-full border-2 overflow-hidden cursor-pointer block select-none ${profile.role === 'teacher' ? 'border-brandBlue' : 'border-brandOrange'}`;
                     }
                     showScreen('dashboard'); navigate(window.location.hash.substring(1) || 'home');
                     listenUnreadNotifications();
@@ -1100,6 +1183,7 @@
         window.toggleAIChat = () => document.getElementById('ai-chat-window').classList.toggle('hidden');
         window.closeGroupChat = () => { document.getElementById('group-chat-window').classList.add('hidden'); activeGroupId = null; loadGroups(); };
         window.toggleMode = () => { document.documentElement.classList.toggle('light'); localStorage.setItem('oc_theme', document.documentElement.classList.contains('light')); };
+        window.closeCustomModal = () => document.getElementById('custom-modal').classList.add('hidden');
         
         window.closeVault = () => { 
             document.getElementById('media-vault').classList.add('hidden'); 
