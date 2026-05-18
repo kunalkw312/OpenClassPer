@@ -71,7 +71,6 @@
         .search-container { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 40px; }
         .search-container.expanded { width: 260px; }
 
-        /* Floating Nav Overlay ruleset pinned strictly to bottom boundary layer */
         #floating-bottom-nav-bar { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 4500; width: calc(100% - 2rem); max-width: 480px; }
 
         @keyframes popUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -159,7 +158,8 @@
                         <button onclick="toggleExpandableSearch(event)" class="w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-white shrink-0 outline-none">
                             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="8" cy="8" r="6" /><path d="M13 13l4 4" /></svg>
                         </button>
-                        <input type="text" id="g-search" oninput="reactiveSearch(this.value)" onblur="collapseSearchOnBlur()" placeholder="Search campus..." class="bg-transparent text-sm w-full outline-none pr-4 text-white hidden">
+                        <!-- Fixed light mode color visibility via multi-context tracking keys -->
+                        <input type="text" id="g-search" oninput="reactiveSearch(this.value)" onblur="collapseSearchOnBlur()" placeholder="Search campus..." class="bg-transparent text-sm w-full outline-none pr-4 text-zinc-900 dark:text-white hidden">
                     </div>
                     
                     <div id="nav-action-icons-row" class="flex items-center gap-3 md:gap-4">
@@ -176,10 +176,8 @@
                 </div>
             </nav>
             
-            <!-- Structural Swipe-detecting workspace window element -->
             <main id="main-content" class="p-4 md:p-10 max-w-7xl mx-auto w-full flex-grow"></main>
 
-            <!-- Relocated Fixed Bottom Floating Tab Bar -->
             <div id="floating-bottom-nav-bar" class="glass p-1.5 rounded-[2rem] shadow-2xl border border-white/10">
                 <div class="flex justify-between items-center w-full gap-0.5">
                     <button id="tab-home" onclick="setTab('home')" class="tab-btn active flex-1 text-center py-3.5">Home</button>
@@ -231,7 +229,6 @@
             if(preservedCart) { cart = JSON.parse(preservedCart); }
         } catch(e) { cart = []; }
 
-        // --- GESTURE SWIPE TRANSITION SYSTEM ---
         function initializeSwipeGestures() {
             const mainContentNode = document.getElementById('main-content');
             if(!mainContentNode) return;
@@ -247,19 +244,17 @@
         }
 
         function handleSwipeGestureEvaluation() {
-            const thresholdDelta = 75; // Enforce minimum displacement metric
+            const thresholdDelta = 75; 
             const deltaX = touchEndCoordsX - touchStartCoordsX;
             const currentTabPos = tabsOrderIndex.indexOf(currentTab);
 
             if (Math.abs(deltaX) < thresholdDelta) return;
 
             if (deltaX > 0) {
-                // Swiped Right -> Pull Previous View Node
                 if (currentTabPos > 0) {
                     setTab(tabsOrderIndex[currentTabPos - 1]);
                 }
             } else {
-                // Swiped Left -> Push Next View Node
                 if (currentTabPos < tabsOrderIndex.length - 1) {
                     setTab(tabsOrderIndex[currentTabPos + 1]);
                 }
@@ -341,7 +336,6 @@
             }
         });
 
-        // --- EXPANDABLE SEARCH ENGINE TOOLKIT ---
         window.toggleExpandableSearch = (e) => {
             if(e) e.stopPropagation();
             const wrapper = document.getElementById('search-wrapper-node');
@@ -350,7 +344,6 @@
             const brandingBlock = document.getElementById('nav-branding-block');
             
             if(wrapper.classList.contains('expanded')) {
-                // Explicit target collapse handle fallback configuration
                 wrapper.classList.remove('expanded');
                 input.classList.add('hidden');
                 input.value = "";
@@ -366,7 +359,6 @@
         };
 
         window.collapseSearchOnBlur = () => {
-            // Delay collapse mechanism to preserve search row redirect click dispatches
             setTimeout(() => {
                 const wrapper = document.getElementById('search-wrapper-node');
                 const input = document.getElementById('g-search');
@@ -382,7 +374,6 @@
             }, 180);
         };
 
-        // --- NOTIFICATION HUB PLATFORM MAP ---
         window.showNotificationsHub = () => {
             const modal = document.getElementById('custom-modal');
             const content = document.getElementById('modal-content');
@@ -400,7 +391,7 @@
                 </div>
                 <div class="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
                     ${notificationsMap.map(n => `
-                        <div class="p-4 rounded-2xl border border-white/5 bg-white/5 text-xs">
+                        <div class="p-4 rounded-2xl border border-white/5 bg-white/5 text-xs text-zinc-800 dark:text-white">
                             <div class="flex justify-between items-center mb-1">
                                 <span class="font-bold text-brandOrange uppercase text-[9px] tracking-wider">${n.type}</span>
                                 <span class="opacity-30 text-[9px]">${n.time}</span>
@@ -442,7 +433,6 @@
             return `<span class="absolute bottom-2 right-2 ${color} text-[8px] font-black tracking-widest px-2 py-0.5 rounded-md shadow-md uppercase border border-white/10 z-10">${badgeText}</span>`;
         };
 
-        // --- PROFILE SETTINGS HUB WITH ANNIHILATION ENGINE ---
         window.showProfileSettings = () => {
             const modal = document.getElementById('custom-modal');
             const content = document.getElementById('modal-content');
@@ -717,7 +707,6 @@
                             <button onclick="publishContent()" class="w-full py-3 btn-brand text-xs">Publish Now</button>
                         </div>
                     </div>
-                    <!-- Unified structural single row non-wrapping configuration tile layout mapping -->
                     <div class="lg:col-span-3 space-y-6"><div id="tab-display" class="min-h-[500px]"></div></div>
                 </div>`;
 
@@ -756,14 +745,22 @@
                 const box = document.getElementById('tab-display');
                 if (currentTab === 'home') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Suggested Syllabus</h3><div id="suggested-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div><h3 class="text-2xl font-black italic mb-6">Subscribed Feed Streams</h3><div id="feed" class="space-y-6"></div>`;
-                    const allContent = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(30)));
+                    
+                    // Fixed student home hydration view models
+                    const [allContent, subContent] = await Promise.all([
+                        Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(30))),
+                        (profile.subs && profile.subs.length) ? Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs))) : Promise.resolve({ empty: true, docs: [] })
+                    ]);
+                    
                     const allContentSorted = allContent.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
                     renderFeed(allContentSorted.slice(0,6), false, 'suggested-feed');
                     
-                    if (profile.subs?.length) {
-                        const subContent = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs)));
+                    if (!subContent.empty && subContent.docs.length > 0) {
                         const subContentSorted = subContent.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
                         renderFeed(subContentSorted, false, 'feed');
+                    } else {
+                        // Dynamic query fallback matrix logic path targeting general arrays if index is dry
+                        renderFeed(allContentSorted.slice(6,16), false, 'feed');
                     }
                 } else if (currentTab === 'groups') {
                     box.innerHTML = `<div class="glass p-8 rounded-[3rem] mb-10"><h3 class="text-2xl font-black mb-4">Join Campus Hub</h3><div class="flex gap-4"><input id="hub-code" placeholder="OC-XXXXXX" class="input-field"><button onclick="joinGroup()" class="btn-brand px-10">Join</button></div></div><div id="student-groups" class="space-y-4"></div>`;
@@ -773,10 +770,16 @@
                     const coSorted = coSnap.docs.sort((a,b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
                     renderCourses(coSorted, false);
                 } else if (currentTab === 'content') {
-                    if(profile.subs?.length) {
-                        const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs)));
-                        const sortedDocs = snap.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Resource Sync Streams</h3><div id="feed" class="space-y-6"></div>`;
+                    const subSnap = (profile.subs && profile.subs.length) ? await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs))) : { empty: true, docs: [] };
+                    
+                    if(!subSnap.empty && subSnap.docs.length > 0) {
+                        const sortedDocs = subSnap.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
                         renderFeed(sortedDocs, false);
+                    } else {
+                        const globalContentSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(25)));
+                        const sortedGlobal = globalContentSnap.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
+                        renderFeed(sortedGlobal, false);
                     }
                 }
             }
@@ -962,7 +965,7 @@
                 try {
                     const { e, p, n, r } = tempUser;
                     const cred = await Core.createUserWithEmailAndPassword(Core.auth, e, p);
-                    await Core.setDoc(Core.doc(Core.db, "users", cred.user.uid), { name: n, role: r, teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), email: e, subs: [], photo: "", joined: new Date().toLocaleDateString() });
+                    await Core.setDoc(Core.doc(Core.doc(Core.db, "users", cred.user.uid)), { name: n, role: r, teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), email: e, subs: [], photo: "", joined: new Date().toLocaleDateString() });
                     location.reload();
                 } catch(err) { toast(err.message, "error"); }
             } else toast("Mismatch payload match rejection", "error");
@@ -1225,6 +1228,8 @@
                         pic.className = `w-9 h-9 md:w-10 md:h-10 rounded-full border-2 overflow-hidden cursor-pointer block select-none ${profile.role === 'teacher' ? 'border-brandBlue' : 'border-brandOrange'}`;
                     }
                     showScreen('dashboard'); navigate(window.location.hash.substring(1) || 'home');
+                    
+                    // Unified single trigger instantiation point binding real time notifications
                     listenUnreadNotifications();
                     initializeSwipeGestures();
                 }
@@ -1242,6 +1247,7 @@
                         if (msg.groupId && msg.groupId !== activeGroupId && msg.senderId !== Core.auth.currentUser.uid) {
                             groupMessageTrackers[msg.groupId] = (groupMessageTrackers[msg.groupId] || 0) + 1;
                             updateNotificationUIBadge(msg.groupId);
+                            pushSystemNotification("GROUP SYNC", `New sync payload message dropped in workspace route: ${msg.groupId}`);
                         }
                     }
                 });
