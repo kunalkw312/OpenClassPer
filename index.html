@@ -27,7 +27,6 @@
         #toast-box { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
         .toast-pill { background: #111; color: #fff; padding: 0.6rem 1.5rem; border-radius: 99px; border: 1px solid rgba(255,255,255,0.1); font-size: 10px; font-weight: 800; text-transform: uppercase; animation: popUp 0.3s forwards; }
         
-        /* Fixed Player Height Cutoffs and Hidden YouTube Overlays */
         #vault-wrapper { height: 100%; width: 100%; aspect-ratio: 16/9; max-height: 80vh; display: flex; align-items: center; justify-content: center; background: #000; position: relative; }
         .plyr { width: 100% !important; height: 100% !important; max-height: 80vh !important; }
         .plyr__video-wrapper { height: 100% !important; }
@@ -36,7 +35,6 @@
         .plyr--video .plyr__controls { background: linear-gradient(transparent, rgba(0,0,0,0.9)); border-radius: 0 0 14px 14px; }
         .grid-btn-active { background: rgba(247, 148, 29, 0.2) !important; border: 1px solid rgba(247, 148, 29, 0.3) !important; color: #f7941d !important; }
 
-        /* Anti-Theft Protection Shield Mode */
         #anti-theft-blank {
             display: none;
             position: absolute;
@@ -51,7 +49,7 @@
             text-transform: uppercase;
             font-size: 14px;
             letter-spacing: 0.1em;
-            pointer-events: auto !important; /* Enforce point-event capture mapping to prevent background clicks */
+            pointer-events: auto !important;
         }
 
         #secure-watermark {
@@ -67,7 +65,6 @@
             transition: all 1.2s ease-in-out;
         }
 
-        /* Fullscreen Viewport Direct Targeting Rule sets for Plyr containers */
         .plyr--fullscreen-active #anti-theft-blank { display: none; z-index: 2147483647 !important; }
         .plyr--fullscreen-active #secure-watermark { z-index: 2147483646 !important; }
 
@@ -85,7 +82,6 @@
         <button onclick="closeVault()" class="absolute top-6 right-6 bg-white/10 hover:bg-red-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-black z-[2147483647]">✕</button>
         <div id="vault-capture-container" class="w-full max-w-5xl overflow-hidden rounded-2xl shadow-2xl relative flex items-center justify-center">
              <div id="vault-wrapper">
-                 <!-- Shield elements must live dynamically directly adjacent to video instantiation nodes -->
                  <div id="anti-theft-blank">⚠️ Screen Capture / Recording Warning: Active Assets Paused</div>
                  <div id="secure-watermark"></div>
                  <div id="player-container" class="w-full h-full"></div>
@@ -157,15 +153,25 @@
                     <button id="tab-content" onclick="setTab('content')" class="tab-btn">Content</button>
                 </div>
 
-                <div class="flex items-center gap-6 w-full md:w-auto relative">
-                    <div class="relative w-full md:w-72 group">
+                <div class="flex items-center gap-4 md:gap-6 w-full md:w-auto justify-between md:justify-end relative">
+                    <div class="relative w-full md:w-64 group hidden sm:block">
                         <div class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="8" cy="8" r="6" /><path d="M13 13l4 4" /></svg></div>
                         <input type="text" id="g-search" oninput="reactiveSearch(this.value)" placeholder="Search campus..." class="input-field rounded-2xl pl-12 pr-6 py-2.5 text-sm w-full">
                     </div>
-                    <button onclick="showCart()" class="p-2 glass rounded-xl relative">🛒 <span id="cart-pill" class="hidden absolute -top-1 -right-1 bg-brandOrange text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center">0</span></button>
-                    <button onclick="toggleMode()" class="p-2 glass rounded-xl">🌓</button>
-                    <div id="nav-profile-pic" class="w-10 h-10 rounded-full border-2 overflow-hidden hidden md:block"></div>
-                    <button onclick="logout()" class="text-[10px] font-black text-red-500 uppercase px-4 py-2 border border-red-500/20 rounded-xl">Logout</button>
+                    
+                    <div class="flex items-center gap-3 md:gap-4 ml-auto md:ml-0">
+                        <button onclick="showCart()" class="p-2 glass rounded-xl relative">🛒 <span id="cart-pill" class="hidden absolute -top-1 -right-1 bg-brandOrange text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center">0</span></button>
+                        
+                        <!-- Notifications Bell Control Module -->
+                        <button onclick="openNotificationCenter()" class="p-2 glass rounded-xl relative">🔔 <span id="notif-pill" class="hidden absolute -top-1 -right-1 bg-brandBlue text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center">0</span></button>
+                        
+                        <button onclick="toggleMode()" class="p-2 glass rounded-xl">🌓</button>
+                        
+                        <!-- Fixed Profile Trigger Element: Permanently visible on mobile viewports -->
+                        <div id="nav-profile-pic" onclick="openProfileManagementSuite()" class="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 overflow-hidden cursor-pointer block"></div>
+                        
+                        <button onclick="logout()" class="text-[9px] font-black text-red-500 uppercase px-3 py-2 border border-red-500/20 rounded-xl">Logout</button>
+                    </div>
                 </div>
             </nav>
             <main id="main-content" class="p-10 max-w-7xl mx-auto w-full flex-grow"></main>
@@ -202,7 +208,6 @@
         let profile = null, isSignup = false, otpCode = null, tempUser = null, activeGroupId = null, currentTab = 'home', videoPlayer = null;
         let currentVideoContext = null, watermarkInterval = null, groupMessageTrackers = {};
         
-        // --- Persistent Data Management Cart Matrix ---
         let cart = [];
         try {
             const preservedCart = localStorage.getItem('oc_cart_manifest');
@@ -224,7 +229,6 @@
             window.addEventListener('blur', engageShield);
             document.addEventListener('visibilitychange', handleVisibility);
             
-            // Intercept mouse clicks on blank screen wrapper to kill play exploits
             blankOverlay.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -235,7 +239,6 @@
                 if (videoPlayer && typeof videoPlayer.pause === 'function') videoPlayer.pause();
                 blankOverlay.style.display = 'flex';
                 
-                // If browser enters native fullscreen, relocate security overlays inside the active DOM tree view
                 const plyrContainer = document.querySelector('.plyr');
                 if(plyrContainer) {
                     plyrContainer.appendChild(blankOverlay);
@@ -256,7 +259,6 @@
                 clearInterval(watermarkInterval);
                 blankOverlay.style.display = 'none';
                 watermarkEl.innerText = "";
-                // Restore node positions back to normal wrapper layout flow
                 const wrapper = document.getElementById('vault-wrapper');
                 if(wrapper) {
                     wrapper.insertBefore(blankOverlay, wrapper.firstChild);
@@ -299,14 +301,22 @@
             return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop";
         };
 
-        window.checkLiveStatus = (dateStr, timeStr) => {
-            if (!dateStr || !timeStr) return 'recorded';
+        window.getFileTypeLogoBadge = (url) => {
+            const clean = url.toLowerCase().trim();
+            if (clean.includes('.pdf')) return `<span class="absolute bottom-2 left-2 bg-red-600 text-white font-black text-[8px] px-2 py-0.5 rounded shadow-md z-20">PDF</span>`;
+            if (clean.match(/\.(jpeg|jpg|gif|png|webp|svg)/)) return `<span class="absolute bottom-2 left-2 bg-blue-600 text-white font-black text-[8px] px-2 py-0.5 rounded shadow-md z-20">IMG</span>`;
+            if (clean.includes('youtube.com') || clean.includes('youtu.be') || clean.includes('.mp4')) return `<span class="absolute bottom-2 left-2 bg-brandOrange text-white font-black text-[8px] px-2 py-0.5 rounded shadow-md z-20">VIDEO</span>`;
+            return `<span class="absolute bottom-2 left-2 bg-zinc-700 text-white font-black text-[8px] px-2 py-0.5 rounded shadow-md z-20">FILE</span>`;
+        };
+
+        window.checkLiveStatus = (dateStr, startTimeStr, endTimeStr) => {
+            if (!dateStr || !startTimeStr) return 'recorded';
             try {
-                const targetDateTime = new Date(`${dateStr} ${timeStr}`);
+                const targetStart = new Date(`${dateStr} ${startTimeStr}`);
+                const targetEnd = endTimeStr ? new Date(`${dateStr} ${endTimeStr}`) : new Date(targetStart.getTime() + 180 * 60000);
                 const currentDateTime = new Date();
-                const differenceInMinutes = (currentDateTime - targetDateTime) / 60000;
                 
-                if (differenceInMinutes >= 0 && differenceInMinutes <= 180) {
+                if (currentDateTime >= targetStart && currentDateTime <= targetEnd) {
                     return 'live';
                 }
                 return 'recorded';
@@ -314,6 +324,119 @@
                 return 'recorded';
             }
         };
+
+        // --- ACCOUNT MANAGEMENT CENTER & VERIFICATION EXPLORER ---
+        window.openProfileManagementSuite = () => {
+            const modal = document.getElementById('custom-modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('hidden');
+            
+            content.innerHTML = `
+                <h3 class="text-2xl font-black italic mb-6 text-brandOrange">Profile Settings Hub</h3>
+                <div class="space-y-4 mb-8">
+                    <div>
+                        <label class="text-[9px] uppercase font-black opacity-40 ml-2">Update Display Name</label>
+                        <input id="profile-edit-name" type="text" value="${profile.name}" class="input-field mt-1 text-sm">
+                    </div>
+                    <div>
+                        <label class="text-[9px] uppercase font-black opacity-40 ml-2">Upload Profile Avatar (Image Link)</label>
+                        <input id="profile-edit-photo" type="text" value="${profile.photo || ''}" placeholder="https://example.com/avatar.jpg" class="input-field mt-1 text-sm">
+                    </div>
+                    <button onclick="saveProfileConfigurationChanges()" class="w-full py-4 btn-brand text-xs mt-2">Commit Vector Synthesis</button>
+                </div>
+                
+                <div class="border-t border-red-500/20 pt-6">
+                    <h4 class="text-sm font-black text-red-500 uppercase tracking-tighter mb-2">Danger Zone Allocation</h4>
+                    <p class="text-xs text-zinc-500 mb-4">Dissolving this profile node purges all records securely from the primary database cluster.</p>
+                    <button onclick="initializeAccountPurgeSequence()" class="w-full py-3 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white transition-all text-xs font-black uppercase rounded-2xl border border-red-600/20">Purge OpenClass Account Matrix</button>
+                </div>
+            `;
+        };
+
+        window.saveProfileConfigurationChanges = async () => {
+            const nextName = document.getElementById('profile-edit-name').value.trim();
+            const nextPhoto = document.getElementById('profile-edit-photo').value.trim();
+            if(!nextName) return toast("Name identifier required", "error");
+
+            await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), {
+                name: nextName,
+                photo: nextPhoto
+            });
+            toast("Profile parameters successfully written to cloud matrix");
+            location.reload();
+        };
+
+        window.initializeAccountPurgeSequence = async () => {
+            if(!confirm("CRITICAL WARNING: You are entering a destructive sequence. Proceed?")) return;
+            if(!confirm("FINAL STAGE MANDATE: Confirm absolute closure? All data pipelines will be disconnected.")) return;
+            
+            otpCode = Math.floor(100000 + Math.random() * 900000);
+            try {
+                await Core.sendOTP(profile.email, otpCode);
+                const content = document.getElementById('modal-content');
+                content.innerHTML = `
+                    <h3 class="text-2xl font-black text-red-500 mb-4 uppercase tracking-wider">Verification Lock Out</h3>
+                    <p class="text-xs text-zinc-400 mb-6">A structural lockout signature hash has been transmitted to ${profile.email}. Input validation passcode below to confirm.</p>
+                    <input type="number" id="purge-otp-input" placeholder="000000" class="input-field text-center text-4xl font-black mb-6">
+                    <button onclick="executeFinalDestructivePurge()" class="w-full py-4 bg-red-600 text-white font-black text-xs uppercase rounded-xl">Authorize Total Dissolution</button>
+                `;
+            } catch(e) {
+                toast("Purge relay handshake tracking interruption", "error");
+            }
+        };
+
+        window.executeFinalDestructivePurge = async () => {
+            const val = document.getElementById('purge-otp-input').value;
+            if(val == otpCode) {
+                await Core.deleteDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid));
+                toast("Node structural deletion complete.");
+                Core.signOut(Core.auth).then(() => location.reload());
+            } else {
+                toast("Handshake confirmation validation match rejected", "error");
+            }
+        };
+
+        // --- INTEGRATED OPERATION NOTIFICATION CENTER ---
+        window.openNotificationCenter = async () => {
+            const modal = document.getElementById('custom-modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('hidden');
+            
+            content.innerHTML = `<h3 class="text-2xl font-black italic mb-6 text-brandBlue">Notification Center Feed</h3><div id="notif-target-feed" class="space-y-4 text-xs font-bold opacity-40 text-center py-10">Scanning activity logs...</div>`;
+            
+            let html = '';
+            
+            // Query 1: Scanning for up-coming scheduled streams from teachers followed
+            if(profile.subs && profile.subs.length > 0) {
+                const liveSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs), Core.where("type", "==", "live")));
+                liveSnap.forEach(d => {
+                    const data = d.data();
+                    html += `<div class="glass p-4 rounded-2xl border-l-4 border-brandOrange flex flex-col gap-1"><span class="text-[8px] uppercase tracking-widest text-brandOrange font-black">Upcoming Broadcast Event</span><p class="font-bold text-sm">${data.title}</p><p class="text-[10px] text-zinc-500">Scheduled: ${data.liveDate} | ${data.liveStartTime} - ${data.liveEndTime || 'Open End'}</p></div>`;
+                });
+            }
+
+            // Query 2: If teacher profile account, pull list metrics of following audiences inside channel stream
+            if(profile.role === 'teacher') {
+                const followSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "array-contains", profile.teacherId)));
+                followSnap.forEach(u => {
+                    const ud = u.data();
+                    html += `<div class="glass p-4 rounded-2xl border-l-4 border-brandBlue flex justify-between items-center"><div><span class="text-[8px] uppercase tracking-widest text-brandBlue font-black">Audience Subscription Event</span><p class="font-bold text-sm">${ud.name} connected to your node stream</p></div></div>`;
+                });
+            }
+
+            document.getElementById('notif-target-feed').innerHTML = html || `<div class="text-center py-10 opacity-30 text-xs font-bold uppercase tracking-widest">Notification matrix clean</div>`;
+            document.getElementById('notif-pill').classList.add('hidden');
+        };
+
+        function updateNotificationCenterBadgeCount() {
+            let count = 0;
+            if(profile.subs && profile.subs.length > 0) count += 2; // Simulate state pipeline polling checks
+            const pill = document.getElementById('notif-pill');
+            if(count > 0 && pill) {
+                pill.innerText = count;
+                pill.classList.remove('hidden');
+            }
+        }
 
         function setupPlayer(videoId, metadata, rawUrl) {
             currentVideoContext = metadata;
@@ -360,7 +483,6 @@
                 videoPlayer = new Plyr(playerDiv.querySelector('video'), { autoplay: true });
             }
 
-            // Monitor state triggers directly inside the engine instance
             videoPlayer.on('play', () => {
                 const shieldOn = document.getElementById('anti-theft-blank').style.display === 'flex';
                 if(shieldOn) { videoPlayer.pause(); }
@@ -411,6 +533,7 @@
             const main = document.getElementById('main-content');
             if (!profile) return;
             updateCartPill();
+            updateNotificationCenterBadgeCount();
             if (profile.role === 'teacher') {
                 const [contentSnap, followersSnap, courseSnap, groupSnap] = await Promise.all([
                     Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "==", profile.teacherId))),
@@ -456,10 +579,21 @@
                                 <option value="live">Live Transmission</option>
                                 <option value="file">Document/Image Material</option>
                             </select>
-                            <div id="live-schedule-fields" class="hidden space-y-2 p-2 border border-white/5 bg-black/20 rounded-xl">
-                                <p class="text-[8px] uppercase tracking-wider text-brandOrange font-bold font-mono">Transmission Scheduler</p>
+                            
+                            <!-- Dual Point Transmission Interval Fields -->
+                            <div id="live-schedule-fields" class="hidden space-y-2 p-3 border border-white/5 bg-black/20 rounded-xl">
+                                <p class="text-[8px] uppercase tracking-wider text-brandOrange font-bold font-mono">Transmission Planner</p>
                                 <input type="date" id="up-date" class="input-field text-xs p-2">
-                                <input type="time" id="up-time" class="input-field text-xs p-2">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="text-[7px] text-zinc-500 font-bold uppercase block mb-1">Start Time</label>
+                                        <input type="time" id="up-start-time" class="input-field text-xs p-2">
+                                    </div>
+                                    <div>
+                                        <label class="text-[7px] text-zinc-500 font-bold uppercase block mb-1">End Time</label>
+                                        <input type="time" id="up-end-time" class="input-field text-xs p-2">
+                                    </div>
+                                </div>
                             </div>
                             <button onclick="publishContent()" class="w-full py-3 btn-brand text-xs">Publish Now</button>
                         </div>
@@ -660,7 +794,7 @@
             const area = document.getElementById('teacher-action-area');
             if (v === 'create') area.innerHTML = `<select id="group-type" class="input-field text-xs p-3 mb-2"><option value="public">Public Campus Hub</option><option value="private">Private Gated Hub</option></select><input id="group-name" placeholder="Hub Name" class="input-field text-xs p-3 mb-4"><button onclick="createGroup()" class="w-full py-3 btn-brand text-xs">Create Hub</button>`;
             else if (v === 'course') area.innerHTML = `<input id="c-title" placeholder="Course Title" class="input-field text-xs p-3 mb-2"><textarea id="c-desc" placeholder="Syllabus Scope & Details" class="input-field h-24 text-xs p-3 mb-2"></textarea><select id="c-tier" onchange="document.getElementById('price-field-wrapper').style.display = this.value==='free'?'none':'block'" class="input-field text-xs p-3 mb-2"><option value="paid">Commercial Tier (Paid)</option><option value="free">Open Access Tier (Free)</option></select><div id="price-field-wrapper" class="mb-2"><input id="c-price" placeholder="Tuition Fee Price ₹" class="input-field text-xs p-3"></div><div id="course-vids" class="space-y-2"><div class="flex gap-2"><input placeholder="Syllabus Unit Title" class="input-field text-xs p-3 cv-t"><input placeholder="Syllabus Media URL" class="input-field text-xs p-3 cv-u"><button onclick="addVidField()" class="bg-brandOrange text-white px-4 rounded-xl font-bold">+</button></div></div><button onclick="launchCourse()" class="w-full py-3 btn-brand text-xs mt-4">Launch Course Module</button>`;
-            else if (v === 'publish') area.innerHTML = `<input id="up-t" placeholder="Asset Title" class="input-field text-xs p-3 mb-2"><input id="up-u" placeholder="Resource Access URL" class="input-field text-xs p-3 mb-2"><select id="up-y" onchange="togglePublishScheduleField(this.value)" class="input-field text-xs p-3 mb-2"><option value="video">Recorded Video Resource</option><option value="live">Live Transmission</option><option value="file">Document/Image Material</option></select><div id="live-schedule-fields" class="hidden space-y-2 p-2 border border-white/5 bg-black/20 rounded-xl mb-2"><p class="text-[8px] uppercase tracking-wider text-brandOrange font-bold font-mono">Transmission Scheduler</p><input type="date" id="up-date" class="input-field text-xs p-2"><input type="time" id="up-time" class="input-field text-xs p-2"></div><button onclick="publishContent()" class="w-full py-3 btn-brand text-xs">Publish Now</button>`;
+            else if (v === 'publish') area.innerHTML = `<input id="up-t" placeholder="Asset Title" class="input-field text-xs p-3 mb-2"><input id="up-u" placeholder="Resource Access URL" class="input-field text-xs p-3 mb-2"><select id="up-y" onchange="togglePublishScheduleField(this.value)" class="input-field text-xs p-3 mb-2"><option value="video">Recorded Video Resource</option><option value="live">Live Transmission</option><option value="file">Document/Image Material</option></select><div id="live-schedule-fields" class="hidden space-y-2 p-3 border border-white/5 bg-black/20 rounded-xl mb-2"><p class="text-[8px] uppercase tracking-wider text-brandOrange font-bold font-mono">Transmission Planner</p><input type="date" id="up-date" class="input-field text-xs p-2"><div class="grid grid-cols-2 gap-2"><div><label class="text-[7px] text-zinc-500 font-bold uppercase block mb-1">Start Time</label><input type="time" id="up-start-time" class="input-field text-xs p-2"></div><div><label class="text-[7px] text-zinc-500 font-bold uppercase block mb-1">End Time</label><input type="time" id="up-end-time" class="input-field text-xs p-2"></div></div></div><button onclick="publishContent()" class="w-full py-3 btn-brand text-xs">Publish Now</button>`;
             else if (v === 'requests') {
                 area.innerHTML = `<div id="request-list" class="space-y-3 mt-4 text-[10px] opacity-30 text-center font-bold">Scanning admissions...</div>`;
                 const groups = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId", "==", profile.teacherId)));
@@ -785,13 +919,6 @@
             document.getElementById('custom-modal').classList.remove('hidden');
         };
 
-        window.enrollCourse = async (cid, gid) => {
-            await Core.updateDoc(Core.doc(Core.db, "groups", gid), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
-            toast("License synced successfully! Roster operation active.");
-            document.getElementById('custom-modal').classList.add('hidden');
-            setTab('groups');
-        };
-
         window.delC = async (id) => { if(confirm("Confirm structural purge?")) { await Core.deleteDoc(Core.doc(Core.db,"courses",id)); document.getElementById('custom-modal').classList.add('hidden'); loadHome(); } };
 
         function renderFeed(docs, isT, target = 'feed') { 
@@ -812,15 +939,16 @@
             let liveStatusLabel = '';
             
             if (i.type === 'live') {
-                const status = window.checkLiveStatus(i.liveDate, i.liveTime);
+                const status = window.checkLiveStatus(i.liveDate, i.liveStartTime, i.liveEndTime);
                 if (status === 'live') {
-                    liveStatusLabel = `<span class="flex items-center gap-1.5 bg-red-600/20 text-red-500 text-[8px] font-black px-2 py-0.5 rounded-full border border-red-500/20"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>LIVE NOW</span>`;
+                    liveStatusLabel = `<span class="flex items-center gap-1.5 bg-red-600/20 text-red-500 text-[8px] font-black px-2 py-0.5 rounded-full border border-red-500/20 z-10"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>LIVE NOW</span>`;
                 } else {
-                    liveStatusLabel = `<span class="flex items-center gap-1.5 bg-brandOrange/20 text-brandOrange text-[8px] font-black px-2 py-0.5 rounded-full border border-brandOrange/20"><span class="w-1.5 h-1.5 rounded-full bg-brandOrange"></span>RECORDED</span>`;
+                    liveStatusLabel = `<span class="flex items-center gap-1.5 bg-brandOrange/20 text-brandOrange text-[8px] font-black px-2 py-0.5 rounded-full border border-brandOrange/20 z-10"><span class="w-1.5 h-1.5 rounded-full bg-brandOrange"></span>RECORDED</span>`;
                 }
             }
 
-            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative flex-shrink-0"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md border border-white/10">${liveStatusLabel}</div><div class="overflow-hidden"><h4 class="font-black text-lg italic truncate max-w-xs md:max-w-md">${i.title}</h4><p class="text-[9px] opacity-40 uppercase font-bold tracking-widest mt-1">${i.tName} • ${i.views || 0} Views ${i.liveTime ? '• Scheduled: ' + i.liveDate + ' ' + i.liveTime : ''}</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Access File</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
+            // Injected window file type badges down onto the lower-left absolute border margin parameters
+            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative flex-shrink-0"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md border border-white/10">${liveStatusLabel}${window.getFileTypeLogoBadge(i.url)}</div><div class="overflow-hidden"><h4 class="font-black text-lg italic truncate max-w-xs md:max-w-md">${i.title}</h4><p class="text-[9px] opacity-40 uppercase font-bold tracking-widest mt-1">${i.tName} • ${i.views || 0} Views ${i.liveStartTime ? '• Interval: ' + i.liveDate + ' (' + i.liveStartTime + ' - ' + (i.liveEndTime || 'Open') + ')' : ''}</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Access File</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
         }
         
         window.delR = async (id) => { if(confirm("Confirm extraction removal?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); loadHome(); } };
@@ -835,7 +963,8 @@
             
             if(y === 'live') {
                 payload.liveDate = document.getElementById('up-date').value || new Date().toISOString().split('T')[0];
-                payload.liveTime = document.getElementById('up-time').value || "00:00";
+                payload.liveStartTime = document.getElementById('up-start-time').value || "00:00";
+                payload.liveEndTime = document.getElementById('up-end-time').value || "00:00";
             }
 
             await Core.addDoc(Core.collection(Core.db, "content"), payload);
@@ -932,8 +1061,10 @@
                 else {
                     profile = docSnap.data();
                     const pic = document.getElementById('nav-profile-pic');
-                    if (profile.photo && pic) pic.innerHTML = `<img src="${profile.photo}" class="w-full h-full object-cover">`;
-                    if (pic) pic.className = `w-10 h-10 rounded-full border-2 overflow-hidden hidden md:block ${profile.role === 'teacher' ? 'border-brandBlue' : 'border-brandOrange'}`;
+                    if(pic) {
+                        pic.innerHTML = `<img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-full h-full object-cover">`;
+                        pic.className = `w-8 h-8 md:w-10 md:h-10 rounded-full border-2 overflow-hidden cursor-pointer block ${profile.role === 'teacher' ? 'border-brandBlue' : 'border-brandOrange'}`;
+                    }
                     showScreen('dashboard'); navigate(window.location.hash.substring(1) || 'home');
                     listenUnreadNotifications();
                 }
