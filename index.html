@@ -15,16 +15,19 @@
         tailwind.config = { darkMode: 'class', theme: { extend: { colors: { brandBlue: '#004a80', brandOrange: '#f7941d' } } } }
     </script>
     <style>
-        :root { --text-main: #002e50; --bg-main: #fdfbf7; --glass-bg: rgba(255, 255, 255, 0.85); --input-bg: #fff; }
-        .dark { --text-main: #fdfbf7; --bg-main: #050505; --glass-bg: rgba(15, 15, 15, 0.9); --input-bg: #111; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: 0.4s; overflow-x: hidden; padding-bottom: 90px; }
+        :root { --text-main: #fdfbf7; --bg-main: #050505; --glass-bg: rgba(15, 15, 15, 0.9); --input-bg: #111; }
+        .light { --text-main: #002e50; --bg-main: #fdfbf7; --glass-bg: rgba(255, 255, 255, 0.85); --input-bg: #fff; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: background-color 0.4s, color 0.4s; overflow-x: hidden; padding-bottom: 95px; }
         .glass { background: var(--glass-bg); backdrop-filter: blur(30px); border: 1px solid rgba(128, 128, 128, 0.1); }
         .btn-brand { background: linear-gradient(135deg, #004a80 0%, #f7941d 100%); background-size: 200% auto; transition: 0.5s; color: white !important; font-weight: 800; text-transform: uppercase; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
         .btn-brand:hover { background-position: right center; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 74, 128, 0.2); }
-        .tab-btn { padding: 12px 20px; font-weight: 800; text-transform: uppercase; font-size: 10px; border-radius: 12px; transition: 0.3s; opacity: 0.4; color: var(--text-main); }
-        .tab-btn.active { background: rgba(247, 148, 29, 0.1); color: #f7941d; opacity: 1; border: 1px solid rgba(247, 148, 29, 0.2); }
+        
+        /* Fixed Symmetrical Navigation Pill Architecture */
+        .tab-btn { width: 100%; text-align: center; padding: 12px 0; font-weight: 800; text-transform: uppercase; font-size: 10px; border-radius: 20px; transition: 0.3s; opacity: 0.4; color: var(--text-main); border: 1px solid transparent; }
+        .tab-btn.active { background: rgba(247, 148, 29, 0.15); color: #f7941d; opacity: 1; border: 1px solid rgba(247, 148, 29, 0.25); }
+        
         .input-field { background: var(--input-bg); border: 1px solid rgba(128, 128, 128, 0.2); color: var(--text-main); outline: none; padding: 1rem; border-radius: 14px; width: 100%; }
-        #toast-box { position: fixed; bottom: 6.5rem; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
+        #toast-box { position: fixed; bottom: 7rem; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
         .toast-pill { background: #111; color: #fff; padding: 0.6rem 1.5rem; border-radius: 99px; border: 1px solid rgba(255,255,255,0.1); font-size: 10px; font-weight: 800; text-transform: uppercase; animation: popUp 0.3s forwards; }
         
         #vault-wrapper { height: 100%; width: 100%; aspect-ratio: 16/9; max-height: 80vh; display: flex; align-items: center; justify-content: center; background: #000; position: relative; }
@@ -71,7 +74,8 @@
         .search-container { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 40px; }
         .search-container.expanded { width: 260px; }
 
-        #floating-bottom-nav-bar { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 4500; width: calc(100% - 2rem); max-width: 480px; }
+        #floating-bottom-nav-bar { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 4500; width: calc(100% - 2rem); max-width: 500px; transition: transform 0.3s ease, opacity 0.3s ease; }
+        #floating-bottom-nav-bar.nav-hidden { transform: translate(-50(), 100px); opacity: 0; pointer-events: none; }
 
         @keyframes popUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -127,7 +131,7 @@
                     <input type="email" id="auth-email" placeholder="Email" class="input-field">
                     <input type="password" id="auth-pass" placeholder="Password" class="input-field">
                     <button onclick="handleAuth()" id="primary-auth-btn" class="w-full py-4 btn-brand">Sign In</button>
-                    <button onclick="handleGoogle()" class="w-full py-4 glass text-[#004a80] dark:text-white rounded-2xl font-bold uppercase text-[10px] flex items-center justify-center gap-4 border border-zinc-500/20">
+                    <button onclick="handleGoogle()" class="w-full py-4 glass dark:text-white text-[#002e50] rounded-2xl font-bold uppercase text-[10px] flex items-center justify-center gap-4 border border-zinc-500/20">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5"> 
                         Continue with Google
                     </button>
@@ -158,8 +162,7 @@
                         <button onclick="toggleExpandableSearch(event)" class="w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-white shrink-0 outline-none">
                             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="8" cy="8" r="6" /><path d="M13 13l4 4" /></svg>
                         </button>
-                        <!-- Added text-slate-900 to ensure clear visibility inside light background containers -->
-                        <input type="text" id="g-search" oninput="reactiveSearch(this.value)" onblur="collapseSearchOnBlur()" placeholder="Search campus..." class="bg-transparent text-sm w-full outline-none pr-4 text-slate-900 dark:text-white hidden">
+                        <input type="text" id="g-search" oninput="reactiveSearch(this.value)" onblur="collapseSearchOnBlur()" placeholder="Search campus..." class="bg-transparent text-sm w-full outline-none pr-4 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 hidden">
                     </div>
                     
                     <div id="nav-action-icons-row" class="flex items-center gap-3 md:gap-4">
@@ -177,12 +180,13 @@
             
             <main id="main-content" class="p-4 md:p-10 max-w-7xl mx-auto w-full flex-grow"></main>
 
-            <div id="floating-bottom-nav-bar" class="glass p-1.5 rounded-[2rem] shadow-2xl border border-white/10">
-                <div class="flex justify-between items-center w-full gap-0.5">
-                    <button id="tab-home" onclick="setTab('home')" class="tab-btn active flex-1 text-center py-3.5">Home</button>
-                    <button id="tab-groups" onclick="setTab('groups')" class="tab-btn flex-1 text-center py-3.5">Groups</button>
-                    <button id="tab-courses" onclick="setTab('courses')" class="tab-btn flex-1 text-center py-3.5">Courses</button>
-                    <button id="tab-content" onclick="setTab('content')" class="tab-btn flex-1 text-center py-3.5">Content</button>
+            <!-- Floating Symmetrical Bottom Nav Bar Pinned Structure -->
+            <div id="floating-bottom-nav-bar" class="glass p-2 rounded-[2.5rem] shadow-2xl border border-white/10">
+                <div class="grid grid-cols-4 w-full gap-1 justify-items-center items-center">
+                    <button id="tab-home" onclick="setTab('home')" class="tab-btn active">Home</button>
+                    <button id="tab-groups" onclick="setTab('groups')" class="tab-btn">Groups</button>
+                    <button id="tab-courses" onclick="setTab('courses')" class="tab-btn">Courses</button>
+                    <button id="tab-content" onclick="setTab('content')" class="tab-btn">Content</button>
                 </div>
             </div>
         </div>
@@ -258,6 +262,13 @@
                     setTab(tabsOrderIndex[currentTabPos + 1]);
                 }
             }
+        }
+
+        function toggleBottomNavBarVisibility(visible) {
+            const navBar = document.getElementById('floating-bottom-nav-bar');
+            if(!navBar) return;
+            if(visible) navBar.classList.remove('nav-hidden');
+            else navBar.classList.add('nav-hidden');
         }
 
         function activateAntiTheftShields() {
@@ -376,21 +387,22 @@
         window.showNotificationsHub = () => {
             const modal = document.getElementById('custom-modal');
             const content = document.getElementById('modal-content');
+            toggleBottomNavBarVisibility(false);
             modal.classList.remove('hidden');
             
             if(notificationsMap.length === 0) {
-                content.innerHTML = `<div class="text-center py-10"><p class="text-sm font-bold opacity-30 uppercase">No updates detected</p></div>`;
+                content.innerHTML = `<div class="text-center py-10"><p class="text-sm font-bold opacity-30 uppercase">No updates found</p></div>`;
                 return;
             }
             
             content.innerHTML = `
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-black italic">Live Activity Hub</h3>
+                    <h3 class="text-xl font-black italic">Activity updates</h3>
                     <button onclick="clearNotifications()" class="text-[10px] uppercase font-black text-brandOrange border border-brandOrange/20 px-3 py-1 rounded-xl hover:bg-brandOrange/5">Clear All</button>
                 </div>
                 <div class="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
                     ${notificationsMap.map(n => `
-                        <div class="p-4 rounded-2xl border border-white/5 bg-white/5 text-xs text-slate-700 dark:text-zinc-200">
+                        <div class="p-4 rounded-2xl border border-white/5 bg-white/5 text-xs">
                             <div class="flex justify-between items-center mb-1">
                                 <span class="font-bold text-brandOrange uppercase text-[9px] tracking-wider">${n.type}</span>
                                 <span class="opacity-30 text-[9px]">${n.time}</span>
@@ -432,35 +444,35 @@
             return `<span class="absolute bottom-2 right-2 ${color} text-[8px] font-black tracking-widest px-2 py-0.5 rounded-md shadow-md uppercase border border-white/10 z-10">${badgeText}</span>`;
         };
 
-        // --- UPDATED SETTINGS HUB WITH DISPLACED LOGOUT OPTION ---
         window.showProfileSettings = () => {
             const modal = document.getElementById('custom-modal');
             const content = document.getElementById('modal-content');
+            toggleBottomNavBarVisibility(false);
             modal.classList.remove('hidden');
             
             content.innerHTML = `
-                <h3 class="text-2xl font-black italic mb-6">Profile Settings Workspace</h3>
-                <div class="space-y-6 text-slate-900 dark:text-white">
+                <h3 class="text-2xl font-black italic mb-6">Profile Settings</h3>
+                <div class="space-y-6">
                     <div class="text-center relative">
                         <img id="profile-hub-preview" src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-24 h-24 rounded-full mx-auto border-4 border-brandOrange p-1 object-cover bg-black">
                         <label class="block mt-3 text-[10px] font-black uppercase text-brandOrange tracking-wider cursor-pointer hover:underline">
-                            Upload Custom Matrix Image
+                            Change Profile Picture
                             <input type="file" id="hub-avatar-file" class="hidden" accept="image/*" onchange="processLocalAvatarUpload(this)">
                         </label>
                     </div>
                     <div class="space-y-2">
-                        <p class="text-[9px] font-bold uppercase opacity-40 ml-2">Identity Signature label</p>
+                        <p class="text-[9px] font-bold uppercase opacity-40 ml-2">Full Name</p>
                         <input type="text" id="profile-hub-name" value="${profile.name}" class="input-field">
                     </div>
-                    <button onclick="saveProfileWorkspaceChanges()" class="w-full py-4 btn-brand text-xs">Commit Updates</button>
+                    <button onclick="saveProfileWorkspaceChanges()" class="w-full py-4 btn-brand text-xs">Save Changes</button>
                     
                     <div class="pt-6 border-t border-red-500/10 mt-10">
                         <h4 class="text-xs font-black uppercase text-red-500 tracking-wider mb-2">Destructive Operations Matrix</h4>
-                        <p class="text-[11px] opacity-50 mb-4 leading-relaxed">Account purging drops all credential licenses, course indices, managed synchronization records, and identity traces across the live instance mapping nodes.</p>
-                        <button onclick="triggerAccountPurgePipeline()" class="w-full py-3 bg-red-600/10 text-red-500 border border-red-600/20 rounded-2xl text-[10px] font-black uppercase hover:bg-red-600 hover:text-white transition-all">Annihilate Account Profile</button>
-                    
-                        <!-- Shifted secure session teardown handle placement -->
-                        <button onclick="logout()" class="w-full py-3.5 mt-4 bg-zinc-500/10 hover:bg-zinc-600/30 text-zinc-500 dark:text-zinc-400 border border-zinc-500/20 rounded-2xl text-[10px] font-black uppercase transition-all">Logout Session</button>
+                        <p class="text-[11px] opacity-50 mb-4 leading-relaxed">Deleting your account removes all access licenses, course enrollments, sync data, and identity records permanently.</p>
+                        <div class="flex flex-col gap-3">
+                            <button onclick="triggerAccountPurgePipeline()" class="w-full py-3 bg-red-600/10 text-red-500 border border-red-600/20 rounded-2xl text-[10px] font-black uppercase hover:bg-red-600 hover:text-white transition-all">Delete My Account</button>
+                            <button onclick="logout()" class="w-full py-3 bg-zinc-600/10 text-zinc-400 border border-zinc-600/20 rounded-2xl text-[10px] font-black uppercase hover:bg-zinc-600 hover:text-white transition-all">Sign out of session</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -479,7 +491,7 @@
 
         window.saveProfileWorkspaceChanges = async () => {
             const updatedName = document.getElementById('profile-hub-name').value.trim();
-            if(!updatedName) return toast("Identity label criteria blank", "error");
+            if(!updatedName) return toast("Name cannot be left blank", "error");
             
             let updatePayload = { name: updatedName };
             if(window._tempHubAvatarBuffer) {
@@ -487,16 +499,16 @@
             }
             
             await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), updatePayload);
-            toast("Profile changes saved successfully");
+            toast("Profile updated successfully");
             location.reload();
         };
 
         window.triggerAccountPurgePipeline = async () => {
-            if(!confirm("STAGE 1 WARNING: Are you fully prepared to execute an irreversible profile purge? All campus group mappings and structural nodes will be severed.")) return;
-            if(!confirm("STAGE 2 SECURITY ENFORCEMENT: Final validation directive. Re-playing authentication logs post-handshake cannot restore this index structure. Continue?")) return;
+            if(!confirm("Warning: Are you completely sure you want to delete your account? This action cannot be undone.")) return;
+            if(!confirm("Final verification: You will lose all your course access and progress. Proceed?")) return;
             
             const dynamicVerificationToken = Math.floor(100000 + Math.random() * 900000);
-            toast("Routing verification check code...");
+            toast("Sending security verification code...");
             
             try {
                 await Core.sendOTP(profile.email, dynamicVerificationToken);
@@ -505,22 +517,22 @@
                 
                 content.innerHTML = `
                     <div class="text-center p-4">
-                        <h3 class="text-2xl font-black text-red-500 uppercase tracking-widest mb-4">Purge Gate Check</h3>
-                        <p class="text-xs opacity-60 mb-6">Enter the handshake verification payload sent to ${profile.email} to close your account index.</p>
+                        <h3 class="text-2xl font-black text-red-500 uppercase tracking-widest mb-4">Security Verification</h3>
+                        <p class="text-xs opacity-60 mb-6">Enter the verification code sent to ${profile.email} to confirm account deletion.</p>
                         <input type="number" id="purge-token-input" placeholder="000000" class="input-field text-center text-4xl font-black mb-6">
-                        <button onclick="finalizeDestructivePurge(${dynamicVerificationToken})" class="w-full py-4 bg-red-600 text-white font-black uppercase rounded-2xl tracking-widest text-xs">Execute Irreversible Destruction</button>
+                        <button onclick="finalizeDestructivePurge(${dynamicVerificationToken})" class="w-full py-4 bg-red-600 text-white font-black uppercase rounded-2xl tracking-widest text-xs">Permanently Delete Account</button>
                     </div>
                 `;
             } catch(e) {
-                toast("Verification proxy network timeout", "error");
+                toast("Verification dispatch failed", "error");
             }
         };
 
         window.finalizeDestructivePurge = async (matchToken) => {
             const inputVal = document.getElementById('purge-token-input').value;
-            if(inputVal != matchToken) return toast("Handshake vector validation rejection", "error");
+            if(inputVal != matchToken) return toast("Incorrect verification code", "error");
             
-            toast("Annihilating cluster indices...");
+            toast("Deleting account logs...");
             await Core.deleteDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid));
             
             if(Core.auth.currentUser) {
@@ -579,12 +591,14 @@
 
             if (isDirectFile && cleanUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)/)) {
                 container.innerHTML = `<div class="w-full h-full flex items-center justify-center bg-zinc-950"><img src="${rawUrl}" class="max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl"></div>`;
+                toggleBottomNavBarVisibility(false);
                 activateAntiTheftShields();
                 return;
             }
 
             if (isDirectFile && cleanUrl.includes('.pdf')) {
                 container.innerHTML = `<iframe src="https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=true" class="w-full h-full border-0 rounded-2xl"></iframe>`;
+                toggleBottomNavBarVisibility(false);
                 activateAntiTheftShields();
                 return;
             }
@@ -611,6 +625,7 @@
             });
 
             videoPlayer.on('enterfullscreen', () => {
+                toggleBottomNavBarVisibility(false);
                 const blankOverlay = document.getElementById('anti-theft-blank');
                 const watermarkEl = document.getElementById('secure-watermark');
                 const targetNode = document.querySelector('.plyr');
@@ -621,6 +636,7 @@
             });
 
             videoPlayer.on('exitfullscreen', () => {
+                toggleBottomNavBarVisibility(true);
                 const blankOverlay = document.getElementById('anti-theft-blank');
                 const watermarkEl = document.getElementById('secure-watermark');
                 const wrapper = document.getElementById('vault-wrapper');
@@ -630,6 +646,7 @@
                 }
             });
 
+            toggleBottomNavBarVisibility(false);
             activateAntiTheftShields();
         }
 
@@ -718,17 +735,17 @@
                     box.innerHTML = `
                         <h3 class="text-2xl font-black italic mb-6">Creator Insights</h3>
                         <div class="flex flex-row flex-nowrap overflow-x-auto gap-3 w-full pb-4 mb-10 selection:bg-transparent">
-                            <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 min-w-[140px] flex-1">
+                            <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 min-w-[120px] flex-1">
                                 <p class="text-[9px] opacity-40 font-black uppercase">Uploads</p>
-                                <h2 class="text-3xl md:text-4xl font-black mt-1">${contentSnap.size}</h2>
+                                <h2 class="text-2xl md:text-4xl font-black mt-1">${contentSnap.size}</h2>
                             </div>
-                            <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 min-w-[140px] flex-1">
+                            <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 min-w-[120px] flex-1">
                                 <p class="text-[9px] opacity-40 font-black uppercase">Courses</p>
-                                <h2 class="text-3xl md:text-4xl font-black mt-1">${courseSnap.size}</h2>
+                                <h2 class="text-2xl md:text-4xl font-black mt-1">${courseSnap.size}</h2>
                             </div>
-                            <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 min-w-[140px] flex-1">
+                            <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 min-w-[120px] flex-1">
                                 <p class="text-[9px] opacity-40 font-black uppercase">Groups</p>
-                                <h2 class="text-3xl md:text-4xl font-black mt-1">${groupSnap.size}</h2>
+                                <h2 class="text-2xl md:text-4xl font-black mt-1">${groupSnap.size}</h2>
                             </div>
                         </div>
                         <div id="feed" class="space-y-4"></div>`;
@@ -748,18 +765,16 @@
                 const box = document.getElementById('tab-display');
                 if (currentTab === 'home') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Suggested Syllabus</h3><div id="suggested-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div><h3 class="text-2xl font-black italic mb-6">Subscribed Feed Streams</h3><div id="feed" class="space-y-6"></div>`;
-                    
                     const allContent = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(30)));
                     const allContentSorted = allContent.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
                     renderFeed(allContentSorted.slice(0,6), false, 'suggested-feed');
                     
-                    // Populate student subscription query timeline stream
-                    if (profile.subs && profile.subs.length > 0) {
+                    if (profile.subs?.length) {
                         const subContent = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs)));
                         const subContentSorted = subContent.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
                         renderFeed(subContentSorted, false, 'feed');
                     } else {
-                        document.getElementById('feed').innerHTML = `<p class="text-xs font-bold opacity-30 text-center py-8">Follow an instructor to view updates here.</p>`;
+                        document.getElementById('feed').innerHTML = `<p class="text-xs font-bold opacity-30 text-center py-10">Follow updates from teachers to view updates here.</p>`;
                     }
                 } else if (currentTab === 'groups') {
                     box.innerHTML = `<div class="glass p-8 rounded-[3rem] mb-10"><h3 class="text-2xl font-black mb-4">Join Campus Hub</h3><div class="flex gap-4"><input id="hub-code" placeholder="OC-XXXXXX" class="input-field"><button onclick="joinGroup()" class="btn-brand px-10">Join</button></div></div><div id="student-groups" class="space-y-4"></div>`;
@@ -769,14 +784,10 @@
                     const coSorted = coSnap.docs.sort((a,b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
                     renderCourses(coSorted, false);
                 } else if (currentTab === 'content') {
-                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Subscribed Content Index</h3><div id="subscribed-content-feed" class="space-y-4"></div>`;
-                    if(profile.subs && profile.subs.length > 0) {
-                        const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs)));
-                        const sortedDocs = snap.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
-                        renderFeed(sortedDocs, false, 'subscribed-content-feed');
-                    } else {
-                        document.getElementById('subscribed-content-feed').innerHTML = `<p class="text-xs font-bold opacity-30 text-center py-8">No content available. Follow an instructor to populate this tab.</p>`;
-                    }
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">All Course Materials</h3><div id="feed" class="space-y-4"></div>`;
+                    const allContentGlobal = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(40)));
+                    const allContentGlobalSorted = allContentGlobal.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
+                    renderFeed(allContentGlobalSorted, false);
                 }
             }
         };
@@ -851,10 +862,10 @@
             const index = cart.findIndex(item => item.id === id);
             if (index > -1) { 
                 cart.splice(index, 1); 
-                toast("Course removed from cart"); 
+                toast("Course removed from dynamic manifest"); 
             } else { 
                 cart.push({ id, title, price }); 
-                toast("Course added to cart"); 
+                toast("Added to checkout manifest"); 
             }
             localStorage.setItem('oc_cart_manifest', JSON.stringify(cart));
             updateCartPill();
@@ -871,19 +882,20 @@
         window.showCart = () => {
             const modal = document.getElementById('custom-modal');
             const content = document.getElementById('modal-content');
+            toggleBottomNavBarVisibility(false);
             modal.classList.remove('hidden');
             if (!cart || cart.length === 0) {
-                content.innerHTML = `<div class="text-center py-10"><p class="text-lg font-black opacity-30 uppercase text-slate-700 dark:text-zinc-200">Your Cart is Empty</p></div>`;
+                content.innerHTML = `<div class="text-center py-10"><p class="text-lg font-black opacity-30 uppercase">Your Cart is Empty</p></div>`;
                 return;
             }
             let total = cart.reduce((sum, i) => sum + parseFloat(i.price || 0), 0);
             content.innerHTML = `
-                <h3 class="text-2xl font-black italic mb-6">Checkout Manifest</h3>
-                <div class="space-y-4 mb-8 text-slate-700 dark:text-zinc-200">
+                <h3 class="text-2xl font-black italic mb-6">SaaS Checkout Matrix</h3>
+                <div class="space-y-4 mb-8">
                     ${cart.map(i => `<div class="flex justify-between items-center glass p-4 rounded-2xl border border-white/5"><div><p class="font-bold text-sm">${i.title}</p><p class="text-xs text-brandOrange font-bold">₹${i.price}</p></div><button onclick="removeItemFromCart('${i.id}')" class="text-xs text-red-500 font-bold">Remove</button></div>`).join('')}
                 </div>
-                <div class="flex justify-between items-center mb-6 border-t border-white/10 pt-4"><p class="text-sm uppercase opacity-40 font-bold">Total Value</p><p class="text-2xl font-black text-brandOrange">₹${total}</p></div>
-                <button onclick="simulateBulkCheckout()" class="w-full py-4 btn-brand">Process Payment</button>
+                <div class="flex justify-between items-center mb-6 border-t border-white/10 pt-4"><p class="text-sm uppercase opacity-40 font-bold">Aggregate Value</p><p class="text-2xl font-black text-brandOrange">₹${total}</p></div>
+                <button onclick="simulateBulkCheckout()" class="w-full py-4 btn-brand">Execute Order Processing</button>
             `;
         };
 
@@ -899,13 +911,12 @@
                 const cDoc = await Core.getDoc(Core.doc(Core.db, "courses", item.id));
                 if (cDoc.exists()) {
                     await Core.updateDoc(Core.doc(Core.db, "groups", cDoc.data().groupId), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
-                    pushSystemNotification("ENROLLMENT", `Successfully enrolled in course: "${item.title}"`);
                 }
             }
             cart = []; 
             localStorage.removeItem('oc_cart_manifest');
             updateCartPill();
-            toast("Transaction approved! Enrolled successfully.");
+            toast("Bulk transaction approved! Learning matrix operational.");
             document.getElementById('custom-modal').classList.add('hidden');
             setTab('groups');
         };
@@ -919,7 +930,7 @@
             const content = cS.docs.filter(d => d.data().title.toLowerCase().includes(q.toLowerCase())).sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
             const groups = gS.docs.filter(d => d.data().code === q || d.data().name.toLowerCase().includes(q.toLowerCase()));
             
-            main.innerHTML = `<div class="space-y-12">${teachers.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Instructors</h3><div class="grid gap-4">${teachers.map(m => `<div onclick="viewTeacher('${m.data().teacherId}')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center cursor-pointer group"><div class="flex items-center gap-6"><img src="${m.data().photo || 'https://ui-avatars.com/api/?name='+m.data().name}" class="w-16 h-16 rounded-2xl object-cover bg-brandBlue shadow-lg bg-black"><div><h3 class="text-xl font-black italic text-brandOrange">${m.data().name}</h3><p class="text-[10px] opacity-30 font-bold">${m.data().teacherId}</p></div></div><p class="text-brandBlue font-black uppercase text-[10px]">View Profile →</p></div>`).join('')}</div></div>` : ''}${groups.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Groups</h3><div class="grid gap-4">${groups.map(g => `<div class="glass p-6 rounded-[2.5rem] flex justify-between items-center border border-white/5"><div><span class="text-[9px] text-brandOrange font-black uppercase tracking-widest">${g.data().type}</span><h3 class="text-xl font-black mt-1">${g.data().name}</h3><p class="text-xs opacity-50">${g.data().code}</p></div><button onclick="handleHubSearchJoin('${g.id}','${g.data().code}')" class="btn-brand px-8 py-2 text-[10px]">Access</button></div>`).join('')}</div></div>` : ''}${content.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Lessons Catalog</h3><div class="grid gap-4">${content.map(d => renderResourceCard(d, false)).join('')}</div></div>` : ''}</div>`;
+            main.innerHTML = `<div class="space-y-12">${teachers.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Instructors</h3><div class="grid gap-4">${teachers.map(m => `<div onclick="viewTeacher('${m.data().teacherId}')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center cursor-pointer group"><div class="flex items-center gap-6"><img src="${m.data().photo || 'https://ui-avatars.com/api/?name='+m.data().name}" class="w-16 h-16 rounded-2xl object-cover bg-brandBlue shadow-lg"><div><h3 class="text-xl font-black italic">${m.data().name}</h3><p class="text-[10px] opacity-30 font-bold">${m.data().teacherId}</p></div></div><p class="text-brandBlue font-black uppercase text-[10px]">Biography →</p></div>`).join('')}</div></div>` : ''}${groups.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Groups</h3><div class="grid gap-4">${groups.map(g => `<div class="glass p-6 rounded-[2.5rem] flex justify-between items-center border border-white/5"><div><span class="text-[9px] text-brandOrange font-black uppercase tracking-widest">${g.data().type}</span><h3 class="text-xl font-black mt-1">${g.data().name}</h3><p class="text-xs opacity-50">${g.data().code}</p></div><button onclick="handleHubSearchJoin('${g.id}','${g.data().code}')" class="btn-brand px-8 py-2 text-[10px]">Access</button></div>`).join('')}</div></div>` : ''}${content.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Lessons Catalog</h3><div class="grid gap-4">${content.map(d => renderResourceCard(d, false)).join('')}</div></div>` : ''}</div>`;
         };
 
         window.handleHubSearchJoin = (id, code) => { setTab('groups'); setTimeout(() => { const target = document.getElementById('hub-code'); if(target) target.value = code; joinGroup(); }, 500); };
@@ -953,7 +964,7 @@
             if (isSignup) {
                 tempUser = { e, p, n: document.getElementById('reg-name').value, r: document.getElementById('reg-role').value };
                 otpCode = Math.floor(100000 + Math.random() * 900000);
-                try { await Core.sendOTP(e, otpCode); document.getElementById('verify-note').innerText = `OTP tracking reference routed to ${e}`; showScreen('verify-screen'); } catch(err) { toast("Relay network anomaly", "error"); }
+                try { await Core.sendOTP(e, otpCode); document.getElementById('verify-note').innerText = `OTP verification sent to ${e}`; showScreen('verify-screen'); } catch(err) { toast("Relay network anomaly", "error"); }
             } else { try { await Core.signInWithEmailAndPassword(Core.auth, e, p); } catch (err) { toast(err.message, "error"); } }
         };
 
@@ -962,10 +973,10 @@
                 try {
                     const { e, p, n, r } = tempUser;
                     const cred = await Core.createUserWithEmailAndPassword(Core.auth, e, p);
-                    await Core.setDoc(Core.doc(Core.doc(Core.db, "users", cred.user.uid)), { name: n, role: r, teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), email: e, subs: [], photo: "", joined: new Date().toLocaleDateString() });
+                    await Core.setDoc(Core.doc(Core.db, "users", cred.user.uid), { name: n, role: r, teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), email: e, subs: [], photo: "", joined: new Date().toLocaleDateString() });
                     location.reload();
                 } catch(err) { toast(err.message, "error"); }
-            } else toast("Verification token mismatch", "error");
+            } else toast("Verification payload rejection", "error");
         };
 
         window.toggleAuth = () => { isSignup = !isSignup; document.getElementById('signup-fields').classList.toggle('hidden'); document.getElementById('primary-auth-btn').innerText = isSignup ? "Verify Handshake" : "Sign In"; document.getElementById('toggle-auth-btn').innerText = isSignup ? "Return to active session authentication" : "Initialize System Profile"; };
@@ -974,7 +985,7 @@
 
         window.finalizeProfile = async () => {
             const n = document.getElementById('ob-name').value, p = document.getElementById('ob-pass').value, r = document.getElementById('ob-role').value;
-            if (!n || !p) return toast("Form vectors unchecked", "error");
+            if (!n || !p) return toast("Form fields incomplete", "error");
             try {
                 await Core.updatePassword(Core.auth.currentUser, p);
                 await Core.setDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { name: n, role: r, teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), email: Core.auth.currentUser.email, subs: [], photo: Core.auth.currentUser.photoURL || "" });
@@ -986,7 +997,7 @@
             const n = document.getElementById('group-name').value; if (!n) return toast("Label missing");
             const c = "OC-" + Math.random().toString(36).substring(2, 8).toUpperCase();
             await Core.addDoc(Core.collection(Core.db, "groups"), { name: n, type: document.getElementById('group-type').value, code: c, teacherId: profile.teacherId, teacherName: profile.name, members: [Core.auth.currentUser.uid], pending: [], createdAt: Core.serverTimestamp() });
-            toast(`Manifest locked: ${c}`); loadHome();
+            toast(`Group created: ${c}`); loadHome();
         };
 
         window.launchCourse = async () => {
@@ -994,7 +1005,7 @@
             let p = tier === 'free' ? "0" : document.getElementById('c-price').value;
             const vt = Array.from(document.querySelectorAll('.cv-t')).map(i => i.value);
             const vu = Array.from(document.querySelectorAll('.cv-u')).map(i => i.value);
-            if (!t || !vu[0]) return toast("Validation vectors incomplete", "error");
+            if (!t || !vu[0]) return toast("Validation indicators incomplete", "error");
             const playlist = vt.map((title, i) => ({ title, url: vu[i] }));
             const code = "HUB-" + Math.random().toString(36).substring(2, 8).toUpperCase();
             const gRef = await Core.addDoc(Core.collection(Core.db, "groups"), { 
@@ -1003,23 +1014,22 @@
             await Core.addDoc(Core.collection(Core.db, "courses"), { 
                 title: t, description: d, thumbnail: window.getSmartPreview(vu[0]), playlist, price: p, teacherId: profile.teacherId, teacherName: profile.name, groupId: gRef.id, createdAt: Core.serverTimestamp() 
             });
-            toast("Course module configured successfully"); loadHome();
+            toast("Course launched successfully"); loadHome();
         };
 
         window.joinGroup = async () => {
             const c = (document.getElementById('hub-code')?.value || document.getElementById('g-search').value).trim().toUpperCase();
             const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("code", "==", c)));
-            if (snap.empty) return toast("Address route null", "error");
+            if (snap.empty) return toast("Group code not found", "error");
             const g = snap.docs[0], d = g.data();
-            if (d.members.includes(Core.auth.currentUser.uid)) return toast("Roster contains duplicate");
+            if (d.members.includes(Core.auth.currentUser.uid)) return toast("Already a member of this hub");
             if (d.type === 'public') {
                 await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
-                pushSystemNotification("HUB SYNC", `Joined group workspace hub: "${d.name}"`);
+                pushSystemNotification("HUB SYNC", `Joined community group: "${d.name}"`);
             } else {
                 await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { pending: Core.arrayUnion({ uid: Core.auth.currentUser.uid, name: profile.name }) });
-                pushSystemNotification("ADMISSION GATE", `Requested admission access credentials for gated hub: "${d.name}"`);
             }
-            toast("Route verification requested"); loadHome();
+            toast("Access requested"); loadHome();
         };
 
         window.openResource = async (id, url, title) => {
@@ -1039,21 +1049,22 @@
             const content = document.getElementById('modal-content');
             const inCart = cart && cart.some(item => item.id === id);
             
+            toggleBottomNavBarVisibility(false);
             content.innerHTML = `
-                <img src="${c.thumbnail}" class="w-full h-auto max-h-64 object-cover rounded-3xl mb-6 shadow-2xl border border-white/10 bg-black">
+                <img src="${c.thumbnail}" class="w-full h-auto max-h-64 object-cover rounded-3xl mb-6 shadow-2xl border border-white/10">
                 <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-black italic text-brandOrange">${c.title}</h2>${isT ? `<button onclick="delC('${id}')" class="text-red-500 font-black uppercase text-[10px]">Purge</button>` : ''}</div>
-                <p class="opacity-70 mb-6 text-xs leading-relaxed text-slate-700 dark:text-zinc-300">${c.description}</p>
+                <p class="opacity-70 mb-6 text-xs leading-relaxed">${c.description}</p>
                 <div class="space-y-3 mb-8">
                     <p class="text-[9px] font-black uppercase opacity-40 tracking-wider">Course Syllabus Blueprint</p>
                     ${c.playlist.map((v, i) => `
-                        <div onclick="openResource('null','${v.url}','${v.title}')" class="bg-white/5 p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-white/10 border border-white/5 transition-all text-slate-700 dark:text-zinc-200">
+                        <div onclick="openResource('null','${v.url}','${v.title}')" class="bg-white/5 p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-white/10 border border-white/5 transition-all">
                             <p class="text-xs font-bold">${i+1}. ${v.title}</p>
                             <span class="text-[10px] text-brandOrange font-black uppercase tracking-tighter">Access Stream</span>
                         </div>
                     `).join('')}
                 </div>
                 <div class="flex gap-4">
-                    <button onclick="toggleCartAction('${id}','${c.title}','${c.price}')" class="flex-1 py-5 glass tracking-widest text-xs font-black uppercase rounded-2xl border border-white/20 text-slate-700 dark:text-zinc-200">${inCart?'Drop from Cart':'Add to Checkout Cart'}</button>
+                    <button onclick="toggleCartAction('${id}','${c.title}','${c.price}')" class="flex-1 py-5 glass tracking-widest text-xs font-black uppercase rounded-2xl border border-white/20">${inCart?'Drop from Cart':'Add to Checkout Cart'}</button>
                     <button onclick="enrollCourse('${id}','${c.groupId}')" class="flex-1 py-5 btn-brand shadow-xl">${parseFloat(c.price)===0?'Instant Open Enrolment':`Acquire License (₹${c.price})`}</button>
                 </div>
             `;
@@ -1062,8 +1073,7 @@
 
         window.enrollCourse = async (cid, gid) => {
             await Core.updateDoc(Core.doc(Core.db, "groups", gid), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
-            pushSystemNotification("ENROLLMENT", "Instantly enrolled in open access course curriculum tier");
-            toast("License synced successfully! Roster operation active.");
+            toast("Enrolled successfully!");
             document.getElementById('custom-modal').classList.add('hidden');
             setTab('groups');
         };
@@ -1079,7 +1089,7 @@
             const container = document.getElementById('courses-feed') || document.getElementById('tab-display');
             if (container) container.innerHTML = `<div class="grid md:grid-cols-2 gap-6 w-full">${docs.map(doc => {
                 const c = doc.data();
-                return `<div class="glass p-6 rounded-[2.5rem] border border-white/5 flex flex-col justify-between h-full"><div class="w-full flex items-center justify-center overflow-hidden rounded-2xl mb-4 bg-zinc-950/40"><img src="${c.thumbnail}" class="w-full h-auto max-h-52 object-cover border border-white/5 bg-black"></div><div><h2 class="text-xl font-black italic mb-2 truncate">${c.title}</h2><div class="flex justify-between items-center mt-4"><h3 class="text-lg font-black text-brandOrange">${parseFloat(c.price)===0?'FREE':'₹'+c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2 text-xs">Inspect Module</button></div></div></div>`;
+                return `<div class="glass p-6 rounded-[2.5rem] border border-white/5 flex flex-col justify-between h-full"><div class="w-full flex items-center justify-center overflow-hidden rounded-2xl mb-4 bg-zinc-950/40"><img src="${c.thumbnail}" class="w-full h-auto max-h-52 object-cover border border-white/5"></div><div><h2 class="text-xl font-black italic mb-2 truncate">${c.title}</h2><div class="flex justify-between items-center mt-4"><h3 class="text-lg font-black text-brandOrange">${parseFloat(c.price)===0?'FREE':'₹'+c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2 text-xs">Inspect Module</button></div></div></div>`;
             }).join('')}</div>`;
         }
 
@@ -1096,16 +1106,16 @@
                 }
             }
 
-            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative flex-shrink-0 self-start md:self-center"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md border border-white/10 bg-black">${window.getFileBadge(i.url)}</div><div class="overflow-hidden"><div class="flex flex-wrap items-center gap-2"><h4 class="font-black text-lg italic truncate max-w-xs md:max-w-md">${i.title}</h4> ${liveStatusLabel}</div><p class="text-[9px] opacity-40 uppercase font-bold tracking-widest mt-1">${i.tName} • ${i.views || 0} Views ${i.liveStartTime ? '• Interval Scheduled: ' + i.liveDate + ' [' + i.liveStartTime + ' - ' + (i.liveEndTime || 'End') + ']' : ''}</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Access File</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
+            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative flex-shrink-0 self-start md:self-center"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md border border-white/10">${window.getFileBadge(i.url)}</div><div class="overflow-hidden"><div class="flex flex-wrap items-center gap-2"><h4 class="font-black text-lg italic truncate max-w-xs md:max-w-md">${i.title}</h4> ${liveStatusLabel}</div><p class="text-[9px] opacity-40 uppercase font-bold tracking-widest mt-1">${i.tName} • ${i.views || 0} Views ${i.liveStartTime ? '• Scheduled: ' + i.liveDate + ' [' + i.liveStartTime + ' - ' + (i.liveEndTime || 'End') + ']' : ''}</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Access File</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
         }
         
-        window.delR = async (id) => { if(confirm("Confirm extraction removal?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); loadHome(); } };
-        window.editR = (id,t,u) => { document.getElementById('modal-content').innerHTML = `<h3 class="text-xl font-black mb-4 italic">Edit Content Properties</h3><input id="ed-t" value="${t}" class="input-field mb-2 text-xs"><input id="ed-u" value="${u}" class="input-field mb-4 text-xs"><button onclick="saveR('${id}')" class="w-full py-4 btn-brand text-xs">Save Configuration</button>`; document.getElementById('custom-modal').classList.remove('hidden'); };
+        window.delR = async (id) => { if(confirm("Confirm asset removal?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); loadHome(); } };
+        window.editR = (id,t,u) => { document.getElementById('modal-content').innerHTML = `<h3 class="text-xl font-black mb-4 italic">Edit Resource</h3><input id="ed-t" value="${t}" class="input-field mb-2 text-xs"><input id="ed-u" value="${u}" class="input-field mb-4 text-xs"><button onclick="saveR('${id}')" class="w-full py-4 btn-brand text-xs">Save Changes</button>`; document.getElementById('custom-modal').classList.remove('hidden'); };
         window.saveR = async (id) => { await Core.updateDoc(Core.doc(Core.db,"content",id), {title:document.getElementById('ed-t').value, url:document.getElementById('ed-u').value}); document.getElementById('custom-modal').classList.add('hidden'); loadHome(); };
 
         window.publishContent = async () => {
             const t = document.getElementById('up-t').value, u = document.getElementById('up-u').value, y = document.getElementById('up-y').value;
-            if (!t || !u) return toast("Form paths nullified", "error");
+            if (!t || !u) return toast("Resource path vectors empty", "error");
             
             let payload = { title: t, url: u, type: y, tId: profile.teacherId, tName: profile.name, views: 0, date: Core.serverTimestamp() };
             
@@ -1116,12 +1126,13 @@
             }
 
             await Core.addDoc(Core.collection(Core.db, "content"), payload);
-            pushSystemNotification("CONTENT UPLOAD", `Instructor shared a new material update asset: "${t}"`);
-            toast("Asset uploaded onto chronological database map"); loadHome();
+            pushSystemNotification("NEW UPLOAD", `Instructor shared resource: "${t}"`);
+            toast("Resource published successfully"); loadHome();
         };
 
         window.openGroupChat = async (id, name) => {
             activeGroupId = id; 
+            toggleBottomNavBarVisibility(false);
             document.getElementById('group-chat-window').classList.remove('hidden');
             document.getElementById('group-chat-title').innerText = name;
             
@@ -1202,7 +1213,7 @@
                             <p class="text-xs md:text-sm font-bold text-brandBlue uppercase opacity-60">${tD.teacherId}</p>
                         </div>
                     </div>
-                    <button onclick="handleSub('${tId}', ${isF})" class="w-full md:w-auto px-10 py-4 ${isF ? 'bg-zinc-800' : 'btn-brand'} rounded-2xl font-black text-xs uppercase">${isF ? 'Unfollow Matrix' : 'Follow Instructor'}</button>
+                    <button onclick="handleSub('${tId}', ${isF})" class="w-full md:w-auto px-10 py-4 ${isF ? 'bg-zinc-800' : 'btn-brand'} rounded-2xl font-black text-xs uppercase">${isF ? 'Unfollow' : 'Follow Instructor'}</button>
                 </div>
                 <h3 class="text-2xl font-black mb-6">Course Collections</h3>
                 <div id="courses-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div>
@@ -1215,12 +1226,7 @@
         window.handleSub = async (tId, isF) => {
             await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { subs: isF ? Core.arrayRemove(tId) : Core.arrayUnion(tId) });
             profile.subs = isF ? profile.subs.filter(i => i !== tId) : [...(profile.subs||[]), tId];
-            
-            if(!isF) {
-                pushSystemNotification("FOLLOW", `You started following instructor: "${tId}"`);
-            } else {
-                pushSystemNotification("UNFOLLOW", `You unfollowed instructor channel mapping: "${tId}"`);
-            }
+            pushSystemNotification("ROSTER MUTATION", `Follow state synchronized for instructor: ${tId}`);
             viewTeacher(tId);
         };
 
@@ -1268,14 +1274,32 @@
             }
         }
 
-        window.toggleAIChat = () => document.getElementById('ai-chat-window').classList.toggle('hidden');
-        window.closeGroupChat = () => { document.getElementById('group-chat-window').classList.add('hidden'); activeGroupId = null; loadGroups(); };
-        window.toggleMode = () => { document.documentElement.classList.toggle('light'); localStorage.setItem('oc_theme', document.documentElement.classList.contains('light')); };
-        window.closeCustomModal = () => document.getElementById('custom-modal').classList.add('hidden');
+        window.toggleAIChat = () => {
+            const chatWindow = document.getElementById('ai-chat-window');
+            chatWindow.classList.toggle('hidden');
+            if(!chatWindow.classList.contains('hidden')) toggleBottomNavBarVisibility(false);
+            else toggleBottomNavBarVisibility(true);
+        };
+        
+        window.closeGroupChat = () => { 
+            document.getElementById('group-chat-window').classList.add('hidden'); 
+            activeGroupId = null; 
+            toggleBottomNavBarVisibility(true);
+            loadGroups(); 
+        };
+        window.toggleMode = () => { 
+            document.documentElement.classList.toggle('light'); 
+            localStorage.setItem('oc_theme', document.documentElement.classList.contains('light')); 
+        };
+        window.closeCustomModal = () => {
+            document.getElementById('custom-modal').classList.add('hidden');
+            toggleBottomNavBarVisibility(true);
+        };
         
         window.closeVault = () => { 
             document.getElementById('media-vault').classList.add('hidden'); 
             currentVideoContext = null; 
+            toggleBottomNavBarVisibility(true);
             if(window._disengageShields) window._disengageShields();
             if(videoPlayer) { try { videoPlayer.destroy(); } catch(e){} videoPlayer = null; } 
         };
