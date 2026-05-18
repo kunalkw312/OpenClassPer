@@ -42,7 +42,7 @@
             position: absolute;
             inset: 0;
             background: #000;
-            z-index: 9999;
+            z-index: 99999;
             flex-direction: column;
             align-items: center;
             justify-content: center;
@@ -55,7 +55,7 @@
 
         #secure-watermark {
             position: absolute;
-            z-index: 2800;
+            z-index: 99998;
             pointer-events: none;
             font-weight: 800;
             font-size: 18px;
@@ -65,6 +65,12 @@
             user-select: none;
             transition: all 1.2s ease-in-out;
         }
+
+        /* Enforce Visibility overlay layers inside native webkit and mozilla fullscreen modules */
+        :-webkit-full-screen #anti-theft-blank { z-index: 2147483647 !important; }
+        :-webkit-full-screen #secure-watermark { z-index: 2147483646 !important; }
+        :fullscreen #anti-theft-blank { z-index: 2147483647 !important; }
+        :fullscreen #secure-watermark { z-index: 2147483646 !important; }
 
         @keyframes popUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -77,8 +83,8 @@
     </div>
 
     <div id="media-vault" class="hidden fixed inset-0 z-[2000] bg-black flex items-center justify-center p-4">
-        <button onclick="closeVault()" class="absolute top-6 right-6 bg-white/10 hover:bg-red-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-black z-[3100]">✕</button>
-        <div class="w-full max-w-5xl overflow-hidden rounded-2xl shadow-2xl relative flex items-center justify-center">
+        <button onclick="closeVault()" class="absolute top-6 right-6 bg-white/10 hover:bg-red-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-black z-[2147483647]">✕</button>
+        <div id="vault-capture-container" class="w-full max-w-5xl overflow-hidden rounded-2xl shadow-2xl relative flex items-center justify-center">
              <div id="anti-theft-blank">⚠️ Screen Capture / Recording Warning: Active Assets Paused</div>
              <div id="secure-watermark"></div>
              <div id="vault-wrapper">
@@ -194,12 +200,20 @@
         import { aiConfig } from "./config.js";
 
         let profile = null, isSignup = false, otpCode = null, tempUser = null, activeGroupId = null, currentTab = 'home', videoPlayer = null;
-        let currentVideoContext = null, watermarkInterval = null, cart = [], groupMessageTrackers = {};
+        let currentVideoContext = null, watermarkInterval = null, groupMessageTrackers = {};
+        
+        // --- Persistent Data Management Cart Matrix ---
+        let cart = [];
+        try {
+            const preservedCart = localStorage.getItem('oc_cart_manifest');
+            if(preservedCart) { cart = JSON.parse(preservedCart); }
+        } catch(e) { cart = []; }
 
         // --- ANTI-THEFT PROTECTION MATRIX ---
         function activateAntiTheftShields() {
             const blankOverlay = document.getElementById('anti-theft-blank');
             const watermarkEl = document.getElementById('secure-watermark');
+            const targetCaptureArea = document.getElementById('vault-capture-container');
 
             if (profile && profile.email) {
                 watermarkEl.innerText = profile.email;
@@ -211,6 +225,10 @@
             window.addEventListener('blur', engageShield);
             document.addEventListener('visibilitychange', handleVisibility);
             
+            // Continuous verification hook monitoring fullscreen layout state modifications
+            document.addEventListener('fullscreenchange', handleFullscreenRebind);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenRebind);
+
             function engageShield() {
                 if (videoPlayer && typeof videoPlayer.pause === 'function') videoPlayer.pause();
                 blankOverlay.style.display = 'flex';
@@ -221,9 +239,22 @@
                 else blankOverlay.style.display = 'none';
             }
 
+            function handleFullscreenRebind() {
+                const isFsActive = document.fullscreenElement || document.webkitFullscreenElement;
+                if(isFsActive) {
+                    // Re-inject protection vectors ahead of primary presentation nodes
+                    if(targetCaptureArea) {
+                        targetCaptureArea.appendChild(blankOverlay);
+                        targetCaptureArea.appendChild(watermarkEl);
+                    }
+                }
+            }
+
             window._disengageShields = () => {
                 window.removeEventListener('blur', engageShield);
                 document.removeEventListener('visibilitychange', handleVisibility);
+                document.removeEventListener('fullscreenchange', handleFullscreenRebind);
+                document.removeEventListener('webkitfullscreenchange', handleFullscreenRebind);
                 clearInterval(watermarkInterval);
                 blankOverlay.style.display = 'none';
                 watermarkEl.innerText = "";
@@ -352,6 +383,7 @@
         window.loadHome = async () => {
             const main = document.getElementById('main-content');
             if (!profile) return;
+            updateCartPill();
             if (profile.role === 'teacher') {
                 const [contentSnap, followersSnap, courseSnap, groupSnap] = await Promise.all([
                     Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "==", profile.teacherId))),
@@ -524,8 +556,14 @@
         // --- SHOPPING SYSTEM CARTS ---
         window.toggleCartAction = (id, title, price) => {
             const index = cart.findIndex(item => item.id === id);
-            if (index > -1) { cart.splice(index, 1); toast("Course removed from dynamic manifest"); } 
-            else { cart.push({ id, title, price }); toast("Added to checkout manifest"); }
+            if (index > -1) { 
+                cart.splice(index, 1); 
+                toast("Course removed from dynamic manifest"); 
+            } else { 
+                cart.push({ id, title, price }); 
+                toast("Added to checkout manifest"); 
+            }
+            localStorage.setItem('oc_cart_manifest', JSON.stringify(cart));
             updateCartPill();
             document.getElementById('custom-modal').classList.add('hidden');
             loadHome();
@@ -533,7 +571,7 @@
 
         function updateCartPill() {
             const pill = document.getElementById('cart-pill');
-            if (cart.length > 0) { pill.innerText = cart.length; pill.classList.remove('hidden'); }
+            if (cart && cart.length > 0) { pill.innerText = cart.length; pill.classList.remove('hidden'); }
             else { pill.classList.add('hidden'); }
         }
 
@@ -541,7 +579,7 @@
             const modal = document.getElementById('custom-modal');
             const content = document.getElementById('modal-content');
             modal.classList.remove('hidden');
-            if (cart.length === 0) {
+            if (!cart || cart.length === 0) {
                 content.innerHTML = `<div class="text-center py-10"><p class="text-lg font-black opacity-30 uppercase">Your Cart is Void</p></div>`;
                 return;
             }
@@ -556,7 +594,12 @@
             `;
         };
 
-        window.removeItemFromCart = (id) => { cart = cart.filter(i => i.id !== id); updateCartPill(); showCart(); };
+        window.removeItemFromCart = (id) => { 
+            cart = cart.filter(i => i.id !== id); 
+            localStorage.setItem('oc_cart_manifest', JSON.stringify(cart));
+            updateCartPill(); 
+            showCart(); 
+        };
         
         window.simulateBulkCheckout = async () => {
             for (let item of cart) {
@@ -565,7 +608,9 @@
                     await Core.updateDoc(Core.doc(Core.db, "groups", cDoc.data().groupId), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
                 }
             }
-            cart = []; updateCartPill();
+            cart = []; 
+            localStorage.removeItem('oc_cart_manifest');
+            updateCartPill();
             toast("Bulk transaction approved! Learning matrix operational.");
             document.getElementById('custom-modal').classList.add('hidden');
             setTab('groups');
@@ -632,7 +677,7 @@
 
         window.toggleAuth = () => { isSignup = !isSignup; document.getElementById('signup-fields').classList.toggle('hidden'); document.getElementById('primary-auth-btn').innerText = isSignup ? "Verify Handshake" : "Sign In"; document.getElementById('toggle-auth-btn').innerText = isSignup ? "Return to active session authentication" : "Initialize System Profile"; };
         window.handleGoogle = () => Core.signInWithPopup(Core.auth, Core.provider);
-        window.logout = () => Core.signOut(Core.auth).then(() => location.reload());
+        window.logout = () => Core.signOut(Core.auth).then(() => { localStorage.removeItem('oc_cart_manifest'); location.reload(); });
 
         window.finalizeProfile = async () => {
             const n = document.getElementById('ob-name').value, p = document.getElementById('ob-pass').value, r = document.getElementById('ob-role').value;
@@ -694,7 +739,7 @@
             const c = snap.data();
             const isT = c.teacherId === profile.teacherId;
             const content = document.getElementById('modal-content');
-            const inCart = cart.some(item => item.id === id);
+            const inCart = cart && cart.some(item => item.id === id);
             
             content.innerHTML = `
                 <img src="${c.thumbnail}" class="w-full h-56 object-cover rounded-3xl mb-6 shadow-2xl border border-white/10">
