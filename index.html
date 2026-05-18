@@ -21,7 +21,7 @@
         .glass { background: var(--glass-bg); backdrop-filter: blur(30px); border: 1px solid rgba(128, 128, 128, 0.1); }
         .btn-brand { background: linear-gradient(135deg, #004a80 0%, #f7941d 100%); background-size: 200% auto; transition: 0.5s; color: white !important; font-weight: 800; text-transform: uppercase; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
         .btn-brand:hover { background-position: right center; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 74, 128, 0.2); }
-        .tab-btn { padding: 10px 16px; font-weight: 800; text-transform: uppercase; font-size: 10px; border-radius: 12px; transition: 0.3s; opacity: 0.4; color: var(--text-main); whitespace: nowrap; }
+        .tab-btn { padding: 12px 16px; font-weight: 800; text-transform: uppercase; font-size: 10px; border-radius: 12px; transition: 0.3s; opacity: 0.4; color: var(--text-main); white-space: nowrap; }
         .tab-btn.active { background: rgba(247, 148, 29, 0.1); color: #f7941d; opacity: 1; border: 1px solid rgba(247, 148, 29, 0.2); }
         .input-field { background: var(--input-bg); border: 1px solid rgba(128, 128, 128, 0.2); color: var(--text-main); outline: none; padding: 1rem; border-radius: 14px; width: 100%; }
         #toast-box { position: fixed; bottom: 6rem; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
@@ -68,8 +68,10 @@
         .plyr--fullscreen-active #anti-theft-blank { display: none; z-index: 2147483647 !important; }
         .plyr--fullscreen-active #secure-watermark { z-index: 2147483646 !important; }
 
-        .search-container { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 40px; }
-        .search-container.expanded { width: 240px; }
+        .search-container { transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1); width: 40px; }
+        .search-container.expanded { width: 260px; }
+
+        #bottom-floating-deck { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 4500; width: calc(100% - 2rem); max-width: 480px; }
 
         @keyframes popUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -145,22 +147,21 @@
         </div>
 
         <div id="dashboard" class="hidden min-h-screen flex flex-col">
-            <!-- Top Sticky Navbar Focuses entirely on dynamic controls -->
-            <nav class="p-4 glass border-b border-white/5 sticky top-0 z-[1000] flex flex-row gap-4 justify-between px-6 md:px-10 items-center">
+            <nav class="p-5 glass border-b border-white/5 sticky top-0 z-[1000] flex flex-row gap-4 justify-between px-4 md:px-10 items-center">
                 <div class="flex items-center gap-3 cursor-pointer select-none" onclick="navigate('home')" id="nav-branding-block">
                     <img src="https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg" class="h-8 md:h-10 rounded-xl">
                     <h2 class="text-xl md:text-2xl font-black italic tracking-tighter">Open<span class="text-brandOrange">Class</span></h2>
                 </div>
 
-                <div class="flex items-center gap-3 md:gap-4 justify-end relative z-10 ml-auto">
+                <div class="flex items-center gap-2 md:gap-4 justify-end relative z-10 ml-auto">
                     <div class="search-container relative flex items-center h-10 overflow-hidden rounded-2xl bg-white/5 border border-white/10" id="search-wrapper-node">
-                        <button onclick="toggleExpandableSearch()" class="w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-white shrink-0 outline-none">
+                        <button onclick="expandSearchInterface()" class="w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-white shrink-0 outline-none">
                             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="8" cy="8" r="6" /><path d="M13 13l4 4" /></svg>
                         </button>
-                        <input type="text" id="g-search" oninput="reactiveSearch(this.value)" placeholder="Search..." class="bg-transparent text-sm w-full outline-none pr-4 text-white hidden">
+                        <input type="text" id="g-search" oninput="reactiveSearch(this.value)" onblur="collapseSearchInterface()" placeholder="Search campus..." class="bg-transparent text-sm w-full outline-none pr-4 text-white hidden">
                     </div>
                     
-                    <div id="nav-action-icons-row" class="flex items-center gap-3 md:gap-4">
+                    <div id="nav-action-icons-row" class="flex items-center gap-2 md:gap-4">
                         <button onclick="showNotificationsHub()" class="p-2 glass rounded-xl relative text-lg outline-none">
                             🔔<span id="notify-pill" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center animate-pulse">0</span>
                         </button>
@@ -168,22 +169,20 @@
                             🛒<span id="cart-pill" class="hidden absolute -top-1 -right-1 bg-brandOrange text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center">0</span>
                         </button>
                         <button onclick="toggleMode()" class="p-2 glass rounded-xl text-lg hidden md:block outline-none">🌓</button>
-                        <div id="nav-profile-pic" onclick="showProfileSettings()" class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 overflow-hidden cursor-pointer block select-none"></div>
-                        <button onclick="logout()" class="text-[9px] font-black text-red-500 uppercase px-3 py-2 border border-red-500/20 rounded-xl hidden md:block">Logout</button>
+                        <div id="nav-profile-pic" onclick="showProfileSettings()" class="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 overflow-hidden cursor-pointer block select-none"></div>
                     </div>
                 </div>
             </nav>
 
-            <!-- Main Dynamic Target View Container Layer -->
             <main id="main-content" class="p-4 md:p-10 max-w-7xl mx-auto w-full flex-grow"></main>
 
-            <!-- Floating Navigation Pinned Dynamically at Bottom Viewport Boundary Frame -->
-            <div class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[4000] max-w-md w-[90%] md:w-auto">
-                <div class="glass p-1.5 rounded-2xl flex flex-row justify-between md:justify-center gap-1 border border-white/10 shadow-2xl" id="nav-tabs-block">
-                    <button id="tab-home" onclick="setTab('home')" class="tab-btn flex-1 md:flex-none active">Home</button>
-                    <button id="tab-groups" onclick="setTab('groups')" class="tab-btn flex-1 md:flex-none">Groups</button>
-                    <button id="tab-courses" onclick="setTab('courses')" class="tab-btn flex-1 md:flex-none">Courses</button>
-                    <button id="tab-content" onclick="setTab('content')" class="tab-btn flex-1 md:flex-none">Content</button>
+            <!-- Bottom Floating Deck Navigation with Gesture Foundations -->
+            <div id="bottom-floating-deck" class="glass p-1.5 rounded-2xl shadow-2xl border border-white/10">
+                <div class="flex gap-1 justify-between items-center w-full">
+                    <button id="tab-home" onclick="setTab('home')" class="tab-btn flex-1 text-center py-2.5">Home</button>
+                    <button id="tab-groups" onclick="setTab('groups')" class="tab-btn flex-1 text-center py-2.5">Groups</button>
+                    <button id="tab-courses" onclick="setTab('courses')" class="tab-btn flex-1 text-center py-2.5">Courses</button>
+                    <button id="tab-content" onclick="setTab('content')" class="tab-btn flex-1 text-center py-2.5">Content</button>
                 </div>
             </div>
         </div>
@@ -205,8 +204,8 @@
         </div>
     </div>
 
-    <div onclick="toggleAIChat()" class="fixed bottom-6 right-6 z-[5000] w-16 h-16 rounded-full btn-brand flex items-center justify-center text-3xl cursor-pointer shadow-2xl select-none">🤖</div>
-    <div id="ai-chat-window" class="hidden fixed bottom-24 right-6 w-[340px] md:w-[380px] h-[550px] md:h-[600px] glass rounded-[2rem] z-[5000] overflow-hidden flex flex-col border border-brandOrange/20">
+    <div onclick="toggleAIChat()" class="fixed bottom-24 right-6 z-[5000] w-14 h-14 rounded-full btn-brand flex items-center justify-center text-2xl cursor-pointer shadow-2xl select-none">🤖</div>
+    <div id="ai-chat-window" class="hidden fixed bottom-40 right-6 w-[320px] md:w-[380px] h-[500px] md:h-[600px] glass rounded-[2rem] z-[5000] overflow-hidden flex flex-col border border-brandOrange/20">
         <div class="p-5 border-b border-white/10 flex justify-between items-center"><h2 class="font-black text-lg italic text-brandOrange">OpenClass AI</h2><button onclick="toggleAIChat()">✕</button></div>
         <div id="ai-messages" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
         <div class="p-4 border-t border-white/10 flex gap-3"><input id="ai-input" type="text" placeholder="Ask AI..." class="input-field flex-1"><button onclick="sendAIMessage()" class="btn-brand px-5 rounded-xl">Send</button></div>
@@ -218,46 +217,17 @@
 
         let profile = null, isSignup = false, otpCode = null, tempUser = null, activeGroupId = null, currentTab = 'home', videoPlayer = null;
         let currentVideoContext = null, watermarkInterval = null, groupMessageTrackers = {}, notificationsMap = [];
-        const tabsOrder = ['home', 'groups', 'courses', 'content'];
         
+        const tabsArray = ['home', 'groups', 'courses', 'content'];
+        let touchStartX = 0;
+        let touchEndX = 0;
+
         let cart = [];
         try {
             const preservedCart = localStorage.getItem('oc_cart_manifest');
             if(preservedCart) { cart = JSON.parse(preservedCart); }
         } catch(e) { cart = []; }
 
-        // --- GESTURE SWIPE MANAGEMENT LOGIC MATRIX ---
-        let touchStartX = 0;
-        let touchEndX = 0;
-        
-        document.addEventListener('touchstart', e => {
-            // Do not capture sliding gestures inside player/chat overlays
-            if (e.target.closest('#player-container') || e.target.closest('#group-chat-window') || e.target.closest('#ai-chat-window')) return;
-            touchStartX = e.changedTouches[0].screenX;
-        }, {passive: true});
-
-        document.addEventListener('touchend', e => {
-            if (e.target.closest('#player-container') || e.target.closest('#group-chat-window') || e.target.closest('#ai-chat-window')) return;
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipeGesture();
-        }, {passive: true});
-
-        function handleSwipeGesture() {
-            const minSwipeWidthThreshold = 80;
-            const displacement = touchEndX - touchStartX;
-            if (Math.abs(displacement) < minSwipeWidthThreshold) return;
-            
-            let currentIdx = tabsOrder.indexOf(currentTab);
-            if (displacement > 0) {
-                // Swiped right -> Navigate left matching index positions
-                if (currentIdx > 0) { setTab(tabsOrder[currentIdx - 1]); }
-            } else {
-                // Swiped left -> Navigate right matching index positions
-                if (currentIdx < tabsOrder.length - 1) { setTab(tabsOrder[currentIdx + 1]); }
-            }
-        }
-
-        // --- ANTI-THEFT PROTECTION MATRIX ---
         function activateAntiTheftShields() {
             const blankOverlay = document.getElementById('anti-theft-blank');
             const watermarkEl = document.getElementById('secure-watermark');
@@ -333,30 +303,58 @@
             }
         });
 
-        // --- EXPANDABLE SEARCH ENGINE TOOLKIT ---
-        window.toggleExpandableSearch = () => {
+        // --- GESTURE ALIGNMENTS AND DETECTION MATRIX ---
+        function checkSwipeGesture() {
+            const diffX = touchStartX - touchEndX;
+            // Ignore modal/chat scroll events filtering by element visibility
+            if(!document.getElementById('custom-modal').classList.contains('hidden') || 
+               !document.getElementById('group-chat-window').classList.contains('hidden') ||
+               !document.getElementById('media-vault').classList.contains('hidden')) return;
+
+            if (Math.abs(diffX) > 80) { // Threshhold barrier limits
+                let idx = tabsArray.indexOf(currentTab);
+                if (diffX > 0 && idx < tabsArray.length - 1) {
+                    setTab(tabsArray[idx + 1]);
+                } else if (diffX < 0 && idx > 0) {
+                    setTab(tabsArray[idx - 1]);
+                }
+            }
+        }
+
+        document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
+        document.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; checkSwipeGesture(); }, {passive: true});
+
+        // --- COLLAPSIBLE SEARCH COMPONENT PIPELINE ---
+        window.expandSearchInterface = () => {
             const wrapper = document.getElementById('search-wrapper-node');
             const input = document.getElementById('g-search');
             const iconsRow = document.getElementById('nav-action-icons-row');
-            const brandingBlock = document.getElementById('nav-branding-block');
+            const branding = document.getElementById('nav-branding-block');
             
-            if(wrapper.classList.contains('expanded')) {
+            wrapper.classList.add('expanded');
+            input.classList.remove('hidden');
+            input.focus();
+            
+            if(window.innerWidth < 768) {
+                iconsRow.classList.add('hidden');
+                branding.classList.add('hidden');
+            }
+        };
+
+        window.collapseSearchInterface = () => {
+            setTimeout(() => {
+                const wrapper = document.getElementById('search-wrapper-node');
+                const input = document.getElementById('g-search');
+                const iconsRow = document.getElementById('nav-action-icons-row');
+                const branding = document.getElementById('nav-branding-block');
+                
                 wrapper.classList.remove('expanded');
                 input.classList.add('hidden');
                 input.value = "";
-                if(window.innerWidth < 768) {
-                    iconsRow.classList.remove('hidden');
-                    brandingBlock.classList.remove('hidden');
-                }
-            } else {
-                wrapper.classList.add('expanded');
-                input.classList.remove('hidden');
-                input.focus();
-                if(window.innerWidth < 768) {
-                    iconsRow.classList.add('hidden');
-                    brandingBlock.classList.add('hidden');
-                }
-            }
+                
+                iconsRow.classList.remove('hidden');
+                branding.classList.remove('hidden');
+            }, 200); // 200ms delay matches selection handshakes
         };
 
         // --- NOTIFICATION HUB PLATFORM MAP ---
@@ -405,6 +403,7 @@
             }
         }
 
+        // --- FILE TYPE UTILITY LOGO ---
         window.getFileBadge = (url) => {
             if (!url) return '';
             const clean = url.toLowerCase().trim();
@@ -419,7 +418,7 @@
             return `<span class="absolute bottom-2 right-2 ${color} text-[8px] font-black tracking-widest px-2 py-0.5 rounded-md shadow-md uppercase border border-white/10 z-10">${badgeText}</span>`;
         };
 
-        // --- PROFILE SETTINGS HUB WITH ANNIHILATION ENGINE ---
+        // --- PROFILE CONTROL SETTINGS WORKSPACE ---
         window.showProfileSettings = () => {
             const modal = document.getElementById('custom-modal');
             const content = document.getElementById('modal-content');
@@ -518,22 +517,7 @@
             location.reload();
         };
 
-        window.checkLiveStatus = (dateStr, startTimeStr, endTimeStr) => {
-            if (!dateStr || !startTimeStr) return 'recorded';
-            try {
-                const targetStart = new Date(`${dateStr} ${startTimeStr}`);
-                const targetEnd = endTimeStr ? new Date(`${dateStr} ${endTimeStr}`) : new Date(targetStart.getTime() + 180 * 60000);
-                const currentDateTime = new Date();
-                
-                if (currentDateTime >= targetStart && currentDateTime <= targetEnd) {
-                    return 'live';
-                }
-                return 'recorded';
-            } catch(e) {
-                return 'recorded';
-            }
-        };
-
+        // --- STABLE PLAYBACK ENGINES ---
         function setupPlayer(videoId, metadata, rawUrl) {
             currentVideoContext = metadata;
             const container = document.getElementById('player-container');
@@ -607,6 +591,23 @@
             activateAntiTheftShields();
         }
 
+        window.setTab = (t) => {
+            currentTab = t;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${t}`)?.classList.add('active');
+            loadHome();
+        };
+
+        window.reactiveSearch = (val) => { if (val.length < 2) return; navigate('search', val); };
+        window.onpopstate = (e) => { if (profile) renderContent(e.state?.p || 'home', e.state?.q || ''); };
+        window.navigate = (p, q = '') => { history.pushState({ p, q }, '', `#${p}`); renderContent(p, q); };
+
+        async function renderContent(p, q) {
+            if (p === 'home') loadHome();
+            else if (p === 'search') loadSearch(q);
+            else if (p === 'profile') viewTeacher(q);
+        }
+
         window.loadHome = async () => {
             const main = document.getElementById('main-content');
             if (!profile) return;
@@ -660,8 +661,8 @@
                                 <p class="text-[8px] uppercase tracking-wider text-brandOrange font-bold font-mono">Transmission Interval Scheduler</p>
                                 <input type="date" id="up-date" class="input-field text-xs p-2">
                                 <div class="grid grid-cols-2 gap-2">
-                                    <input type="time" id="up-start-time" class="input-field text-xs p-2" title="Transmission Start Time">
-                                    <input type="time" id="up-end-time" class="input-field text-xs p-2" title="Transmission Boundary End Time">
+                                    <input type="time" id="up-start-time" class="input-field text-xs p-2" title="Start Time">
+                                    <input type="time" id="up-end-time" class="input-field text-xs p-2" title="End Time">
                                 </div>
                             </div>
                             <button onclick="publishContent()" class="w-full py-3 btn-brand text-xs">Publish Now</button>
@@ -672,8 +673,26 @@
 
                 const box = document.getElementById('tab-display');
                 if (currentTab === 'home') {
-                    // Enforce precise 3-column single row display metrics across mobile and pc targets uniformly
-                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Creator Insights</h3><div class="grid grid-cols-3 gap-3 md:gap-6 mb-10"><div class="glass p-4 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border border-white/5 text-center md:text-left"><p class="text-[8px] md:text-[9px] opacity-40 font-black uppercase">Uploads</p><h2 class="text-xl md:text-4xl font-black mt-1">${contentSnap.size}</h2></div><div class="glass p-4 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border border-white/5 text-center md:text-left"><p class="text-[8px] md:text-[9px] opacity-40 font-black uppercase">Courses</p><h2 class="text-xl md:text-4xl font-black mt-1">${courseSnap.size}</h2></div><div class="glass p-4 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border border-white/5 text-center md:text-left"><p class="text-[8px] md:text-[9px] opacity-40 font-black uppercase">Groups</p><h2 class="text-xl md:text-4xl font-black mt-1">${groupSnap.size}</h2></div></div><div id="feed" class="space-y-4"></div>`;
+                    // Refactored Multi-Panel Counter Grid layout mapping stats into a single container row across viewports
+                    box.innerHTML = `
+                        <h3 class="text-2xl font-black italic mb-6">Creator Insights</h3>
+                        <div class="glass p-4 rounded-[2rem] border border-white/5 mb-10">
+                            <div class="flex flex-row justify-between items-center text-center divide-x divide-white/10">
+                                <div class="flex-1 py-2">
+                                    <p class="text-[9px] opacity-40 font-black uppercase tracking-wider">Uploads</p>
+                                    <h2 class="text-xl md:text-3xl font-black mt-1">${contentSnap.size}</h2>
+                                </div>
+                                <div class="flex-1 py-2">
+                                    <p class="text-[9px] opacity-40 font-black uppercase tracking-wider">Courses</p>
+                                    <h2 class="text-xl md:text-3xl font-black mt-1">${courseSnap.size}</h2>
+                                </div>
+                                <div class="flex-1 py-2">
+                                    <p class="text-[9px] opacity-40 font-black uppercase tracking-wider">Groups</p>
+                                    <h2 class="text-xl md:text-3xl font-black mt-1">${groupSnap.size}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="feed" class="space-y-4"></div>`;
                     renderFeed(contentSorted, true);
                 } else if (currentTab === 'groups') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Your Managed Hubs</h3><div id="student-groups" class="space-y-4"></div>`;
@@ -713,67 +732,6 @@
                         renderFeed(sortedDocs, false);
                     }
                 }
-            }
-        };
-
-        window.manageFollowersRoster = async (teacherId) => {
-            const modal = document.getElementById('custom-modal');
-            const content = document.getElementById('modal-content');
-            modal.classList.remove('hidden');
-            content.innerHTML = `<h3 class="text-xl font-black mb-6 uppercase tracking-tighter text-brandBlue">Auditing Subscribed Followers</h3><div class="space-y-4" id="roster-list-target">Loading roster index...</div>`;
-            
-            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "array-contains", teacherId)));
-            const container = document.getElementById('roster-list-target');
-            if (snap.empty) { container.innerHTML = `<p class="text-xs font-bold opacity-30 text-center py-6">No followers found.</p>`; return; }
-            
-            container.innerHTML = snap.docs.map(doc => {
-                const u = doc.data();
-                return `<div class="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5"><div><p class="text-sm font-black">${u.name}</p><p class="text-[10px] opacity-40">${u.email}</p></div><button onclick="severFollowerRelation('${doc.id}','${teacherId}')" class="text-[9px] bg-red-500/20 text-red-400 font-bold px-4 py-2 rounded-xl hover:bg-red-500 hover:text-white transition-all">Block & Sever</button></div>`;
-            }).join('');
-        };
-
-        window.severFollowerRelation = async (uid, teacherId) => {
-            if(confirm("Confirm user eviction and blocking from channel profile stream?")) {
-                await Core.updateDoc(Core.doc(Core.db, "users", uid), { subs: Core.arrayRemove(teacherId) });
-                toast("Follower removed and stream blacklisted");
-                manageFollowersRoster(teacherId);
-                loadHome();
-            }
-        };
-
-        window.manageGroupRoster = async (groupId, groupName) => {
-            const modal = document.getElementById('custom-modal');
-            const content = document.getElementById('modal-content');
-            modal.classList.remove('hidden');
-            content.innerHTML = `<h3 class="text-xl font-black mb-6 uppercase tracking-tighter text-brandOrange">Roster Directory: ${groupName}</h3><div class="space-y-4" id="group-roster-target">Reading hub directory...</div>`;
-            
-            const gDoc = await Core.getDoc(Core.doc(Core.db, "groups", groupId));
-            if(!gDoc.exists()) return;
-            const data = gDoc.data();
-            
-            if (!data.members || data.members.length === 0) {
-                document.getElementById('group-roster-target').innerHTML = `<p class="text-xs font-bold opacity-30 text-center">Empty directory</p>`;
-                return;
-            }
-
-            const usersSnap = await Core.getDocs(Core.collection(Core.db, "users"));
-            const container = document.getElementById('group-roster-target');
-            let html = "";
-            
-            usersSnap.forEach(uDoc => {
-                if (data.members.includes(uDoc.id) && uDoc.data().teacherId !== data.teacherId) {
-                    const usr = uDoc.data();
-                    html += `<div class="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5"><div><p class="text-sm font-black">${usr.name}</p><p class="text-[10px] opacity-40">${usr.role.toUpperCase()}</p></div><button onclick="kickGroupMember('${groupId}','${uDoc.id}','${groupName}')" class="text-[9px] bg-red-600 text-white font-black px-4 py-2 rounded-xl">Revoke Entry</button></div>`;
-                }
-            });
-            container.innerHTML = html || `<p class="text-xs font-bold opacity-30 text-center py-4">No active external members inside this asset hub.</p>`;
-        };
-
-        window.kickGroupMember = async (groupId, uid, groupName) => {
-            if (confirm("Confirm complete revocation of asset pool access credentials for this individual user?")) {
-                await Core.updateDoc(Core.doc(Core.db, "groups", groupId), { members: Core.arrayRemove(uid) });
-                toast("Access cleared and denied.");
-                manageGroupRoster(groupId, groupName);
             }
         };
 
@@ -964,7 +922,9 @@
             const inCart = cart && cart.some(item => item.id === id);
             
             content.innerHTML = `
-                <img src="${c.thumbnail}" class="w-full h-auto max-h-64 object-cover rounded-3xl mb-6 shadow-2xl border border-white/10">
+                <div class="w-full flex items-center justify-center overflow-hidden bg-black rounded-3xl mb-6 shadow-2xl border border-white/10">
+                    <img src="${c.thumbnail}" class="w-full h-auto max-h-64 object-cover">
+                </div>
                 <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-black italic text-brandOrange">${c.title}</h2>${isT ? `<button onclick="delC('${id}')" class="text-red-500 font-black uppercase text-[10px]">Purge</button>` : ''}</div>
                 <p class="opacity-70 mb-6 text-xs leading-relaxed">${c.description}</p>
                 <div class="space-y-3 mb-8">
@@ -1002,6 +962,7 @@
             const container = document.getElementById('courses-feed') || document.getElementById('tab-display');
             if (container) container.innerHTML = `<div class="grid md:grid-cols-2 gap-6 w-full">${docs.map(doc => {
                 const c = doc.data();
+                // Standardized auto-fluid viewport presentation layer wrapper sizing perfectly to image aspect configurations
                 return `<div class="glass p-6 rounded-[2.5rem] border border-white/5 flex flex-col justify-between h-full"><div class="w-full flex items-center justify-center overflow-hidden rounded-2xl mb-4 bg-zinc-950/40"><img src="${c.thumbnail}" class="w-full h-auto max-h-52 object-cover border border-white/5"></div><div><h2 class="text-xl font-black italic mb-2 truncate">${c.title}</h2><div class="flex justify-between items-center mt-4"><h3 class="text-lg font-black text-brandOrange">${parseFloat(c.price)===0?'FREE':'₹'+c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2 text-xs">Inspect Module</button></div></div></div>`;
             }).join('')}</div>`;
         }
@@ -1019,6 +980,7 @@
                 }
             }
 
+            // Repositioned live status badges directly into text title containers adjacent to header nodes
             return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative flex-shrink-0 self-start md:self-center"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md border border-white/10">${window.getFileBadge(i.url)}</div><div class="overflow-hidden"><div class="flex flex-wrap items-center gap-2"><h4 class="font-black text-lg italic truncate max-w-xs md:max-w-md">${i.title}</h4> ${liveStatusLabel}</div><p class="text-[9px] opacity-40 uppercase font-bold tracking-widest mt-1">${i.tName} • ${i.views || 0} Views ${i.liveStartTime ? '• Interval Scheduled: ' + i.liveDate + ' [' + i.liveStartTime + ' - ' + (i.liveEndTime || 'End') + ']' : ''}</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Access File</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
         }
         
@@ -1151,7 +1113,7 @@
                     const pic = document.getElementById('nav-profile-pic');
                     if (pic) {
                         pic.innerHTML = `<img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-full h-full object-cover bg-black">`;
-                        pic.className = `w-9 h-9 md:w-10 md:h-10 rounded-full border-2 overflow-hidden cursor-pointer block select-none ${profile.role === 'teacher' ? 'border-brandBlue' : 'border-brandOrange'}`;
+                        pic.className = `w-8 h-8 md:w-10 md:h-10 rounded-full border-2 overflow-hidden cursor-pointer block select-none ${profile.role === 'teacher' ? 'border-brandBlue' : 'border-brandOrange'}`;
                     }
                     showScreen('dashboard'); navigate(window.location.hash.substring(1) || 'home');
                     listenUnreadNotifications();
