@@ -17,14 +17,14 @@
     <style>
         :root { --text-main: #fdfbf7; --bg-main: #050505; --glass-bg: rgba(15, 15, 15, 0.9); --input-bg: #111; }
         .light { --text-main: #002e50; --bg-main: #fdfbf7; --glass-bg: rgba(255, 255, 255, 0.85); --input-bg: #fff; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: 0.4s; overflow-x: hidden; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: 0.4s; overflow-x: hidden; padding-bottom: 90px; }
         .glass { background: var(--glass-bg); backdrop-filter: blur(30px); border: 1px solid rgba(128, 128, 128, 0.1); }
         .btn-brand { background: linear-gradient(135deg, #004a80 0%, #f7941d 100%); background-size: 200% auto; transition: 0.5s; color: white !important; font-weight: 800; text-transform: uppercase; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
         .btn-brand:hover { background-position: right center; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 74, 128, 0.2); }
-        .tab-btn { padding: 12px 20px; font-weight: 800; text-transform: uppercase; font-size: 10px; border-radius: 12px; transition: 0.3s; opacity: 0.4; color: var(--text-main); }
+        .tab-btn { padding: 10px 16px; font-weight: 800; text-transform: uppercase; font-size: 10px; border-radius: 12px; transition: 0.3s; opacity: 0.4; color: var(--text-main); whitespace: nowrap; }
         .tab-btn.active { background: rgba(247, 148, 29, 0.1); color: #f7941d; opacity: 1; border: 1px solid rgba(247, 148, 29, 0.2); }
         .input-field { background: var(--input-bg); border: 1px solid rgba(128, 128, 128, 0.2); color: var(--text-main); outline: none; padding: 1rem; border-radius: 14px; width: 100%; }
-        #toast-box { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
+        #toast-box { position: fixed; bottom: 6rem; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
         .toast-pill { background: #111; color: #fff; padding: 0.6rem 1.5rem; border-radius: 99px; border: 1px solid rgba(255,255,255,0.1); font-size: 10px; font-weight: 800; text-transform: uppercase; animation: popUp 0.3s forwards; }
         
         #vault-wrapper { height: 100%; width: 100%; aspect-ratio: 16/9; max-height: 80vh; display: flex; align-items: center; justify-content: center; background: #000; position: relative; }
@@ -69,7 +69,7 @@
         .plyr--fullscreen-active #secure-watermark { z-index: 2147483646 !important; }
 
         .search-container { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 40px; }
-        .search-container.expanded { width: 280px; }
+        .search-container.expanded { width: 240px; }
 
         @keyframes popUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -145,25 +145,19 @@
         </div>
 
         <div id="dashboard" class="hidden min-h-screen flex flex-col">
-            <nav class="p-5 glass border-b border-white/5 sticky top-0 z-[1000] flex flex-row gap-4 justify-between px-6 md:px-10 items-center">
+            <!-- Top Sticky Navbar Focuses entirely on dynamic controls -->
+            <nav class="p-4 glass border-b border-white/5 sticky top-0 z-[1000] flex flex-row gap-4 justify-between px-6 md:px-10 items-center">
                 <div class="flex items-center gap-3 cursor-pointer select-none" onclick="navigate('home')" id="nav-branding-block">
                     <img src="https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg" class="h-8 md:h-10 rounded-xl">
                     <h2 class="text-xl md:text-2xl font-black italic tracking-tighter">Open<span class="text-brandOrange">Class</span></h2>
                 </div>
-                
-                <div class="flex gap-0.5 md:gap-1 glass p-1 rounded-2xl" id="nav-tabs-block">
-                    <button id="tab-home" onclick="setTab('home')" class="tab-btn active px-2.5 md:px-5 py-2">Home</button>
-                    <button id="tab-groups" onclick="setTab('groups')" class="tab-btn px-2.5 md:px-5 py-2">Groups</button>
-                    <button id="tab-courses" onclick="setTab('courses')" class="tab-btn px-2.5 md:px-5 py-2">Courses</button>
-                    <button id="tab-content" onclick="setTab('content')" class="tab-btn px-2.5 md:px-5 py-2">Content</button>
-                </div>
 
-                <div class="flex items-center gap-3 md:gap-4 justify-end relative z-10">
+                <div class="flex items-center gap-3 md:gap-4 justify-end relative z-10 ml-auto">
                     <div class="search-container relative flex items-center h-10 overflow-hidden rounded-2xl bg-white/5 border border-white/10" id="search-wrapper-node">
                         <button onclick="toggleExpandableSearch()" class="w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-white shrink-0 outline-none">
                             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="8" cy="8" r="6" /><path d="M13 13l4 4" /></svg>
                         </button>
-                        <input type="text" id="g-search" oninput="reactiveSearch(this.value)" placeholder="Search campus..." class="bg-transparent text-sm w-full outline-none pr-4 text-white hidden">
+                        <input type="text" id="g-search" oninput="reactiveSearch(this.value)" placeholder="Search..." class="bg-transparent text-sm w-full outline-none pr-4 text-white hidden">
                     </div>
                     
                     <div id="nav-action-icons-row" class="flex items-center gap-3 md:gap-4">
@@ -179,7 +173,19 @@
                     </div>
                 </div>
             </nav>
+
+            <!-- Main Dynamic Target View Container Layer -->
             <main id="main-content" class="p-4 md:p-10 max-w-7xl mx-auto w-full flex-grow"></main>
+
+            <!-- Floating Navigation Pinned Dynamically at Bottom Viewport Boundary Frame -->
+            <div class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[4000] max-w-md w-[90%] md:w-auto">
+                <div class="glass p-1.5 rounded-2xl flex flex-row justify-between md:justify-center gap-1 border border-white/10 shadow-2xl" id="nav-tabs-block">
+                    <button id="tab-home" onclick="setTab('home')" class="tab-btn flex-1 md:flex-none active">Home</button>
+                    <button id="tab-groups" onclick="setTab('groups')" class="tab-btn flex-1 md:flex-none">Groups</button>
+                    <button id="tab-courses" onclick="setTab('courses')" class="tab-btn flex-1 md:flex-none">Courses</button>
+                    <button id="tab-content" onclick="setTab('content')" class="tab-btn flex-1 md:flex-none">Content</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -212,6 +218,7 @@
 
         let profile = null, isSignup = false, otpCode = null, tempUser = null, activeGroupId = null, currentTab = 'home', videoPlayer = null;
         let currentVideoContext = null, watermarkInterval = null, groupMessageTrackers = {}, notificationsMap = [];
+        const tabsOrder = ['home', 'groups', 'courses', 'content'];
         
         let cart = [];
         try {
@@ -219,6 +226,38 @@
             if(preservedCart) { cart = JSON.parse(preservedCart); }
         } catch(e) { cart = []; }
 
+        // --- GESTURE SWIPE MANAGEMENT LOGIC MATRIX ---
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', e => {
+            // Do not capture sliding gestures inside player/chat overlays
+            if (e.target.closest('#player-container') || e.target.closest('#group-chat-window') || e.target.closest('#ai-chat-window')) return;
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        document.addEventListener('touchend', e => {
+            if (e.target.closest('#player-container') || e.target.closest('#group-chat-window') || e.target.closest('#ai-chat-window')) return;
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipeGesture();
+        }, {passive: true});
+
+        function handleSwipeGesture() {
+            const minSwipeWidthThreshold = 80;
+            const displacement = touchEndX - touchStartX;
+            if (Math.abs(displacement) < minSwipeWidthThreshold) return;
+            
+            let currentIdx = tabsOrder.indexOf(currentTab);
+            if (displacement > 0) {
+                // Swiped right -> Navigate left matching index positions
+                if (currentIdx > 0) { setTab(tabsOrder[currentIdx - 1]); }
+            } else {
+                // Swiped left -> Navigate right matching index positions
+                if (currentIdx < tabsOrder.length - 1) { setTab(tabsOrder[currentIdx + 1]); }
+            }
+        }
+
+        // --- ANTI-THEFT PROTECTION MATRIX ---
         function activateAntiTheftShields() {
             const blankOverlay = document.getElementById('anti-theft-blank');
             const watermarkEl = document.getElementById('secure-watermark');
@@ -299,7 +338,7 @@
             const wrapper = document.getElementById('search-wrapper-node');
             const input = document.getElementById('g-search');
             const iconsRow = document.getElementById('nav-action-icons-row');
-            const tabsBlock = document.getElementById('nav-tabs-block');
+            const brandingBlock = document.getElementById('nav-branding-block');
             
             if(wrapper.classList.contains('expanded')) {
                 wrapper.classList.remove('expanded');
@@ -307,7 +346,7 @@
                 input.value = "";
                 if(window.innerWidth < 768) {
                     iconsRow.classList.remove('hidden');
-                    tabsBlock.classList.remove('hidden');
+                    brandingBlock.classList.remove('hidden');
                 }
             } else {
                 wrapper.classList.add('expanded');
@@ -315,7 +354,7 @@
                 input.focus();
                 if(window.innerWidth < 768) {
                     iconsRow.classList.add('hidden');
-                    tabsBlock.classList.add('hidden');
+                    brandingBlock.classList.add('hidden');
                 }
             }
         };
@@ -366,7 +405,6 @@
             }
         }
 
-        // --- EXTENDED FILE LOGO EXTRACTION MAPPING ---
         window.getFileBadge = (url) => {
             if (!url) return '';
             const clean = url.toLowerCase().trim();
@@ -469,27 +507,15 @@
             toast("Annihilating cluster indices...");
             await Core.deleteDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid));
             
-            // Core logic verification cleanup interface hook
             if(Core.auth.currentUser) {
                 try {
                     await Core.auth.currentUser.delete();
                 } catch(e) {
-                    // Fallback configuration strategy if tokens are expired/stale
                     await Core.signOut(Core.auth);
                 }
             }
             localStorage.removeItem('oc_cart_manifest');
             location.reload();
-        };
-
-        window.getSmartPreview = (url) => {
-            if (!url) return "https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg";
-            const cleanUrl = url.toLowerCase().trim();
-            if (cleanUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)/)) return url;
-            if (cleanUrl.includes('v=')) return `https://img.youtube.com/vi/${url.split('v=')[1].split('&')[0]}/mqdefault.jpg`;
-            if (cleanUrl.includes('youtu.be/')) return `https://img.youtube.com/vi/${url.split('/').pop().split('?')[0]}/mqdefault.jpg`;
-            if (cleanUrl.includes('/live/')) return `https://img.youtube.com/vi/${url.split('/live/')[1].split('?')[0]}/mqdefault.jpg`;
-            return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop";
         };
 
         window.checkLiveStatus = (dateStr, startTimeStr, endTimeStr) => {
@@ -581,23 +607,6 @@
             activateAntiTheftShields();
         }
 
-        window.setTab = (t) => {
-            currentTab = t;
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`tab-${t}`)?.classList.add('active');
-            loadHome();
-        };
-
-        window.reactiveSearch = (val) => { if (val.length < 2) return; navigate('search', val); };
-        window.onpopstate = (e) => { if (profile) renderContent(e.state?.p || 'home', e.state?.q || ''); };
-        window.navigate = (p, q = '') => { history.pushState({ p, q }, '', `#${p}`); renderContent(p, q); };
-
-        async function renderContent(p, q) {
-            if (p === 'home') loadHome();
-            else if (p === 'search') loadSearch(q);
-            else if (p === 'profile') viewTeacher(q);
-        }
-
         window.loadHome = async () => {
             const main = document.getElementById('main-content');
             if (!profile) return;
@@ -663,7 +672,8 @@
 
                 const box = document.getElementById('tab-display');
                 if (currentTab === 'home') {
-                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Creator Insights</h3><div class="grid md:grid-cols-3 gap-6 mb-10"><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 font-black">Uploads</p><h2 class="text-4xl font-black">${contentSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 font-black">Courses</p><h2 class="text-4xl font-black">${courseSnap.size}</h2></div><div class="glass p-8 rounded-[2rem] border border-white/5"><p class="text-[9px] opacity-40 font-black">Groups</p><h2 class="text-4xl font-black">${groupSnap.size}</h2></div></div><div id="feed" class="space-y-4"></div>`;
+                    // Enforce precise 3-column single row display metrics across mobile and pc targets uniformly
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Creator Insights</h3><div class="grid grid-cols-3 gap-3 md:gap-6 mb-10"><div class="glass p-4 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border border-white/5 text-center md:text-left"><p class="text-[8px] md:text-[9px] opacity-40 font-black uppercase">Uploads</p><h2 class="text-xl md:text-4xl font-black mt-1">${contentSnap.size}</h2></div><div class="glass p-4 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border border-white/5 text-center md:text-left"><p class="text-[8px] md:text-[9px] opacity-40 font-black uppercase">Courses</p><h2 class="text-xl md:text-4xl font-black mt-1">${courseSnap.size}</h2></div><div class="glass p-4 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border border-white/5 text-center md:text-left"><p class="text-[8px] md:text-[9px] opacity-40 font-black uppercase">Groups</p><h2 class="text-xl md:text-4xl font-black mt-1">${groupSnap.size}</h2></div></div><div id="feed" class="space-y-4"></div>`;
                     renderFeed(contentSorted, true);
                 } else if (currentTab === 'groups') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Your Managed Hubs</h3><div id="student-groups" class="space-y-4"></div>`;
@@ -704,11 +714,6 @@
                     }
                 }
             }
-        };
-
-        window.togglePublishScheduleField = (val) => {
-            const el = document.getElementById('live-schedule-fields');
-            if(el) { if(val === 'live') el.classList.remove('hidden'); else el.classList.add('hidden'); }
         };
 
         window.manageFollowersRoster = async (teacherId) => {
