@@ -15,8 +15,8 @@
         tailwind.config = { darkMode: 'class', theme: { extend: { colors: { brandBlue: '#004a80', brandOrange: '#f7941d' } } } }
     </script>
     <style>
-        :root { --text-main: #fdfbf7; --bg-main: #050505; --glass-bg: rgba(15, 15, 15, 0.9); --input-bg: #111; }
-        .light { --text-main: #002e50; --bg-main: #fdfbf7; --glass-bg: rgba(255, 255, 255, 0.85); --input-bg: #fff; }
+        :root { --text-main: #002e50; --bg-main: #fdfbf7; --glass-bg: rgba(255, 255, 255, 0.85); --input-bg: #fff; }
+        .dark { --text-main: #fdfbf7; --bg-main: #050505; --glass-bg: rgba(15, 15, 15, 0.9); --input-bg: #111; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: 0.4s; overflow-x: hidden; padding-bottom: 90px; }
         .glass { background: var(--glass-bg); backdrop-filter: blur(30px); border: 1px solid rgba(128, 128, 128, 0.1); }
         .btn-brand { background: linear-gradient(135deg, #004a80 0%, #f7941d 100%); background-size: 200% auto; transition: 0.5s; color: white !important; font-weight: 800; text-transform: uppercase; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
@@ -80,7 +80,7 @@
     <div id="toast-box"></div>
 
     <div id="custom-modal" class="hidden fixed inset-0 z-[2500] bg-black/95 backdrop-blur-md flex items-center justify-center p-6">
-        <div class="absolute top-6 left-6 text-white/50 cursor-pointer hover:text-white font-bold flex items-center gap-2" onclick="closeCustomModal()">← BACK</div>
+        <div class="absolute top-6 left-6 text-white/50 cursor-pointer hover:text-white font-bold flex items-center gap-2 select-none" onclick="closeCustomModal()">← BACK</div>
         <div id="modal-content" class="w-full max-w-xl glass p-10 rounded-[3rem] border border-brandOrange/20 shadow-2xl overflow-y-auto max-h-[90vh]"></div>
     </div>
 
@@ -127,7 +127,7 @@
                     <input type="email" id="auth-email" placeholder="Email" class="input-field">
                     <input type="password" id="auth-pass" placeholder="Password" class="input-field">
                     <button onclick="handleAuth()" id="primary-auth-btn" class="w-full py-4 btn-brand">Sign In</button>
-                    <button onclick="handleGoogle()" class="w-full py-4 glass dark:text-white text-[#002e50] rounded-2xl font-bold uppercase text-[10px] flex items-center justify-center gap-4 border border-zinc-500/20">
+                    <button onclick="handleGoogle()" class="w-full py-4 glass text-[#004a80] dark:text-white rounded-2xl font-bold uppercase text-[10px] flex items-center justify-center gap-4 border border-zinc-500/20">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5"> 
                         Continue with Google
                     </button>
@@ -158,8 +158,8 @@
                         <button onclick="toggleExpandableSearch(event)" class="w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-white shrink-0 outline-none">
                             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="8" cy="8" r="6" /><path d="M13 13l4 4" /></svg>
                         </button>
-                        <!-- Fixed light mode color visibility via multi-context tracking keys -->
-                        <input type="text" id="g-search" oninput="reactiveSearch(this.value)" onblur="collapseSearchOnBlur()" placeholder="Search campus..." class="bg-transparent text-sm w-full outline-none pr-4 text-zinc-900 dark:text-white hidden">
+                        <!-- Added text-slate-900 to ensure clear visibility inside light background containers -->
+                        <input type="text" id="g-search" oninput="reactiveSearch(this.value)" onblur="collapseSearchOnBlur()" placeholder="Search campus..." class="bg-transparent text-sm w-full outline-none pr-4 text-slate-900 dark:text-white hidden">
                     </div>
                     
                     <div id="nav-action-icons-row" class="flex items-center gap-3 md:gap-4">
@@ -169,9 +169,8 @@
                         <button onclick="showCart()" class="p-2 glass rounded-xl relative text-lg outline-none">
                             🛒<span id="cart-pill" class="hidden absolute -top-1 -right-1 bg-brandOrange text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center">0</span>
                         </button>
-                        <button onclick="toggleMode()" class="p-2 glass rounded-xl text-lg hidden md:block outline-none">🌓</button>
+                        <button onclick="toggleMode()" class="p-2 glass rounded-xl text-lg outline-none">🌓</button>
                         <div id="nav-profile-pic" onclick="showProfileSettings()" class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 overflow-hidden cursor-pointer block select-none"></div>
-                        <button onclick="logout()" class="text-[9px] font-black text-red-500 uppercase px-4 py-2 border border-red-500/20 rounded-xl hidden md:block">Logout</button>
                     </div>
                 </div>
             </nav>
@@ -387,11 +386,11 @@
             content.innerHTML = `
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-black italic">Live Activity Hub</h3>
-                    <button onclick="clearNotifications()" class="text-[10px] uppercase font-black text-brandOrange border border-brandOrange/20 px-3 py-1 rounded-xl hover:bg-brandOrange/5">Clear Matrix</button>
+                    <button onclick="clearNotifications()" class="text-[10px] uppercase font-black text-brandOrange border border-brandOrange/20 px-3 py-1 rounded-xl hover:bg-brandOrange/5">Clear All</button>
                 </div>
                 <div class="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
                     ${notificationsMap.map(n => `
-                        <div class="p-4 rounded-2xl border border-white/5 bg-white/5 text-xs text-zinc-800 dark:text-white">
+                        <div class="p-4 rounded-2xl border border-white/5 bg-white/5 text-xs text-slate-700 dark:text-zinc-200">
                             <div class="flex justify-between items-center mb-1">
                                 <span class="font-bold text-brandOrange uppercase text-[9px] tracking-wider">${n.type}</span>
                                 <span class="opacity-30 text-[9px]">${n.time}</span>
@@ -406,7 +405,7 @@
         window.clearNotifications = () => {
             notificationsMap = [];
             document.getElementById('notify-pill').classList.add('hidden');
-            toast("Notification registry cleared");
+            toast("Notifications cleared");
             closeCustomModal();
         };
 
@@ -433,6 +432,7 @@
             return `<span class="absolute bottom-2 right-2 ${color} text-[8px] font-black tracking-widest px-2 py-0.5 rounded-md shadow-md uppercase border border-white/10 z-10">${badgeText}</span>`;
         };
 
+        // --- UPDATED SETTINGS HUB WITH DISPLACED LOGOUT OPTION ---
         window.showProfileSettings = () => {
             const modal = document.getElementById('custom-modal');
             const content = document.getElementById('modal-content');
@@ -440,7 +440,7 @@
             
             content.innerHTML = `
                 <h3 class="text-2xl font-black italic mb-6">Profile Settings Workspace</h3>
-                <div class="space-y-6">
+                <div class="space-y-6 text-slate-900 dark:text-white">
                     <div class="text-center relative">
                         <img id="profile-hub-preview" src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-24 h-24 rounded-full mx-auto border-4 border-brandOrange p-1 object-cover bg-black">
                         <label class="block mt-3 text-[10px] font-black uppercase text-brandOrange tracking-wider cursor-pointer hover:underline">
@@ -458,6 +458,9 @@
                         <h4 class="text-xs font-black uppercase text-red-500 tracking-wider mb-2">Destructive Operations Matrix</h4>
                         <p class="text-[11px] opacity-50 mb-4 leading-relaxed">Account purging drops all credential licenses, course indices, managed synchronization records, and identity traces across the live instance mapping nodes.</p>
                         <button onclick="triggerAccountPurgePipeline()" class="w-full py-3 bg-red-600/10 text-red-500 border border-red-600/20 rounded-2xl text-[10px] font-black uppercase hover:bg-red-600 hover:text-white transition-all">Annihilate Account Profile</button>
+                    
+                        <!-- Shifted secure session teardown handle placement -->
+                        <button onclick="logout()" class="w-full py-3.5 mt-4 bg-zinc-500/10 hover:bg-zinc-600/30 text-zinc-500 dark:text-zinc-400 border border-zinc-500/20 rounded-2xl text-[10px] font-black uppercase transition-all">Logout Session</button>
                     </div>
                 </div>
             `;
@@ -484,7 +487,7 @@
             }
             
             await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), updatePayload);
-            toast("Identity variables synchronized onto active nodes");
+            toast("Profile changes saved successfully");
             location.reload();
         };
 
@@ -493,7 +496,7 @@
             if(!confirm("STAGE 2 SECURITY ENFORCEMENT: Final validation directive. Re-playing authentication logs post-handshake cannot restore this index structure. Continue?")) return;
             
             const dynamicVerificationToken = Math.floor(100000 + Math.random() * 900000);
-            toast("Routing synchronization challenge code...");
+            toast("Routing verification check code...");
             
             try {
                 await Core.sendOTP(profile.email, dynamicVerificationToken);
@@ -746,21 +749,17 @@
                 if (currentTab === 'home') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Suggested Syllabus</h3><div id="suggested-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div><h3 class="text-2xl font-black italic mb-6">Subscribed Feed Streams</h3><div id="feed" class="space-y-6"></div>`;
                     
-                    // Fixed student home hydration view models
-                    const [allContent, subContent] = await Promise.all([
-                        Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(30))),
-                        (profile.subs && profile.subs.length) ? Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs))) : Promise.resolve({ empty: true, docs: [] })
-                    ]);
-                    
+                    const allContent = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(30)));
                     const allContentSorted = allContent.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
                     renderFeed(allContentSorted.slice(0,6), false, 'suggested-feed');
                     
-                    if (!subContent.empty && subContent.docs.length > 0) {
+                    // Populate student subscription query timeline stream
+                    if (profile.subs && profile.subs.length > 0) {
+                        const subContent = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs)));
                         const subContentSorted = subContent.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
                         renderFeed(subContentSorted, false, 'feed');
                     } else {
-                        // Dynamic query fallback matrix logic path targeting general arrays if index is dry
-                        renderFeed(allContentSorted.slice(6,16), false, 'feed');
+                        document.getElementById('feed').innerHTML = `<p class="text-xs font-bold opacity-30 text-center py-8">Follow an instructor to view updates here.</p>`;
                     }
                 } else if (currentTab === 'groups') {
                     box.innerHTML = `<div class="glass p-8 rounded-[3rem] mb-10"><h3 class="text-2xl font-black mb-4">Join Campus Hub</h3><div class="flex gap-4"><input id="hub-code" placeholder="OC-XXXXXX" class="input-field"><button onclick="joinGroup()" class="btn-brand px-10">Join</button></div></div><div id="student-groups" class="space-y-4"></div>`;
@@ -770,16 +769,13 @@
                     const coSorted = coSnap.docs.sort((a,b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
                     renderCourses(coSorted, false);
                 } else if (currentTab === 'content') {
-                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Resource Sync Streams</h3><div id="feed" class="space-y-6"></div>`;
-                    const subSnap = (profile.subs && profile.subs.length) ? await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs))) : { empty: true, docs: [] };
-                    
-                    if(!subSnap.empty && subSnap.docs.length > 0) {
-                        const sortedDocs = subSnap.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
-                        renderFeed(sortedDocs, false);
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Subscribed Content Index</h3><div id="subscribed-content-feed" class="space-y-4"></div>`;
+                    if(profile.subs && profile.subs.length > 0) {
+                        const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs)));
+                        const sortedDocs = snap.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
+                        renderFeed(sortedDocs, false, 'subscribed-content-feed');
                     } else {
-                        const globalContentSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(25)));
-                        const sortedGlobal = globalContentSnap.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
-                        renderFeed(sortedGlobal, false);
+                        document.getElementById('subscribed-content-feed').innerHTML = `<p class="text-xs font-bold opacity-30 text-center py-8">No content available. Follow an instructor to populate this tab.</p>`;
                     }
                 }
             }
@@ -855,10 +851,10 @@
             const index = cart.findIndex(item => item.id === id);
             if (index > -1) { 
                 cart.splice(index, 1); 
-                toast("Course removed from dynamic manifest"); 
+                toast("Course removed from cart"); 
             } else { 
                 cart.push({ id, title, price }); 
-                toast("Added to checkout manifest"); 
+                toast("Course added to cart"); 
             }
             localStorage.setItem('oc_cart_manifest', JSON.stringify(cart));
             updateCartPill();
@@ -877,17 +873,17 @@
             const content = document.getElementById('modal-content');
             modal.classList.remove('hidden');
             if (!cart || cart.length === 0) {
-                content.innerHTML = `<div class="text-center py-10"><p class="text-lg font-black opacity-30 uppercase">Your Cart is Void</p></div>`;
+                content.innerHTML = `<div class="text-center py-10"><p class="text-lg font-black opacity-30 uppercase text-slate-700 dark:text-zinc-200">Your Cart is Empty</p></div>`;
                 return;
             }
             let total = cart.reduce((sum, i) => sum + parseFloat(i.price || 0), 0);
             content.innerHTML = `
-                <h3 class="text-2xl font-black italic mb-6">SaaS Checkout Matrix</h3>
-                <div class="space-y-4 mb-8">
+                <h3 class="text-2xl font-black italic mb-6">Checkout Manifest</h3>
+                <div class="space-y-4 mb-8 text-slate-700 dark:text-zinc-200">
                     ${cart.map(i => `<div class="flex justify-between items-center glass p-4 rounded-2xl border border-white/5"><div><p class="font-bold text-sm">${i.title}</p><p class="text-xs text-brandOrange font-bold">₹${i.price}</p></div><button onclick="removeItemFromCart('${i.id}')" class="text-xs text-red-500 font-bold">Remove</button></div>`).join('')}
                 </div>
-                <div class="flex justify-between items-center mb-6 border-t border-white/10 pt-4"><p class="text-sm uppercase opacity-40 font-bold">Aggregate Value</p><p class="text-2xl font-black text-brandOrange">₹${total}</p></div>
-                <button onclick="simulateBulkCheckout()" class="w-full py-4 btn-brand">Execute Order Processing</button>
+                <div class="flex justify-between items-center mb-6 border-t border-white/10 pt-4"><p class="text-sm uppercase opacity-40 font-bold">Total Value</p><p class="text-2xl font-black text-brandOrange">₹${total}</p></div>
+                <button onclick="simulateBulkCheckout()" class="w-full py-4 btn-brand">Process Payment</button>
             `;
         };
 
@@ -903,12 +899,13 @@
                 const cDoc = await Core.getDoc(Core.doc(Core.db, "courses", item.id));
                 if (cDoc.exists()) {
                     await Core.updateDoc(Core.doc(Core.db, "groups", cDoc.data().groupId), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
+                    pushSystemNotification("ENROLLMENT", `Successfully enrolled in course: "${item.title}"`);
                 }
             }
             cart = []; 
             localStorage.removeItem('oc_cart_manifest');
             updateCartPill();
-            toast("Bulk transaction approved! Learning matrix operational.");
+            toast("Transaction approved! Enrolled successfully.");
             document.getElementById('custom-modal').classList.add('hidden');
             setTab('groups');
         };
@@ -922,7 +919,7 @@
             const content = cS.docs.filter(d => d.data().title.toLowerCase().includes(q.toLowerCase())).sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
             const groups = gS.docs.filter(d => d.data().code === q || d.data().name.toLowerCase().includes(q.toLowerCase()));
             
-            main.innerHTML = `<div class="space-y-12">${teachers.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Instructors</h3><div class="grid gap-4">${teachers.map(m => `<div onclick="viewTeacher('${m.data().teacherId}')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center cursor-pointer group"><div class="flex items-center gap-6"><img src="${m.data().photo || 'https://ui-avatars.com/api/?name='+m.data().name}" class="w-16 h-16 rounded-2xl object-cover bg-brandBlue shadow-lg"><div><h3 class="text-xl font-black italic">${m.data().name}</h3><p class="text-[10px] opacity-30 font-bold">${m.data().teacherId}</p></div></div><p class="text-brandBlue font-black uppercase text-[10px]">Biography →</p></div>`).join('')}</div></div>` : ''}${groups.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Groups</h3><div class="grid gap-4">${groups.map(g => `<div class="glass p-6 rounded-[2.5rem] flex justify-between items-center border border-white/5"><div><span class="text-[9px] text-brandOrange font-black uppercase tracking-widest">${g.data().type}</span><h3 class="text-xl font-black mt-1">${g.data().name}</h3><p class="text-xs opacity-50">${g.data().code}</p></div><button onclick="handleHubSearchJoin('${g.id}','${g.data().code}')" class="btn-brand px-8 py-2 text-[10px]">Access</button></div>`).join('')}</div></div>` : ''}${content.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Lessons Catalog</h3><div class="grid gap-4">${content.map(d => renderResourceCard(d, false)).join('')}</div></div>` : ''}</div>`;
+            main.innerHTML = `<div class="space-y-12">${teachers.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Instructors</h3><div class="grid gap-4">${teachers.map(m => `<div onclick="viewTeacher('${m.data().teacherId}')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center cursor-pointer group"><div class="flex items-center gap-6"><img src="${m.data().photo || 'https://ui-avatars.com/api/?name='+m.data().name}" class="w-16 h-16 rounded-2xl object-cover bg-brandBlue shadow-lg bg-black"><div><h3 class="text-xl font-black italic text-brandOrange">${m.data().name}</h3><p class="text-[10px] opacity-30 font-bold">${m.data().teacherId}</p></div></div><p class="text-brandBlue font-black uppercase text-[10px]">View Profile →</p></div>`).join('')}</div></div>` : ''}${groups.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Groups</h3><div class="grid gap-4">${groups.map(g => `<div class="glass p-6 rounded-[2.5rem] flex justify-between items-center border border-white/5"><div><span class="text-[9px] text-brandOrange font-black uppercase tracking-widest">${g.data().type}</span><h3 class="text-xl font-black mt-1">${g.data().name}</h3><p class="text-xs opacity-50">${g.data().code}</p></div><button onclick="handleHubSearchJoin('${g.id}','${g.data().code}')" class="btn-brand px-8 py-2 text-[10px]">Access</button></div>`).join('')}</div></div>` : ''}${content.length ? `<div><h3 class="text-xs font-black uppercase opacity-40 mb-4 ml-4">Lessons Catalog</h3><div class="grid gap-4">${content.map(d => renderResourceCard(d, false)).join('')}</div></div>` : ''}</div>`;
         };
 
         window.handleHubSearchJoin = (id, code) => { setTab('groups'); setTimeout(() => { const target = document.getElementById('hub-code'); if(target) target.value = code; joinGroup(); }, 500); };
@@ -968,7 +965,7 @@
                     await Core.setDoc(Core.doc(Core.doc(Core.db, "users", cred.user.uid)), { name: n, role: r, teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), email: e, subs: [], photo: "", joined: new Date().toLocaleDateString() });
                     location.reload();
                 } catch(err) { toast(err.message, "error"); }
-            } else toast("Mismatch payload match rejection", "error");
+            } else toast("Verification token mismatch", "error");
         };
 
         window.toggleAuth = () => { isSignup = !isSignup; document.getElementById('signup-fields').classList.toggle('hidden'); document.getElementById('primary-auth-btn').innerText = isSignup ? "Verify Handshake" : "Sign In"; document.getElementById('toggle-auth-btn').innerText = isSignup ? "Return to active session authentication" : "Initialize System Profile"; };
@@ -1006,7 +1003,7 @@
             await Core.addDoc(Core.collection(Core.db, "courses"), { 
                 title: t, description: d, thumbnail: window.getSmartPreview(vu[0]), playlist, price: p, teacherId: profile.teacherId, teacherName: profile.name, groupId: gRef.id, createdAt: Core.serverTimestamp() 
             });
-            toast("Syllabus array synchronized and online"); loadHome();
+            toast("Course module configured successfully"); loadHome();
         };
 
         window.joinGroup = async () => {
@@ -1015,8 +1012,13 @@
             if (snap.empty) return toast("Address route null", "error");
             const g = snap.docs[0], d = g.data();
             if (d.members.includes(Core.auth.currentUser.uid)) return toast("Roster contains duplicate");
-            if (d.type === 'public') await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
-            else await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { pending: Core.arrayUnion({ uid: Core.auth.currentUser.uid, name: profile.name }) });
+            if (d.type === 'public') {
+                await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
+                pushSystemNotification("HUB SYNC", `Joined group workspace hub: "${d.name}"`);
+            } else {
+                await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { pending: Core.arrayUnion({ uid: Core.auth.currentUser.uid, name: profile.name }) });
+                pushSystemNotification("ADMISSION GATE", `Requested admission access credentials for gated hub: "${d.name}"`);
+            }
             toast("Route verification requested"); loadHome();
         };
 
@@ -1038,20 +1040,20 @@
             const inCart = cart && cart.some(item => item.id === id);
             
             content.innerHTML = `
-                <img src="${c.thumbnail}" class="w-full h-auto max-h-64 object-cover rounded-3xl mb-6 shadow-2xl border border-white/10">
+                <img src="${c.thumbnail}" class="w-full h-auto max-h-64 object-cover rounded-3xl mb-6 shadow-2xl border border-white/10 bg-black">
                 <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-black italic text-brandOrange">${c.title}</h2>${isT ? `<button onclick="delC('${id}')" class="text-red-500 font-black uppercase text-[10px]">Purge</button>` : ''}</div>
-                <p class="opacity-70 mb-6 text-xs leading-relaxed">${c.description}</p>
+                <p class="opacity-70 mb-6 text-xs leading-relaxed text-slate-700 dark:text-zinc-300">${c.description}</p>
                 <div class="space-y-3 mb-8">
                     <p class="text-[9px] font-black uppercase opacity-40 tracking-wider">Course Syllabus Blueprint</p>
                     ${c.playlist.map((v, i) => `
-                        <div onclick="openResource('null','${v.url}','${v.title}')" class="bg-white/5 p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-white/10 border border-white/5 transition-all">
+                        <div onclick="openResource('null','${v.url}','${v.title}')" class="bg-white/5 p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-white/10 border border-white/5 transition-all text-slate-700 dark:text-zinc-200">
                             <p class="text-xs font-bold">${i+1}. ${v.title}</p>
                             <span class="text-[10px] text-brandOrange font-black uppercase tracking-tighter">Access Stream</span>
                         </div>
                     `).join('')}
                 </div>
                 <div class="flex gap-4">
-                    <button onclick="toggleCartAction('${id}','${c.title}','${c.price}')" class="flex-1 py-5 glass tracking-widest text-xs font-black uppercase rounded-2xl border border-white/20">${inCart?'Drop from Cart':'Add to Checkout Cart'}</button>
+                    <button onclick="toggleCartAction('${id}','${c.title}','${c.price}')" class="flex-1 py-5 glass tracking-widest text-xs font-black uppercase rounded-2xl border border-white/20 text-slate-700 dark:text-zinc-200">${inCart?'Drop from Cart':'Add to Checkout Cart'}</button>
                     <button onclick="enrollCourse('${id}','${c.groupId}')" class="flex-1 py-5 btn-brand shadow-xl">${parseFloat(c.price)===0?'Instant Open Enrolment':`Acquire License (₹${c.price})`}</button>
                 </div>
             `;
@@ -1060,6 +1062,7 @@
 
         window.enrollCourse = async (cid, gid) => {
             await Core.updateDoc(Core.doc(Core.db, "groups", gid), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
+            pushSystemNotification("ENROLLMENT", "Instantly enrolled in open access course curriculum tier");
             toast("License synced successfully! Roster operation active.");
             document.getElementById('custom-modal').classList.add('hidden');
             setTab('groups');
@@ -1076,7 +1079,7 @@
             const container = document.getElementById('courses-feed') || document.getElementById('tab-display');
             if (container) container.innerHTML = `<div class="grid md:grid-cols-2 gap-6 w-full">${docs.map(doc => {
                 const c = doc.data();
-                return `<div class="glass p-6 rounded-[2.5rem] border border-white/5 flex flex-col justify-between h-full"><div class="w-full flex items-center justify-center overflow-hidden rounded-2xl mb-4 bg-zinc-950/40"><img src="${c.thumbnail}" class="w-full h-auto max-h-52 object-cover border border-white/5"></div><div><h2 class="text-xl font-black italic mb-2 truncate">${c.title}</h2><div class="flex justify-between items-center mt-4"><h3 class="text-lg font-black text-brandOrange">${parseFloat(c.price)===0?'FREE':'₹'+c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2 text-xs">Inspect Module</button></div></div></div>`;
+                return `<div class="glass p-6 rounded-[2.5rem] border border-white/5 flex flex-col justify-between h-full"><div class="w-full flex items-center justify-center overflow-hidden rounded-2xl mb-4 bg-zinc-950/40"><img src="${c.thumbnail}" class="w-full h-auto max-h-52 object-cover border border-white/5 bg-black"></div><div><h2 class="text-xl font-black italic mb-2 truncate">${c.title}</h2><div class="flex justify-between items-center mt-4"><h3 class="text-lg font-black text-brandOrange">${parseFloat(c.price)===0?'FREE':'₹'+c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2 text-xs">Inspect Module</button></div></div></div>`;
             }).join('')}</div>`;
         }
 
@@ -1093,7 +1096,7 @@
                 }
             }
 
-            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative flex-shrink-0 self-start md:self-center"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md border border-white/10">${window.getFileBadge(i.url)}</div><div class="overflow-hidden"><div class="flex flex-wrap items-center gap-2"><h4 class="font-black text-lg italic truncate max-w-xs md:max-w-md">${i.title}</h4> ${liveStatusLabel}</div><p class="text-[9px] opacity-40 uppercase font-bold tracking-widest mt-1">${i.tName} • ${i.views || 0} Views ${i.liveStartTime ? '• Interval Scheduled: ' + i.liveDate + ' [' + i.liveStartTime + ' - ' + (i.liveEndTime || 'End') + ']' : ''}</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Access File</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
+            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative flex-shrink-0 self-start md:self-center"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md border border-white/10 bg-black">${window.getFileBadge(i.url)}</div><div class="overflow-hidden"><div class="flex flex-wrap items-center gap-2"><h4 class="font-black text-lg italic truncate max-w-xs md:max-w-md">${i.title}</h4> ${liveStatusLabel}</div><p class="text-[9px] opacity-40 uppercase font-bold tracking-widest mt-1">${i.tName} • ${i.views || 0} Views ${i.liveStartTime ? '• Interval Scheduled: ' + i.liveDate + ' [' + i.liveStartTime + ' - ' + (i.liveEndTime || 'End') + ']' : ''}</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Access File</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
         }
         
         window.delR = async (id) => { if(confirm("Confirm extraction removal?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); loadHome(); } };
@@ -1113,7 +1116,7 @@
             }
 
             await Core.addDoc(Core.collection(Core.db, "content"), payload);
-            pushSystemNotification("CHRONO INDEX", `New configuration node published under path token: "${t}"`);
+            pushSystemNotification("CONTENT UPLOAD", `Instructor shared a new material update asset: "${t}"`);
             toast("Asset uploaded onto chronological database map"); loadHome();
         };
 
@@ -1212,7 +1215,12 @@
         window.handleSub = async (tId, isF) => {
             await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { subs: isF ? Core.arrayRemove(tId) : Core.arrayUnion(tId) });
             profile.subs = isF ? profile.subs.filter(i => i !== tId) : [...(profile.subs||[]), tId];
-            pushSystemNotification("ROSTER MUTATION", `Channel tracking state alignment changed for sync node: ${tId}`);
+            
+            if(!isF) {
+                pushSystemNotification("FOLLOW", `You started following instructor: "${tId}"`);
+            } else {
+                pushSystemNotification("UNFOLLOW", `You unfollowed instructor channel mapping: "${tId}"`);
+            }
             viewTeacher(tId);
         };
 
@@ -1228,8 +1236,6 @@
                         pic.className = `w-9 h-9 md:w-10 md:h-10 rounded-full border-2 overflow-hidden cursor-pointer block select-none ${profile.role === 'teacher' ? 'border-brandBlue' : 'border-brandOrange'}`;
                     }
                     showScreen('dashboard'); navigate(window.location.hash.substring(1) || 'home');
-                    
-                    // Unified single trigger instantiation point binding real time notifications
                     listenUnreadNotifications();
                     initializeSwipeGestures();
                 }
@@ -1247,7 +1253,6 @@
                         if (msg.groupId && msg.groupId !== activeGroupId && msg.senderId !== Core.auth.currentUser.uid) {
                             groupMessageTrackers[msg.groupId] = (groupMessageTrackers[msg.groupId] || 0) + 1;
                             updateNotificationUIBadge(msg.groupId);
-                            pushSystemNotification("GROUP SYNC", `New sync payload message dropped in workspace route: ${msg.groupId}`);
                         }
                     }
                 });
