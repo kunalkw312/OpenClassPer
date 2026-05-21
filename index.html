@@ -87,35 +87,33 @@
         <div id="modal-content" class="w-full max-w-xl glass p-10 rounded-[3rem] border border-brandOrange/20 shadow-2xl overflow-y-auto max-h-[90vh]"></div>
     </div>
 
-    <!-- Media Streaming Vault with Horizontal Layout split for Live Chat Integration -->
-    <div id="media-vault" class="hidden fixed inset-0 z-[2000] bg-black flex flex-col items-center justify-center p-4">
+    <div id="media-vault" class="hidden fixed inset-0 z-[2000] bg-black flex items-center justify-center p-4">
         <button onclick="closeVault()" class="absolute top-6 right-6 bg-white/10 hover:bg-red-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-black z-[2147483647]">✕</button>
         
-        <div class="w-full max-w-6xl grid lg:grid-cols-4 gap-4 bg-zinc-950 rounded-3xl overflow-hidden p-2 border border-white/5 shadow-2xl">
-            <div id="vault-capture-container" class="w-full lg:col-span-3 overflow-hidden rounded-2xl relative flex items-center justify-center bg-black">
-                 <div id="vault-wrapper" class="w-full">
-                     <div id="anti-theft-blank">⚠️ Screen Capture / Recording Warning: Active Assets Paused</div>
-                     <div id="secure-watermark"></div>
-                     <div id="player-container" class="w-full h-full"></div>
+        <!-- Modified Media Layout Split Grid to host Live Horizontal Chat Matrix -->
+        <div id="vault-capture-container" class="w-full max-w-6xl overflow-hidden rounded-2xl shadow-2xl relative flex flex-col lg:flex-row items-stretch bg-zinc-950">
+             <div id="vault-wrapper" class="flex-1 relative bg-black">
+                 <div id="anti-theft-blank">⚠️ Screen Capture / Recording Warning: Active Assets Paused</div>
+                 <div id="secure-watermark"></div>
+                 <div id="player-container" class="w-full h-full"></div>
+             </div>
+             
+             <!-- Unified Live Transmission Streaming Chat Sub-Panel Component Container -->
+             <div id="live-chat-panel" class="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-white/10 bg-zinc-900/60 flex flex-col h-[300px] lg:h-auto">
+                 <div class="p-4 border-b border-white/10 flex justify-between items-center bg-black/20">
+                     <span class="text-xs font-black tracking-wider text-brandOrange flex items-center gap-2">
+                         <span id="chat-signal-pulse" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> STREAM CONVERSATION
+                     </span>
+                     <span id="live-chat-counter" class="text-[10px] opacity-40 font-mono">0 logs</span>
                  </div>
-            </div>
-            
-            <!-- Real-Time Interactive Streaming Chat Feed Box Workspace -->
-            <div id="live-chat-panel" class="hidden flex-col h-[40vh] lg:h-[70vh] bg-black/50 border border-white/5 rounded-2xl overflow-hidden">
-                <div class="p-3 border-b border-white/10 bg-zinc-900/50 flex items-center justify-between">
-                    <span class="text-xs font-black tracking-widest text-brandOrange uppercase flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span> Live Chat
-                    </span>
-                    <span class="text-[9px] opacity-40 uppercase font-bold" id="chat-status-indicator">Active</span>
-                </div>
-                <div id="live-chat-messages" class="flex-grow p-3 overflow-y-auto space-y-3 text-xs flex flex-col justify-end">
-                    <p class="text-zinc-500 text-center italic text-[10px]">Welcome to the live chat matrix stream.</p>
-                </div>
-                <div id="live-chat-input-wrapper" class="p-2 border-t border-white/10 bg-zinc-900/40 flex gap-2">
-                    <input type="text" id="live-chat-message-input" placeholder="Say something..." class="w-full bg-zinc-950 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                    <button onclick="sendLiveChatMessage()" class="bg-brandOrange text-white font-black text-[10px] px-3 rounded-xl uppercase">Send</button>
-                </div>
-            </div>
+                 <div id="live-chat-stream" class="flex-grow overflow-y-auto p-4 space-y-3 text-xs flex flex-col justify-end">
+                     <p class="text-zinc-500 italic text-center text-[11px] my-auto">Chat matrix initializing...</p>
+                 </div>
+                 <div id="live-chat-input-block" class="p-3 border-t border-white/10 flex gap-2 bg-black/30">
+                     <input id="stream-comment-field" type="text" placeholder="Send public question safely..." class="bg-zinc-950 border border-white/5 text-xs rounded-xl px-3 py-2 flex-grow text-white outline-none">
+                     <button onclick="dispatchLiveStreamComment()" class="bg-brandOrange text-white text-[10px] font-extrabold uppercase px-4 rounded-xl shadow-md shrink-0">Send</button>
+                 </div>
+             </div>
         </div>
     </div>
 
@@ -239,8 +237,7 @@
         import { aiConfig } from "./config.js";
 
         let profile = null, isSignup = false, otpCode = null, tempUser = null, activeGroupId = null, currentTab = 'home', videoPlayer = null;
-        let currentVideoContext = null, watermarkInterval = null, groupMessageTrackers = {}, notificationsMap = [];
-        let activeLiveChatListener = null, activeLiveChatId = null;
+        let currentVideoContext = null, watermarkInterval = null, groupMessageTrackers = {}, notificationsMap = [], liveChatSnapshotHook = null;
         
         const tabsOrderIndex = ['home', 'groups', 'courses', 'content'];
         let touchStartCoordsX = 0;
@@ -579,6 +576,7 @@
             return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop";
         };
 
+        // --- HARDENED MULTI-INTERVAL SCHEDULER MATRIX COMPILER ---
         window.checkLiveStatus = (dateStr, startTimeStr, endTimeStr) => {
             if (!dateStr || !startTimeStr) return 'recorded';
             try {
@@ -587,7 +585,7 @@
                 const currentDateTime = new Date();
                 
                 if (currentDateTime < targetStart) {
-                    return 'scheduled';
+                    return 'upcoming';
                 } else if (currentDateTime >= targetStart && currentDateTime <= targetEnd) {
                     return 'live';
                 }
@@ -597,63 +595,112 @@
             }
         };
 
-        // --- REAL-TIME STREAM COMMENT ENGINE INTERFACE ---
-        function attachLiveChatStreamListener(contentId, liveStatus) {
-            const chatPanel = document.getElementById('live-chat-panel');
-            const messagesContainer = document.getElementById('live-chat-messages');
-            const statusIndicator = document.getElementById('chat-status-indicator');
-            
-            if(activeLiveChatListener) { activeLiveChatListener(); activeLiveChatListener = null; }
-            activeLiveChatId = null;
+        // --- DYNAMIC LIVE CHAT CORE REALTIME ENGINE ---
+        function hookLiveStreamChatSocket(contentId, stateMode) {
+            const chatStreamNode = document.getElementById('live-chat-stream');
+            const inputBlockNode = document.getElementById('live-chat-input-block');
+            const counterNode = document.getElementById('live-chat-counter');
+            const signalPulseNode = document.getElementById('chat-signal-pulse');
 
-            if (liveStatus === 'recorded' || !contentId) {
-                chatPanel.classList.add('hidden');
+            if(liveChatSnapshotHook) { liveChatSnapshotHook(); liveChatSnapshotHook = null; }
+            if(!chatStreamNode) return;
+
+            chatStreamNode.innerHTML = "";
+            
+            if (stateMode === 'upcoming') {
+                if(inputBlockNode) inputBlockNode.style.display = 'none';
+                chatStreamNode.innerHTML = `<p class="text-zinc-500 italic text-center my-auto">Scheduled chat matrix offline.</p>`;
                 return;
             }
 
-            chatPanel.classList.remove('hidden');
-            activeLiveChatId = contentId;
-
-            if (liveStatus === 'scheduled') {
-                statusIndicator.innerText = "Scheduled Workspace";
-                messagesContainer.innerHTML = `<p class="text-zinc-500 text-center italic text-[10px]">Lecture has not started yet. Chat is pre-active.</p>`;
+            if (stateMode === 'recorded') {
+                // Freeze dispatches if the transmission lifecycle is complete
+                if(inputBlockNode) inputBlockNode.style.display = 'none';
+                if(signalPulseNode) { signalPulseNode.classList.remove('bg-red-500'); signalPulseNode.classList.add('bg-zinc-600'); }
             } else {
-                statusIndicator.innerText = "Live Broadcast Mode";
+                if(inputBlockNode) inputBlockNode.style.display = 'flex';
+                if(signalPulseNode) { signalPulseNode.classList.remove('bg-zinc-600'); signalPulseNode.classList.add('bg-red-500'); }
             }
 
-            const q = Core.query(
-                Core.collection(Core.db, "liveChats"), 
-                Core.where("contentId", "==", contentId), 
-                Core.orderBy("createdAt", "asc"),
-                Core.limit(50)
+            const chatQuery = Core.query(
+                Core.collection(Core.db, "content", contentId, "liveComments"),
+                Core.orderBy("relativeVideoTime", "asc")
             );
 
-            activeLiveChatListener = Core.onSnapshot(q, (snap) => {
-                messagesContainer.innerHTML = snap.docs.map(doc => {
-                    const m = doc.data();
-                    return `<div class="bg-white/5 p-2 rounded-xl border border-white/5"><span class="font-extrabold text-brandOrange block text-[10px] mb-0.5">${m.senderName}</span><span class="text-white opacity-90">${m.text}</span></div>`;
-                }).join('');
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            // Establish real-time persistent data snapshot sync loop
+            liveChatSnapshotHook = Core.onSnapshot(chatQuery, (snapshot) => {
+                if(counterNode) counterNode.innerText = `${snapshot.size} messages`;
+                
+                window._activeStreamCommentsCollection = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                if (stateMode === 'live') {
+                    // Render message logs directly if transmission is live
+                    renderLiveChatPackets(window._activeStreamCommentsCollection);
+                }
             });
+
+            if (stateMode === 'recorded' && videoPlayer) {
+                // Wire timeline hooks to render historical logs during VOD playback
+                videoPlayer.on('timeupdate', () => {
+                    const currentTimelineMark = videoPlayer.currentTime;
+                    const filteredLogs = (window._activeStreamCommentsCollection || []).filter(log => log.relativeVideoTime <= currentTimelineMark);
+                    renderLiveChatPackets(filteredLogs);
+                });
+            }
         }
 
-        window.sendLiveChatMessage = async () => {
-            const input = document.getElementById('live-chat-message-input');
-            const text = input.value.trim();
-            if(!text || !activeLiveChatId) return;
+        function renderLiveChatPackets(logsArray) {
+            const streamContainer = document.getElementById('live-chat-stream');
+            if(!streamContainer) return;
 
-            await Core.addDoc(Core.collection(Core.db, "liveChats"), {
-                contentId: activeLiveChatId,
+            if (logsArray.length === 0) {
+                streamContainer.innerHTML = `<p class="text-zinc-500 italic text-center my-auto">No messages inside this cluster room.</p>`;
+                return;
+            }
+
+            streamContainer.innerHTML = logsArray.map(log => `
+                <div class="flex items-start gap-2.5 animate-fadeIn">
+                    <img src="${log.senderPhoto || 'https://ui-avatars.com/api/?name='+log.senderName}" class="w-6 h-6 rounded-full border border-white/5 object-cover shrink-0 mt-0.5 bg-black">
+                    <div class="bg-white/5 border border-white/5 rounded-xl p-2.5 flex-grow overflow-hidden">
+                        <div class="flex justify-between items-center mb-0.5">
+                            <span class="font-extrabold text-zinc-300 truncate max-w-[120px]">${log.senderName}</span>
+                            <span class="text-[8px] font-mono opacity-30">${formatTimelineDurationCode(log.relativeVideoTime)}</span>
+                        </div>
+                        <p class="text-zinc-400 leading-relaxed break-words">${log.text}</p>
+                    </div>
+                </div>
+            `).join('');
+            streamContainer.scrollTop = streamContainer.scrollHeight;
+        }
+
+        function formatTimelineDurationCode(secondsVal) {
+            if (isNaN(secondsVal) || secondsVal === null) return "00:00";
+            const mins = Math.floor(secondsVal / 60);
+            const secs = Math.floor(secondsVal % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        window.dispatchLiveStreamComment = async () => {
+            const field = document.getElementById('stream-comment-field');
+            const txt = field ? field.value.trim() : "";
+            if(!txt || !currentVideoContext || !currentVideoContext.id) return;
+
+            const relativeTimeOffset = videoPlayer ? videoPlayer.currentTime : 0;
+
+            await Core.addDoc(Core.collection(Core.db, "content", currentVideoContext.id, "liveComments"), {
                 senderId: Core.auth.currentUser.uid,
                 senderName: profile.name,
-                text: text,
-                createdAt: Core.serverTimestamp()
+                senderPhoto: profile.photo || '',
+                text: txt,
+                relativeVideoTime: relativeTimeOffset,
+                serverTimestamp: Core.serverTimestamp()
             });
-            input.value = "";
+
+            if(field) field.value = "";
         };
 
-        function setupPlayer(videoId, metadata, rawUrl, contentId = null, liveStatus = 'recorded') {
-            currentVideoContext = metadata;
+        function setupPlayer(contentId, videoId, metadata, rawUrl, stateMode) {
+            currentVideoContext = { id: contentId, ...metadata };
             const container = document.getElementById('player-container');
             container.innerHTML = "";
             
@@ -672,16 +719,16 @@
             if (isDirectFile && cleanUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)/)) {
                 container.innerHTML = `<div class="w-full h-full flex items-center justify-center bg-zinc-950"><img src="${rawUrl}" class="max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl"></div>`;
                 toggleBottomNavBarVisibility(false);
-                attachLiveChatStreamListener(contentId, liveStatus);
                 activateAntiTheftShields();
+                hookLiveStreamChatSocket(contentId, stateMode);
                 return;
             }
 
             if (isDirectFile && cleanUrl.includes('.pdf')) {
                 container.innerHTML = `<iframe src="https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=true" class="w-full h-full border-0 rounded-2xl"></iframe>`;
                 toggleBottomNavBarVisibility(false);
-                attachLiveChatStreamListener(contentId, liveStatus);
                 activateAntiTheftShields();
+                hookLiveStreamChatSocket(contentId, stateMode);
                 return;
             }
 
@@ -718,6 +765,7 @@
             });
 
             videoPlayer.on('exitfullscreen', () => {
+                toggleBottomNavBarVisibility(true);
                 const blankOverlay = document.getElementById('anti-theft-blank');
                 const watermarkEl = document.getElementById('secure-watermark');
                 const wrapper = document.getElementById('vault-wrapper');
@@ -728,8 +776,8 @@
             });
 
             toggleBottomNavBarVisibility(false);
-            attachLiveChatStreamListener(contentId, liveStatus);
             activateAntiTheftShields();
+            hookLiveStreamChatSocket(contentId, stateMode);
         }
 
         window.setTab = (t) => {
@@ -771,7 +819,7 @@
                     <div class="space-y-6 lg:sticky lg:top-32 h-fit">
                         <div class="glass p-8 rounded-[3rem] border border-brandBlue/30 text-center shadow-xl">
                             <img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-brandBlue p-1 object-cover bg-black">
-                            <h3 class="text-xl font-black italic pr-2">${profile.name}</h3>
+                            <h3 class="text-xl font-black italic pr-4">${profile.name}</h3>
                             <p class="text-[10px] font-bold opacity-40 uppercase tracking-widest mb-6">${profile.teacherId}</p>
                             <div class="grid grid-cols-2 gap-4">
                                 <div onclick="manageFollowersRoster('${profile.teacherId}')" class="bg-white/5 p-4 rounded-3xl text-center cursor-pointer hover:bg-brandBlue/10 transition-all border border-white/5">
@@ -1130,21 +1178,22 @@
         };
 
         window.openResource = async (id, url, title) => {
-            let directLiveStatus = 'recorded';
-            if(id && id !== 'null') {
-                const liveDocRef = await Core.getDoc(Core.doc(Core.db, "content", id));
-                if (liveDocRef.exists()) {
-                    const lData = liveDocRef.data();
-                    directLiveStatus = window.checkLiveStatus(lData.liveDate, lData.liveStartTime, lData.liveEndTime);
-                    await Core.updateDoc(Core.doc(Core.db, "content", id), { views: Core.increment(1) });
-                }
-            }
+            if(id && id !== 'null') await Core.updateDoc(Core.doc(Core.db, "content", id), { views: Core.increment(1) });
             let vid = "";
             if (url.includes('v=')) vid = url.split('v=')[1].split('&')[0];
             else if (url.includes('youtu.be/')) vid = url.split('/').pop().split('?')[0];
             else if (url.includes('/live/')) vid = url.split('/live/')[1].split('?')[0];
+            
+            // Re-evaluate multi-state duration conditions dynamically before video load callbacks
+            const targetDocRef = await Core.getDoc(Core.doc(Core.db, "content", id));
+            let computationalStateMode = "recorded";
+            if(targetDocRef.exists()) {
+                const targetData = targetDocRef.data();
+                computationalStateMode = window.checkLiveStatus(targetData.liveDate, targetData.liveStartTime, targetData.liveEndTime);
+            }
+
             document.getElementById('media-vault').classList.remove('hidden');
-            setupPlayer(vid, { title, link: url }, url, id, directLiveStatus);
+            setupPlayer(id, vid, { title, link: url }, url, computationalStateMode);
         };
 
         window.openCourse = async (id) => {
@@ -1201,19 +1250,26 @@
         function renderResourceCard(d, isT) {
             const i = d.data();
             let liveStatusLabel = '';
+            let accessActionClickHandle = `onclick="openResource('${d.id}','${i.url}','${i.title}')"`;
+            let disableStyleLayer = "";
             
             if (i.type === 'live') {
                 const status = window.checkLiveStatus(i.liveDate, i.liveStartTime, i.liveEndTime);
-                if (status === 'live') {
+                if (status === 'upcoming') {
+                    liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-blue-600/20 text-blue-500 text-[8px] font-black px-2 py-0.5 rounded-full border border-blue-500/20">SCHEDULED AT ${i.liveStartTime}</span>`;
+                    // Block access interaction handles for unreached schedules for student profile tiers
+                    if(!isT) {
+                        accessActionClickHandle = `onclick="toast('Transmission scheduled for locked interval execution path','error')"`;
+                        disableStyleLayer = "opacity-50 pointer-events-none";
+                    }
+                } else if (status === 'live') {
                     liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-red-600/20 text-red-500 text-[8px] font-black px-2 py-0.5 rounded-full border border-red-500/20"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>LIVE NOW</span>`;
-                } else if (status === 'scheduled') {
-                    liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-blue-600/20 text-blue-400 text-[8px] font-black px-2 py-0.5 rounded-full border border-blue-500/20">SCHEDULED AT ${i.liveStartTime}</span>`;
                 } else {
                     liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-brandOrange/20 text-brandOrange text-[8px] font-black px-2 py-0.5 rounded-full border border-brandOrange/20"><span class="w-1.5 h-1.5 rounded-full bg-brandOrange"></span>RECORDED LIVE</span>`;
                 }
             }
 
-            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative flex-shrink-0 self-start md:self-center"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md border border-white/10">${window.getFileBadge(i.url)}</div><div class="overflow-hidden"><div class="flex flex-wrap items-center gap-2"><h4 class="font-black text-lg italic truncate max-w-xs md:max-w-md pr-4">${i.title}</h4> ${liveStatusLabel}</div><p class="text-[9px] opacity-40 uppercase font-bold tracking-widest mt-1 pr-4">${i.tName} • ${i.views || 0} Views ${i.liveStartTime ? '• Scheduled: ' + i.liveDate + ' [' + i.liveStartTime + ' - ' + (i.liveEndTime || 'End') + ']' : ''}</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Access File</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
+            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative flex-shrink-0 self-start md:self-center"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md border border-white/10">${window.getFileBadge(i.url)}</div><div class="overflow-hidden"><div class="flex flex-wrap items-center gap-2"><h4 class="font-black text-lg italic truncate max-w-xs md:max-w-md pr-4">${i.title}</h4> ${liveStatusLabel}</div><p class="text-[9px] opacity-40 uppercase font-bold tracking-widest mt-1 pr-4">${i.tName} • ${i.views || 0} Views ${i.liveStartTime ? '• Scheduled: ' + i.liveDate + ' [' + i.liveStartTime + ' - ' + (i.liveEndTime || 'End') + ']' : ''}</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button ${accessActionClickHandle} class="flex-grow md:flex-none btn-brand px-10 py-3 rounded-2xl font-black text-[10px] uppercase ${disableStyleLayer}">Access File</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
         }
         
         window.delR = async (id) => { if(confirm("Confirm asset removal?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); loadHome(); } };
@@ -1233,12 +1289,7 @@
             }
 
             await Core.addDoc(Core.collection(Core.db, "content"), payload);
-            
-            if (y === 'live') {
-                pushSystemNotification("UPCOMING LIVE", `Scheduled broadcast session tracked: "${t}" at ${payload.liveStartTime}`);
-            } else {
-                pushSystemNotification("NEW UPLOAD", `Instructor shared resource content element: "${t}"`);
-            }
+            pushSystemNotification("NEW UPLOAD", `Instructor shared resource content element: "${t}"`);
             toast("Resource published successfully"); loadHome();
         };
 
@@ -1412,8 +1463,7 @@
             document.getElementById('media-vault').classList.add('hidden'); 
             currentVideoContext = null; 
             toggleBottomNavBarVisibility(true);
-            if(activeLiveChatListener) { activeLiveChatListener(); activeLiveChatListener = null; }
-            activeLiveChatId = null;
+            if(liveChatSnapshotHook) { liveChatSnapshotHook(); liveChatSnapshotHook = null; }
             if(window._disengageShields) window._disengageShields();
             if(videoPlayer) { try { videoPlayer.destroy(); } catch(e){} videoPlayer = null; } 
         };
