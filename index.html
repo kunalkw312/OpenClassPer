@@ -22,7 +22,6 @@
         .btn-brand { background: linear-gradient(135deg, #004a80 0%, #f7941d 100%); background-size: 200% auto; transition: 0.5s; color: white !important; font-weight: 800; text-transform: uppercase; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
         .btn-brand:hover { background-position: right center; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 74, 128, 0.2); }
         
-        /* Fixed Symmetrical Navigation Pill Architecture */
         .tab-btn { width: 100%; text-align: center; padding: 12px 0; font-weight: 800; text-transform: uppercase; font-size: 10px; border-radius: 20px; transition: 0.3s; opacity: 0.4; color: var(--text-main); border: 1px solid transparent; }
         .tab-btn.active { background: rgba(247, 148, 29, 0.15); color: #f7941d; opacity: 1; border: 1px solid rgba(247, 148, 29, 0.25); }
         
@@ -75,7 +74,7 @@
         .search-container.expanded { width: 260px; }
 
         #floating-bottom-nav-bar { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 4500; width: calc(100% - 2rem); max-width: 500px; transition: transform 0.3s ease, opacity 0.3s ease; }
-        #floating-bottom-nav-bar.nav-hidden { transform: translate(-50(), 100px); opacity: 0; pointer-events: none; }
+        #floating-bottom-nav-bar.nav-hidden { transform: translate(-50%, 100px); opacity: 0; pointer-events: none; }
 
         @keyframes popUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -131,7 +130,7 @@
                     <input type="email" id="auth-email" placeholder="Email" class="input-field">
                     <input type="password" id="auth-pass" placeholder="Password" class="input-field">
                     <button onclick="handleAuth()" id="primary-auth-btn" class="w-full py-4 btn-brand">Sign In</button>
-                    <button onclick="handleGoogle()" class="w-full py-4 glass dark:text-white text-[#002e50] rounded-2xl font-bold uppercase text-[10px] flex items-center justify-center gap-4 border border-zinc-500/20">
+                    <button onclick="handleGoogle()" class="w-full py-4 glass text-zinc-900 dark:text-white rounded-2xl font-bold uppercase text-[10px] flex items-center justify-center gap-4 border border-zinc-500/20">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5"> 
                         Continue with Google
                     </button>
@@ -180,7 +179,6 @@
             
             <main id="main-content" class="p-4 md:p-10 max-w-7xl mx-auto w-full flex-grow"></main>
 
-            <!-- Floating Symmetrical Bottom Nav Bar Pinned Structure -->
             <div id="floating-bottom-nav-bar" class="glass p-2 rounded-[2.5rem] shadow-2xl border border-white/10">
                 <div class="grid grid-cols-4 w-full gap-1 justify-items-center items-center">
                     <button id="tab-home" onclick="setTab('home')" class="tab-btn active">Home</button>
@@ -402,7 +400,7 @@
                 </div>
                 <div class="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
                     ${notificationsMap.map(n => `
-                        <div class="p-4 rounded-2xl border border-white/5 bg-white/5 text-xs">
+                        <div class="p-4 rounded-2xl border border-white/5 bg-white/5 text-xs text-zinc-800 dark:text-zinc-200">
                             <div class="flex justify-between items-center mb-1">
                                 <span class="font-bold text-brandOrange uppercase text-[9px] tracking-wider">${n.type}</span>
                                 <span class="opacity-30 text-[9px]">${n.time}</span>
@@ -429,6 +427,19 @@
                 pill.classList.remove('hidden');
             }
         }
+
+        window.getSmartPreview = (url) => {
+            if (!url) return "https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg";
+            const cleanUrl = url.toLowerCase().trim();
+            if (cleanUrl.includes('youtube.com/watch') || cleanUrl.includes('youtu.be/')) {
+                let id = '';
+                if(cleanUrl.includes('v=')) id = url.split('v=')[1].split('&')[0];
+                else if(cleanUrl.includes('youtu.be/')) id = url.split('/').pop().split('?')[0];
+                return id ? `https://img.youtube.com/vi/${id}/mqdefault.jpg` : "https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg";
+            }
+            if (cleanUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)/)) return url;
+            return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop";
+        };
 
         window.getFileBadge = (url) => {
             if (!url) return '';
@@ -495,7 +506,7 @@
             
             let updatePayload = { name: updatedName };
             if(window._tempHubAvatarBuffer) {
-                updatePayload.photo = window._tempHubAvatarBuffer;
+                updatePayload.photo = window._tempHub._avatarBuffer;
             }
             
             await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), updatePayload);
@@ -544,16 +555,6 @@
             }
             localStorage.removeItem('oc_cart_manifest');
             location.reload();
-        };
-
-        window.getSmartPreview = (url) => {
-            if (!url) return "https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg";
-            const cleanUrl = url.toLowerCase().trim();
-            if (cleanUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)/)) return url;
-            if (cleanUrl.includes('v=')) return `https://img.youtube.com/vi/${url.split('v=')[1].split('&')[0]}/mqdefault.jpg`;
-            if (cleanUrl.includes('youtu.be/')) return `https://img.youtube.com/vi/${url.split('/').pop().split('?')[0]}/mqdefault.jpg`;
-            if (cleanUrl.includes('/live/')) return `https://img.youtube.com/vi/${url.split('/live/')[1].split('?')[0]}/mqdefault.jpg`;
-            return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop";
         };
 
         window.checkLiveStatus = (dateStr, startTimeStr, endTimeStr) => {
@@ -765,13 +766,35 @@
                 const box = document.getElementById('tab-display');
                 if (currentTab === 'home') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Suggested Syllabus</h3><div id="suggested-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div><h3 class="text-2xl font-black italic mb-6">Subscribed Feed Streams</h3><div id="feed" class="space-y-6"></div>`;
+                    
                     const allContent = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(30)));
-                    const allContentSorted = allContent.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
+                    
+                    // Filter to hidden scheduled broadcasts before parsing feed renders
+                    const publicContentDocs = allContent.docs.filter(doc => {
+                        const d = doc.data();
+                        if(d.type === 'live') {
+                            const now = new Date();
+                            const startTime = new Date(`${d.liveDate} ${d.liveStartTime}`);
+                            return now >= startTime;
+                        }
+                        return true;
+                    });
+
+                    const allContentSorted = publicContentDocs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
                     renderFeed(allContentSorted.slice(0,6), false, 'suggested-feed');
                     
                     if (profile.subs?.length) {
                         const subContent = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "in", profile.subs)));
-                        const subContentSorted = subContent.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
+                        const publicSubsDocs = subContent.docs.filter(doc => {
+                            const d = doc.data();
+                            if(d.type === 'live') {
+                                const now = new Date();
+                                const startTime = new Date(`${d.liveDate} ${d.liveStartTime}`);
+                                return now >= startTime;
+                            }
+                            return true;
+                        });
+                        const subContentSorted = publicSubsDocs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
                         renderFeed(subContentSorted, false, 'feed');
                     } else {
                         document.getElementById('feed').innerHTML = `<p class="text-xs font-bold opacity-30 text-center py-10">Follow updates from teachers to view updates here.</p>`;
@@ -786,15 +809,21 @@
                 } else if (currentTab === 'content') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">All Course Materials</h3><div id="feed" class="space-y-4"></div>`;
                     const allContentGlobal = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(40)));
-                    const allContentGlobalSorted = allContentGlobal.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
+                    
+                    const openGlobalDocs = allContentGlobal.docs.filter(doc => {
+                        const d = doc.data();
+                        if(d.type === 'live') {
+                            const now = new Date();
+                            const startTime = new Date(`${d.liveDate} ${d.liveStartTime}`);
+                            return now >= startTime;
+                        }
+                        return true;
+                    });
+
+                    const allContentGlobalSorted = openGlobalDocs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
                     renderFeed(allContentGlobalSorted, false);
                 }
             }
-        };
-
-        window.togglePublishScheduleField = (val) => {
-            const el = document.getElementById('live-schedule-fields');
-            if(el) { if(val === 'live') el.classList.remove('hidden'); else el.classList.add('hidden'); }
         };
 
         window.manageFollowersRoster = async (teacherId) => {
@@ -1014,6 +1043,13 @@
             await Core.addDoc(Core.collection(Core.db, "courses"), { 
                 title: t, description: d, thumbnail: window.getSmartPreview(vu[0]), playlist, price: p, teacherId: profile.teacherId, teacherName: profile.name, groupId: gRef.id, createdAt: Core.serverTimestamp() 
             });
+            
+            // Dynamic telemetry synchronization dispatch signal to follower pools
+            const syncFollowers = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "array-contains", profile.teacherId)));
+            syncFollowers.forEach(followerDoc => {
+                pushSystemNotification("NEW MODULE", `Teacher ${profile.name} launched a new syllabus track: "${t}"`);
+            });
+            
             toast("Course launched successfully"); loadHome();
         };
 
@@ -1028,6 +1064,9 @@
                 pushSystemNotification("HUB SYNC", `Joined community group: "${d.name}"`);
             } else {
                 await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { pending: Core.arrayUnion({ uid: Core.auth.currentUser.uid, name: profile.name }) });
+                
+                // Alert class target supervisor interface node logs
+                pushSystemNotification("ADMISSION PENDING", `Admission processing request filed for gated corridor: "${d.name}"`);
             }
             toast("Access requested"); loadHome();
         };
@@ -1051,7 +1090,9 @@
             
             toggleBottomNavBarVisibility(false);
             content.innerHTML = `
-                <img src="${c.thumbnail}" class="w-full h-auto max-h-64 object-cover rounded-3xl mb-6 shadow-2xl border border-white/10">
+                <div class="w-full flex items-center justify-center overflow-hidden rounded-3xl mb-6 bg-zinc-950/40">
+                    <img src="${c.thumbnail}" class="w-full h-auto max-h-64 object-cover border border-white/5">
+                </div>
                 <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-black italic text-brandOrange">${c.title}</h2>${isT ? `<button onclick="delC('${id}')" class="text-red-500 font-black uppercase text-[10px]">Purge</button>` : ''}</div>
                 <p class="opacity-70 mb-6 text-xs leading-relaxed">${c.description}</p>
                 <div class="space-y-3 mb-8">
@@ -1089,7 +1130,7 @@
             const container = document.getElementById('courses-feed') || document.getElementById('tab-display');
             if (container) container.innerHTML = `<div class="grid md:grid-cols-2 gap-6 w-full">${docs.map(doc => {
                 const c = doc.data();
-                return `<div class="glass p-6 rounded-[2.5rem] border border-white/5 flex flex-col justify-between h-full"><div class="w-full flex items-center justify-center overflow-hidden rounded-2xl mb-4 bg-zinc-950/40"><img src="${c.thumbnail}" class="w-full h-auto max-h-52 object-cover border border-white/5"></div><div><h2 class="text-xl font-black italic mb-2 truncate">${c.title}</h2><div class="flex justify-between items-center mt-4"><h3 class="text-lg font-black text-brandOrange">${parseFloat(c.price)===0?'FREE':'₹'+c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2 text-xs">Inspect Module</button></div></div></div>`;
+                return `<div class="glass p-6 rounded-[2.5rem] border border-white/5 flex flex-col justify-between h-full"><div class="w-full flex items-center justify-center overflow-hidden rounded-2xl mb-4 bg-zinc-950/40"><img src="${c.thumbnail}" class="w-full h-auto max-h-52 object-cover border border-white/5"></div><div><h2 class="text-xl font-black italic mb-2 break-words overflow-visible">${c.title}</h2><div class="flex justify-between items-center mt-4"><h3 class="text-lg font-black text-brandOrange">${parseFloat(c.price)===0?'FREE':'₹'+c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2 text-xs">Inspect Module</button></div></div></div>`;
             }).join('')}</div>`;
         }
 
@@ -1106,7 +1147,7 @@
                 }
             }
 
-            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative flex-shrink-0 self-start md:self-center"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md border border-white/10">${window.getFileBadge(i.url)}</div><div class="overflow-hidden"><div class="flex flex-wrap items-center gap-2"><h4 class="font-black text-lg italic truncate max-w-xs md:max-w-md">${i.title}</h4> ${liveStatusLabel}</div><p class="text-[9px] opacity-40 uppercase font-bold tracking-widest mt-1">${i.tName} • ${i.views || 0} Views ${i.liveStartTime ? '• Scheduled: ' + i.liveDate + ' [' + i.liveStartTime + ' - ' + (i.liveEndTime || 'End') + ']' : ''}</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Access File</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
+            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative flex-shrink-0 self-start md:self-center"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md border border-white/10">${window.getFileBadge(i.url)}</div><div class="overflow-hidden w-full"><div class="flex flex-wrap items-center gap-2"><h4 class="font-black text-lg italic break-words overflow-visible max-w-xs md:max-w-md">${i.title}</h4> ${liveStatusLabel}</div><p class="text-[9px] opacity-40 uppercase font-bold tracking-widest mt-1">${i.tName} • ${i.views || 0} Views ${i.liveStartTime ? '• Scheduled: ' + i.liveDate + ' [' + i.liveStartTime + ' - ' + (i.liveEndTime || 'End') + ']' : ''}</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Access File</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
         }
         
         window.delR = async (id) => { if(confirm("Confirm asset removal?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); loadHome(); } };
@@ -1126,7 +1167,13 @@
             }
 
             await Core.addDoc(Core.collection(Core.db, "content"), payload);
-            pushSystemNotification("NEW UPLOAD", `Instructor shared resource: "${t}"`);
+            
+            // Loop subscribers to trigger activity signals onto client navigation nodes
+            const syncFollowers = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "array-contains", profile.teacherId)));
+            syncFollowers.forEach(followerDoc => {
+                pushSystemNotification("NEW UPLOAD", `Instructor ${profile.name} shared a new file resource: "${t}"`);
+            });
+
             toast("Resource published successfully"); loadHome();
         };
 
@@ -1158,6 +1205,13 @@
             const i = document.getElementById('group-message-input'), t = i.value.trim();
             if (!t || !activeGroupId) return;
             await Core.addDoc(Core.collection(Core.db, "groupMessages"), { groupId: activeGroupId, senderId: Core.auth.currentUser.uid, sender: profile.name, senderPhoto: profile.photo || '', text: t, createdAt: Core.serverTimestamp() });
+            
+            // Loop structural members inside channel to sync messaging notifications
+            const groupMetadata = await Core.getDoc(Core.doc(Core.db, "groups", activeGroupId));
+            if(groupMetadata.exists()) {
+                pushSystemNotification("CHAT ACTIVITY", `New dialogue entry shared in sync space: "${groupMetadata.data().name}"`);
+            }
+
             i.value = '';
         };
 
@@ -1226,7 +1280,12 @@
         window.handleSub = async (tId, isF) => {
             await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { subs: isF ? Core.arrayRemove(tId) : Core.arrayUnion(tId) });
             profile.subs = isF ? profile.subs.filter(i => i !== tId) : [...(profile.subs||[]), tId];
-            pushSystemNotification("ROSTER MUTATION", `Follow state synchronized for instructor: ${tId}`);
+            
+            if(!isF) {
+                // Dispatch alert tracking data onto targeted channel profile
+                pushSystemNotification("FOLLOWER ALIGNMENT", `You subscribed to channel profile: ${tId}`);
+            }
+
             viewTeacher(tId);
         };
 
