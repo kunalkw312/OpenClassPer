@@ -87,11 +87,11 @@
         <div id="modal-content" class="w-full max-w-xl glass p-10 rounded-[3rem] border border-brandOrange/20 shadow-2xl overflow-y-auto max-h-[90vh]"></div>
     </div>
 
-    <!-- Media Vault Panel Refactored to house the Split Dual-Column Live Chat Layout -->
-    <div id="media-vault" class="hidden fixed inset-0 z-[2000] bg-black p-4 flex flex-col lg:flex-row items-center justify-center gap-4">
+    <!-- Media Vault Panel with Dynamic Split-Screen Chat Interface -->
+    <div id="media-vault" class="hidden fixed inset-0 z-[2000] bg-black flex flex-col md:flex-row items-center justify-center p-4 gap-4">
         <button onclick="closeVault()" class="absolute top-6 right-6 bg-white/10 hover:bg-red-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-black z-[2147483647]">✕</button>
         
-        <div id="vault-capture-container" class="w-full lg:flex-1 overflow-hidden rounded-2xl shadow-2xl relative flex items-center justify-center bg-zinc-950">
+        <div id="vault-capture-container" class="w-full flex-1 overflow-hidden rounded-2xl shadow-2xl relative flex items-center justify-center bg-black">
              <div id="vault-wrapper">
                  <div id="anti-theft-blank">⚠️ Screen Capture / Recording Warning: Active Assets Paused</div>
                  <div id="secure-watermark"></div>
@@ -99,19 +99,18 @@
              </div>
         </div>
 
-        <!-- Sidebar Stream Chat Frame Area -->
-        <div id="live-chat-panel" class="hidden w-full lg:w-[360px] h-[300px] lg:h-[80vh] glass rounded-2xl flex flex-col border border-white/10 overflow-hidden relative">
-            <div class="p-4 border-b border-white/5 bg-white/5 flex items-center justify-between">
-                <span class="text-xs font-black uppercase tracking-wider text-brandOrange flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-brandOrange animate-ping" id="chat-live-pulse"></span>
-                    Broadcast Room Chat
-                </span>
-                <span id="chat-mode-label" class="text-[9px] font-bold opacity-40 uppercase tracking-widest">Real-time Stream</span>
+        <!-- Synchronized Live Streaming Chat Matrix -->
+        <div id="live-chat-panel" class="hidden w-full md:w-[360px] h-[40vh] md:h-[80vh] glass rounded-2xl flex flex-col overflow-hidden border border-white/10">
+            <div class="p-4 border-b border-white/10 flex justify-between items-center bg-black/20">
+                <h3 class="font-black text-sm text-brandOrange uppercase tracking-wider flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-ping" id="live-chat-status-dot"></span> Live Chat Feed
+                </h3>
+                <span id="live-chat-mode-label" class="text-[9px] opacity-40 uppercase font-mono">Realtime</span>
             </div>
-            <div id="live-chat-messages-container" class="flex-1 overflow-y-auto p-4 space-y-4 text-xs"></div>
-            <div id="live-chat-input-row" class="p-3 border-t border-white/5 flex gap-2 items-center bg-black/20">
-                <input id="live-chat-message-field" class="bg-zinc-900 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 outline-none flex-grow" placeholder="Send public question...">
-                <button onclick="dispatchLiveChatMessageNode()" class="btn-brand px-4 py-2.5 text-[10px] rounded-xl">Send</button>
+            <div id="live-chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 font-sans text-xs"></div>
+            <div id="live-chat-input-area" class="p-3 border-t border-white/10 flex gap-2 bg-black/40">
+                <input id="live-chat-message-input" type="text" placeholder="Send a message..." class="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs flex-1 outline-none text-white placeholder-zinc-500">
+                <button onclick="sendLiveChatMessage()" class="btn-brand px-4 rounded-xl text-xs font-bold">Send</button>
             </div>
         </div>
     </div>
@@ -237,9 +236,8 @@
 
         let profile = null, isSignup = false, otpCode = null, tempUser = null, activeGroupId = null, currentTab = 'home', videoPlayer = null;
         let currentVideoContext = null, watermarkInterval = null, groupMessageTrackers = {}, notificationsMap = [];
+        let activeLiveContentId = null, chatUnsubscribeListener = null;
         
-        // Chat module runtime parameters mapping fields
-        let activeLiveContentId = null, chatUnsubscribeListener = null, cachedHistoricChatMessages = [];
         const tabsOrderIndex = ['home', 'groups', 'courses', 'content'];
         let touchStartCoordsX = 0;
         let touchEndCoordsX = 0;
@@ -425,7 +423,7 @@
                                 <span class="font-bold text-brandOrange uppercase text-[9px] tracking-wider">${n.type}</span>
                                 <span class="opacity-30 text-[9px]">${n.time}</span>
                             </div>
-                            <p class="opacity-80 pr-4 text-zinc-900 dark:text-zinc-100">${n.text}</p>
+                            <p class="opacity-80 pr-4">${n.text}</p>
                         </div>
                     `).join('')}
                 </div>
@@ -569,14 +567,11 @@
             const cleanUrl = url.toLowerCase().trim();
             if (cleanUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)/)) return url;
             
-            // Regex parsing strategies ensuring precise token isolation
-            let id = '';
-            if (cleanUrl.includes('v=')) id = url.split('v=')[1]?.split('&')[0];
-            else if (cleanUrl.includes('youtu.be/')) id = url.split('/').pop()?.split('?')[0];
-            else if (cleanUrl.includes('/shorts/')) id = url.split('/shorts/')[1]?.split('?')[0];
-            else if (cleanUrl.includes('/live/')) id = url.split('/live/')[1]?.split('?')[0];
+            if (cleanUrl.includes('v=')) return `https://img.youtube.com/vi/${url.split('v=')[1].split('&')[0]}/mqdefault.jpg`;
+            if (cleanUrl.includes('youtu.be/')) return `https://img.youtube.com/vi/${url.split('/').pop().split('?')[0]}/mqdefault.jpg`;
+            if (cleanUrl.includes('/shorts/')) return `https://img.youtube.com/vi/${url.split('/shorts/')[1].split('?')[0]}/mqdefault.jpg`;
+            if (cleanUrl.includes('/live/')) return `https://img.youtube.com/vi/${url.split('/live/')[1].split('?')[0]}/mqdefault.jpg`;
             
-            if (id) return `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
             return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop";
         };
 
@@ -588,7 +583,7 @@
                 const currentDateTime = new Date();
                 
                 if (currentDateTime < targetStart) {
-                    return 'upcoming';
+                    return 'scheduled';
                 } else if (currentDateTime >= targetStart && currentDateTime <= targetEnd) {
                     return 'live';
                 }
@@ -598,100 +593,87 @@
             }
         };
 
-        // --- DYNAMIC LIVE CHAT EMULATION LOGIC STACK ---
-        function attachLiveChatSystemEngine(contentId, streamState) {
+        // --- REALTIME CHAT CHANNEL TRACKER SYNCHRONIZATION ---
+        function bindLiveChatStream(contentId, liveState) {
             activeLiveContentId = contentId;
             const chatPanel = document.getElementById('live-chat-panel');
-            const messagesContainer = document.getElementById('live-chat-messages-container');
-            const inputRow = document.getElementById('live-chat-input-row');
-            const pulseNode = document.getElementById('chat-live-pulse');
-            const modeLabel = document.getElementById('chat-mode-label');
-            
-            if(!chatPanel || !messagesContainer) return;
+            const chatContainer = document.getElementById('live-chat-messages');
+            const inputFieldArea = document.getElementById('live-chat-input-area');
+            const modeLabel = document.getElementById('live-chat-mode-label');
+            const statusDot = document.getElementById('live-chat-status-dot');
+
+            if(!chatPanel) return;
             chatPanel.classList.remove('hidden');
-            messagesContainer.innerHTML = "";
-            cachedHistoricChatMessages = [];
-            
-            if(chatUnsubscribeListener) { chatUnsubscribeListener(); chatUnsubscribeListener = null; }
+            chatContainer.innerHTML = "";
 
-            if (streamState === 'live') {
-                inputRow.classList.remove('hidden');
-                pulseNode.classList.remove('bg-zinc-500');
-                pulseNode.classList.add('bg-brandOrange', 'animate-ping');
-                modeLabel.innerText = "Real-time Stream";
-                
-                const q = Core.query(Core.collection(Core.db, "liveChatMessages"), Core.where("contentId", "==", contentId), Core.orderBy("videoTimestamp", "asc"));
-                chatUnsubscribeListener = Core.onSnapshot(q, (snap) => {
-                    messagesContainer.innerHTML = snap.docs.map(doc => renderSingleChatMessageHtml(doc.data())).join('');
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                });
+            if(chatUnsubscribeListener) { chatUnsubscribeListener(); }
+
+            if (liveState === 'recorded') {
+                modeLabel.innerText = "Replay Mode";
+                statusDot.classList.add('hidden');
+                inputFieldArea.classList.add('hidden'); // Lock out new inputs post expiration boundary
             } else {
-                // Concluded recorded timeline session state re-mapping rules
-                inputRow.classList.add('hidden');
-                pulseNode.classList.remove('bg-brandOrange', 'animate-ping');
-                pulseNode.classList.add('bg-zinc-500');
-                modeLabel.innerText = "Timeline Replay";
-                
-                const chatRef = Core.collection(Core.db, "liveChatMessages");
-                Core.getDocs(Core.query(chatRef, Core.where("contentId", "==", contentId), Core.orderBy("videoTimestamp", "asc"))).then((snap) => {
-                    snap.forEach(doc => cachedHistoricChatMessages.push(doc.data()));
-                });
+                modeLabel.innerText = "Realtime Feed";
+                statusDot.classList.remove('hidden');
+                inputFieldArea.classList.remove('hidden');
             }
-        }
 
-        function renderSingleChatMessageHtml(data) {
-            const stampSec = parseFloat(data.videoTimestamp || 0);
-            const formatTime = Math.floor(stampSec / 60) + ":" + String(Math.floor(stampSec % 60)).padStart(2, '0');
-            return `
-                <div class="flex items-start gap-2 bg-white/5 p-2 rounded-xl border border-white/5 animate-fade-in">
-                    <img src="${data.senderPhoto || 'https://ui-avatars.com/api/?name='+data.senderName}" class="w-6 h-6 rounded-full object-cover bg-black mt-0.5">
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-1.5 flex-wrap">
-                            <span class="font-bold text-zinc-400 truncate max-w-[120px]">${data.senderName}</span>
-                            <span class="text-[9px] bg-white/10 px-1.5 py-0.5 rounded text-brandOrange font-mono font-bold">${formatTime}</span>
+            const chatQuery = Core.query(
+                Core.collection(Core.db, "liveChats"),
+                Core.where("contentId", "==", contentId),
+                Core.orderBy("videoTimestamp", "asc")
+            );
+
+            chatUnsubscribeListener = Core.onSnapshot(chatQuery, (snap) => {
+                let htmlStr = "";
+                snap.forEach(doc => {
+                    const c = doc.data();
+                    const formattedTime = new Date(c.videoTimestamp * 1000).toISOString().substr(11, 8);
+                    htmlStr += `
+                        <div class="flex items-start gap-2 bg-white/5 p-2 rounded-xl border border-white/5">
+                            <img src="${c.senderPhoto || 'https://ui-avatars.com/api/?name='+c.senderName}" class="w-6 h-6 rounded-full object-cover bg-black">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex justify-between items-baseline mb-0.5">
+                                    <span class="font-extrabold text-zinc-400 truncate max-w-[120px]">${c.senderName}</span>
+                                    <span class="text-[8px] bg-brandOrange/20 text-brandOrange font-mono px-1.5 py-0.5 rounded">${formattedTime}</span>
+                                </div>
+                                <p class="text-zinc-200 break-words leading-tight">${c.message}</p>
+                            </div>
                         </div>
-                        <p class="text-zinc-200 mt-0.5 break-words">${data.text}</p>
-                    </div>
-                </div>
-            `;
+                    `;
+                });
+                chatContainer.innerHTML = htmlStr || `<p class="text-[10px] opacity-30 text-center py-6">No chat records match context alignment timeline.</p>`;
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            });
         }
 
-        window.dispatchLiveChatMessageNode = async () => {
-            const input = document.getElementById('live-chat-message-field');
-            const messageText = input.value.trim();
-            if(!messageText || !activeLiveContentId) return;
-            
-            let currentPlayheadSec = 0;
-            if(videoPlayer) { currentPlayheadSec = videoPlayer.currentTime || 0; }
-            
-            await Core.addDoc(Core.collection(Core.db, "liveChatMessages"), {
+        window.sendLiveChatMessage = async () => {
+            const input = document.getElementById('live-chat-message-input');
+            const txt = input.value.trim();
+            if(!txt || !activeLiveContentId) return;
+
+            let playbackTime = 0;
+            if(videoPlayer && typeof videoPlayer.currentTime !== 'undefined') {
+                playbackTime = videoPlayer.currentTime;
+            }
+
+            await Core.addDoc(Core.collection(Core.db, "liveChats"), {
                 contentId: activeLiveContentId,
-                senderId: Core.auth.currentUser.uid,
+                senderUid: Core.auth.currentUser.uid,
                 senderName: profile.name,
                 senderPhoto: profile.photo || '',
-                text: messageText,
-                videoTimestamp: currentPlayheadSec,
+                message: txt,
+                videoTimestamp: playbackTime,
                 createdAt: Core.serverTimestamp()
             });
+
             input.value = "";
         };
 
-        function bindTimelineChatPlaybackHook(currentSeconds) {
-            if(!cachedHistoricChatMessages.length) return;
-            const container = document.getElementById('live-chat-messages-container');
-            if(!container) return;
-            
-            // Filter stream messages which correspond chronologically with active frame indicators
-            const applicableMessages = cachedHistoricChatMessages.filter(msg => parseFloat(msg.videoTimestamp) <= currentSeconds);
-            container.innerHTML = applicableMessages.map(msg => renderSingleChatMessageHtml(msg)).join('');
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function setupPlayer(videoId, metadata, rawUrl, contentId, streamState) {
+        function setupPlayer(videoId, metadata, rawUrl, contentId = null, liveState = 'recorded') {
             currentVideoContext = metadata;
             const container = document.getElementById('player-container');
             container.innerHTML = "";
-            document.getElementById('live-chat-panel').classList.add('hidden');
             
             if (videoPlayer) { try { videoPlayer.destroy(); } catch(e){} }
 
@@ -728,7 +710,7 @@
                 playerDiv.setAttribute('data-plyr-embed-id', videoId);
                 videoPlayer = new Plyr('#player-instance', {
                     autoplay: true,
-                    // Hardened configuration forces cookieless processing to strip commercial advertisement parameters
+                    // Hardened configuration blocks titles, channel notes, and recommendation layers
                     youtube: { noCookie: true, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1, controls: 0 }
                 });
             } else {
@@ -739,13 +721,6 @@
             videoPlayer.on('play', () => {
                 const shieldOn = document.getElementById('anti-theft-blank').style.display === 'flex';
                 if(shieldOn) { videoPlayer.pause(); }
-            });
-
-            // Replay mapping frame listener targeting concluded stream timelines
-            videoPlayer.on('timeupdate', () => {
-                if(streamState !== 'live' && contentId) {
-                    bindTimelineChatPlaybackHook(videoPlayer.currentTime || 0);
-                }
             });
 
             videoPlayer.on('enterfullscreen', () => {
@@ -770,13 +745,15 @@
                 }
             });
 
+            // Bind contextual timeline stream chat channels selectively 
+            if (contentId && (metadata.type === 'live')) {
+                bindLiveChatStream(contentId, liveState);
+            } else {
+                document.getElementById('live-chat-panel').classList.add('hidden');
+            }
+
             toggleBottomNavBarVisibility(false);
             activateAntiTheftShields();
-
-            // Fire up structural live conversation thread window layer if content item corresponds to transmissions
-            if(contentId && (streamState === 'live' || streamState === 'recorded')) {
-                attachLiveChatSystemEngine(contentId, streamState);
-            }
         }
 
         window.setTab = (t) => {
@@ -818,7 +795,7 @@
                     <div class="space-y-6 lg:sticky lg:top-32 h-fit">
                         <div class="glass p-8 rounded-[3rem] border border-brandBlue/30 text-center shadow-xl">
                             <img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-brandBlue p-1 object-cover bg-black">
-                            <h3 class="text-xl font-black italic pr-4">${profile.name}</h3>
+                            <h3 class="text-xl font-black italic pr-2">${profile.name}</h3>
                             <p class="text-[10px] font-bold opacity-40 uppercase tracking-widest mb-6">${profile.teacherId}</p>
                             <div class="grid grid-cols-2 gap-4">
                                 <div onclick="manageFollowersRoster('${profile.teacherId}')" class="bg-white/5 p-4 rounded-3xl text-center cursor-pointer hover:bg-brandBlue/10 transition-all border border-white/5">
@@ -866,7 +843,7 @@
                         <div class="flex flex-row flex-nowrap overflow-x-auto gap-3 w-full pb-4 mb-10 selection:bg-transparent">
                             <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 min-w-[120px] flex-1">
                                 <p class="text-[9px] opacity-40 font-black uppercase">Uploads</p>
-                                <h2 class="text-2xl md:text-4xl font-black mt-1 pr-4">${contentSnap.size}</h2>
+                                <h2 class="text-2xl md:text-4xl font-black mt-1 pr-2">${contentSnap.size}</h2>
                             </div>
                             <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 min-w-[120px] flex-1">
                                 <p class="text-[9px] opacity-40 font-black uppercase">Courses</p>
@@ -983,6 +960,7 @@
         window.kickGroupMember = async (groupId, uid, groupName) => {
             if (confirm("Confirm complete revocation of asset pool access credentials for this individual user?")) {
                 await Core.updateDoc(Core.doc(Core.db, "groups", groupId), { members: Core.arrayRemove(uid) });
+                pushSystemNotification("HUB EVICTION", `Member authentication access revoked from hub node: ${groupName}`);
                 toast("Access cleared and denied.");
                 manageGroupRoster(groupId, groupName);
             }
@@ -1175,17 +1153,14 @@
             toast("Access requested"); loadHome();
         };
 
-        window.openResource = async (id, url, title, streamState) => {
+        window.openResource = async (id, url, title, type = 'video', liveState = 'recorded') => {
             if(id && id !== 'null') await Core.updateDoc(Core.doc(Core.db, "content", id), { views: Core.increment(1) });
             let vid = "";
-            const cleanUrl = url.toLowerCase().trim();
-            if (cleanUrl.includes('v=')) vid = url.split('v=')[1]?.split('&')[0];
-            else if (cleanUrl.includes('youtu.be/')) vid = url.split('/').pop()?.split('?')[0];
-            else if (cleanUrl.includes('/shorts/')) vid = url.split('/shorts/')[1]?.split('?')[0];
-            else if (cleanUrl.includes('/live/')) vid = url.split('/live/')[1]?.split('?')[0];
-            
+            if (url.includes('v=')) vid = url.split('v=')[1].split('&')[0];
+            else if (url.includes('youtu.be/')) vid = url.split('/').pop().split('?')[0];
+            else if (url.includes('/live/')) vid = url.split('/live/')[1].split('?')[0];
             document.getElementById('media-vault').classList.remove('hidden');
-            setupPlayer(vid, { title, link: url }, url, id, streamState);
+            setupPlayer(vid, { title, link: url, type: type }, url, id, liveState);
         };
 
         window.openCourse = async (id) => {
@@ -1203,7 +1178,7 @@
                 <div class="space-y-3 mb-8">
                     <p class="text-[9px] font-black uppercase opacity-40 tracking-wider">Course Syllabus Blueprint</p>
                     ${c.playlist.map((v, i) => `
-                        <div onclick="openResource('null','${v.url}','${v.title}')" class="bg-white/5 p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-white/10 border border-white/5 transition-all">
+                        <div onclick="openResource('null','${v.url}','${v.title}', 'video')" class="bg-white/5 p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-white/10 border border-white/5 transition-all">
                             <p class="text-xs font-bold pr-4">${i+1}. ${v.title}</p>
                             <span class="text-[10px] text-brandOrange font-black uppercase tracking-tighter shrink-0">Access Stream</span>
                         </div>
@@ -1235,35 +1210,30 @@
             const container = document.getElementById('courses-feed') || document.getElementById('tab-display');
             if (container) container.innerHTML = `<div class="grid md:grid-cols-2 gap-6 w-full">${docs.map(doc => {
                 const c = doc.data();
-                return `<div class="glass p-5 rounded-[2.5rem] border border-white/5 flex flex-col justify-between h-auto"><div class="w-full flex items-center justify-center overflow-hidden rounded-2xl mb-4 bg-zinc-950/40 aspect-video"><img src="${c.thumbnail}" class="w-full h-full object-cover border border-white/5"></div><div><h2 class="text-xl font-black italic mb-2 truncate pr-4">${c.title}</h2><div class="flex justify-between items-center mt-4"><h3 class="text-lg font-black text-brandOrange">₹${c.price === '0' ? 'FREE' : c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2 text-xs">Inspect Module</button></div></div></div>`;
+                return `<div class="glass p-5 rounded-[2.5rem] border border-white/5 flex flex-col justify-between h-full"><div class="w-full flex items-center justify-center overflow-hidden rounded-2xl mb-4 bg-zinc-950/40 aspect-video"><img src="${c.thumbnail}" class="w-full h-full object-cover border border-white/5"></div><div><h2 class="text-xl font-black italic mb-2 truncate pr-4">${c.title}</h2><div class="flex justify-between items-center mt-4"><h3 class="text-lg font-black text-brandOrange">₹${c.price === '0' ? 'FREE' : c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2 text-xs">Inspect Module</button></div></div></div>`;
             }).join('')}</div>`;
         }
 
         function renderResourceCard(d, isT) {
             const i = d.data();
             let liveStatusLabel = '';
-            let streamState = 'recorded';
-            let actionBtnHtml = '';
+            let clickActionStr = `openResource('${d.id}','${i.url}','${i.title}','${i.type}','recorded')`;
             
             if (i.type === 'live') {
-                streamState = window.checkLiveStatus(i.liveDate, i.liveStartTime, i.liveEndTime);
-                if (streamState === 'upcoming') {
+                const status = window.checkLiveStatus(i.liveDate, i.liveStartTime, i.liveEndTime);
+                if (status === 'scheduled') {
                     liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-blue-600/20 text-blue-400 text-[8px] font-black px-2 py-0.5 rounded-full border border-blue-500/20">SCHEDULED AT ${i.liveStartTime}</span>`;
-                } else if (streamState === 'live') {
+                    clickActionStr = `toast('This live transmission will launch at its configured scheduled time window.','error')`;
+                } else if (status === 'live') {
                     liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-red-600/20 text-red-500 text-[8px] font-black px-2 py-0.5 rounded-full border border-red-500/20"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>LIVE NOW</span>`;
+                    clickActionStr = `openResource('${d.id}','${i.url}','${i.title}','live','live')`;
                 } else {
                     liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-brandOrange/20 text-brandOrange text-[8px] font-black px-2 py-0.5 rounded-full border border-brandOrange/20"><span class="w-1.5 h-1.5 rounded-full bg-brandOrange"></span>RECORDED LIVE</span>`;
+                    clickActionStr = `openResource('${d.id}','${i.url}','${i.title}','live','recorded')`;
                 }
             }
 
-            // Teachers retain full execution privileges; block upcoming scheduled feeds for regular standard students
-            if (!isT && streamState === 'upcoming') {
-                actionBtnHtml = `<button disabled class="flex-grow md:flex-none bg-zinc-800 text-zinc-500 px-10 py-3 rounded-2xl font-black text-[10px] uppercase cursor-not-allowed">Locked</button>`;
-            } else {
-                actionBtnHtml = `<button onclick="openResource('${d.id}','${i.url}','${i.title}','${streamState}')" class="flex-grow md:flex-none btn-brand px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Access File</button>`;
-            }
-
-            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative flex-shrink-0 self-start md:self-center"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md border border-white/10">${window.getFileBadge(i.url)}</div><div class="overflow-hidden"><div class="flex flex-wrap items-center gap-2"><h4 class="font-black text-lg italic truncate max-w-xs md:max-w-md pr-4">${i.title}</h4> ${liveStatusLabel}</div><p class="text-[9px] opacity-40 uppercase font-bold tracking-widest mt-1 pr-4">${i.tName} • ${i.views || 0} Views ${i.liveStartTime ? '• Scheduled: ' + i.liveDate + ' [' + i.liveStartTime + ' - ' + (i.liveEndTime || 'End') + ']' : ''}</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end">${actionBtnHtml}${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
+            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative flex-shrink-0 self-start md:self-center"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md border border-white/10">${window.getFileBadge(i.url)}</div><div class="overflow-hidden"><div class="flex flex-wrap items-center gap-2"><h4 class="font-black text-lg italic truncate max-w-xs md:max-w-md pr-4">${i.title}</h4> ${liveStatusLabel}</div><p class="text-[9px] opacity-40 uppercase font-bold tracking-widest mt-1 pr-4">${i.tName} • ${i.views || 0} Views ${i.liveStartTime ? '• Scheduled: ' + i.liveDate + ' [' + i.liveStartTime + ' - ' + (i.liveEndTime || 'End') + ']' : ''}</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="${clickActionStr}" class="flex-grow md:flex-none btn-brand px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Access File</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
         }
         
         window.delR = async (id) => { if(confirm("Confirm asset removal?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); loadHome(); } };
@@ -1283,7 +1253,9 @@
             }
 
             await Core.addDoc(Core.collection(Core.db, "content"), payload);
-            pushSystemNotification("NEW LEADING CONTENT", `Teacher shared a new learning item matrix block: "${t}"`);
+            
+            // Notification Broadcast Stream Engine Integration Loop Hook 
+            pushSystemNotification("NEW UPLOAD", `Instructor shared resource content element: "${t}"`);
             toast("Resource published successfully"); loadHome();
         };
 
@@ -1455,9 +1427,10 @@
         
         window.closeVault = () => { 
             document.getElementById('media-vault').classList.add('hidden'); 
+            document.getElementById('live-chat-panel').classList.add('hidden');
+            if(chatUnsubscribeListener) { chatUnsubscribeListener(); chatUnsubscribeListener = null; }
             currentVideoContext = null; 
             activeLiveContentId = null;
-            if(chatUnsubscribeListener) { chatUnsubscribeListener(); chatUnsubscribeListener = null; }
             toggleBottomNavBarVisibility(true);
             if(window._disengageShields) window._disengageShields();
             if(videoPlayer) { try { videoPlayer.destroy(); } catch(e){} videoPlayer = null; } 
