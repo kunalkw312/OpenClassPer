@@ -32,7 +32,9 @@
         #vault-wrapper { height: 100%; width: 100%; aspect-ratio: 16/9; max-height: 80vh; display: flex; align-items: center; justify-content: center; background: #000; position: relative; }
         .plyr { width: 100% !important; height: 100% !important; max-height: 80vh !important; }
         .plyr__video-wrapper { height: 100% !important; }
-        #media-vault .plyr__video-embed iframe { transform: scale(1.4) !important; pointer-events: none; top: -20%; height: 140%; }
+        
+        /* HARDENED ANTI-AD STYLING MASK LAYER FOR YOUTUBE CONTAINER TARGETS */
+        #media-vault .plyr__video-embed iframe { transform: scale(1.4); pointer-events: none; top: -20%; height: 140%; }
         .plyr--full-ui.plyr--video .plyr__control--overlaid { background: #f7941d; }
         .plyr--video .plyr__controls { background: linear-gradient(transparent, rgba(0,0,0,0.9)); border-radius: 0 0 14px 14px; }
         .grid-btn-active { background: rgba(247, 148, 29, 0.2) !important; border: 1px solid rgba(247, 148, 29, 0.3) !important; color: #f7941d !important; }
@@ -83,39 +85,36 @@
     <div id="toast-box"></div>
 
     <div id="custom-modal" class="hidden fixed inset-0 z-[2500] bg-black/95 backdrop-blur-md flex items-center justify-center p-6">
-        <div class="absolute top-6 left-6 text-white/50 cursor-pointer hover:text-white font-bold flex items-center gap-2 select-none" onclick="closeCustomModal()">← BACK</div>
+        <div class="absolute top-6 left-6 text-white/50 pointer-events-auto cursor-pointer hover:text-white font-bold flex items-center gap-2 select-none" onclick="closeCustomModal()">← BACK</div>
         <div id="modal-content" class="w-full max-w-xl glass p-10 rounded-[3rem] border border-brandOrange/20 shadow-2xl overflow-y-auto max-h-[90vh]"></div>
     </div>
 
-    <div id="media-vault" class="hidden fixed inset-0 z-[2000] bg-black flex items-center justify-center p-4">
+    <!-- Media Vault Panel Updated to Support Split-Screen Layouts for Real-Time Chat Functions -->
+    <div id="media-vault" class="hidden fixed inset-0 z-[2000] bg-black flex flex-col lg:flex-row p-2 md:p-4 gap-4 overflow-y-auto lg:overflow-hidden">
         <button onclick="closeVault()" class="absolute top-6 right-6 bg-white/10 hover:bg-red-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-black z-[2147483647]">✕</button>
-        <div id="vault-capture-container" class="w-full max-w-6/7 xl:max-w-7xl w-full h-full flex flex-col lg:flex-row overflow-hidden rounded-2xl shadow-2xl relative bg-[#09090b]">
-             
-             <!-- Dynamic Split Layout Viewport Area Frame -->
-             <div class="flex-1 bg-black relative flex items-center justify-center h-fit lg:h-full">
-                 <div id="vault-wrapper">
-                     <div id="anti-theft-blank">⚠️ Screen Capture / Recording Warning: Active Paused</div>
-                     <div id="secure-watermark"></div>
-                     <div id="player-container" class="w-full h-full"></div>
-                 </div>
+        
+        <div id="vault-capture-container" class="w-full lg:flex-1 h-fit lg:h-full flex items-center justify-center bg-zinc-950 rounded-2xl overflow-hidden relative">
+             <div id="vault-wrapper" class="w-full h-full">
+                 <div id="anti-theft-blank">⚠️ Screen Capture / Recording Warning: Active Assets Paused</div>
+                 <div id="secure-watermark"></div>
+                 <div id="player-container" class="w-full h-full"></div>
              </div>
+        </div>
 
-             <!-- Synced Stream Live Chat Module Container Area -->
-             <div id="vault-live-chat-panel" class="hidden w-full lg:w-[380px] h-[350px] lg:h-full border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col bg-black/60 backdrop-blur-md">
-                 <div class="p-4 border-b border-white/10 flex justify-between items-center bg-black/40">
-                     <div class="flex items-center gap-2">
-                         <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-                         <h3 class="text-sm font-black tracking-wider uppercase text-zinc-200">Live Transmission Chat</h3>
-                     </div>
-                     <span id="chat-status-ticker" class="text-[10px] font-bold uppercase text-zinc-500 font-mono">Connecting...</span>
-                 </div>
-                 <div id="live-chat-messages-box" class="flex-grow overflow-y-auto p-4 space-y-4 text-xs scroll-smooth"></div>
-                 <div id="live-chat-input-row" class="p-3 border-t border-white/10 flex gap-2 items-center bg-black/40">
-                     <input id="live-stream-msg-field" type="text" placeholder="Send a message..." class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white flex-grow outline-none focus:border-brandOrange/40 transition-colors">
-                     <button onclick="dispatchLiveChatMessage()" class="btn-brand px-4 py-2.5 rounded-xl text-xs shrink-0">Send</button>
-                 </div>
-             </div>
-
+        <!-- Transmission Broadcast Real-Time Commentary Module Area -->
+        <div id="live-chat-panel" class="hidden w-full lg:w-[380px] h-[400px] lg:h-full glass rounded-2xl flex flex-col overflow-hidden border border-white/10 relative shrink-0">
+            <div class="p-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                    <h3 class="text-sm font-black uppercase tracking-wider text-zinc-300">Live Transmission Chat</h3>
+                </div>
+                <span id="chat-lock-state-badge" class="text-[9px] font-bold px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 uppercase">Sync Open</span>
+            </div>
+            <div id="live-chat-messages-container" class="flex-grow p-4 overflow-y-auto space-y-4 text-xs"></div>
+            <div id="live-chat-input-row" class="p-3 border-t border-white/10 bg-zinc-900/50 flex gap-2">
+                <input id="live-stream-chat-field" type="text" placeholder="Send a question down the stream..." class="bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white outline-none flex-1">
+                <button onclick="dispatchLiveTransmissionComment()" class="btn-brand px-4 text-xs rounded-xl font-bold uppercase">Send</button>
+            </div>
         </div>
     </div>
 
@@ -240,7 +239,7 @@
 
         let profile = null, isSignup = false, otpCode = null, tempUser = null, activeGroupId = null, currentTab = 'home', videoPlayer = null;
         let currentVideoContext = null, watermarkInterval = null, groupMessageTrackers = {}, notificationsMap = [];
-        let liveChatListenerUnsubscribe = null, activeLiveVideoIdRef = null;
+        let activeLiveContentId = null, chatUnsubscribeHook = null, globalRealTimeContentListener = null;
         
         const tabsOrderIndex = ['home', 'groups', 'courses', 'content'];
         let touchStartCoordsX = 0;
@@ -579,7 +578,7 @@
             return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop";
         };
 
-        // --- TICKER CHRONO CONTEXTUAL TIME CALCULATOR HUB ---
+        // --- ENHANCED THREE-STATE REACTIVE BROADCAST CALCULATION UTILITY ---
         window.checkLiveStatus = (dateStr, startTimeStr, endTimeStr) => {
             if (!dateStr || !startTimeStr) return 'recorded';
             try {
@@ -588,7 +587,7 @@
                 const currentDateTime = new Date();
                 
                 if (currentDateTime < targetStart) {
-                    return 'scheduled';
+                    return 'upcoming';
                 } else if (currentDateTime >= targetStart && currentDateTime <= targetEnd) {
                     return 'live';
                 }
@@ -598,126 +597,106 @@
             }
         };
 
-        // --- TIME RECONSTRUCT FORMAT HELPER MATRIX ---
-        function formatChronoTimestamp(secondsDecimal) {
-            if (isNaN(secondsDecimal) || secondsDecimal === null) return "00:00";
-            const totalSecs = Math.floor(secondsDecimal);
-            const hrs = Math.floor(totalSecs / 3600);
-            const mins = Math.floor((totalSecs % 3600) / 60);
-            const secs = totalSecs % 60;
+        // --- CHRONOLOGICAL BROADCAST LIVE TRANSMISSION INTERACTIVE COMMENTS ENGINE ---
+        function attachLiveStreamChatListener(contentId, dateStr, startTimeStr, endTimeStr) {
+            activeLiveContentId = contentId;
+            const container = document.getElementById('live-chat-messages-container');
+            const chatPanel = document.getElementById('live-chat-panel');
+            const badge = document.getElementById('chat-lock-state-badge');
             
-            if (hrs > 0) {
-                return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-            }
-            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        }
+            if(chatUnsubscribeHook) { chatUnsubscribeHook(); }
+            if(!container || !chatPanel) return;
 
-        // --- HIGH-FIDELITY LIVE INTERACTIVE COMMENTS ENGINE ---
-        function attachLiveChatSyncStream(contentId, dateStr, startTimeStr, endTimeStr) {
-            activeLiveVideoIdRef = contentId;
-            const messagesBox = document.getElementById('live-chat-messages-box');
-            const chatStatusTicker = document.getElementById('chat-status-ticker');
-            const inputField = document.getElementById('live-stream-msg-field');
-            const sendBtn = document.querySelector('#live-chat-input-row button');
-            
-            if(liveChatListenerUnsubscribe) { liveChatListenerUnsubscribe(); }
-            if(messagesBox) messagesBox.innerHTML = "";
+            chatPanel.classList.remove('hidden');
+            container.innerHTML = "";
 
-            // Evaluate state conditions to safely handle locking metrics
-            function evaluateChatWindowLockMode() {
-                const state = window.checkLiveStatus(dateStr, startTimeStr, endTimeStr);
-                if(state === 'scheduled') {
-                    chatStatusTicker.innerText = "PRE-STREAM LOCK";
-                    if(inputField) { inputField.disabled = true; inputField.placeholder = "Chat locks until broadcast start..."; }
-                    if(sendBtn) sendBtn.disabled = true;
-                } else if(state === 'live') {
-                    chatStatusTicker.innerText = "LIVE SYNC";
-                    if(inputField) { inputField.disabled = false; inputField.placeholder = "Say something intelligently..."; }
-                    if(sendBtn) sendBtn.disabled = false;
-                } else {
-                    chatStatusTicker.innerText = "STREAM ARCHIVED";
-                    if(inputField) { inputField.disabled = true; inputField.placeholder = "Broadcast finalized. Comments locked."; }
-                    if(sendBtn) sendBtn.disabled = true;
-                }
+            const status = window.checkLiveStatus(dateStr, startTimeStr, endTimeStr);
+            if(status === 'recorded') {
+                badge.innerText = "Archive Locked";
+                badge.className = "text-[9px] font-bold px-2 py-0.5 rounded bg-red-950 text-red-400 uppercase";
+                document.getElementById('live-chat-input-row').classList.add('hidden');
+            } else {
+                badge.innerText = "Sync Active";
+                badge.className = "text-[9px] font-bold px-2 py-0.5 rounded bg-green-950 text-green-400 uppercase";
+                document.getElementById('live-chat-input-row').classList.remove('hidden');
             }
 
-            evaluateChatWindowLockMode();
-
-            const queryRef = Core.query(
-                Core.collection(Core.db, "liveComments"), 
-                Core.where("contentId", "==", contentId), 
-                Core.orderBy("playbackOffset", "asc")
+            const q = Core.query(
+                Core.collection(Core.db, "liveTransmissionsComments"),
+                Core.where("contentId", "==", contentId),
+                Core.orderBy("relativeOffsetSeconds", "asc")
             );
 
-            liveChatListenerUnsubscribe = Core.onSnapshot(queryRef, (snapshot) => {
-                let htmlOut = "";
-                snapshot.forEach(docNode => {
-                    const data = docNode.data();
-                    const timestampBadge = formatChronoTimestamp(data.playbackOffset);
-                    htmlOut += `
-                        <div class="flex items-start gap-2.5 group animate-popUp">
-                            <img src="${data.senderPhoto || 'https://ui-avatars.com/api/?name='+data.senderName}" class="w-6 h-6 rounded-full border border-white/10 object-cover shrink-0 bg-black">
-                            <div class="flex flex-col min-w-0">
-                                <div class="flex items-baseline gap-1.5 flex-wrap">
-                                    <span class="font-black text-zinc-300 truncate max-w-[120px]">${data.senderName}</span>
-                                    <span class="text-[9px] font-mono text-brandOrange bg-brandOrange/10 px-1 rounded">${timestampBadge}</span>
+            chatUnsubscribeHook = Core.onSnapshot(q, (snap) => {
+                let html = "";
+                snap.forEach(doc => {
+                    const c = doc.data();
+                    const formattedOffset = formatSecondsToMinutes(c.relativeOffsetSeconds || 0);
+                    html += `
+                        <div class="flex items-start gap-2.5 animate-fadeIn">
+                            <img src="${c.senderPhoto || 'https://ui-avatars.com/api/?name='+c.senderName}" class="w-6 h-6 rounded-full object-cover bg-black mt-0.5 border border-white/10">
+                            <div class="bg-white/5 rounded-xl p-2.5 flex-1 max-w-[85%]">
+                                <div class="flex justify-between items-center mb-1 opacity-40 text-[9px] font-bold">
+                                    <span class="text-brandOrange truncate max-w-[100px]">${c.senderName}</span>
+                                    <span>[${formattedOffset}]</span>
                                 </div>
-                                <p class="text-zinc-400 mt-0.5 leading-relaxed break-words">${data.messageText}</p>
+                                <p class="text-zinc-200 leading-normal font-sans break-words">${c.commentText}</p>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 });
-                if(messagesBox) {
-                    messagesBox.innerHTML = htmlOut || `<p class="text-center opacity-30 text-[10px] uppercase font-bold py-10">No live expressions logged</p>`;
-                    messagesBox.scrollTop = messagesBox.scrollHeight;
-                }
+                container.innerHTML = html || `<p class="text-center text-[10px] opacity-30 py-8 uppercase tracking-wider font-mono">No live telemetry entries</p>`;
+                container.scrollTop = container.scrollHeight;
             });
-
-            // Polling routine checking interface rules bounds cleanly in real-time
-            window._chatContextLockInterval = setInterval(evaluateChatWindowLockMode, 5000);
         }
 
-        window.dispatchLiveChatMessage = async () => {
-            const input = document.getElementById('live-stream-msg-field');
-            const text = input ? input.value.trim() : "";
-            if(!text || !activeLiveVideoIdRef) return;
+        function formatSecondsToMinutes(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = Math.floor(totalSeconds % 60);
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
 
-            let currentOffset = 0;
-            if(videoPlayer && typeof videoPlayer.currentTime !== 'undefined') {
-                currentOffset = videoPlayer.currentTime;
+        window.dispatchLiveTransmissionComment = async () => {
+            const field = document.getElementById('live-stream-chat-field');
+            const comment = field?.value.trim();
+            if(!comment || !activeLiveContentId) return;
+
+            // Enforce explicit dynamic timeline boundary checks
+            const currentVideoMetadata = currentVideoContext;
+            if (currentVideoMetadata) {
+                const liveStatus = window.checkLiveStatus(currentVideoMetadata.liveDate, currentVideoMetadata.liveStartTime, currentVideoMetadata.liveEndTime);
+                if(liveStatus === 'recorded') {
+                    toast("Transmission closed. Commentary window terminated.", "error");
+                    return;
+                }
             }
 
-            input.value = "";
+            let computedOffset = 0;
+            if(videoPlayer && typeof videoPlayer.currentTime !== 'undefined') {
+                computedOffset = videoPlayer.currentTime;
+            } else if (currentVideoContext) {
+                const streamAnchor = new Date(`${currentVideoContext.liveDate} ${currentVideoContext.liveStartTime}`);
+                computedOffset = Math.max(0, (new Date() - streamAnchor) / 1000);
+            }
 
-            await Core.addDoc(Core.collection(Core.db, "liveComments"), {
-                contentId: activeLiveVideoIdRef,
-                senderId: Core.auth.currentUser.uid,
+            await Core.addDoc(Core.collection(Core.db, "liveTransmissionsComments"), {
+                contentId: activeLiveContentId,
+                senderUid: Core.auth.currentUser.uid,
                 senderName: profile.name,
-                senderPhoto: profile.photo || '',
-                messageText: text,
-                playbackOffset: currentOffset,
-                serverTimestamp: Core.serverTimestamp()
+                senderPhoto: profile.photo || "",
+                commentText: comment,
+                relativeOffsetSeconds: computedOffset,
+                createdAt: Core.serverTimestamp()
             });
+
+            field.value = "";
         };
 
-        function setupPlayer(videoId, metadata, rawUrl, itemType, docId, dateStr, startT, endT) {
+        function setupPlayer(videoId, metadata, rawUrl, contentId = null) {
             currentVideoContext = metadata;
             const container = document.getElementById('player-container');
-            const chatPanel = document.getElementById('vault-live-chat-panel');
             container.innerHTML = "";
             
             if (videoPlayer) { try { videoPlayer.destroy(); } catch(e){} }
-
-            // Clear hanging interval hooks
-            if(window._chatContextLockInterval) { clearInterval(window._chatContextLockInterval); }
-
-            if(itemType === 'live') {
-                if(chatPanel) chatPanel.classList.remove('hidden');
-                attachLiveChatSyncStream(docId, dateStr, startT, endT);
-            } else {
-                if(chatPanel) chatPanel.classList.add('hidden');
-                if(liveChatListenerUnsubscribe) { liveChatListenerUnsubscribe(); liveChatListenerUnsubscribe = null; }
-            }
 
             const cleanUrl = rawUrl.toLowerCase().trim();
             const isDirectFile = cleanUrl.match(/\.(mp4|webm|ogg|mp3|wav|jpeg|jpg|gif|png|webp|svg|pdf)/) || cleanUrl.includes('firebasestorage.googleapis');
@@ -752,7 +731,7 @@
                 playerDiv.setAttribute('data-plyr-embed-id', videoId);
                 videoPlayer = new Plyr('#player-instance', {
                     autoplay: true,
-                    // youtube-nocookie embedding protocol mapping forces an ad-free layer
+                    // ANTI-AD ARCHITECTURE: Blocks external triggers, annotations, and branding panels
                     youtube: { noCookie: true, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1, controls: 0 }
                 });
             } else {
@@ -786,8 +765,65 @@
                 }
             });
 
+            // Bind commentary feed layout strictly for live transmission types
+            if(metadata && metadata.type === 'live' && contentId) {
+                attachLiveStreamChatListener(contentId, metadata.liveDate, metadata.liveStartTime, metadata.liveEndTime);
+            } else {
+                document.getElementById('live-chat-panel').classList.add('hidden');
+            }
+
             toggleBottomNavBarVisibility(false);
             activateAntiTheftShields();
+        }
+
+        // --- GLOBAL PASSIVE REAL-TIME COLLECTION BROADCAST SYNC CAPTURE LISTENER ---
+        function initializeGlobalRealTimeSyncFeed() {
+            if(globalRealTimeContentListener) globalRealTimeContentListener();
+            
+            const q = Core.query(Core.collection(Core.db, "content"), Core.orderBy("date", "desc"), Core.limit(50));
+            globalRealTimeContentListener = Core.onSnapshot(q, (snap) => {
+                // Instantly sync dashboard layouts if tracking view positions remain bound
+                if (profile) {
+                    snap.docChanges().forEach(change => {
+                        if (change.type === "added") {
+                            const node = change.doc.data();
+                            // Push notifications to students following the publishing teacher
+                            if(profile.role === 'student' && profile.subs?.includes(node.tId)) {
+                                if(node.type === 'live') {
+                                    pushSystemNotification("UPCOMING BROADCAST", `Instructor scheduled an upcoming transmission window: "${node.title}"`);
+                                } else {
+                                    pushSystemNotification("NEW SYLLABUS RESYNC", `Instructor appended a new curriculum node asset link: "${node.title}"`);
+                                }
+                            }
+                        }
+                    });
+                    
+                    // Reactive reload of active viewing matrices
+                    if(document.getElementById('feed') || document.getElementById('suggested-feed')) {
+                        syncActiveTabRenderingRealTime(snap.docs);
+                    }
+                }
+            });
+        }
+
+        async function syncActiveTabRenderingRealTime(allGlobalDocs) {
+            const currentClock = new Date();
+            if (profile.role === 'teacher') {
+                const teacherDocs = allGlobalDocs.filter(d => d.data().tId === profile.teacherId);
+                if(currentTab === 'home' || currentTab === 'content') {
+                    renderFeed(teacherDocs, true, 'feed');
+                }
+            } else {
+                if(currentTab === 'home') {
+                    renderFeed(allGlobalDocs.slice(0,6), false, 'suggested-feed');
+                    if (profile.subs?.length) {
+                        const subContent = allGlobalDocs.filter(doc => profile.subs.includes(doc.data().tId));
+                        renderFeed(subContent, false, 'feed');
+                    }
+                } else if(currentTab === 'content') {
+                    renderFeed(allGlobalDocs, false, 'feed');
+                }
+            }
         }
 
         window.setTab = (t) => {
@@ -820,7 +856,6 @@
                 ]);
                 
                 let totalViews = 0; contentSnap.forEach(d => totalViews += (d.data().views || 0));
-                
                 const contentSorted = contentSnap.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
                 const coursesSorted = courseSnap.docs.sort((a,b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
 
@@ -905,17 +940,7 @@
                 const box = document.getElementById('tab-display');
                 if (currentTab === 'home') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Suggested Syllabus</h3><div id="suggested-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div><h3 class="text-2xl font-black italic mb-6">Subscribed Feed Streams</h3><div id="feed" class="space-y-6"></div>`;
-                    
-                    const allContent = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(40)));
-                    const allContentSorted = allContent.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
-                    renderFeed(allContentSorted.slice(0,6), false, 'suggested-feed');
-                    
-                    if (profile.subs?.length) {
-                        const subContent = allContentSorted.filter(doc => profile.subs.includes(doc.data().tId));
-                        renderFeed(subContent, false, 'feed');
-                    } else {
-                        document.getElementById('feed').innerHTML = `<p class="text-xs font-bold opacity-30 text-center py-10">Follow updates from teachers to view updates here.</p>`;
-                    }
+                    initializeGlobalRealTimeSyncFeed();
                 } else if (currentTab === 'groups') {
                     box.innerHTML = `<div class="glass p-8 rounded-[3rem] mb-10"><h3 class="text-2xl font-black mb-4">Join Campus Hub</h3><div class="flex gap-4"><input id="hub-code" placeholder="OC-XXXXXX" class="input-field"><button onclick="joinGroup()" class="btn-brand px-10">Join</button></div></div><h3 class="text-xl font-black mb-4 italic">Enrolled Hubs Matrix</h3><div id="student-groups" class="space-y-4"></div>`;
                     loadGroups();
@@ -925,9 +950,7 @@
                     renderCourses(coSorted, false);
                 } else if (currentTab === 'content') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">All Course Materials</h3><div id="feed" class="space-y-4"></div>`;
-                    const allContentGlobal = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(40)));
-                    const allContentGlobalSorted = allContentGlobal.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
-                    renderFeed(allContentGlobalSorted, false);
+                    initializeGlobalRealTimeSyncFeed();
                 }
             }
         };
@@ -1187,14 +1210,27 @@
             toast("Access requested"); loadHome();
         };
 
-        window.openResource = async (id, url, title, itemType, dateStr, startT, endT) => {
+        window.openResource = async (id, url, title) => {
             if(id && id !== 'null') await Core.updateDoc(Core.doc(Core.db, "content", id), { views: Core.increment(1) });
             let vid = "";
             if (url.includes('v=')) vid = url.split('v=')[1].split('&')[0];
             else if (url.includes('youtu.be/')) vid = url.split('/').pop().split('?')[0];
             else if (url.includes('/live/')) vid = url.split('/live/')[1].split('?')[0];
+            
+            // Retrieve data fields dynamically to support instant playback validations
+            const docRef = await Core.getDoc(Core.doc(Core.db, "content", id));
+            let data = docRef.exists() ? docRef.data() : null;
+
+            if(data && data.type === 'live') {
+                const liveState = window.checkLiveStatus(data.liveDate, data.liveStartTime, data.liveEndTime);
+                if(liveState === 'upcoming' && profile.role === 'student') {
+                    toast(`Stream locked. Broadcast initializes at ${data.liveStartTime}`, "error");
+                    return;
+                }
+            }
+
             document.getElementById('media-vault').classList.remove('hidden');
-            setupPlayer(vid, { title, link: url }, url, itemType, id, dateStr, startT, endT);
+            setupPlayer(vid, data, url, id);
         };
 
         window.openCourse = async (id) => {
@@ -1212,7 +1248,7 @@
                 <div class="space-y-3 mb-8">
                     <p class="text-[9px] font-black uppercase opacity-40 tracking-wider">Course Syllabus Blueprint</p>
                     ${c.playlist.map((v, i) => `
-                        <div onclick="openResource('null','${v.url}','${v.title}','video')" class="bg-white/5 p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-white/10 border border-white/5 transition-all">
+                        <div onclick="openResource('null','${v.url}','${v.title}')" class="bg-white/5 p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-white/10 border border-white/5 transition-all">
                             <p class="text-xs font-bold pr-4">${i+1}. ${v.title}</p>
                             <span class="text-[10px] text-brandOrange font-black uppercase tracking-tighter shrink-0">Access Stream</span>
                         </div>
@@ -1256,25 +1292,14 @@
                 const status = window.checkLiveStatus(i.liveDate, i.liveStartTime, i.liveEndTime);
                 if (status === 'live') {
                     liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-red-600/20 text-red-500 text-[8px] font-black px-2 py-0.5 rounded-full border border-red-500/20"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>LIVE NOW</span>`;
-                } else if (status === 'scheduled') {
+                } else if(status === 'upcoming') {
                     liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-blue-600/20 text-blue-500 text-[8px] font-black px-2 py-0.5 rounded-full border border-blue-500/20">SCHEDULED AT ${i.liveStartTime}</span>`;
                 } else {
-                    liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-brandOrange/20 text-brandOrange text-[8px] font-black px-2 py-0.5 rounded-full border border-brandOrange/20"><span class="w-1.5 h-1.5 rounded-full bg-brandOrange"></span>RECORDED LIVE</span>`;
+                    liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-brandOrange/20 text-brandOrange text-[8px] font-black px-2 py-0.5 rounded-full border border-brandOrange/20">RECORDED LIVE</span>`;
                 }
             }
 
-            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative flex-shrink-0 self-start md:self-center"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md border border-white/10">${window.getFileBadge(i.url)}</div><div class="overflow-hidden"><div class="flex flex-wrap items-center gap-2"><h4 class="font-black text-lg italic truncate max-w-xs md:max-w-md pr-4">${i.title}</h4> ${liveStatusLabel}</div><p class="text-[9px] opacity-40 uppercase font-bold tracking-widest mt-1 pr-4">${i.tName} • ${i.views || 0} Views ${i.liveStartTime ? '• Scheduled: ' + i.liveDate + ' [' + i.liveStartTime + ' - ' + (i.liveEndTime || 'End') + ']' : ''}</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openResource('${d.id}','${urlAdapterForLiveStatus(i)}','${i.title}','${i.type}','${d.id}','${i.liveDate || ''}','${i.liveStartTime || ''}','${i.liveEndTime || ''}')" class="flex-grow md:flex-none btn-brand px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Access File</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
-        }
-
-        // Direct stream lookup router adaptation logic blocker
-        function urlAdapterForLiveStatus(itemData) {
-            if(itemData.type === 'live') {
-                const status = window.checkLiveStatus(itemData.liveDate, itemData.liveStartTime, itemData.liveEndTime);
-                if(status === 'scheduled') {
-                    return "#"; // Lock redirection trigger route target
-                }
-            }
-            return itemData.url;
+            return `<div class="glass p-5 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-xl gap-6 border border-white/5"><div class="flex items-center gap-6 w-full md:w-auto"><div class="relative flex-shrink-0 self-start md:self-center"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 rounded-2xl object-cover bg-brandBlue shadow-md border border-white/10">${window.getFileBadge(i.url)}</div><div class="overflow-hidden"><div class="flex flex-wrap items-center gap-2"><h4 class="font-black text-lg italic truncate max-w-xs md:max-w-md pr-4">${i.title}</h4> ${liveStatusLabel}</div><p class="text-[9px] opacity-40 uppercase font-bold tracking-widest mt-1 pr-4">${i.tName} • ${i.views || 0} Views ${i.liveStartTime ? '• Scheduled: ' + i.liveDate + ' [' + i.liveStartTime + ' - ' + (i.liveEndTime || 'End') + ']' : ''}</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Access File</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500">🗑</button>` : ''}</div></div>`;
         }
         
         window.delR = async (id) => { if(confirm("Confirm asset removal?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); loadHome(); } };
@@ -1393,39 +1418,9 @@
         window.handleSub = async (tId, isF) => {
             await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { subs: isF ? Core.arrayRemove(tId) : Core.arrayUnion(tId) });
             profile.subs = isF ? profile.subs.filter(i => i !== tId) : [...(profile.subs||[]), tId];
+            pushSystemNotification("ROSTER MUTATION", `Follow state synchronized for instructor tracking key: ${tId}`);
             viewTeacher(tId);
         };
-
-        // --- GLOBAL NETWORK TELEMETRY LIFECYCLE LISTENERS ---
-        function initializeGlobalActivityStreamListeners() {
-            // Intercept live transmission events from instructors
-            Core.onSnapshot(Core.collection(Core.db, "content"), (snapshot) => {
-                snapshot.docChanges().forEach(change => {
-                    if (change.type === "added") {
-                        const data = change.doc.data();
-                        if (profile && profile.role === 'student' && profile.subs?.includes(data.tId)) {
-                            if(data.type === 'live') {
-                                pushSystemNotification("UPCOMING TRANSMISSION", `Instructor ${data.tName} has scheduled a Live Transmission: "${data.title}" at ${data.liveStartTime}`);
-                            } else {
-                                pushSystemNotification("CONTENT FEED DISPATCH", `Instructor ${data.tName} published asset module: "${data.title}"`);
-                            }
-                        }
-                    }
-                });
-            });
-
-            // Intercept group member allocation modifications
-            Core.onSnapshot(Core.collection(Core.db, "groups"), (snapshot) => {
-                snapshot.docChanges().forEach(change => {
-                    const data = change.doc.data();
-                    if(change.type === "modified" && profile) {
-                        if(profile.role === 'teacher' && data.teacherId === profile.teacherId) {
-                            pushSystemNotification("ROSTER SYNC", `Roster adjustments cleared on pool container: "${data.name}"`);
-                        }
-                    }
-                });
-            });
-        }
 
         Core.onAuthStateChanged(Core.auth, async (user) => {
             if (user) {
@@ -1441,14 +1436,6 @@
                     showScreen('dashboard'); navigate(window.location.hash.substring(1) || 'home');
                     listenUnreadNotifications();
                     initializeSwipeGestures();
-                    initializeGlobalActivityStreamListeners();
-                    
-                    // Clock validation polling loop mapping instant updates without manual refresh
-                    setInterval(() => {
-                        if(document.getElementById('dashboard').classList.contains('hidden') === false) {
-                            renderContent(currentTab);
-                        }
-                    }, 8000);
                 }
             } else showScreen('auth-screen');
         });
@@ -1504,11 +1491,10 @@
         window.closeVault = () => { 
             document.getElementById('media-vault').classList.add('hidden'); 
             currentVideoContext = null; 
-            activeLiveVideoIdRef = null;
+            activeLiveContentId = null;
+            if(chatUnsubscribeHook) { chatUnsubscribeHook(); chatUnsubscribeHook = null; }
             toggleBottomNavBarVisibility(true);
             if(window._disengageShields) window._disengageShields();
-            if(liveChatListenerUnsubscribe) { liveChatListenerUnsubscribe(); liveChatListenerUnsubscribe = null; }
-            if(window._chatContextLockInterval) { clearInterval(window._chatContextLockInterval); }
             if(videoPlayer) { try { videoPlayer.destroy(); } catch(e){} videoPlayer = null; } 
         };
         
