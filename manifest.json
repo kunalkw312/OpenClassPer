@@ -23,13 +23,13 @@
   ],
   "screenshots": [
     {
-      "src": "https://via.placeholder.com/1280x720?text=OpenClass+Desktop",
+      "src": "Icons/Screenshot.png",
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide"
     },
     {
-      "src": "https://via.placeholder.com/390x844?text=OpenClass+Mobile",
+      "src": "Icons/Screenshot390x844.png",
       "sizes": "390x844",
       "type": "image/png"
     }
