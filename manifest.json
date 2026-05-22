@@ -1,4 +1,5 @@
 {
+  "id": "/index.html",
   "name": "OpenClass LMS",
   "short_name": "OpenClass",
   "description": "Premium SaaS Learning Management System",
@@ -8,15 +9,29 @@
   "theme_color": "#004a80",
   "icons": [
     {
-      "src": "https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg",
+      "src": "https://cdn-icons-png.flaticon.com/512/3135/3135768.png",
       "sizes": "192x192",
-      "type": "image/jpeg"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg",
+      "src": "https://cdn-icons-png.flaticon.com/512/3135/3135768.png",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://via.placeholder.com/1280x720?text=OpenClass+Desktop",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "https://via.placeholder.com/390x844?text=OpenClass+Mobile",
+      "sizes": "390x844",
+      "type": "image/png"
     }
   ]
 }
-
