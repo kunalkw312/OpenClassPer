@@ -1,6 +1,7 @@
 {
   "name": "OpenClass LMS",
   "short_name": "OpenClass",
+  "description": "Premium SaaS Learning Management System",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#050505",
