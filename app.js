@@ -1,16 +1,19 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, updatePassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, updateDoc, increment, deleteDoc, arrayUnion, arrayRemove, serverTimestamp, onSnapshot, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, updateDoc, increment, deleteDoc, arrayUnion, arrayRemove, serverTimestamp, onSnapshot, orderBy, limit, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import { firebaseConfig, emailConfig } from "./config.js";
-
-import { enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-enableIndexedDbPersistence(db).catch((err) => console.log("Persistence failed"));
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export const provider = new GoogleAuthProvider();
 
+// Enable offline persistence
+enableIndexedDbPersistence(db).catch((err) => {
+    if (err.code == 'failed-precondition') console.log("Persistence failed: Multiple tabs open");
+    else if (err.code == 'unimplemented') console.log("Persistence not supported");
+});
+
+export const provider = new GoogleAuthProvider();
 emailjs.init(emailConfig.publicKey);
 
 export { 
@@ -20,6 +23,7 @@ export {
     signOut, signInWithPopup, updatePassword 
 };
 
+// ... (Rest of your original getThumbnail and sendOTP functions remain the same)
 export function getThumbnail(url) {
     try {
         let id = '';
