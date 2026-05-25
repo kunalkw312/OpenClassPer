@@ -1,6 +1,6 @@
 {
-  "id": "/<OpenClassPer>/index.html",
-  "start_url": "/<OpenClassPer>/index.html",
+  "id": "/index.html",
+  "start_url": "/index.html",
   "scope": "/<OpenClassPer>/",
   "name": "OpenClass LMS",
   "short_name": "OpenClass",
