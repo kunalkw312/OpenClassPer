@@ -1,9 +1,8 @@
 {
-  "id": "/index.html",
-  "start_url": "/index.html",
-  "scope": "/<OpenClassPer>/",
+  "id": "/OpenClassPer/index.html",
   "name": "OpenClass LMS",
   "short_name": "OpenClass",
+  "start_url": "/OpenClassPer/index.html",
   "display": "standalone",
   "background_color": "#050505",
   "theme_color": "#004a80",
