@@ -13,6 +13,17 @@ enableIndexedDbPersistence(db).catch((err) => {
     else if (err.code == 'unimplemented') console.log("Persistence not supported");
 });
 
+// Add this after your app initialization logic
+window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const path = urlParams.get('p');
+    if (path) {
+        // If the app was opened via 404 redirect, navigate to the correct page
+        renderContent(path);
+    }
+});
+
+
 export const provider = new GoogleAuthProvider();
 emailjs.init(emailConfig.publicKey);
 
