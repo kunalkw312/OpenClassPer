@@ -1,12 +1,11 @@
 const CACHE_NAME = 'openclass-v1';
-const GHPATH = '/<OpenClassPer>'; 
 const ASSETS = [
-  `${GHPATH}/`,
-  `${GHPATH}/index.html`,
-  `${GHPATH}/app.js`,
-  `${GHPATH}/config.js`
+  '/OpenClassPer/',
+  '/OpenClassPer/index.html',
+  '/OpenClassPer/app.js',
+  '/OpenClassPer/config.js'
 ];
-
+// ... rest of your worker code
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
