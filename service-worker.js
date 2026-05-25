@@ -1,10 +1,12 @@
 const CACHE_NAME = 'openclass-v1';
+const GHPATH = '/<OpenClassPer>'; 
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/app.js',
-  '/config.js'
+  `${GHPATH}/`,
+  `${GHPATH}/index.html`,
+  `${GHPATH}/app.js`,
+  `${GHPATH}/config.js`
 ];
+
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
