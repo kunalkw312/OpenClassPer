@@ -8,9 +8,9 @@
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      // Add /<repository-name>/ before service-worker.js
-      navigator.serviceWorker.register('/<OpenClassPer>/service-worker.js')
-        .then(() => console.log('PWA Service Worker Registered'));
+      // Use absolute path from the domain root
+      navigator.serviceWorker.register('/OpenClassPer/service-worker.js')
+        .catch(err => console.log('SW registration failed: ', err));
     });
   }
 </script>
