@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#004a80">
+<link rel="manifest" href="/OpenClassPer/manifest.json">
+
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            // Using the full path to ensure the mobile browser finds it
-            navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
-                .then(reg => console.log('SW Registered'))
-                .catch(err => console.log('SW Registration failed', err));
+            // Register the service worker inside the sub-directory
+            navigator.serviceWorker.register('/OpenClassPer/service-worker.js', { scope: '/OpenClassPer/' })
+                .then(() => console.log('PWA Registered'));
         });
     }
 </script>
