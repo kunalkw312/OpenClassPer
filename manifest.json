@@ -1,7 +1,7 @@
 {
-  "id": "/<repository-name>/index.html",
-  "start_url": "/<repository-name>/index.html",
-  "scope": "/<repository-name>/",
+  "id": "/<OpenClassPer>/index.html",
+  "start_url": "/<OpenClassPer>/index.html",
+  "scope": "/<OpenClassPer>/",
   "name": "OpenClass LMS",
   "short_name": "OpenClass",
   "display": "standalone",
