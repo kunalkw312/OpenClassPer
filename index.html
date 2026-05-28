@@ -1358,9 +1358,12 @@
 
             if (!m && !file) return;
 
-            // 🛑 SAFETY CHECK: Prevent the "undefined" URL bug
-            if (!customAiConfig || !customAiConfig.backendUrl) {
-                toast("AI Config Missing: Check config.js spelling and clear cache.", "error");
+            // Grab the URL regardless of whether you named it backendApiUrl or backendUrl in config.js
+            const activeBackendUrl = customAiConfig.backendApiUrl || customAiConfig.backendUrl;
+
+            // 🛑 SAFETY CHECK
+            if (!activeBackendUrl) {
+                toast("AI Config Missing: Check config.js spelling.", "error");
                 console.error("Current customAiConfig state:", customAiConfig);
                 return;
             }
@@ -1400,7 +1403,7 @@
 
             try {
                 // Ensure there is no trailing slash in your config URL
-                const baseUrl = customAiConfig.backendUrl.replace(/\/$/, ""); 
+                const baseUrl = activeBackendUrl.replace(/\/$/, ""); 
                 
                 const response = await fetch(`${baseUrl}/v1/chat/process`, {
                     method: "POST",
@@ -1411,7 +1414,7 @@
                     body: formData
                 });
                 
-                // 🛑 SAFETY CHECK: Catch HTML error pages (like 404/405) before they break JSON parsing
+                // 🛑 SAFETY CHECK: Catch HTML error pages before they break JSON parsing
                 const contentType = response.headers.get("content-type");
                 if (contentType && contentType.indexOf("application/json") === -1) {
                     throw new Error("API returned HTML instead of JSON. The ngrok URL might be wrong or down.");
