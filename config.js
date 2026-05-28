@@ -15,6 +15,9 @@ export const emailConfig = {
     publicKey: "P88qoYcr5CHYVNAPw"
 };
 
+// Custom AI Backend Configuration
 export const aiConfig = {
-    geminiKey: "AIzaSyBaCaZufr9ho2acn5GiQwmdyFmXzysMN8M"
+    backendApiUrl: "https://dance-peroxide-tinfoil.ngrok-free.dev/", 
+    projectKey: "my_super_secure_secret_agent_key_123",           
+    groqKey: "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" // Add your key here if you aren't pulling it from the UI                          
 };
