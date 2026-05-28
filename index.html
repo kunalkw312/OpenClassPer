@@ -44,10 +44,12 @@
         #toast-box { position: fixed; bottom: 7rem; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
         .toast-pill { background: #111; color: #fff; padding: 0.6rem 1.5rem; border-radius: 99px; border: 1px solid rgba(255,255,255,0.1); font-size: 10px; font-weight: 800; text-transform: uppercase; animation: popUp 0.3s forwards; }
         
-        #vault-wrapper { height: 100%; width: 100%; aspect-ratio: 16/9; max-height: 80vh; display: flex; align-items: center; justify-content: center; background: #000; position: relative; }
+        /* Adjusted Vault and Player rules for correct Aspect Ratios without aggressive cropping */
+        #vault-wrapper { height: 100%; width: 100%; max-height: 80vh; display: flex; align-items: center; justify-content: center; background: #000; position: relative; border-radius: 14px; overflow: hidden; }
         .plyr { width: 100% !important; height: 100% !important; max-height: 80vh !important; }
-        .plyr__video-wrapper { height: 100% !important; }
-        #media-vault .plyr__video-embed iframe { transform: scale(1.35); pointer-events: none; top: -17%; height: 134%; }
+        .plyr__video-wrapper { height: 100% !important; display: flex; align-items: center; justify-content: center; }
+        .plyr video { object-fit: contain !important; }
+        #media-vault .plyr__video-embed iframe { pointer-events: none; }
         .plyr--full-ui.plyr--video .plyr__control--overlaid { background: #f7941d; }
         .plyr--video .plyr__controls { background: linear-gradient(transparent, rgba(0,0,0,0.9)); border-radius: 0 0 14px 14px; }
         .grid-btn-active { background: rgba(247, 148, 29, 0.2) !important; border: 1px solid rgba(247, 148, 29, 0.3) !important; color: #f7941d !important; }
@@ -464,21 +466,15 @@
             `;
         };
 
-        window.clearNotifications = () => {
-            notificationsMap = [];
+        // Complete notification fix: clearing global notifications updates backend read state
+        window.clearNotifications = async () => {
+            const notifsSnap = await Core.getDocs(Core.collection(Core.db, `users/${Core.auth.currentUser.uid}/notifications`));
+            const batchPromises = notifsSnap.docs.map(doc => Core.updateDoc(doc.ref, { read: true }));
+            await Promise.all(batchPromises);
             document.getElementById('notify-pill').classList.add('hidden');
             toast("Notifications cleared");
             closeCustomModal();
         };
-
-        function pushSystemNotification(type, text) {
-            notificationsMap.unshift({ type, text, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
-            const pill = document.getElementById('notify-pill');
-            if(pill) {
-                pill.innerText = notificationsMap.length;
-                pill.classList.remove('hidden');
-            }
-        }
 
         window.getFileBadge = (url) => {
             if (!url) return '';
@@ -627,7 +623,6 @@
             }
         };
 
-        // --- REAL-TIME LIVE COMMENTS HANDLER MATRIX ---
         function subscribeToLiveStreamChat(contentId, endTimeStr) {
             const chatBox = document.getElementById('live-classroom-chat-container');
             const messagesTarget = document.getElementById('live-chat-messages-target');
@@ -638,7 +633,6 @@
             chatBox.classList.remove('hidden');
             messagesTarget.innerHTML = `<p class="opacity-30 italic text-center py-4">Connecting to live chat stream...</p>`;
 
-            // Enforce input lock rules if lecture duration tracking boundary has elapsed
             if(endTimeStr) {
                 const deadline = new Date(`${endTimeStr}`);
                 if(new Date() > deadline) {
@@ -706,7 +700,6 @@
             const container = document.getElementById('player-container');
             container.innerHTML = "";
             
-            // Terminate existing listener chains when switching stream channels
             if(activeLiveChatListenerUnsub) { activeLiveChatListenerUnsub(); activeLiveChatListenerUnsub = null; }
             document.getElementById('live-classroom-chat-container').classList.add('hidden');
 
@@ -745,12 +738,15 @@
                 playerDiv.setAttribute('data-plyr-embed-id', videoId);
                 videoPlayer = new Plyr('#player-instance', {
                     autoplay: true,
-                    // Hardened query manipulation logic filters advertisement tracking tags completely
                     youtube: { noCookie: true, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1, controls: 0 }
                 });
             } else {
-                playerDiv.innerHTML = `<video src="${rawUrl}" controls crossorigin class="w-full h-full"></video>`;
-                videoPlayer = new Plyr(playerDiv.querySelector('video'), { autoplay: true });
+                // Bug 3 Fix: Inject controls inline and manually pass full UI array for Non-Youtube files
+                playerDiv.innerHTML = `<video src="${rawUrl}" playsinline controls crossorigin class="w-full h-full"></video>`;
+                videoPlayer = new Plyr(playerDiv.querySelector('video'), { 
+                    autoplay: true,
+                    controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen']
+                });
             }
 
             videoPlayer.on('play', () => {
@@ -779,7 +775,7 @@
                 }
             });
 
-            // Bind conversational chat streams strictly onto Live Class type models
+            // Bug 1 Fix: Only subscribe to Live Chat if it is actively marked as Live 
             if(metadata && metadata.isLiveBroadcast && contentId) {
                 subscribeToLiveStreamChat(contentId, metadata.endTargetClockStr);
             }
@@ -956,7 +952,6 @@
         window.severFollowerRelation = async (uid, teacherId) => {
             if(confirm("Confirm user eviction and blocking from channel profile stream?")) {
                 await Core.updateDoc(Core.doc(Core.db, "users", uid), { subs: Core.arrayRemove(teacherId) });
-                pushSystemNotification("FOLLOWER UPDATE", `Roster change: A subscriber has been disconnected from your updates stream.`);
                 toast("Follower removed and stream blacklisted");
                 manageFollowersRoster(teacherId);
                 loadHome();
@@ -994,7 +989,6 @@
         window.kickGroupMember = async (groupId, uid, groupName) => {
             if (confirm("Confirm complete revocation of asset pool access credentials for this individual user?")) {
                 await Core.updateDoc(Core.doc(Core.db, "groups", groupId), { members: Core.arrayRemove(uid) });
-                pushSystemNotification("GROUP ACCESS REVOKED", `Community hub log: A student's access authorization has been removed from "${groupName}".`);
                 toast("Access cleared and denied.");
                 manageGroupRoster(groupId, groupName);
             }
@@ -1053,7 +1047,6 @@
                 const cDoc = await Core.getDoc(Core.doc(Core.db, "courses", item.id));
                 if (cDoc.exists()) {
                     await Core.updateDoc(Core.doc(Core.db, "groups", cDoc.data().groupId), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
-                    pushSystemNotification("COURSE PURCHASED", `SaaS Enrollment success: You are now registered for course "${cDoc.data().title}".`);
                 }
             }
             cart = []; 
@@ -1104,7 +1097,8 @@
             const ref = Core.doc(Core.db, "groups", gid); 
             if(accept) {
                 await Core.updateDoc(ref, { members: Core.arrayUnion(uid), pending: Core.arrayRemove({ uid, name }) }); 
-                pushSystemNotification("ADMISSION GRANTED", `Hub entry verification: Your admission application has been approved.`);
+                // DB Notification
+                await Core.addDoc(Core.collection(Core.db, `users/${uid}/notifications`), { type: "ADMISSION GRANTED", text: `Hub entry verification: Your admission application to a Private Hub has been approved.`, createdAt: Core.serverTimestamp(), read: false });
             } else {
                 await Core.updateDoc(ref, { pending: Core.arrayRemove({ uid, name }) }); 
             }
@@ -1175,12 +1169,13 @@
             if (snap.empty) return toast("Group code not found", "error");
             const g = snap.docs[0], d = g.data();
             if (d.members.includes(Core.auth.currentUser.uid)) return toast("Already a member of this hub");
+            
             if (d.type === 'public') {
                 await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
-                pushSystemNotification("GROUP JOINED", `Roster confirmation: You are now an authorized member of public hub "${d.name}".`);
             } else {
                 await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { pending: Core.arrayUnion({ uid: Core.auth.currentUser.uid, name: profile.name }) });
-                pushSystemNotification("REQUEST PENDING", `Admission log: Access credentials verification requested for "${d.name}".`);
+                // DB Notification to Teacher
+                await Core.addDoc(Core.collection(Core.db, `users/${d.teacherId}/notifications`), { type: "REQUEST PENDING", text: `Admission log: Access credentials verification requested for hub "${d.name}".`, createdAt: Core.serverTimestamp(), read: false });
             }
             toast("Access requested"); loadHome();
         };
@@ -1191,7 +1186,7 @@
                 if(checkDoc.exists()) {
                     const data = checkDoc.data();
                     const status = window.checkLiveStatus(data.liveDate, data.liveStartTime, data.liveEndTime);
-                    // Deny stream connection entry if the current timestamp is prior to the scheduled window
+                    
                     if(status === 'scheduled') {
                         toast(`Broadcast locked until start configuration: ${data.liveDate} at ${data.liveStartTime}`, "error");
                         return;
@@ -1204,10 +1199,14 @@
                     else if (url.includes('/live/')) vid = url.split('/live/')[1].split('?')[0];
                     
                     document.getElementById('media-vault').classList.remove('hidden');
+                    
+                    // Bug 1 Fix: Pass explicit true ONLY if it is currently LIVE right now to avoid displaying dead chats
+                    const isLiveNow = (data.type === 'live' && status === 'live');
+                    
                     setupPlayer(id, vid, { 
                         title, 
                         link: url, 
-                        isLiveBroadcast: (data.type === 'live'),
+                        isLiveBroadcast: isLiveNow,
                         endTargetClockStr: data.liveEndTime ? `${data.liveDate} ${data.liveEndTime}` : null 
                     }, url);
                     return;
@@ -1308,12 +1307,19 @@
 
             await Core.addDoc(Core.collection(Core.db, "content"), payload);
             
-            // Dispatch target system notifications directly down following subscriber indices
-            if(y === 'live') {
-                pushSystemNotification("LIVE LECTURE SCHEDULED", `New live training scheduled: "${t}" is set for ${payload.liveDate} at ${payload.liveStartTime}.`);
-            } else {
-                pushSystemNotification("NEW MATERIAL", `New file asset sync: "${t}" has been added by your instructor.`);
-            }
+            // Bug 5 Fix: Robust DB Notification Engine
+            // Fetch all users who follow this specific teacher and send them a targeted DB alert
+            const followerSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "array-contains", profile.teacherId)));
+            
+            followerSnap.forEach(userDoc => {
+                Core.addDoc(Core.collection(Core.db, `users/${userDoc.id}/notifications`), {
+                    type: y === 'live' ? "LIVE LECTURE SCHEDULED" : "NEW MATERIAL",
+                    text: y === 'live' ? `New live training scheduled: "${t}" is set for ${payload.liveDate} at ${payload.liveStartTime}.` : `New file asset sync: "${t}" has been added by your instructor.`,
+                    createdAt: Core.serverTimestamp(),
+                    read: false
+                });
+            });
+
             toast("Resource published successfully"); loadHome();
         };
 
@@ -1348,7 +1354,6 @@
             i.value = '';
         };
 
-           // Initialize the memory array globally
         window.aiChatHistory = window.aiChatHistory || [];
 
         window.sendAIMessage = async () => {
@@ -1361,10 +1366,8 @@
 
             if (!m && !file) return;
 
-            // Grab the URL regardless of whether you named it backendApiUrl or backendUrl in config.js
             const activeBackendUrl = customAiConfig.backendApiUrl || customAiConfig.backendUrl;
 
-            // 🛑 SAFETY CHECK
             if (!activeBackendUrl) {
                 toast("AI Config Missing: Check config.js spelling.", "error");
                 console.error("Current customAiConfig state:", customAiConfig);
@@ -1373,7 +1376,6 @@
 
             const chat = document.getElementById('ai-messages');
             
-            // Generate visual block for user message
             let userMsgHtml = `<div class="ml-auto bg-brandOrange text-white p-4 rounded-2xl max-w-[80%] text-sm shadow-md">`;
             if (file) userMsgHtml += `<div class="text-[10px] opacity-70 mb-1 font-bold">📎 ${file.name}</div>`;
             if (m) userMsgHtml += `<div>${m}</div>`;
@@ -1381,34 +1383,30 @@
             
             chat.innerHTML += userMsgHtml;
             
-            // Clear inputs
             promptInput.value = '';
             fileInput.value = '';
             filePreview.innerText = '';
             filePreview.classList.add('hidden');
             chat.scrollTop = chat.scrollHeight;
 
-            // 1. Save the user's input to the chat history
             window.aiChatHistory.push({ 
                 role: 'User', 
                 content: m || `[Uploaded File: ${file.name}]` 
             });
 
-            // 2. Format the last 10 messages into a readable string for the AI
             const historyContext = window.aiChatHistory
                 .map(msg => `${msg.role}: ${msg.content}`)
                 .join('\n');
 
             const formData = new FormData();
             
-            // 🧠 SYSTEM DIRECTIVE + CONTEXT HISTORY + CURRENT QUERY
+            // Retained precise persona and prompt injection behavior 
             const systemDirective = `System Directive: You are the virtual teacher core assistant of the OpenClass LMS ecosystem. Persona: Highly smart, productive, and helpful. You must speak very little. Keep your responses extremely concise, short, and to the point. Provide only the most important, actionable information without any fluff or unnecessary conversational filler.`;
             
             const finalPrompt = `User: ${profile?.name}. Permission Tier: ${profile?.role}.\n${systemDirective}\n\n--- Recent Conversation History ---\n${historyContext}\n-----------------------------------\n\nCurrent Query: ${m}`;
             
             formData.append("prompt", finalPrompt);
             
-            // Dynamically pass active media resource URL if viewing a module
             if (currentVideoContext && currentVideoContext.link) {
                 formData.append("url", currentVideoContext.link);
             }
@@ -1416,13 +1414,11 @@
                 formData.append("file", file);
             }
 
-            // Append a loading skeleton
             const loadingId = 'ai-loading-' + Date.now();
             chat.innerHTML += `<div id="${loadingId}" class="bg-white/10 p-4 rounded-2xl max-w-[80%] text-sm text-zinc-200 leading-relaxed italic opacity-50">Processing multimodal context...</div>`;
             chat.scrollTop = chat.scrollHeight;
 
             try {
-                // Ensure there is no trailing slash in your config URL
                 const baseUrl = activeBackendUrl.replace(/\/$/, ""); 
                 
                 const response = await fetch(`${baseUrl}/v1/chat/process`, {
@@ -1434,7 +1430,6 @@
                     body: formData
                 });
                 
-                // 🛑 SAFETY CHECK: Catch HTML error pages before they break JSON parsing
                 const contentType = response.headers.get("content-type");
                 if (contentType && contentType.indexOf("application/json") === -1) {
                     throw new Error("API returned HTML instead of JSON. The ngrok URL might be wrong or down.");
@@ -1446,10 +1441,8 @@
                 if (response.ok) {
                     const textReply = data.response || "Task execution complete.";
                     
-                    // 3. Save the AI's response to the history
                     window.aiChatHistory.push({ role: 'AI', content: textReply });
                     
-                    // 4. Trim the history to strictly keep only the last 10 interactions
                     if (window.aiChatHistory.length > 10) {
                         window.aiChatHistory = window.aiChatHistory.slice(-10);
                     }
@@ -1468,7 +1461,6 @@
             }
         };
 
-        
         window.viewTeacher = async (tId) => {
             const main = document.getElementById('main-content');
             injectSkeletonState('main-content');
@@ -1501,7 +1493,6 @@
         window.handleSub = async (tId, isF) => {
             await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { subs: isF ? Core.arrayRemove(tId) : Core.arrayUnion(tId) });
             profile.subs = isF ? profile.subs.filter(i => i !== tId) : [...(profile.subs||[]), tId];
-            pushSystemNotification("INSTRUCTOR CONNECT MIGRATION", `Follower update: Your tracking settings have been modified for instructor "${tId}".`);
             viewTeacher(tId);
         };
 
@@ -1523,7 +1514,9 @@
             } else showScreen('auth-screen');
         });
 
+        // Bug 5 Fix: Robust Listening Engine for DB notifications
         function listenUnreadNotifications() {
+            // Group chat real-time listeners
             Core.onSnapshot(Core.collection(Core.db, "groupMessages"), (snap) => {
                 if(document.getElementById('group-chat-window').classList.contains('hidden') === false) {
                     if(activeGroupId) groupMessageTrackers[activeGroupId] = 0;
@@ -1537,6 +1530,34 @@
                         }
                     }
                 });
+            });
+
+            // Global System Alert DB Sync listener
+            const notifsQuery = Core.query(Core.collection(Core.db, `users/${Core.auth.currentUser.uid}/notifications`), Core.orderBy("createdAt", "desc"), Core.limit(20));
+            Core.onSnapshot(notifsQuery, (snap) => {
+                notificationsMap = [];
+                let unreadCount = 0;
+                
+                snap.forEach(doc => {
+                    const n = doc.data();
+                    if (!n.read) unreadCount++;
+                    notificationsMap.push({
+                        id: doc.id,
+                        type: n.type,
+                        text: n.text,
+                        time: n.createdAt ? new Date(n.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Just now'
+                    });
+                });
+                
+                const pill = document.getElementById('notify-pill');
+                if (pill) {
+                    if (unreadCount > 0) {
+                        pill.innerText = unreadCount;
+                        pill.classList.remove('hidden');
+                    } else {
+                        pill.classList.add('hidden');
+                    }
+                }
             });
         }
 
