@@ -1,4 +1,4 @@
-const CACHE_NAME = 'openclass-v1';
+const CACHE_NAME = 'openclass-v2';
 const ASSETS = [
   '/OpenClassPer/',
   '/OpenClassPer/index.html',
