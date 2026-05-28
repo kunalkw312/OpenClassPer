@@ -1348,7 +1348,7 @@
             i.value = '';
         };
 
-        window.sendAIMessage = async () => {
+            window.sendAIMessage = async () => {
             const promptInput = document.getElementById('ai-input');
             const fileInput = document.getElementById('ai-media-file');
             const filePreview = document.getElementById('ai-file-preview');
@@ -1357,6 +1357,13 @@
             const file = fileInput.files[0];
 
             if (!m && !file) return;
+
+            // 🛑 SAFETY CHECK: Prevent the "undefined" URL bug
+            if (!customAiConfig || !customAiConfig.backendUrl) {
+                toast("AI Config Missing: Check config.js spelling and clear cache.", "error");
+                console.error("Current customAiConfig state:", customAiConfig);
+                return;
+            }
 
             const chat = document.getElementById('ai-messages');
             
@@ -1392,7 +1399,10 @@
             chat.scrollTop = chat.scrollHeight;
 
             try {
-                const response = await fetch(`${customAiConfig.backendUrl}/v1/chat/process`, {
+                // Ensure there is no trailing slash in your config URL
+                const baseUrl = customAiConfig.backendUrl.replace(/\/$/, ""); 
+                
+                const response = await fetch(`${baseUrl}/v1/chat/process`, {
                     method: "POST",
                     headers: {
                         "X-Project-Key": customAiConfig.projectKey,
@@ -1401,6 +1411,12 @@
                     body: formData
                 });
                 
+                // 🛑 SAFETY CHECK: Catch HTML error pages (like 404/405) before they break JSON parsing
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") === -1) {
+                    throw new Error("API returned HTML instead of JSON. The ngrok URL might be wrong or down.");
+                }
+
                 const data = await response.json();
                 document.getElementById(loadingId).remove();
 
@@ -1414,6 +1430,7 @@
                 chat.scrollTop = chat.scrollHeight;
             } catch (e) {
                 document.getElementById(loadingId)?.remove();
+                chat.innerHTML += `<div class="bg-red-500/20 border border-red-500/50 p-4 rounded-2xl max-w-[80%] text-sm text-red-200 leading-relaxed">Network Interruption: ${e.message}</div>`;
                 toast("AI Core handshake interruption", "error"); 
                 console.error(e);
             }
