@@ -1348,7 +1348,10 @@
             i.value = '';
         };
 
-            window.sendAIMessage = async () => {
+           // Initialize the memory array globally
+        window.aiChatHistory = window.aiChatHistory || [];
+
+        window.sendAIMessage = async () => {
             const promptInput = document.getElementById('ai-input');
             const fileInput = document.getElementById('ai-media-file');
             const filePreview = document.getElementById('ai-file-preview');
@@ -1385,12 +1388,25 @@
             filePreview.classList.add('hidden');
             chat.scrollTop = chat.scrollHeight;
 
+            // 1. Save the user's input to the chat history
+            window.aiChatHistory.push({ 
+                role: 'User', 
+                content: m || `[Uploaded File: ${file.name}]` 
+            });
+
+            // 2. Format the last 10 messages into a readable string for the AI
+            const historyContext = window.aiChatHistory
+                .map(msg => `${msg.role}: ${msg.content}`)
+                .join('\n');
+
             const formData = new FormData();
             
-            // 🧠 UPDATED SYSTEM DIRECTIVE FOR THE NEW PERSONA
-            const systemDirective = `System Directive: You are the virtual core assistant of the OpenClass LMS ecosystem. Persona: Highly smart, productive, and helpful. You must speak very little. Keep your responses extremely concise, short, and to the point. Provide only the most important, actionable information without any fluff or unnecessary conversational filler.`;
+            // 🧠 SYSTEM DIRECTIVE + CONTEXT HISTORY + CURRENT QUERY
+            const systemDirective = `System Directive: You are the virtual teacher core assistant of the OpenClass LMS ecosystem. Persona: Highly smart, productive, and helpful. You must speak very little. Keep your responses extremely concise, short, and to the point. Provide only the most important, actionable information without any fluff or unnecessary conversational filler.`;
             
-            formData.append("prompt", `User: ${profile?.name}. Permission Tier: ${profile?.role}.\n${systemDirective}\nQuery: ${m}`);
+            const finalPrompt = `User: ${profile?.name}. Permission Tier: ${profile?.role}.\n${systemDirective}\n\n--- Recent Conversation History ---\n${historyContext}\n-----------------------------------\n\nCurrent Query: ${m}`;
+            
+            formData.append("prompt", finalPrompt);
             
             // Dynamically pass active media resource URL if viewing a module
             if (currentVideoContext && currentVideoContext.link) {
@@ -1429,6 +1445,15 @@
 
                 if (response.ok) {
                     const textReply = data.response || "Task execution complete.";
+                    
+                    // 3. Save the AI's response to the history
+                    window.aiChatHistory.push({ role: 'AI', content: textReply });
+                    
+                    // 4. Trim the history to strictly keep only the last 10 interactions
+                    if (window.aiChatHistory.length > 10) {
+                        window.aiChatHistory = window.aiChatHistory.slice(-10);
+                    }
+
                     chat.innerHTML += `<div class="bg-white/10 p-4 rounded-2xl max-w-[80%] text-sm text-zinc-200 leading-relaxed">${textReply}</div>`;
                 } else {
                     console.error("Error from custom backend:", data.detail);
@@ -1443,6 +1468,7 @@
             }
         };
 
+        
         window.viewTeacher = async (tId) => {
             const main = document.getElementById('main-content');
             injectSkeletonState('main-content');
