@@ -1386,7 +1386,11 @@
             chat.scrollTop = chat.scrollHeight;
 
             const formData = new FormData();
-            formData.append("prompt", `User: ${profile?.name}. Permission Tier: ${profile?.role}.\nSystem Directive: You are the virtual teacher core assistant of the OpenClass LMS ecosystem.\nQuery: ${m}`);
+            
+            // 🧠 UPDATED SYSTEM DIRECTIVE FOR THE NEW PERSONA
+            const systemDirective = `System Directive: You are the virtual core assistant of the OpenClass LMS ecosystem. Persona: Highly smart, productive, and helpful. You must speak very little. Keep your responses extremely concise, short, and to the point. Provide only the most important, actionable information without any fluff or unnecessary conversational filler.`;
+            
+            formData.append("prompt", `User: ${profile?.name}. Permission Tier: ${profile?.role}.\n${systemDirective}\nQuery: ${m}`);
             
             // Dynamically pass active media resource URL if viewing a module
             if (currentVideoContext && currentVideoContext.link) {
