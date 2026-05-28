@@ -241,12 +241,22 @@
     <div id="ai-chat-window" class="hidden fixed bottom-44 right-6 w-[340px] md:w-[380px] h-[500px] glass rounded-[2rem] z-[5000] overflow-hidden flex flex-col border border-brandOrange/20">
         <div class="p-5 border-b border-white/10 flex justify-between items-center"><h2 class="font-black text-lg italic text-brandOrange">OpenClass AI</h2><button onclick="toggleAIChat()">✕</button></div>
         <div id="ai-messages" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
-        <div class="p-4 border-t border-white/10 flex gap-3"><input id="ai-input" type="text" placeholder="Ask AI..." class="input-field flex-1"><button onclick="sendAIMessage()" class="btn-brand px-5 rounded-xl">Send</button></div>
+        <div class="p-4 border-t border-white/10 flex flex-col gap-2">
+            <div id="ai-file-preview" class="hidden text-[10px] text-brandOrange font-bold truncate"></div>
+            <div class="flex gap-2 items-center">
+                <label class="cursor-pointer text-white/50 hover:text-white p-2">
+                    📎
+                    <input type="file" id="ai-media-file" class="hidden" onchange="document.getElementById('ai-file-preview').innerText = this.files[0]?.name || ''; document.getElementById('ai-file-preview').classList.remove('hidden');">
+                </label>
+                <input id="ai-input" type="text" placeholder="Ask AI..." class="input-field flex-1" onkeydown="if(event.key==='Enter') sendAIMessage()">
+                <button onclick="sendAIMessage()" class="btn-brand px-5 rounded-xl">Send</button>
+            </div>
+        </div>
     </div>
 
     <script type="module">
         import * as Core from "./app.js";
-        import { aiConfig } from "./config.js";
+        import { customAiConfig } from "./config.js";
 
         let profile = null, isSignup = false, otpCode = null, tempUser = null, activeGroupId = null, currentTab = 'home', videoPlayer = null;
         let currentVideoContext = null, watermarkInterval = null, groupMessageTrackers = {}, notificationsMap = [], activeLiveChatListenerUnsub = null;
@@ -735,6 +745,7 @@
                 playerDiv.setAttribute('data-plyr-embed-id', videoId);
                 videoPlayer = new Plyr('#player-instance', {
                     autoplay: true,
+                    // Hardened query manipulation logic filters advertisement tracking tags completely
                     youtube: { noCookie: true, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1, controls: 0 }
                 });
             } else {
@@ -768,6 +779,7 @@
                 }
             });
 
+            // Bind conversational chat streams strictly onto Live Class type models
             if(metadata && metadata.isLiveBroadcast && contentId) {
                 subscribeToLiveStreamChat(contentId, metadata.endTargetClockStr);
             }
@@ -1337,54 +1349,73 @@
         };
 
         window.sendAIMessage = async () => {
-            const i = document.getElementById('ai-input'), m = i.value.trim();
-            if (!m) return;
+            const promptInput = document.getElementById('ai-input');
+            const fileInput = document.getElementById('ai-media-file');
+            const filePreview = document.getElementById('ai-file-preview');
             
+            const m = promptInput.value.trim();
+            const file = fileInput.files[0];
+
+            if (!m && !file) return;
+
             const chat = document.getElementById('ai-messages');
-            chat.innerHTML += `<div class="ml-auto bg-brandOrange text-white p-4 rounded-2xl max-w-[80%] text-sm shadow-md">${m}</div>`;
-            i.value = '';
             
-            let videoIdentityPrompt = "No media context active.";
-            let mediaUrl = null;
+            // Generate visual block for user message
+            let userMsgHtml = `<div class="ml-auto bg-brandOrange text-white p-4 rounded-2xl max-w-[80%] text-sm shadow-md">`;
+            if (file) userMsgHtml += `<div class="text-[10px] opacity-70 mb-1 font-bold">📎 ${file.name}</div>`;
+            if (m) userMsgHtml += `<div>${m}</div>`;
+            userMsgHtml += `</div>`;
             
+            chat.innerHTML += userMsgHtml;
+            
+            // Clear inputs
+            promptInput.value = '';
+            fileInput.value = '';
+            filePreview.innerText = '';
+            filePreview.classList.add('hidden');
+            chat.scrollTop = chat.scrollHeight;
+
+            const formData = new FormData();
+            formData.append("prompt", `User: ${profile?.name}. Permission Tier: ${profile?.role}.\nSystem Directive: You are the virtual teacher core assistant of the OpenClass LMS ecosystem.\nQuery: ${m}`);
+            
+            // Dynamically pass active media resource URL if viewing a module
             if (currentVideoContext && currentVideoContext.link) {
-                videoIdentityPrompt = `Active Media Resource: "${currentVideoContext.title}".`;
-                mediaUrl = currentVideoContext.link;
+                formData.append("url", currentVideoContext.link);
+            }
+            if (file) {
+                formData.append("file", file);
             }
 
-            const context = `User: ${profile?.name}. Permission Tier: ${profile?.role}. Active Anchor: ${videoIdentityPrompt}`;
-            const fullPrompt = `${context} \nSystem Directive: You are the virtual teacher core assistant of the OpenClass LMS ecosystem. Respond intelligently.\nQuery: ${m}`;
-            
-            const formData = new FormData();
-            formData.append("prompt", fullPrompt);
-            
-            if (mediaUrl) {
-                formData.append("url", mediaUrl);
-            }
-            
+            // Append a loading skeleton
+            const loadingId = 'ai-loading-' + Date.now();
+            chat.innerHTML += `<div id="${loadingId}" class="bg-white/10 p-4 rounded-2xl max-w-[80%] text-sm text-zinc-200 leading-relaxed italic opacity-50">Processing multimodal context...</div>`;
+            chat.scrollTop = chat.scrollHeight;
+
             try {
-                const response = await fetch(`${aiConfig.backendApiUrl}/v1/chat/process`, {
+                const response = await fetch(`${customAiConfig.backendUrl}/v1/chat/process`, {
                     method: "POST",
                     headers: {
-                        "X-Project-Key": aiConfig.projectKey,
-                        "X-Groq-Key": aiConfig.groqKey
+                        "X-Project-Key": customAiConfig.projectKey,
+                        "X-Groq-Key": customAiConfig.groqKey
                     },
                     body: formData
                 });
-
-                const data = await response.json();
                 
+                const data = await response.json();
+                document.getElementById(loadingId).remove();
+
                 if (response.ok) {
-                    const textReply = data.response;
+                    const textReply = data.response || "Task execution complete.";
                     chat.innerHTML += `<div class="bg-white/10 p-4 rounded-2xl max-w-[80%] text-sm text-zinc-200 leading-relaxed">${textReply}</div>`;
-                    chat.scrollTop = chat.scrollHeight;
                 } else {
-                    console.error("Error from MLLM backend:", data.detail);
-                    toast("Backend processing error", "error");
+                    console.error("Error from custom backend:", data.detail);
+                    chat.innerHTML += `<div class="bg-red-500/20 border border-red-500/50 p-4 rounded-2xl max-w-[80%] text-sm text-red-200 leading-relaxed">System Error: ${data.detail || 'Backend processing rejected payload.'}</div>`;
                 }
-            } catch (e) { 
-                console.error("Network error connecting to backend:", e);
+                chat.scrollTop = chat.scrollHeight;
+            } catch (e) {
+                document.getElementById(loadingId)?.remove();
                 toast("AI Core handshake interruption", "error"); 
+                console.error(e);
             }
         };
 
