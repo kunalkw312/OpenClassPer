@@ -1,0 +1,37 @@
+{
+  "id": "/",
+  "name": "OpenClass LMS",
+  "short_name": "OpenClass",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#004a80",
+  
+  "icons": [
+    {
+      "src": "https://res.cloudinary.com/dowhvdkjh/image/upload/v1780123661/Icon192_hwdtob.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://res.cloudinary.com/dowhvdkjh/image/upload/v1780123661/Icon_cpp9wz.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://res.cloudinary.com/dowhvdkjh/image/upload/v1780123662/Screenshot_p2fzuw.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "https://res.cloudinary.com/dowhvdkjh/image/upload/v1780123662/Screenshot390x844_wagula.png",
+      "sizes": "390x844",
+      "type": "image/png"
+    }
+  ]
+}
