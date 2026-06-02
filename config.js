@@ -15,11 +15,8 @@ export const emailConfig = {
 };
 
 export const customAiConfig = {
-    // IMPORTANT AI CORS WARNING:
-    // If you see a CORS error in the console, your Ngrok URL backend below must allow CORS.
-    // The browser physically blocks HTTP calls from `firebaseapp.com` to `ngrok-free.app`
-    // unless the ngrok-free.app server returns the header: `Access-Control-Allow-Origin: *`.
-    backendUrl: "https://dance-peroxide-tinfoil.ngrok-free.dev", 
+    // Replace 123.45.67.89 with your actual Hostinger VPS IP Address
+    backendUrl: "https://dance-peroxide-tinfoil.ngrok-free.dev/", 
     projectKey: "my_super_secure_secret_agent_key_123",
-    groqKey: "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" 
+    groqKey: "" // Leave this empty, you don't need Groq anymore!
 };
