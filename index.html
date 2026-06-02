@@ -6,17 +6,17 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#050505">
     
-   <script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            // Removed the leading slashes so it uses relative pathing for GitHub Pages
-            navigator.serviceWorker.register('./service-worker.js', { scope: './' })
-                .then(() => console.log('PWA Registered'))
-                .catch(err => console.error('SW Registration Failed:', err));
-        });
-    }
-</script>
-    
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Fixed relative pathing for GitHub Pages
+                navigator.serviceWorker.register('./service-worker.js', { scope: './' })
+                    .then(() => console.log('PWA Registered'))
+                    .catch(err => console.error('SW Registration Failed:', err));
+            });
+        }
+    </script>
+  
     <title>OpenClass | Premium SaaS LMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -247,7 +247,7 @@
     </div>
 
     <div id="app">
-        <div id="auth-screen" class="hidden min-h-screen flex items-center justify-center p-6">
+        <div id="auth-screen" class="min-h-screen flex items-center justify-center p-6">
             <div class="w-full max-w-md glass p-10 rounded-[3.5rem] text-center shadow-2xl premium-card-enter">
                 <img src="https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg" class="h-20 mx-auto mb-6 rounded-2xl object-cover shadow-lg hover:scale-105 transition-transform duration-300">
                 <h1 class="text-4xl font-black mb-8 italic dark:text-white text-brandBlue">Open<span class="text-brandOrange">Class</span></h1>
@@ -1855,7 +1855,20 @@
             viewTeacher(tId);
         };
 
+        // --- BACKEND FAILSAFE ---
+        // If Firebase doesn't respond within 1.5 seconds, force the UI to show.
+        let isBackendConnected = false;
+        setTimeout(() => {
+            if (!isBackendConnected) {
+                console.warn("Backend auth check timed out. Forcing UI visible.");
+                showScreen('auth-screen');
+            }
+        }, 1500);
+
+        // --- AUTHENTICATION LISTENER ---
         Core.onAuthStateChanged(Core.auth, async (user) => {
+            isBackendConnected = true; // Tell the failsafe the backend is working
+            
             if (user) {
                 const docSnap = await Core.getDoc(Core.doc(Core.db, "users", user.uid));
                 if (!docSnap.exists()) showScreen('onboarding-screen');
@@ -1871,7 +1884,9 @@
                     listenSystemEvents(); 
                     initializeSwipeGestures();
                 }
-            } else showScreen('auth-screen');
+            } else {
+                showScreen('auth-screen');
+            }
         });
 
         function listenSystemEvents() {
