@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel="manifest" href="/manifest.json">
+    
+    <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#050505">
     
     <script>
@@ -62,14 +63,7 @@
         .plyr__video-wrapper { height: 100% !important; display: flex; align-items: center; justify-content: center; background: #000; }
         .plyr__video-wrapper video { object-fit: contain !important; width: 100%; height: 100%; }
         
-        /* CROP YOUTUBE NATIVE UI & LOGO */
-        #media-vault .plyr__video-embed iframe {
-            transform: scale(1.12);
-            pointer-events: none;
-            top: -8%;
-            height: 116%;
-        }
-
+        #media-vault .plyr__video-embed iframe { transform: scale(1.12); pointer-events: none; top: -8%; height: 116%; }
         .plyr--full-ui.plyr--video .plyr__control--overlaid { background: #f7941d; }
         .plyr--video .plyr__controls { background: linear-gradient(transparent, rgba(0,0,0,0.9)); border-radius: 0 0 14px 14px; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
         
@@ -89,16 +83,8 @@
         #live-classroom-chat-container { height: 100%; max-height: 80vh; display: flex; flex-direction: column; background: #0b0b0b; border-left: 1px solid rgba(255, 255, 255, 0.05); border-radius: 1rem; }
         #live-classroom-chat-container.hidden { display: none !important; }
         
-        /* AI Chat Window Enhancements */
-        #ai-chat-window {
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform-origin: bottom right;
-        }
-        .ai-drawer-hidden {
-            opacity: 0 !important;
-            transform: scale(0.9) translateY(40px) !important;
-            pointer-events: none !important;
-        }
+        #ai-chat-window { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-origin: bottom right; }
+        .ai-drawer-hidden { opacity: 0 !important; transform: scale(0.9) translateY(40px) !important; pointer-events: none !important; }
 
         @keyframes popUp { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
     </style>
@@ -372,17 +358,17 @@
             pwaInstallPromptEvent: null,
 
             // Auth Functions that will be hydrated by app.js
-            handleAuth: function() { console.warn('Auth system loading...'); },
-            handleGoogle: function() { console.warn('Auth system loading...'); },
+            handleAuth: function() { alert('Auth system is disconnected or missing (app.js not found). Make sure app.js is in your repository.'); },
+            handleGoogle: function() { alert('Auth system is disconnected or missing (app.js not found). Make sure app.js is in your repository.'); },
             toggleAuth: function() {
                 this.isSignup = !this.isSignup;
                 document.getElementById('signup-fields').classList.toggle('hidden');
                 document.getElementById('primary-auth-btn').innerText = this.isSignup ? "Verify Handshake" : "Sign In";
                 document.getElementById('toggle-auth-btn').innerText = this.isSignup ? "Return to active session" : "Initialize System Profile";
             },
-            checkOTP: function() { console.warn('Auth system loading...'); },
-            logout: function() { console.warn('Auth system loading...'); },
-            finalizeProfile: function() { console.warn('Auth system loading...'); }
+            checkOTP: function() { alert('Auth system is disconnected or missing.'); },
+            logout: function() { alert('Auth system is disconnected or missing.'); },
+            finalizeProfile: function() { alert('Auth system is disconnected or missing.'); }
         };
 
         // UI Failsafe
@@ -414,53 +400,113 @@
     </script>
 
     <script type="module">
-        import * as Core from "./app.js";
-        import { customAiConfig } from "./config.js";
-
-        // Re-assign global state variables for compatibility with existing inline functions
-        window.Core = Core;
-        window.customAiConfig = customAiConfig;
-        
         try {
-            const preservedCart = localStorage.getItem('oc_cart_manifest');
-            if(preservedCart) { window.cart = JSON.parse(preservedCart); }
-        } catch(e) { window.cart = []; }
+            // Wait for both modules to load. If they fail (404), the catch block handles it safely.
+            const Core = await import("./app.js");
+            const configMod = await import("./config.js").catch(() => ({ customAiConfig: {} }));
+            const customAiConfig = configMod.customAiConfig;
 
-        // Hydrate the App State Auth Functions
-        window.appState.handleAuth = async () => {
-            const e = document.getElementById('auth-email').value, p = document.getElementById('auth-pass').value;
-            if (window.appState.isSignup) {
-                window.appState.tempUser = { e, p, n: document.getElementById('reg-name').value, r: document.getElementById('reg-role').value };
-                window.appState.otpCode = Math.floor(100000 + Math.random() * 900000);
-                try { await Core.sendOTP(e, window.appState.otpCode); document.getElementById('verify-note').innerText = `OTP sent to ${e}`; showScreen('verify-screen'); } catch(err) { toast("Relay network anomaly", "error"); }
-            } else { try { await Core.signInWithEmailAndPassword(Core.auth, e, p); } catch (err) { toast(err.message, "error"); } }
-        };
-
-        window.appState.checkOTP = async () => {
-            if (document.getElementById('otp-input').value == window.appState.otpCode) {
-                try {
-                    const { e, p, n, r } = window.appState.tempUser;
-                    const cred = await Core.createUserWithEmailAndPassword(Core.auth, e, p);
-                    await Core.setDoc(Core.doc(Core.db, "users", cred.user.uid), { name: n, role: r, teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), email: e, subs: [], photo: "", joined: new Date().toLocaleDateString() });
-                    location.reload();
-                } catch(err) { toast(err.message, "error"); }
-            } else toast("Verification payload rejection", "error");
-        };
-
-        window.appState.handleGoogle = () => Core.signInWithPopup(Core.auth, Core.provider);
-        window.appState.logout = () => Core.signOut(Core.auth).then(() => { localStorage.removeItem('oc_cart_manifest'); location.reload(); });
-
-        window.appState.finalizeProfile = async () => {
-            const n = document.getElementById('ob-name').value, p = document.getElementById('ob-pass').value, r = document.getElementById('ob-role').value;
-            if (!n || !p) return toast("Form fields incomplete", "error");
+            window.Core = Core;
+            window.customAiConfig = customAiConfig;
+            
             try {
-                await Core.updatePassword(Core.auth.currentUser, p);
-                await Core.setDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { name: n, role: r, teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), email: Core.auth.currentUser.email, subs: [], photo: Core.auth.currentUser.photoURL || "" });
-                location.reload();
-            } catch(e) { toast(e.message, "error"); }
-        };
+                const preservedCart = localStorage.getItem('oc_cart_manifest');
+                if(preservedCart) { window.cart = JSON.parse(preservedCart); }
+            } catch(e) { window.cart = []; }
 
-        // Redefine other inline functions
+            // Hydrate the App State Auth Functions since Firebase successfully loaded
+            window.appState.handleAuth = async () => {
+                const e = document.getElementById('auth-email').value, p = document.getElementById('auth-pass').value;
+                if (window.appState.isSignup) {
+                    window.appState.tempUser = { e, p, n: document.getElementById('reg-name').value, r: document.getElementById('reg-role').value };
+                    window.appState.otpCode = Math.floor(100000 + Math.random() * 900000);
+                    try { await Core.sendOTP(e, window.appState.otpCode); document.getElementById('verify-note').innerText = `OTP sent to ${e}`; showScreen('verify-screen'); } catch(err) { toast("Relay network anomaly", "error"); }
+                } else { try { await Core.signInWithEmailAndPassword(Core.auth, e, p); } catch (err) { toast(err.message, "error"); } }
+            };
+
+            window.appState.checkOTP = async () => {
+                if (document.getElementById('otp-input').value == window.appState.otpCode) {
+                    try {
+                        const { e, p, n, r } = window.appState.tempUser;
+                        const cred = await Core.createUserWithEmailAndPassword(Core.auth, e, p);
+                        await Core.setDoc(Core.doc(Core.db, "users", cred.user.uid), { name: n, role: r, teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), email: e, subs: [], photo: "", joined: new Date().toLocaleDateString() });
+                        location.reload();
+                    } catch(err) { toast(err.message, "error"); }
+                } else toast("Verification payload rejection", "error");
+            };
+
+            window.appState.handleGoogle = () => Core.signInWithPopup(Core.auth, Core.provider);
+            window.appState.logout = () => Core.signOut(Core.auth).then(() => { localStorage.removeItem('oc_cart_manifest'); location.reload(); });
+
+            window.appState.finalizeProfile = async () => {
+                const n = document.getElementById('ob-name').value, p = document.getElementById('ob-pass').value, r = document.getElementById('ob-role').value;
+                if (!n || !p) return toast("Form fields incomplete", "error");
+                try {
+                    await Core.updatePassword(Core.auth.currentUser, p);
+                    await Core.setDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { name: n, role: r, teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), email: Core.auth.currentUser.email, subs: [], photo: Core.auth.currentUser.photoURL || "" });
+                    location.reload();
+                } catch(e) { toast(e.message, "error"); }
+            };
+
+            Core.onAuthStateChanged(Core.auth, async (user) => {
+                if (user) {
+                    const docSnap = await Core.getDoc(Core.doc(Core.db, "users", user.uid));
+                    if (!docSnap.exists()) showScreen('onboarding-screen');
+                    else {
+                        window.profile = docSnap.data();
+                        
+                        if (window.profile.role === "super_admin") {
+                            const adminBtn = document.getElementById("admin-panel-btn");
+                            if (adminBtn) adminBtn.classList.remove("hidden");
+                        }
+
+                        const pic = document.getElementById('nav-profile-pic');
+                        if (pic) {
+                            pic.innerHTML = `<img src="${window.profile.photo || 'https://ui-avatars.com/api/?name='+window.profile.name}" class="w-full h-full object-cover bg-black">`;
+                            pic.className = `w-9 h-9 md:w-10 md:h-10 rounded-full border-[3px] overflow-hidden cursor-pointer block select-none hover:scale-105 transition-transform shadow-lg ${window.profile.role === 'teacher' ? 'border-brandBlue' : 'border-brandOrange'}`;
+                        }
+                        showScreen('dashboard'); window.navigate(window.location.hash.substring(1) || 'home');
+                        
+                        Core.onSnapshot(Core.collection(Core.db, "groupMessages"), (snap) => {
+                            if(document.getElementById('group-chat-window').classList.contains('hidden') === false) {
+                                if(window.appState.activeGroupId) window.appState.groupMessageTrackers[window.appState.activeGroupId] = 0;
+                            }
+                            snap.docChanges().forEach(change => {
+                                if (change.type === "added") {
+                                    const msg = change.doc.data();
+                                    if (msg.groupId && msg.groupId !== window.appState.activeGroupId && msg.senderId !== Core.auth.currentUser.uid) {
+                                        window.appState.groupMessageTrackers[msg.groupId] = (window.appState.groupMessageTrackers[msg.groupId] || 0) + 1;
+                                        const el = document.getElementById(`badge-${msg.groupId}`);
+                                        if(el) { el.innerText = window.appState.groupMessageTrackers[msg.groupId] + " new"; el.classList.remove('hidden'); }
+                                    }
+                                }
+                            });
+                        });
+
+                        if(window.profile.role === 'student' && window.profile.subs && window.profile.subs.length > 0) {
+                            const contentQuery = Core.query(Core.collection(Core.db, "content"), Core.orderBy("date", "desc"), Core.limit(10));
+                            Core.onSnapshot(contentQuery, (snap) => {
+                                snap.docChanges().forEach(change => {
+                                    if (change.type === "added") {
+                                        const data = change.doc.data();
+                                        const docTimestamp = data.date ? data.date.toMillis() : 0;
+                                        if (docTimestamp > window.appState.appLoadTime && window.profile.subs.includes(data.tId)) {
+                                            window.pushSystemNotification("NEW SYLLABUS", `${data.tName} published ${data.title}`);
+                                        }
+                                    }
+                                });
+                            });
+                        }
+                        window.initializeSwipeGestures();
+                    }
+                } else showScreen('auth-screen');
+            });
+            
+        } catch (e) {
+            console.warn("Backend missing or failed to initialize:", e);
+        }
+
+        // Standard Window Functions
         window.injectSkeletonState = function(targetElementId) {
             const el = document.getElementById(targetElementId);
             if(!el) return;
@@ -821,7 +867,7 @@
                 let updatePayload = { name: updatedName };
                 if (window._tempHubAvatarBuffer) updatePayload.photo = window._tempHubAvatarBuffer;
                 
-                await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), updatePayload);
+                await window.Core.updateDoc(window.Core.doc(window.Core.db, "users", window.Core.auth.currentUser.uid), updatePayload);
                 toast("Profile updated successfully");
                 setTimeout(() => location.reload(), 1000);
             } catch(e) {
@@ -841,7 +887,7 @@
             toast("Sending security verification code...");
             
             try {
-                await Core.sendOTP(window.profile.email, dynamicVerificationToken);
+                await window.Core.sendOTP(window.profile.email, dynamicVerificationToken);
                 const modal = document.getElementById('custom-modal');
                 const content = document.getElementById('modal-content');
                 
@@ -863,13 +909,13 @@
             if(inputVal != matchToken) return toast("Incorrect verification code", "error");
             
             toast("Deleting account logs...");
-            await Core.deleteDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid));
+            await window.Core.deleteDoc(window.Core.doc(window.Core.db, "users", window.Core.auth.currentUser.uid));
             
-            if(Core.auth.currentUser) {
+            if(window.Core.auth.currentUser) {
                 try {
-                    await Core.auth.currentUser.delete();
+                    await window.Core.auth.currentUser.delete();
                 } catch(e) {
-                    await Core.signOut(Core.auth);
+                    await window.Core.signOut(window.Core.auth);
                 }
             }
             localStorage.removeItem('oc_cart_manifest');
@@ -927,14 +973,14 @@
             chatBox.classList.remove('hidden');
             messagesTarget.innerHTML = `<p class="opacity-30 italic text-center py-4 text-[10px]">Connecting to live chat stream module...</p>`;
 
-            const q = Core.query(
-                Core.collection(Core.db, "liveChats"), 
-                Core.where("contentId", "==", contentId), 
-                Core.orderBy("createdAt", "asc")
+            const q = window.Core.query(
+                window.Core.collection(window.Core.db, "liveChats"), 
+                window.Core.where("contentId", "==", contentId), 
+                window.Core.orderBy("createdAt", "asc")
             );
 
             if (window.appState.activeLiveChatListenerUnsub) window.appState.activeLiveChatListenerUnsub();
-            window.appState.activeLiveChatListenerUnsub = Core.onSnapshot(q, (snapshot) => {
+            window.appState.activeLiveChatListenerUnsub = window.Core.onSnapshot(q, (snapshot) => {
                 messagesTarget.innerHTML = "";
                 if(snapshot.empty) {
                     messagesTarget.innerHTML = `<p class="opacity-30 italic text-center py-8">Welcome to the live session! Ask any question below.</p>`;
@@ -969,13 +1015,13 @@
             const txt = field.value.trim();
             field.value = "";
             
-            await Core.addDoc(Core.collection(Core.db, "liveChats"), {
+            await window.Core.addDoc(window.Core.collection(window.Core.db, "liveChats"), {
                 contentId: window.appState.currentVideoContext.id,
-                senderId: Core.auth.currentUser.uid,
+                senderId: window.Core.auth.currentUser.uid,
                 senderName: window.profile.name,
                 senderPhoto: window.profile.photo || '',
                 text: txt,
-                createdAt: Core.serverTimestamp()
+                createdAt: window.Core.serverTimestamp()
             });
         };
 
@@ -1094,10 +1140,10 @@
             window.updateCartPill();
             if (window.profile.role === 'teacher' || window.profile.role === 'super_admin') {
                 const [contentSnap, followersSnap, courseSnap, groupSnap] = await Promise.all([
-                    Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "==", window.profile.teacherId))),
-                    Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "array-contains", window.profile.teacherId))),
-                    Core.getDocs(Core.query(Core.collection(Core.db, "courses"), Core.where("teacherId", "==", window.profile.teacherId))),
-                    Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId", "==", window.profile.teacherId)))
+                    window.Core.getDocs(window.Core.query(window.Core.collection(window.Core.db, "content"), window.Core.where("tId", "==", window.profile.teacherId))),
+                    window.Core.getDocs(window.Core.query(window.Core.collection(window.Core.db, "users"), window.Core.where("subs", "array-contains", window.profile.teacherId))),
+                    window.Core.getDocs(window.Core.query(window.Core.collection(window.Core.db, "courses"), window.Core.where("teacherId", "==", window.profile.teacherId))),
+                    window.Core.getDocs(window.Core.query(window.Core.collection(window.Core.db, "groups"), window.Core.where("teacherId", "==", window.profile.teacherId)))
                 ]);
                 
                 let totalViews = 0; contentSnap.forEach(d => totalViews += (d.data().views || 0));
@@ -1188,7 +1234,7 @@
                 if (window.currentTab === 'home') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Suggested Syllabus</h3><div id="suggested-feed" class="grid md:grid-cols-2 gap-6 mb-12"></div><h3 class="text-2xl font-black italic mb-6">Subscribed Feed Streams</h3><div id="feed" class="space-y-6"></div>`;
                     
-                    const allContent = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(40)));
+                    const allContent = await window.Core.getDocs(window.Core.query(window.Core.collection(window.Core.db, "content"), window.Core.limit(40)));
                     const allContentSorted = allContent.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
                     
                     window.renderFeed(allContentSorted.slice(0,6), false, 'suggested-feed');
@@ -1204,12 +1250,12 @@
                     window.loadGroups();
                 } else if (window.currentTab === 'courses') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Marketplace Courses</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6"></div>`;
-                    const coSnap = await Core.getDocs(Core.collection(Core.db, "courses"));
+                    const coSnap = await window.Core.getDocs(window.Core.collection(window.Core.db, "courses"));
                     const coSorted = coSnap.docs.sort((a,b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
                     window.renderCourses(coSorted, false);
                 } else if (window.currentTab === 'content') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">All Course Materials</h3><div id="feed" class="space-y-4"></div>`;
-                    const allContentGlobal = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(40)));
+                    const allContentGlobal = await window.Core.getDocs(window.Core.query(window.Core.collection(window.Core.db, "content"), window.Core.limit(40)));
                     const allContentGlobalSorted = allContentGlobal.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
                     window.renderFeed(allContentGlobalSorted, false);
                 }
@@ -1227,7 +1273,7 @@
             modal.classList.remove('hidden');
             content.innerHTML = `<h3 class="text-xl font-black mb-6 uppercase tracking-tighter text-brandBlue">Auditing Subscribed Followers</h3><div class="space-y-4" id="roster-list-target">Loading roster index...</div>`;
             
-            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "array-contains", teacherId)));
+            const snap = await window.Core.getDocs(window.Core.query(window.Core.collection(window.Core.db, "users"), window.Core.where("subs", "array-contains", teacherId)));
             const container = document.getElementById('roster-list-target');
             if (snap.empty) { container.innerHTML = `<p class="text-xs font-bold opacity-40 text-center py-6">No followers found.</p>`; return; }
             
@@ -1239,7 +1285,7 @@
 
         window.severFollowerRelation = async (uid, teacherId) => {
             if(confirm("Confirm user eviction and blocking from channel profile stream?")) {
-                await Core.updateDoc(Core.doc(Core.db, "users", uid), { subs: Core.arrayRemove(teacherId) });
+                await window.Core.updateDoc(window.Core.doc(window.Core.db, "users", uid), { subs: window.Core.arrayRemove(teacherId) });
                 window.pushSystemNotification("FOLLOWER EVICTED", `Roster change: A subscriber was disconnected.`);
                 toast("Follower removed and stream blacklisted");
                 window.manageFollowersRoster(teacherId);
@@ -1253,7 +1299,7 @@
             modal.classList.remove('hidden');
             content.innerHTML = `<h3 class="text-xl font-black mb-6 uppercase tracking-tighter text-brandOrange">Roster Directory: ${groupName}</h3><div class="space-y-4" id="group-roster-target">Reading hub directory...</div>`;
             
-            const gDoc = await Core.getDoc(Core.doc(Core.db, "groups", groupId));
+            const gDoc = await window.Core.getDoc(window.Core.doc(window.Core.db, "groups", groupId));
             if(!gDoc.exists()) return;
             const data = gDoc.data();
             
@@ -1262,7 +1308,7 @@
                 return;
             }
 
-            const usersSnap = await Core.getDocs(Core.collection(Core.db, "users"));
+            const usersSnap = await window.Core.getDocs(window.Core.collection(window.Core.db, "users"));
             const container = document.getElementById('group-roster-target');
             let html = "";
             
@@ -1277,7 +1323,7 @@
 
         window.kickGroupMember = async (groupId, uid, groupName) => {
             if (confirm("Confirm complete revocation of asset pool access credentials for this individual user?")) {
-                await Core.updateDoc(Core.doc(Core.db, "groups", groupId), { members: Core.arrayRemove(uid) });
+                await window.Core.updateDoc(window.Core.doc(window.Core.db, "groups", groupId), { members: window.Core.arrayRemove(uid) });
                 window.pushSystemNotification("ACCESS REVOKED", `A student was removed from "${groupName}".`);
                 toast("Access cleared and denied.");
                 window.manageGroupRoster(groupId, groupName);
@@ -1334,9 +1380,9 @@
         
         window.simulateBulkCheckout = async () => {
             for (let item of window.cart) {
-                const cDoc = await Core.getDoc(Core.doc(Core.db, "courses", item.id));
+                const cDoc = await window.Core.getDoc(window.Core.doc(window.Core.db, "courses", item.id));
                 if (cDoc.exists()) {
-                    await Core.updateDoc(Core.doc(Core.db, "groups", cDoc.data().groupId), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
+                    await window.Core.updateDoc(window.Core.doc(window.Core.db, "groups", cDoc.data().groupId), { members: window.Core.arrayUnion(window.Core.auth.currentUser.uid) });
                     window.pushSystemNotification("ENROLLMENT", `License validated for "${cDoc.data().title}".`);
                 }
             }
@@ -1352,7 +1398,7 @@
             const main = document.getElementById('main-content');
             if (!q) return window.loadHome();
             window.injectSkeletonState('main-content');
-            const [uS, cS, gS] = await Promise.all([Core.getDocs(Core.collection(Core.db, "users")), Core.getDocs(Core.collection(Core.db, "content")), Core.getDocs(Core.collection(Core.db, "groups"))]);
+            const [uS, cS, gS] = await Promise.all([window.Core.getDocs(window.Core.collection(window.Core.db, "users")), window.Core.getDocs(window.Core.collection(window.Core.db, "content")), window.Core.getDocs(window.Core.collection(window.Core.db, "groups"))]);
             const teachers = uS.docs.filter(d => d.data().role === 'teacher' && (d.data().name.toLowerCase().includes(q.toLowerCase()) || d.data().teacherId === q));
             const content = cS.docs.filter(d => d.data().title.toLowerCase().includes(q.toLowerCase())).sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
             const groups = gS.docs.filter(d => d.data().code === q || d.data().name.toLowerCase().includes(q.toLowerCase()));
@@ -1371,7 +1417,7 @@
             else if (v === 'publish') area.innerHTML = `<input id="up-t" placeholder="Asset Title" class="input-field text-sm p-4 mb-3"><input id="up-u" placeholder="Resource Access URL" class="input-field text-sm p-4 mb-3"><select id="up-y" onchange="togglePublishScheduleField(this.value)" class="input-field text-sm p-4 mb-3 text-white"><option value="video">Recorded Video Resource</option><option value="live">Live Transmission</option><option value="file">Document/Image Material</option></select><div id="live-schedule-fields" class="hidden space-y-3 p-4 border border-brandOrange/20 bg-brandOrange/5 rounded-2xl mb-4"><p class="text-[9px] uppercase tracking-widest text-brandOrange font-black">Transmission Interval Scheduler</p><input type="date" id="up-date" class="input-field text-sm p-3"><div class="grid grid-cols-2 gap-3"><input type="time" id="up-start-time" class="input-field text-sm p-3" title="Start Time"><input type="time" id="up-end-time" class="input-field text-sm p-3" title="End Time"></div></div><button onclick="publishContent()" class="w-full py-4 btn-brand text-xs shadow-md">Publish Matrix</button>`;
             else if (v === 'requests') {
                 area.innerHTML = `<div id="request-list" class="space-y-3 mt-4 text-[10px] opacity-40 text-center font-bold tracking-widest uppercase py-6">Scanning admissions...</div>`;
-                const groups = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId", "==", window.profile.teacherId)));
+                const groups = await window.Core.getDocs(window.Core.query(window.Core.collection(window.Core.db, "groups"), window.Core.where("teacherId", "==", window.profile.teacherId)));
                 let html = '';
                 groups.forEach(g => { const d = g.data(); if(d.pending?.length) d.pending.forEach(p => { html += `<div class="bg-white/5 p-4 rounded-xl flex flex-col gap-3 border border-white/5 shadow-sm"><div><p class="text-[9px] text-brandOrange font-black tracking-widest uppercase mb-1">${d.name}</p><p class="font-bold text-sm pr-2">${p.name}</p></div><div class="flex gap-2"><button onclick="modReq('${g.id}','${p.uid}','${p.name}',true)" class="flex-1 py-2 bg-green-600/20 text-green-500 hover:bg-green-600 hover:text-white transition-colors rounded-xl text-[10px] font-black uppercase border border-green-500/20">Accept</button><button onclick="modReq('${g.id}','${p.uid}','${p.name}',false)" class="flex-1 py-2 bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white transition-colors rounded-xl text-[10px] font-black uppercase border border-red-500/20">Deny</button></div></div>`; }); });
                 document.getElementById('request-list').innerHTML = html || `<p class="text-[10px] opacity-40 text-center font-bold tracking-widest uppercase py-6">Clear Gate Management Queue</p>`;
@@ -1385,12 +1431,12 @@
         };
 
         window.modReq = async (gid, uid, name, accept) => { 
-            const ref = Core.doc(Core.db, "groups", gid); 
+            const ref = window.Core.doc(window.Core.db, "groups", gid); 
             if(accept) {
-                await Core.updateDoc(ref, { members: Core.arrayUnion(uid), pending: Core.arrayRemove({ uid, name }) }); 
+                await window.Core.updateDoc(ref, { members: window.Core.arrayUnion(uid), pending: window.Core.arrayRemove({ uid, name }) }); 
                 window.pushSystemNotification("ADMISSION", `Approval finalized for ${name}.`);
             } else {
-                await Core.updateDoc(ref, { pending: Core.arrayRemove({ uid, name }) }); 
+                await window.Core.updateDoc(ref, { pending: window.Core.arrayRemove({ uid, name }) }); 
             }
             window.switchTeacherView('requests'); 
         };
@@ -1398,7 +1444,7 @@
         window.createGroup = async () => {
             const n = document.getElementById('group-name').value; if (!n) return toast("Label missing");
             const c = "OC-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-            await Core.addDoc(Core.collection(Core.db, "groups"), { name: n, type: document.getElementById('group-type').value, code: c, teacherId: window.profile.teacherId, teacherName: window.profile.name, members: [Core.auth.currentUser.uid], pending: [], createdAt: Core.serverTimestamp() });
+            await window.Core.addDoc(window.Core.collection(window.Core.db, "groups"), { name: n, type: document.getElementById('group-type').value, code: c, teacherId: window.profile.teacherId, teacherName: window.profile.name, members: [window.Core.auth.currentUser.uid], pending: [], createdAt: window.Core.serverTimestamp() });
             toast("Hub initiated"); window.loadHome();
         };
 
@@ -1410,26 +1456,26 @@
             if (!t || !vu[0]) return toast("Validation indicators incomplete", "error");
             const playlist = vt.map((title, i) => ({ title, url: vu[i] }));
             const code = "HUB-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-            const gRef = await Core.addDoc(Core.collection(Core.db, "groups"), { 
-                name: `${t} (Core Sync Hub)`, type: 'private', code, teacherId: window.profile.teacherId, teacherName: window.profile.name, members: [Core.auth.currentUser.uid], pending: [], createdAt: Core.serverTimestamp() 
+            const gRef = await window.Core.addDoc(window.Core.collection(window.Core.db, "groups"), { 
+                name: `${t} (Core Sync Hub)`, type: 'private', code, teacherId: window.profile.teacherId, teacherName: window.profile.name, members: [window.Core.auth.currentUser.uid], pending: [], createdAt: window.Core.serverTimestamp() 
             });
-            await Core.addDoc(Core.collection(Core.db, "courses"), { 
-                title: t, description: d, thumbnail: window.getSmartPreview(vu[0]), playlist, price: p, teacherId: window.profile.teacherId, teacherName: window.profile.name, groupId: gRef.id, createdAt: Core.serverTimestamp() 
+            await window.Core.addDoc(window.Core.collection(window.Core.db, "courses"), { 
+                title: t, description: d, thumbnail: window.getSmartPreview(vu[0]), playlist, price: p, teacherId: window.profile.teacherId, teacherName: window.profile.name, groupId: gRef.id, createdAt: window.Core.serverTimestamp() 
             });
             toast("Course matrix active"); window.loadHome();
         };
 
         window.joinGroup = async () => {
             const c = (document.getElementById('hub-code')?.value || document.getElementById('g-search').value).trim().toUpperCase();
-            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("code", "==", c)));
+            const snap = await window.Core.getDocs(window.Core.query(window.Core.collection(window.Core.db, "groups"), window.Core.where("code", "==", c)));
             if (snap.empty) return toast("Group code not found", "error");
             const g = snap.docs[0], d = g.data();
-            if (d.members.includes(Core.auth.currentUser.uid)) return toast("Already a member of this hub");
+            if (d.members.includes(window.Core.auth.currentUser.uid)) return toast("Already a member of this hub");
             if (d.type === 'public') {
-                await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
+                await window.Core.updateDoc(window.Core.doc(window.Core.db, "groups", g.id), { members: window.Core.arrayUnion(window.Core.auth.currentUser.uid) });
                 window.pushSystemNotification("HUB JOINED", `You entered "${d.name}".`);
             } else {
-                await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { pending: Core.arrayUnion({ uid: Core.auth.currentUser.uid, name: window.profile.name }) });
+                await window.Core.updateDoc(window.Core.doc(window.Core.db, "groups", g.id), { pending: window.Core.arrayUnion({ uid: window.Core.auth.currentUser.uid, name: window.profile.name }) });
                 window.pushSystemNotification("PENDING", `Access verification required for "${d.name}".`);
             }
             toast("Access requested"); window.loadHome();
@@ -1437,7 +1483,7 @@
 
         window.openResource = async (id, url, title) => {
             if(id && id !== 'null') {
-                const checkDoc = await Core.getDoc(Core.doc(Core.db, "content", id));
+                const checkDoc = await window.Core.getDoc(window.Core.doc(window.Core.db, "content", id));
                 if(checkDoc.exists()) {
                     const data = checkDoc.data();
                     const status = window.checkLiveStatus(data.liveDate, data.liveStartTime, data.liveEndTime);
@@ -1445,7 +1491,7 @@
                         toast(`Broadcast locked until start configuration: ${data.liveDate} at ${data.liveStartTime}`, "error");
                         return;
                     }
-                    await Core.updateDoc(Core.doc(Core.db, "content", id), { views: Core.increment(1) });
+                    await window.Core.updateDoc(window.Core.doc(window.Core.db, "content", id), { views: window.Core.increment(1) });
                     
                     const vid = window.extractYTId(url) || "";
                     
@@ -1469,7 +1515,7 @@
         };
 
         window.openCourse = async (id) => {
-            const snap = await Core.getDoc(Core.doc(Core.db, "courses", id));
+            const snap = await window.Core.getDoc(window.Core.doc(window.Core.db, "courses", id));
             const c = snap.data();
             const isT = c.teacherId === window.profile.teacherId;
             const content = document.getElementById('modal-content');
@@ -1498,13 +1544,13 @@
         };
 
         window.enrollCourse = async (cid, gid) => {
-            await Core.updateDoc(Core.doc(Core.db, "groups", gid), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
+            await window.Core.updateDoc(window.Core.doc(window.Core.db, "groups", gid), { members: window.Core.arrayUnion(window.Core.auth.currentUser.uid) });
             toast("Enrolled successfully!");
             document.getElementById('custom-modal').classList.add('hidden');
             window.setTab('groups');
         };
 
-        window.delC = async (id) => { if(confirm("Confirm structural purge?")) { await Core.deleteDoc(Core.doc(Core.db,"courses",id)); document.getElementById('custom-modal').classList.add('hidden'); window.loadHome(); } };
+        window.delC = async (id) => { if(confirm("Confirm structural purge?")) { await window.Core.deleteDoc(window.Core.doc(window.Core.db,"courses",id)); document.getElementById('custom-modal').classList.add('hidden'); window.loadHome(); } };
 
         window.renderFeed = function(docs, isT, target = 'feed') { 
             const container = document.getElementById(target) || document.getElementById('tab-display');
@@ -1537,15 +1583,15 @@
             return `<div class="glass p-5 md:p-6 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-md hover:shadow-xl transition-all gap-6 border border-white/5 hover:border-brandBlue/30"><div class="flex items-center gap-5 md:gap-6 w-full md:w-auto"><div class="relative flex-shrink-0 self-start md:self-center overflow-hidden rounded-2xl border border-white/10 shadow-lg"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 md:w-36 md:h-24 object-cover bg-brandBlue group-hover:scale-110 transition-transform duration-500">${window.getFileBadge(i.url)}</div><div class="overflow-hidden flex flex-col justify-center"><h4 class="font-black text-lg md:text-xl italic truncate max-w-[200px] md:max-w-md pr-4 text-white/90 drop-shadow-md mb-1">${i.title}</h4> ${liveStatusLabel}<p class="text-[9px] opacity-50 uppercase font-bold tracking-widest mt-1 pr-4 font-mono">${i.tName} • ${i.views || 0} Views</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand px-10 py-3.5 rounded-2xl font-black text-[10px] uppercase shadow-md hover:shadow-brandBlue/40">Access Core</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-brandBlue hover:bg-white/10 transition-colors border border-white/5 shadow-sm">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-zinc-800 text-white rounded-xl hover:text-red-500 hover:bg-red-500/10 transition-colors border border-white/5 shadow-sm">🗑</button>` : ''}</div></div>`;
         }
         
-        window.delR = async (id) => { if(confirm("Confirm asset removal?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); window.loadHome(); } };
+        window.delR = async (id) => { if(confirm("Confirm asset removal?")) { await window.Core.deleteDoc(window.Core.doc(window.Core.db,"content",id)); window.loadHome(); } };
         window.editR = (id,t,u) => { document.getElementById('modal-content').innerHTML = `<h3 class="text-xl font-black mb-6 italic">Edit Resource</h3><input id="ed-t" value="${t}" class="input-field mb-4 text-sm"><input id="ed-u" value="${u}" class="input-field mb-6 text-sm"><button onclick="saveR('${id}')" class="w-full py-4 btn-brand text-xs shadow-md">Save Changes</button>`; document.getElementById('custom-modal').classList.remove('hidden'); };
-        window.saveR = async (id) => { await Core.updateDoc(Core.doc(Core.db,"content",id), {title:document.getElementById('ed-t').value, url:document.getElementById('ed-u').value}); document.getElementById('custom-modal').classList.add('hidden'); window.loadHome(); };
+        window.saveR = async (id) => { await window.Core.updateDoc(window.Core.doc(window.Core.db,"content",id), {title:document.getElementById('ed-t').value, url:document.getElementById('ed-u').value}); document.getElementById('custom-modal').classList.add('hidden'); window.loadHome(); };
 
         window.publishContent = async () => {
             const t = document.getElementById('up-t').value, u = document.getElementById('up-u').value, y = document.getElementById('up-y').value;
             if (!t || !u) return toast("Resource path vectors empty", "error");
             
-            let payload = { title: t, url: u, type: y, tId: window.profile.teacherId, tName: window.profile.name, views: 0, date: Core.serverTimestamp() };
+            let payload = { title: t, url: u, type: y, tId: window.profile.teacherId, tName: window.profile.name, views: 0, date: window.Core.serverTimestamp() };
             
             if(y === 'live') {
                 payload.liveDate = document.getElementById('up-date').value || new Date().toISOString().split('T')[0];
@@ -1553,7 +1599,7 @@
                 payload.liveEndTime = document.getElementById('up-end-time').value || "00:00";
             }
 
-            await Core.addDoc(Core.collection(Core.db, "content"), payload);
+            await window.Core.addDoc(window.Core.collection(window.Core.db, "content"), payload);
             
             if(y === 'live') {
                 window.pushSystemNotification("LIVE LECTURE", `Scheduled: "${t}" on ${payload.liveDate} at ${payload.liveStartTime}.`);
@@ -1569,7 +1615,7 @@
             document.getElementById('group-chat-window').classList.remove('hidden');
             document.getElementById('group-chat-title').innerText = name;
             
-            const gDoc = await Core.getDoc(Core.doc(Core.db, "groups", id));
+            const gDoc = await window.Core.getDoc(window.Core.doc(window.Core.db, "groups", id));
             const isAdmin = gDoc.exists() && gDoc.data().teacherId === window.profile.teacherId;
             const rosterBtn = document.getElementById('group-roster-btn');
             if(isAdmin) { rosterBtn.style.display="block"; rosterBtn.onclick=()=>window.manageGroupRoster(id, name); }
@@ -1577,10 +1623,10 @@
 
             window.appState.groupMessageTrackers[id] = 0; 
             
-            const q = Core.query(Core.collection(Core.db, "groupMessages"), Core.where("groupId", "==", id), Core.orderBy("createdAt", "asc"));
-            Core.onSnapshot(q, (snap) => {
+            const q = window.Core.query(window.Core.collection(window.Core.db, "groupMessages"), window.Core.where("groupId", "==", id), window.Core.orderBy("createdAt", "asc"));
+            window.Core.onSnapshot(q, (snap) => {
                 document.getElementById('group-chat-messages').innerHTML = snap.docs.map(m => {
-                    const d = m.data(); const isM = d.senderId === Core.auth.currentUser.uid;
+                    const d = m.data(); const isM = d.senderId === window.Core.auth.currentUser.uid;
                     return `<div class="flex ${isM ? 'flex-row-reverse' : 'flex-row'} items-end gap-3"><img src="${d.senderPhoto || 'https://ui-avatars.com/api/?name='+d.sender}" class="w-8 h-8 rounded-full border border-white/10 object-cover bg-black shadow-sm"><div class="flex flex-col ${isM ? 'items-end' : 'items-start'}"><p class="text-[9px] opacity-50 uppercase font-black px-2 mb-1 text-zinc-400 tracking-widest">${d.sender}</p><div class="inline-block p-3.5 md:p-4 rounded-2xl ${isM ? 'bg-brandOrange text-white shadow-[0_5px_15px_rgba(247,148,29,0.3)]' : 'bg-white/10 shadow-sm border border-white/5'} text-sm leading-relaxed max-w-[85%] break-words">${d.text}</div></div></div>`;
                 }).join('');
                 document.getElementById('group-chat-messages').scrollTop = 99999;
@@ -1590,7 +1636,7 @@
         window.sendGroupMessage = async () => {
             const i = document.getElementById('group-message-input'), t = i.value.trim();
             if (!t || !window.appState.activeGroupId) return;
-            await Core.addDoc(Core.collection(Core.db, "groupMessages"), { groupId: window.appState.activeGroupId, senderId: Core.auth.currentUser.uid, sender: window.profile.name, senderPhoto: window.profile.photo || '', text: t, createdAt: Core.serverTimestamp() });
+            await window.Core.addDoc(window.Core.collection(window.Core.db, "groupMessages"), { groupId: window.appState.activeGroupId, senderId: window.Core.auth.currentUser.uid, sender: window.profile.name, senderPhoto: window.profile.photo || '', text: t, createdAt: window.Core.serverTimestamp() });
             i.value = '';
         };
 
@@ -1604,7 +1650,7 @@
 
             if (!m && !file) return;
 
-            const activeBackendUrl = customAiConfig.backendApiUrl || customAiConfig.backendUrl;
+            const activeBackendUrl = window.customAiConfig.backendApiUrl || window.customAiConfig.backendUrl;
 
             if (!activeBackendUrl) {
                 toast("AI Config Missing: Check config.js spelling.", "error");
@@ -1667,8 +1713,8 @@
                 const response = await fetch(`${baseUrl}/v1/chat/process`, {
                     method: "POST",
                     headers: {
-                        "X-Project-Key": customAiConfig.projectKey,
-                        "X-Groq-Key": customAiConfig.groqKey
+                        "X-Project-Key": window.customAiConfig.projectKey,
+                        "X-Groq-Key": window.customAiConfig.groqKey
                     },
                     body: formData
                 });
@@ -1703,49 +1749,12 @@
             }
         };
 
-        window.viewTeacher = async (tId) => {
-            const main = document.getElementById('main-content');
-            window.injectSkeletonState('main-content');
-            const [uS, cS, coS] = await Promise.all([Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId", "==", tId))), Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "==", tId))), Core.getDocs(Core.query(Core.collection(Core.db, "courses"), Core.where("teacherId", "==", tId)))]);
-            if(uS.empty) return window.navigate('home');
-            const tD = uS.docs[0].data(), isF = window.profile.subs?.includes(tId);
-            
-            const contentSorted = cS.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
-            const coursesSorted = coS.docs.sort((a,b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
-
-            main.innerHTML = `<div class="space-y-10">
-                <div class="glass p-6 md:p-10 rounded-[4rem] border border-brandBlue/30 flex flex-col md:flex-row justify-between items-center gap-6 shadow-2xl relative overflow-hidden">
-                    <div class="absolute -right-20 -top-20 w-64 h-64 bg-brandBlue/10 blur-3xl rounded-full pointer-events-none"></div>
-                    <div class="flex items-center gap-6 md:gap-8 relative z-10">
-                        <img src="${tD.photo || 'https://ui-avatars.com/api/?name='+tD.name}" class="w-20 h-20 md:w-28 md:h-28 rounded-full border-[5px] border-brandBlue object-cover bg-black shadow-2xl">
-                        <div>
-                            <h2 class="text-3xl md:text-5xl font-black italic tracking-tighter pr-4 drop-shadow-md text-white/95">${tD.name}</h2>
-                            <p class="text-[10px] md:text-xs font-bold text-brandBlue uppercase tracking-widest mt-1 pr-4 font-mono shadow-sm p-1.5 bg-brandBlue/10 border border-brandBlue/20 rounded-lg w-fit inline-block">${tD.teacherId}</p>
-                        </div>
-                    </div>
-                    <button onclick="handleSub('${tId}', ${isF})" class="w-full md:w-auto px-10 py-4 md:py-5 ${isF ? 'bg-zinc-800 border border-white/10 hover:bg-zinc-700 hover:text-white text-zinc-400' : 'btn-brand shadow-[0_10px_20px_rgba(0,74,128,0.3)] hover:shadow-brandBlue/50'} rounded-2xl font-black text-xs uppercase tracking-widest transition-all z-10 relative">${isF ? 'Unfollow' : 'Follow Instructor'}</button>
-                </div>
-                <h3 class="text-2xl font-black mb-6 italic">Course Collections</h3>
-                <div id="courses-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div>
-                <h3 class="text-2xl font-black mb-6 italic">Syllabus Catalog Items</h3>
-                <div id="feed" class="space-y-4"></div>
-            </div>`;
-            window.renderFeed(contentSorted, false); window.renderCourses(coursesSorted);
-        };
-
-        window.handleSub = async (tId, isF) => {
-            await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { subs: isF ? Core.arrayRemove(tId) : Core.arrayUnion(tId) });
-            window.profile.subs = isF ? window.profile.subs.filter(i => i !== tId) : [...(window.profile.subs||[]), tId];
-            window.pushSystemNotification("INSTRUCTOR CONNECT", `Tracking settings modified for "${tId}".`);
-            window.viewTeacher(tId);
-        };
-
         window.loadGroups = async function() {
             const container = document.getElementById('student-groups'); if (!container) return;
             window.injectSkeletonState('student-groups');
-            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "groups")));
+            const snap = await window.Core.getDocs(window.Core.query(window.Core.collection(window.Core.db, "groups")));
             
-            container.innerHTML = snap.docs.filter(d => d.data().members?.includes(Core.auth.currentUser.uid) || d.data().teacherId === window.profile.teacherId).map(docSnap => {
+            container.innerHTML = snap.docs.filter(d => d.data().members?.includes(window.Core.auth.currentUser.uid) || d.data().teacherId === window.profile.teacherId).map(docSnap => {
                 const g = docSnap.data();
                 const unreadCount = window.appState.groupMessageTrackers[docSnap.id] || 0;
                 return `<div class="glass p-5 md:p-6 rounded-[2rem] flex justify-between items-center border border-white/5 shadow-sm hover:shadow-brandOrange/20 hover:border-brandOrange/30 transition-all group"><div><span class="text-[8px] text-brandOrange font-black uppercase tracking-widest shadow-[0_0_8px_rgba(247,148,29,0.2)]">${g.type}</span><div class="flex items-center gap-3 mt-0.5"><h3 class="text-xl md:text-2xl font-black truncate max-w-[180px] md:max-w-xs text-white/90 drop-shadow-sm">${g.name}</h3><span id="badge-${docSnap.id}" class="${unreadCount===0?'hidden':''} bg-brandOrange text-white text-[9px] font-extrabold px-2 py-0.5 rounded-lg shadow-md animate-bounce border border-white/10">${unreadCount} new</span></div><p class="text-[10px] opacity-40 font-mono mt-1">${g.code}</p></div><div class="flex gap-2"><button onclick="openGroupChat('${docSnap.id}', '${g.name}')" class="btn-brand px-5 md:px-7 py-3 text-[10px] shadow-md hover:shadow-brandOrange/30">Open Sync Hub</button></div></div>`;
@@ -1760,7 +1769,6 @@
                 return `<div class="glass p-5 md:p-6 rounded-[2rem] flex justify-between items-center group border border-white/5 hover:border-brandBlue/30 shadow-sm hover:shadow-md transition-all"><div><span class="text-[8px] text-brandBlue font-black uppercase tracking-widest">${g.type}</span><div class="flex items-center gap-3 mt-0.5"><h3 class="text-xl md:text-2xl font-black truncate max-w-[150px] md:max-w-xs text-white/90 drop-shadow-sm">${g.name}</h3><span id="badge-${d.id}" class="${unreadCount===0?'hidden':''} bg-brandBlue text-white text-[9px] font-extrabold px-2 py-0.5 rounded-lg shadow-md border border-white/10">${unreadCount}</span></div><p class="text-[10px] opacity-40 font-mono mt-1">${g.code}</p></div><div class="flex gap-2"><button onclick="openGroupChat('${d.id}', '${g.name}')" class="btn-brand px-5 md:px-6 py-3 text-[10px] shadow-md hover:shadow-brandBlue/30">Manage Pool</button><button onclick="delG('${d.id}')" class="bg-red-500/10 text-red-500 p-3 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm border border-red-500/20">🗑</button></div></div>`;
             }).join('')}</div>`;
         }
-
     </script>
 </body>
 </html>
