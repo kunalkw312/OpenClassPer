@@ -6,16 +6,17 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#050505">
     
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
-                    .then(() => console.log('PWA Registered'))
-                    .catch(err => console.error('SW Registration Failed:', err));
-            });
-        }
-    </script>
-  
+   <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            // Removed the leading slashes so it uses relative pathing for GitHub Pages
+            navigator.serviceWorker.register('./service-worker.js', { scope: './' })
+                .then(() => console.log('PWA Registered'))
+                .catch(err => console.error('SW Registration Failed:', err));
+        });
+    }
+</script>
+    
     <title>OpenClass | Premium SaaS LMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
