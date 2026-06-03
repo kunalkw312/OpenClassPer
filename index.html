@@ -3,9 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#050505">
-
+    
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+                    .then(() => console.log('PWA Registered'))
+                    .catch(err => console.error('SW Registration Failed:', err));
+            });
+        }
+    </script>
   
     <title>OpenClass | Premium SaaS LMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -38,8 +47,9 @@
             --border-color: rgba(0, 0, 0, 0.1);
         }
         
-        /* Smooth Theme Transitions & Snappy UI */
-        html { transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1), color 0.6s ease; }
+        /* Softer, slower Theme Transitions to protect eyes */
+        html, body { transition: background-color 1s ease-in-out, color 1s ease-in-out; }
+        .glass, .input-field, #group-chat-window, #ai-chat-window, #ai-messages > div, #group-chat-messages > div > div > div { transition: background-color 1s ease-in-out, border-color 1s ease-in-out, color 1s ease-in-out, box-shadow 1s ease-in-out; }
         
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
@@ -61,7 +71,7 @@
 
         .glass { background: var(--glass-bg); backdrop-filter: blur(30px); border: 1px solid var(--border-color); }
         .btn-brand { background: linear-gradient(135deg, #004a80 0%, #f7941d 100%); background-size: 200% auto; transition: transform 0.3s ease, box-shadow 0.3s ease, background-position 0.5s; color: white !important; font-weight: 800; text-transform: uppercase; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
-        .btn-brand:hover { background-position: right center; transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 25px rgba(0, 74, 128, 0.3); }
+        .btn-brand:hover, #ai-floating-btn:hover { background-position: right center; transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 25px rgba(0, 74, 128, 0.3); }
         
         .tab-btn { width: 100%; text-align: center; padding: 12px 0; font-weight: 800; text-transform: uppercase; font-size: 10px; border-radius: 20px; transition: all 0.3s ease; opacity: 0.4; color: var(--text-main); border: 1px solid transparent; }
         .tab-btn.active { background: rgba(247, 148, 29, 0.15); color: #f7941d; opacity: 1; border: 1px solid rgba(247, 148, 29, 0.25); transform: scale(1.05); }
@@ -73,10 +83,10 @@
         #toast-box { position: fixed; bottom: 8rem; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
         .toast-pill { background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); color: #fff; padding: 0.8rem 1.8rem; border-radius: 99px; border: 1px solid rgba(255,255,255,0.1); font-size: 11px; font-weight: 800; text-transform: uppercase; animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        #vault-wrapper { width: 100%; height: 100%; aspect-ratio: 16/9; max-height: 80vh; display: flex; align-items: center; justify-content: center; background: #000; position: relative; overflow: hidden; border-radius: 1rem;}
-        .plyr { width: 100% !important; height: 100% !important; max-height: 80vh !important; }
-        .plyr__video-wrapper { height: 100% !important; display: flex; align-items: center; justify-content: center; background: #000; }
-        .plyr__video-wrapper video { object-fit: contain !important; width: 100%; height: 100%; }
+        /* Fixed Video Player Wrapping & Constraints */
+        #vault-wrapper { width: 100%; height: 100%; max-height: 85vh; display: flex; align-items: center; justify-content: center; background: #000; position: relative; overflow: hidden; border-radius: 1rem; }
+        .plyr { width: 100%; border-radius: 1rem; overflow: hidden; background: #000; }
+        .plyr video { max-height: 85vh; object-fit: contain; }
         
         #media-vault .plyr__video-embed iframe { transform: scale(1.12); pointer-events: none; top: -8%; height: 116%; }
         .plyr--full-ui.plyr--video .plyr__control--overlaid { background: #f7941d; }
@@ -92,7 +102,7 @@
         .search-container { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 40px; }
         .search-container.expanded { width: 260px; }
 
-        #floating-bottom-nav-bar { position: fixed; bottom: calc(1.5rem + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 4500; width: calc(100% - 2rem); max-width: 500px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease; }
+        #floating-bottom-nav-bar { position: fixed; bottom: max(1.5rem, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 4500; width: calc(100% - 2rem); max-width: 500px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease; }
         #floating-bottom-nav-bar.nav-hidden { transform: translate(-50%, 150px); opacity: 0; pointer-events: none; }
 
         #live-classroom-chat-container { height: 100%; max-height: 80vh; display: flex; flex-direction: column; background: #0b0b0b; border-left: 1px solid rgba(255, 255, 255, 0.05); border-radius: 1rem; }
@@ -142,17 +152,17 @@
         </div>
     </div>
 
-    <div id="group-chat-window" class="hidden fixed inset-0 bg-black/95 z-[6000] flex flex-col backdrop-blur-xl">
-        <div class="p-5 glass flex justify-between items-center border-b border-white/5 pt-[max(1.25rem,env(safe-area-inset-top))]">
+    <div id="group-chat-window" class="hidden fixed inset-0 bg-[var(--bg-main)] z-[6000] flex flex-col backdrop-blur-xl">
+        <div class="p-5 glass flex justify-between items-center border-b border-[var(--border-color)] pt-[max(1.25rem,env(safe-area-inset-top))]">
             <div class="flex items-center gap-4">
-                <button class="text-white/50 hover:text-white mr-2 flex items-center justify-center bg-white/5 w-10 h-10 rounded-full hover:scale-110 transition-transform" onclick="closeGroupChat()">←</button>
-                <h2 id="group-chat-title" class="text-2xl font-black italic text-white">Group</h2>
+                <button class="text-[var(--text-main)] opacity-50 hover:opacity-100 mr-2 flex items-center justify-center bg-[var(--input-bg)] w-10 h-10 rounded-full border border-[var(--border-color)] hover:scale-110 transition-transform" onclick="closeGroupChat()">←</button>
+                <h2 id="group-chat-title" class="text-2xl font-black italic text-[var(--text-main)]">Group</h2>
                 <button id="group-roster-btn" class="text-xs font-bold text-brandOrange uppercase border border-brandOrange/20 px-3 py-1 rounded-lg hover:bg-brandOrange hover:text-white transition-colors">Manage Members</button>
             </div>
-            <button onclick="closeGroupChat()" class="text-2xl w-10 h-10 flex items-center justify-center bg-white/5 rounded-full hover:bg-red-500 hover:text-white transition-colors text-white">✕</button>
+            <button onclick="closeGroupChat()" class="text-2xl w-10 h-10 flex items-center justify-center bg-[var(--input-bg)] rounded-full hover:bg-red-500 hover:text-white border border-[var(--border-color)] transition-colors text-[var(--text-main)]">✕</button>
         </div>
-        <div id="group-chat-messages" class="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth text-white"></div>
-        <div class="p-4 pb-[max(1rem,env(safe-area-inset-bottom))] flex gap-3 glass border-t border-white/5">
+        <div id="group-chat-messages" class="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth text-[var(--text-main)]"></div>
+        <div class="p-4 pb-[max(1rem,env(safe-area-inset-bottom))] flex gap-3 glass border-t border-[var(--border-color)]">
             <input id="group-message-input" class="input-field flex-1" placeholder="Type message safely..." onkeydown="if(event.key==='Enter') sendGroupMessage()">
             <button onclick="sendGroupMessage()" class="btn-brand px-8">Send</button>
         </div>
@@ -193,8 +203,8 @@
             </div>
         </div>
 
-        <div id="dashboard" class="hidden min-h-screen flex flex-col fade-in">
-            <nav class="p-4 md:p-5 glass border-b border-[var(--border-color)] sticky top-0 z-[1000] flex flex-row gap-4 justify-between px-4 md:px-10 items-center pt-[max(1rem,env(safe-area-inset-top))]">
+        <div id="dashboard" class="hidden min-h-screen fade-in">
+            <nav class="p-4 md:p-5 glass border-b border-[var(--border-color)] sticky top-0 z-[1000] w-full flex flex-row gap-4 justify-between px-4 md:px-10 items-center pt-[max(1rem,env(safe-area-inset-top))]">
                 <div class="flex items-center gap-3 cursor-pointer select-none group" onclick="navigate('home')" id="nav-branding-block">
                     <img src="https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg" class="h-8 md:h-10 rounded-xl group-hover:scale-110 transition-transform duration-300">
                     <h2 class="text-xl md:text-2xl font-black italic tracking-tighter transition-colors group-hover:text-brandOrange">Open<span class="text-brandOrange group-hover:text-[var(--text-main)] transition-colors">Class</span></h2>
@@ -202,7 +212,7 @@
 
                 <div class="flex items-center gap-3 md:gap-4 justify-end relative z-10 ml-auto">
                     <div class="search-container relative flex items-center h-10 overflow-hidden rounded-2xl bg-[var(--input-bg)] border border-[var(--border-color)] shadow-sm" id="search-wrapper-node">
-                        <button onclick="toggleExpandableSearch(event)" class="w-10 h-10 flex items-center justify-center text-zinc-500 hover:text-brandOrange shrink-0 outline-none transition-colors">
+                        <button onclick="toggleExpandableSearch(event)" class="w-10 h-10 flex items-center justify-center text-[var(--text-main)] opacity-50 hover:opacity-100 hover:text-brandOrange shrink-0 outline-none transition-colors">
                             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="8" cy="8" r="6" /><path d="M13 13l4 4" /></svg>
                         </button>
                         <input type="text" id="g-search" oninput="reactiveSearch(this.value)" onblur="collapseSearchOnBlur()" placeholder="Search campus..." class="bg-transparent text-sm w-full outline-none pr-4 text-[var(--text-main)] placeholder-zinc-500 hidden">
@@ -221,7 +231,7 @@
                 </div>
             </nav>
             
-            <main id="main-content" class="p-4 md:p-10 max-w-7xl mx-auto w-full flex-grow"></main>
+            <main id="main-content" class="p-4 md:p-10 max-w-7xl mx-auto w-full"></main>
 
             <div id="floating-bottom-nav-bar" class="glass p-2 rounded-[2.5rem] shadow-2xl border border-[var(--border-color)]">
                 <div class="grid grid-cols-4 w-full gap-1 justify-items-center items-center">
@@ -235,7 +245,7 @@
     </div>
 
     <div id="onboarding-screen" class="hidden min-h-screen flex items-center justify-center p-6 relative fade-in">
-        <button onclick="logout()" class="absolute top-10 right-10 text-2xl font-black opacity-30 hover:opacity-100 bg-[var(--border-color)] w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110">✕</button>
+        <button onclick="logout()" class="absolute top-10 right-10 text-2xl font-black opacity-30 hover:opacity-100 bg-[var(--border-color)] w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110 text-[var(--text-main)]">✕</button>
         <div class="w-full max-w-md glass p-10 rounded-[3.5rem] border border-brandOrange/20 shadow-2xl text-center">
             <h2 class="text-3xl font-black mb-6 italic">Finalize Profile</h2>
             <div class="space-y-4">
@@ -250,34 +260,34 @@
         </div>
     </div>
 
-    <div onclick="toggleAIChat()" class="fixed bottom-28 right-6 z-[5000] w-14 h-14 md:w-16 md:h-16 rounded-full btn-brand flex items-center justify-center text-2xl md:text-3xl cursor-pointer shadow-[0_10px_25px_rgba(247,148,29,0.4)] select-none hover:scale-110 transition-transform duration-300 border-2 border-white/10">🤖</div>
+    <div id="ai-floating-btn" onclick="toggleAIChat()" class="fixed bottom-28 right-6 z-[5000] w-14 h-14 md:w-16 md:h-16 rounded-full btn-brand flex items-center justify-center text-2xl md:text-3xl cursor-pointer shadow-[0_10px_25px_rgba(247,148,29,0.4)] select-none border-2 border-[var(--border-color)] transition-all">🤖</div>
     
     <div id="ai-chat-window" class="ai-drawer-hidden flex fixed bottom-[120px] md:bottom-48 right-6 w-[calc(100vw-3rem)] md:w-[400px] h-[550px] max-h-[70vh] glass rounded-[2.5rem] z-[5000] overflow-hidden flex-col border border-brandOrange/30 shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
-        <div class="p-5 border-b border-[var(--border-color)] flex justify-between items-center bg-black/40 backdrop-blur-md">
+        <div class="p-5 border-b border-[var(--border-color)] flex justify-between items-center bg-[var(--input-bg)]">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-full bg-brandOrange/20 flex items-center justify-center text-lg shadow-inner">🤖</div>
                 <div>
-                    <h2 class="font-black text-sm uppercase tracking-widest text-white">Core Assistant</h2>
+                    <h2 class="font-black text-sm uppercase tracking-widest text-[var(--text-main)]">Core Assistant</h2>
                     <p class="text-[8px] text-brandOrange font-bold tracking-widest">ONLINE</p>
                 </div>
             </div>
-            <button onclick="toggleAIChat()" class="w-8 h-8 flex items-center justify-center bg-white/5 rounded-full hover:bg-white/20 hover:scale-110 transition-all text-white font-bold">✕</button>
+            <button onclick="toggleAIChat()" class="w-8 h-8 flex items-center justify-center bg-[var(--border-color)] rounded-full hover:bg-brandOrange hover:scale-110 transition-all text-[var(--text-main)] hover:text-white font-bold">✕</button>
         </div>
         
-        <div id="ai-messages" class="flex-1 overflow-y-auto p-5 space-y-5 scroll-smooth bg-black/20 text-white">
-            <div class="bg-zinc-800/80 border border-white/5 text-zinc-200 p-4 rounded-2xl rounded-tl-sm max-w-[85%] text-sm shadow-md fade-in">
+        <div id="ai-messages" class="flex-1 overflow-y-auto p-5 space-y-5 scroll-smooth bg-transparent text-[var(--text-main)]">
+            <div class="bg-[var(--input-bg)] border border-[var(--border-color)] text-[var(--text-main)] p-4 rounded-2xl rounded-tl-sm max-w-[85%] text-sm shadow-md fade-in">
                 Hello. I am the OpenClass Core Assistant. How can I increase your productivity today?
             </div>
         </div>
         
-        <div class="p-4 border-t border-[var(--border-color)] flex flex-col gap-2 bg-black/40 backdrop-blur-md pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <div class="p-4 border-t border-[var(--border-color)] flex flex-col gap-2 bg-[var(--glass-bg)] pb-[max(1rem,env(safe-area-inset-bottom))]">
             <div id="ai-file-preview" class="hidden text-[10px] text-brandOrange font-bold truncate px-2"></div>
-            <div class="flex gap-2 items-center bg-black/50 p-1.5 rounded-2xl border border-white/5 focus-within:border-brandOrange/50 transition-colors">
-                <label class="cursor-pointer text-white/40 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-colors">
+            <div class="flex gap-2 items-center bg-[var(--input-bg)] p-1.5 rounded-2xl border border-[var(--border-color)] focus-within:border-brandOrange/50 transition-colors">
+                <label class="shrink-0 cursor-pointer text-[var(--text-main)] opacity-50 hover:opacity-100 p-2 rounded-xl bg-[var(--border-color)] transition-all">
                     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"></path></svg>
                     <input type="file" id="ai-media-file" class="hidden" onchange="document.getElementById('ai-file-preview').innerText = this.files[0]?.name || ''; document.getElementById('ai-file-preview').classList.remove('hidden');">
                 </label>
-                <input id="ai-input" type="text" placeholder="Ask AI..." class="bg-transparent text-sm text-white outline-none flex-1 placeholder-white/30" onkeydown="if(event.key==='Enter') sendAIMessage()">
+                <input id="ai-input" type="text" placeholder="Ask AI..." class="bg-transparent text-sm text-[var(--text-main)] outline-none flex-1 placeholder-[var(--text-main)] placeholder-opacity-30" onkeydown="if(event.key==='Enter') sendAIMessage()">
                 <button onclick="sendAIMessage()" class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs uppercase shadow-lg hover:shadow-brandOrange/50 hover:scale-105 transition-all">Send</button>
             </div>
         </div>
@@ -622,7 +632,6 @@
 
         window.clearAllNotifications = async () => {
             try {
-                // Batch delete or sequential
                 for(let n of notificationsMap) {
                     await Core.deleteDoc(Core.doc(Core.db, "notifications", n.id));
                 }
@@ -685,9 +694,15 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="space-y-3">
-                            <p class="text-[10px] font-black uppercase tracking-widest opacity-40 ml-2">Full Name</p>
-                            <input type="text" id="profile-hub-name" value="${profile.name}" placeholder="Enter your full name" class="input-field transition-all">
+                        <div class="space-y-4">
+                            <div class="space-y-3">
+                                <p class="text-[10px] font-black uppercase tracking-widest opacity-40 ml-2">Full Name</p>
+                                <input type="text" id="profile-hub-name" value="${profile.name}" placeholder="Enter your full name" class="input-field transition-all">
+                            </div>
+                            <div class="space-y-3">
+                                <p class="text-[10px] font-black uppercase tracking-widest opacity-40 ml-2">Short Bio (Optional)</p>
+                                <textarea id="profile-hub-bio" placeholder="Write a short bio about yourself..." class="input-field transition-all resize-none" rows="2">${profile.bio || ''}</textarea>
+                            </div>
                         </div>
                         <button onclick="saveProfileWorkspaceChanges(event)" class="w-full py-4 btn-brand text-xs rounded-2xl font-black uppercase tracking-widest hover:scale-[1.02] transition-all shadow-lg">Save Profile Changes</button>
                         
@@ -704,7 +719,7 @@
                             </div>
                             <div class="flex flex-col gap-3">
                                 <button onclick="triggerAccountPurgePipeline()" class="w-full py-4 bg-red-600/10 text-red-500 border border-red-600/20 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-sm">Delete My Account</button>
-                                <button onclick="logout()" class="w-full py-4 bg-zinc-500/10 text-zinc-500 border border-zinc-500/20 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-500 hover:text-white hover:scale-[1.02] transition-all shadow-sm">Sign Out</button>
+                                <button onclick="logout()" class="w-full py-4 bg-[var(--input-bg)] text-[var(--text-main)] border border-[var(--border-color)] rounded-2xl text-[10px] font-black uppercase tracking-widest hover:opacity-70 hover:scale-[1.02] transition-all shadow-sm">Sign Out</button>
                             </div>
                         </div>
                     </div>
@@ -733,7 +748,7 @@
                     <div class="space-y-6 fade-in">
                         <div class="flex items-center justify-between">
                             <h3 class="text-2xl font-black italic">Crop Profile Photo</h3>
-                            <button onclick="showProfileSettings()" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 hover:scale-110 transition-all font-bold text-white">✕</button>
+                            <button onclick="showProfileSettings()" class="w-10 h-10 rounded-full bg-[var(--border-color)] hover:bg-brandOrange hover:scale-110 transition-all font-bold text-[var(--text-main)] hover:text-white">✕</button>
                         </div>
                         <div class="bg-black rounded-3xl overflow-hidden border border-white/10 h-64 flex items-center justify-center">
                             <img id="cropper-image" src="${e.target.result}" class="max-w-full max-h-full">
@@ -788,6 +803,7 @@
 
         window.saveProfileWorkspaceChanges = async (event) => {
             const updatedName = document.getElementById('profile-hub-name').value.trim();
+            const updatedBio = document.getElementById('profile-hub-bio').value.trim();
             if (!updatedName) return toast("Name cannot be left blank", "error");
             
             const saveButton = event.target;
@@ -795,7 +811,7 @@
             saveButton.disabled = true;
             
             try {
-                let updatePayload = { name: updatedName };
+                let updatePayload = { name: updatedName, bio: updatedBio };
                 if (window._tempHubAvatarBuffer) updatePayload.photo = window._tempHubAvatarBuffer;
                 
                 await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), updatePayload);
@@ -1094,31 +1110,32 @@
                 const coursesSorted = courseSnap.docs.sort((a,b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
 
                 if (currentTab === 'home') {
-                    // Analytics Tab
+                    // Analytics Tab with Centered Content and Bios
                     main.innerHTML = `
                     <div class="fade-in space-y-8">
-                        <div class="glass p-8 rounded-[3rem] shadow-2xl flex flex-col md:flex-row items-center gap-8 border-brandBlue/30 hover:shadow-brandBlue/10 transition-shadow">
-                            <img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-28 h-28 rounded-full border-[4px] border-brandBlue object-cover bg-black shadow-lg">
-                            <div class="text-center md:text-left flex-1">
+                        <div class="glass p-8 rounded-[3rem] shadow-2xl flex flex-col md:flex-row items-center justify-center text-center md:text-left gap-8 border-brandBlue/30 hover:shadow-brandBlue/10 transition-shadow">
+                            <img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-28 h-28 rounded-full border-[4px] border-brandBlue object-cover bg-black shadow-lg hover:scale-105 transition-transform">
+                            <div class="flex-1">
                                 <h2 class="text-3xl font-black italic">${profile.name}</h2>
-                                <p class="text-xs font-bold opacity-50 uppercase tracking-widest mt-1 mb-6 font-mono">${profile.teacherId}</p>
+                                <p class="text-xs font-bold opacity-50 uppercase tracking-widest mt-1 mb-2 font-mono">${profile.teacherId}</p>
+                                ${profile.bio ? `<p class="text-sm opacity-80 leading-relaxed max-w-xl mx-auto md:mx-0">${profile.bio}</p>` : ''}
                             </div>
                         </div>
                         <h3 class="text-2xl font-black italic mb-6">Channel Analytics</h3>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full pb-4">
-                            <div onclick="manageFollowersRoster('${profile.teacherId}')" class="glass p-6 md:p-8 rounded-[2rem] border border-[var(--border-color)] hover:border-brandBlue/50 transition-all cursor-pointer shadow-md hover:-translate-y-1">
+                            <div onclick="manageFollowersRoster('${profile.teacherId}')" class="glass p-6 md:p-8 rounded-[2rem] border border-[var(--border-color)] hover:border-brandBlue/50 transition-all cursor-pointer shadow-md hover:-translate-y-1 flex flex-col items-center justify-center text-center">
                                 <p class="text-[10px] opacity-60 font-black uppercase tracking-widest text-brandBlue">Followers</p>
                                 <h2 class="text-3xl md:text-5xl font-black mt-2 text-brandBlue">${followersSnap.size}</h2>
                             </div>
-                            <div class="glass p-6 md:p-8 rounded-[2rem] border border-[var(--border-color)] shadow-md hover:-translate-y-1 transition-transform">
+                            <div class="glass p-6 md:p-8 rounded-[2rem] border border-[var(--border-color)] shadow-md hover:-translate-y-1 transition-transform flex flex-col items-center justify-center text-center">
                                 <p class="text-[10px] opacity-60 font-black uppercase tracking-widest">Total Views</p>
                                 <h2 class="text-3xl md:text-5xl font-black mt-2">${totalViews}</h2>
                             </div>
-                            <div class="glass p-6 md:p-8 rounded-[2rem] border border-[var(--border-color)] shadow-md hover:-translate-y-1 transition-transform">
+                            <div class="glass p-6 md:p-8 rounded-[2rem] border border-[var(--border-color)] shadow-md hover:-translate-y-1 transition-transform flex flex-col items-center justify-center text-center">
                                 <p class="text-[10px] opacity-60 font-black uppercase tracking-widest">Uploads</p>
                                 <h2 class="text-3xl md:text-5xl font-black mt-2">${contentSnap.size}</h2>
                             </div>
-                            <div class="glass p-6 md:p-8 rounded-[2rem] border border-[var(--border-color)] shadow-md hover:-translate-y-1 transition-transform">
+                            <div class="glass p-6 md:p-8 rounded-[2rem] border border-[var(--border-color)] shadow-md hover:-translate-y-1 transition-transform flex flex-col items-center justify-center text-center">
                                 <p class="text-[10px] opacity-60 font-black uppercase tracking-widest">Courses</p>
                                 <h2 class="text-3xl md:text-5xl font-black mt-2">${courseSnap.size}</h2>
                             </div>
@@ -1127,7 +1144,7 @@
                         <div class="space-y-3">
                             ${contentSorted.map(d => {
                                 const c = d.data();
-                                return `<div class="glass p-4 rounded-2xl flex justify-between items-center border border-[var(--border-color)] hover:border-white/30 transition-colors shadow-sm">
+                                return `<div class="glass p-4 rounded-2xl flex justify-between items-center border border-[var(--border-color)] hover:border-brandBlue/30 transition-colors shadow-sm hover:scale-[1.01]">
                                     <div class="truncate pr-4 flex-1"><h4 class="font-bold text-sm truncate">${c.title}</h4><p class="text-[9px] opacity-50 uppercase tracking-widest mt-1">${c.type} Asset</p></div>
                                     <div class="text-right shrink-0"><p class="text-lg font-black text-brandOrange">${c.views || 0}</p><p class="text-[8px] opacity-50 uppercase tracking-widest">Views</p></div>
                                 </div>`
@@ -1161,7 +1178,7 @@
                                         <input type="time" id="up-end-time" class="input-field text-sm p-3" title="Transmission Boundary End Time">
                                     </div>
                                 </div>
-                                <button onclick="publishContent()" class="w-full py-4 btn-brand text-xs shadow-lg mt-2">Publish Matrix</button>
+                                <button onclick="publishContent()" class="w-full py-4 btn-brand text-xs shadow-lg mt-2 hover:scale-[1.02] transition-transform">Publish Matrix</button>
                             </div>
                         </div>
                         <div class="lg:col-span-3 space-y-8"><div id="tab-display" class="min-h-[500px] fade-in"></div></div>
@@ -1361,11 +1378,11 @@
             document.querySelectorAll('.teacher-grid-btn').forEach(btn => btn.classList.remove('grid-btn-active'));
             document.getElementById(`btn-${v}`)?.classList.add('grid-btn-active');
             const area = document.getElementById('teacher-action-area');
-            area.classList.remove('fade-in'); void area.offsetWidth; area.classList.add('fade-in'); // Retrigger animation
+            area.classList.remove('fade-in'); void area.offsetWidth; area.classList.add('fade-in'); 
             
             if (v === 'create') area.innerHTML = `<select id="group-type" class="input-field text-sm p-4 mb-3 transition-colors"><option value="public">Public Campus Hub</option><option value="private">Private Gated Hub</option></select><input id="group-name" placeholder="Hub Name" class="input-field text-sm p-4 mb-5 transition-colors"><button onclick="createGroup()" class="w-full py-4 btn-brand text-xs shadow-md">Create Hub</button>`;
-            else if (v === 'course') area.innerHTML = `<input id="c-title" placeholder="Course Title" class="input-field text-sm p-4 mb-3 transition-colors"><textarea id="c-desc" placeholder="Syllabus Scope & Details" class="input-field h-24 text-sm p-4 mb-3 transition-colors"></textarea><select id="c-tier" onchange="document.getElementById('price-field-wrapper').style.display = this.value==='free'?'none':'block'" class="input-field text-sm p-4 mb-3 transition-colors"><option value="paid">Commercial Tier (Paid)</option><option value="free">Open Access Tier (Free)</option></select><div id="price-field-wrapper" class="mb-4"><input id="c-price" placeholder="Tuition Fee Price ₹" class="input-field text-sm p-4 transition-colors"></div><div id="course-vids" class="space-y-3"><div class="flex gap-2 fade-in"><input placeholder="Syllabus Unit Title" class="input-field text-xs p-3 cv-t transition-colors"><input placeholder="Syllabus Media URL" class="input-field text-xs p-3 cv-u transition-colors"><button onclick="addVidField()" class="bg-brandOrange hover:bg-brandOrange/80 hover:scale-105 transition-all text-white px-4 rounded-xl font-black text-lg shadow-sm">+</button></div></div><button onclick="launchCourse()" class="w-full py-4 btn-brand text-xs mt-6 shadow-md">Launch Module</button>`;
-            else if (v === 'publish') area.innerHTML = `<input id="up-t" placeholder="Asset Title" class="input-field text-sm p-4 mb-3 transition-colors"><input id="up-u" placeholder="Resource Access URL" class="input-field text-sm p-4 mb-3 transition-colors"><select id="up-y" onchange="togglePublishScheduleField(this.value)" class="input-field text-sm p-4 mb-3 transition-colors"><option value="video">Recorded Video Resource</option><option value="live">Live Transmission</option><option value="file">Document/Image Material</option></select><div id="live-schedule-fields" class="hidden space-y-3 p-4 border border-brandOrange/20 bg-brandOrange/5 rounded-2xl mb-4 fade-in"><p class="text-[9px] uppercase tracking-widest text-brandOrange font-black">Transmission Interval Scheduler</p><input type="date" id="up-date" class="input-field text-sm p-3 transition-colors"><div class="grid grid-cols-2 gap-3"><input type="time" id="up-start-time" class="input-field text-sm p-3 transition-colors" title="Start Time"><input type="time" id="up-end-time" class="input-field text-sm p-3 transition-colors" title="End Time"></div></div><button onclick="publishContent()" class="w-full py-4 btn-brand text-xs shadow-md">Publish Matrix</button>`;
+            else if (v === 'course') area.innerHTML = `<input id="c-title" placeholder="Course Title" class="input-field text-sm p-4 mb-3 transition-colors"><textarea id="c-desc" placeholder="Syllabus Scope & Details" class="input-field h-24 text-sm p-4 mb-3 transition-colors"></textarea><select id="c-tier" onchange="document.getElementById('price-field-wrapper').style.display = this.value==='free'?'none':'block'" class="input-field text-sm p-4 mb-3 transition-colors"><option value="paid">Commercial Tier (Paid)</option><option value="free">Open Access Tier (Free)</option></select><div id="price-field-wrapper" class="mb-4"><input id="c-price" placeholder="Tuition Fee Price ₹" class="input-field text-sm p-4 transition-colors"></div><div id="course-vids" class="space-y-3"><div class="flex gap-2 fade-in"><input placeholder="Syllabus Unit Title" class="input-field text-xs p-3 cv-t transition-colors"><input placeholder="Syllabus Media URL" class="input-field text-xs p-3 cv-u transition-colors"><button onclick="addVidField()" class="bg-brandOrange hover:bg-brandOrange/80 hover:scale-105 transition-all text-white px-4 rounded-xl font-black text-lg shadow-sm">+</button></div></div><button onclick="launchCourse()" class="w-full py-4 btn-brand text-xs mt-6 shadow-md hover:scale-[1.02]">Launch Module</button>`;
+            else if (v === 'publish') area.innerHTML = `<input id="up-t" placeholder="Asset Title" class="input-field text-sm p-4 mb-3 transition-colors"><input id="up-u" placeholder="Resource Access URL" class="input-field text-sm p-4 mb-3 transition-colors"><select id="up-y" onchange="togglePublishScheduleField(this.value)" class="input-field text-sm p-4 mb-3 transition-colors"><option value="video">Recorded Video Resource</option><option value="live">Live Transmission</option><option value="file">Document/Image Material</option></select><div id="live-schedule-fields" class="hidden space-y-3 p-4 border border-brandOrange/20 bg-brandOrange/5 rounded-2xl mb-4 fade-in"><p class="text-[9px] uppercase tracking-widest text-brandOrange font-black">Transmission Interval Scheduler</p><input type="date" id="up-date" class="input-field text-sm p-3 transition-colors"><div class="grid grid-cols-2 gap-3"><input type="time" id="up-start-time" class="input-field text-sm p-3 transition-colors" title="Start Time"><input type="time" id="up-end-time" class="input-field text-sm p-3 transition-colors" title="End Time"></div></div><button onclick="publishContent()" class="w-full py-4 btn-brand text-xs shadow-md hover:scale-[1.02]">Publish Matrix</button>`;
             else if (v === 'requests') {
                 area.innerHTML = `<div id="request-list" class="space-y-3 mt-4 text-[10px] opacity-40 text-center font-bold tracking-widest uppercase py-6 fade-in">Scanning admissions...</div>`;
                 const groups = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId", "==", profile.teacherId)));
@@ -1519,7 +1536,7 @@
                 <div class="fade-in">
                     <img src="${c.thumbnail}" class="w-full h-auto max-h-64 object-cover rounded-3xl mb-6 shadow-2xl border border-[var(--border-color)]">
                     <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-black italic text-brandOrange pr-4">${c.title}</h2>${isT ? `<button onclick="delC('${id}')" class="text-red-500 font-black uppercase text-[10px] tracking-widest border border-red-500/20 bg-red-500/10 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white hover:scale-105 transition-all">Purge</button>` : ''}</div>
-                    <p class="opacity-80 mb-8 text-sm leading-relaxed pr-4 text-zinc-300 dark:text-zinc-300">${c.description}</p>
+                    <p class="opacity-80 mb-8 text-sm leading-relaxed pr-4 text-[var(--text-main)] opacity-80">${c.description}</p>
                     <div class="space-y-3 mb-8">
                         <p class="text-[9px] font-black uppercase opacity-40 tracking-widest mb-1 border-b border-[var(--border-color)] pb-2">Course Syllabus Blueprint</p>
                         ${c.playlist.map((v, i) => `
@@ -1569,9 +1586,9 @@
             if (i.type === 'live') {
                 const status = window.checkLiveStatus(i.liveDate, i.liveStartTime, i.liveEndTime);
                 if (status === 'scheduled') {
-                    liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-blue-600/20 text-blue-500 dark:text-blue-400 text-[8px] font-black tracking-widest px-2.5 py-1 rounded-full border border-blue-500/20 shadow-sm mt-1 mb-1 w-fit">SCHEDULED: ${i.liveStartTime}</span>`;
+                    liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-blue-600/20 text-blue-500 text-[8px] font-black tracking-widest px-2.5 py-1 rounded-full border border-blue-500/20 shadow-sm mt-1 mb-1 w-fit">SCHEDULED: ${i.liveStartTime}</span>`;
                 } else if (status === 'live') {
-                    liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-red-600/20 text-red-600 dark:text-red-500 text-[8px] font-black tracking-widest px-2.5 py-1 rounded-full border border-red-500/20 shadow-sm mt-1 mb-1 w-fit"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_red]"></span>LIVE NOW</span>`;
+                    liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-red-600/20 text-red-600 text-[8px] font-black tracking-widest px-2.5 py-1 rounded-full border border-red-500/20 shadow-sm mt-1 mb-1 w-fit"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_red]"></span>LIVE NOW</span>`;
                 } else {
                     liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-brandOrange/20 text-brandOrange text-[8px] font-black tracking-widest px-2.5 py-1 rounded-full border border-brandOrange/20 shadow-sm mt-1 mb-1 w-fit"><span class="w-1.5 h-1.5 rounded-full bg-brandOrange shadow-[0_0_8px_#f7941d]"></span>RECORDED</span>`;
                 }
@@ -1626,7 +1643,7 @@
             Core.onSnapshot(q, (snap) => {
                 document.getElementById('group-chat-messages').innerHTML = snap.docs.map(m => {
                     const d = m.data(); const isM = d.senderId === Core.auth.currentUser.uid;
-                    return `<div class="flex ${isM ? 'flex-row-reverse' : 'flex-row'} items-end gap-3 fade-in"><img src="${d.senderPhoto || 'https://ui-avatars.com/api/?name='+d.sender}" class="w-8 h-8 rounded-full border border-[var(--border-color)] object-cover bg-black shadow-sm"><div class="flex flex-col ${isM ? 'items-end' : 'items-start'}"><p class="text-[9px] opacity-50 uppercase font-black px-2 mb-1 text-zinc-400 tracking-widest">${d.sender}</p><div class="inline-block p-3.5 md:p-4 rounded-2xl ${isM ? 'bg-brandOrange text-white shadow-[0_5px_15px_rgba(247,148,29,0.3)]' : 'bg-white/10 shadow-sm border border-white/5 text-white'} text-sm leading-relaxed max-w-[85%] break-words">${d.text}</div></div></div>`;
+                    return `<div class="flex ${isM ? 'flex-row-reverse' : 'flex-row'} items-end gap-3 fade-in"><img src="${d.senderPhoto || 'https://ui-avatars.com/api/?name='+d.sender}" class="w-8 h-8 rounded-full border border-[var(--border-color)] object-cover bg-[var(--input-bg)] shadow-sm"><div class="flex flex-col ${isM ? 'items-end' : 'items-start'}"><p class="text-[9px] opacity-50 uppercase font-black px-2 mb-1 text-[var(--text-main)] tracking-widest">${d.sender}</p><div class="inline-block p-3.5 md:p-4 rounded-2xl ${isM ? 'bg-brandOrange text-white shadow-[0_5px_15px_rgba(247,148,29,0.3)]' : 'bg-[var(--input-bg)] shadow-sm border border-[var(--border-color)] text-[var(--text-main)]'} text-sm leading-relaxed max-w-[85%] break-words">${d.text}</div></div></div>`;
                 }).join('');
                 document.getElementById('group-chat-messages').scrollTop = 99999;
             });
@@ -1678,7 +1695,7 @@
 
             const loadingId = 'ai-loading-' + Date.now();
             chat.innerHTML += `
-            <div id="${loadingId}" class="flex items-center gap-3 bg-zinc-800/80 border border-white/5 p-4 rounded-2xl rounded-tl-sm w-fit text-sm shadow-md fade-in">
+            <div id="${loadingId}" class="flex items-center gap-3 bg-[var(--input-bg)] border border-[var(--border-color)] p-4 rounded-2xl rounded-tl-sm w-fit text-sm shadow-md fade-in">
                 <span class="flex gap-1"><span class="w-1.5 h-1.5 bg-brandOrange rounded-full animate-bounce" style="animation-delay: 0s;"></span><span class="w-1.5 h-1.5 bg-brandOrange rounded-full animate-bounce" style="animation-delay: 0.2s;"></span><span class="w-1.5 h-1.5 bg-brandOrange rounded-full animate-bounce" style="animation-delay: 0.4s;"></span></span>
             </div>`;
             chat.scrollTop = chat.scrollHeight;
@@ -1694,15 +1711,15 @@
                     const textReply = data.response || "Task execution complete.";
                     window.aiChatHistory.push({ role: 'AI', content: textReply });
                     if (window.aiChatHistory.length > 10) window.aiChatHistory = window.aiChatHistory.slice(-10);
-                    chat.innerHTML += `<div class="bg-zinc-800/80 border border-white/5 text-zinc-200 p-4 rounded-2xl rounded-tl-sm max-w-[85%] text-sm leading-relaxed shadow-md fade-in">${textReply}</div>`;
+                    chat.innerHTML += `<div class="bg-[var(--input-bg)] border border-[var(--border-color)] text-[var(--text-main)] p-4 rounded-2xl rounded-tl-sm max-w-[85%] text-sm leading-relaxed shadow-md fade-in">${textReply}</div>`;
                 } else {
                     console.error("Error from custom backend:", data.detail);
-                    chat.innerHTML += `<div class="bg-red-500/10 border border-red-500/30 p-4 rounded-2xl rounded-tl-sm max-w-[85%] text-sm text-red-400 leading-relaxed font-bold shadow-md fade-in">System Error: ${data.detail || 'Backend processing rejected payload.'}</div>`;
+                    chat.innerHTML += `<div class="bg-red-500/10 border border-red-500/30 p-4 rounded-2xl rounded-tl-sm max-w-[85%] text-sm text-red-500 leading-relaxed font-bold shadow-md fade-in">System Error: ${data.detail || 'Backend processing rejected payload.'}</div>`;
                 }
                 chat.scrollTop = chat.scrollHeight;
             } catch (e) {
                 document.getElementById(loadingId)?.remove();
-                chat.innerHTML += `<div class="bg-red-500/10 border border-red-500/30 p-4 rounded-2xl rounded-tl-sm max-w-[85%] text-sm text-red-400 leading-relaxed font-bold shadow-md fade-in">Network Interruption: ${e.message}</div>`;
+                chat.innerHTML += `<div class="bg-red-500/10 border border-red-500/30 p-4 rounded-2xl rounded-tl-sm max-w-[85%] text-sm text-red-500 leading-relaxed font-bold shadow-md fade-in">Network Interruption: ${e.message}</div>`;
                 toast("AI Core handshake interruption", "error"); 
                 console.error(e);
             }
@@ -1719,13 +1736,14 @@
             const coursesSorted = coS.docs.sort((a,b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
 
             main.innerHTML = `<div class="space-y-10 fade-in">
-                <div class="glass p-6 md:p-10 rounded-[4rem] border border-brandBlue/30 flex flex-col md:flex-row justify-between items-center gap-6 shadow-2xl relative overflow-hidden hover:shadow-brandBlue/20 transition-all">
+                <div class="glass p-6 md:p-10 rounded-[4rem] border border-brandBlue/30 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6 shadow-2xl relative overflow-hidden hover:shadow-brandBlue/20 transition-all">
                     <div class="absolute -right-20 -top-20 w-64 h-64 bg-brandBlue/10 blur-3xl rounded-full pointer-events-none"></div>
-                    <div class="flex items-center gap-6 md:gap-8 relative z-10">
-                        <img src="${tD.photo || 'https://ui-avatars.com/api/?name='+tD.name}" class="w-20 h-20 md:w-28 md:h-28 rounded-full border-[5px] border-brandBlue object-cover bg-black shadow-2xl hover:scale-105 transition-transform">
+                    <div class="flex flex-col md:flex-row items-center gap-6 md:gap-8 relative z-10">
+                        <img src="${tD.photo || 'https://ui-avatars.com/api/?name='+tD.name}" class="w-24 h-24 md:w-28 md:h-28 rounded-full border-[5px] border-brandBlue object-cover bg-black shadow-2xl hover:scale-105 transition-transform">
                         <div>
                             <h2 class="text-3xl md:text-5xl font-black italic tracking-tighter pr-4 drop-shadow-md text-[var(--text-main)]">${tD.name}</h2>
-                            <p class="text-[10px] md:text-xs font-bold text-brandBlue uppercase tracking-widest mt-1 pr-4 font-mono shadow-sm p-1.5 bg-brandBlue/10 border border-brandBlue/20 rounded-lg w-fit inline-block">${tD.teacherId}</p>
+                            <p class="text-[10px] md:text-xs font-bold text-brandBlue uppercase tracking-widest mt-1 font-mono shadow-sm p-1.5 bg-brandBlue/10 border border-brandBlue/20 rounded-lg w-fit inline-block md:inline">${tD.teacherId}</p>
+                            ${tD.bio ? `<p class="mt-4 text-sm opacity-80 leading-relaxed max-w-xl mx-auto md:mx-0">${tD.bio}</p>` : ''}
                         </div>
                     </div>
                     <button onclick="handleSub('${tId}', ${isF})" class="w-full md:w-auto px-10 py-4 md:py-5 ${isF ? 'bg-[var(--input-bg)] border border-[var(--border-color)] hover:bg-[var(--border-color)] text-[var(--text-main)]' : 'btn-brand shadow-[0_10px_20px_rgba(0,74,128,0.3)] hover:shadow-brandBlue/50'} rounded-2xl font-black text-xs uppercase tracking-widest transition-all z-10 relative hover:scale-[1.02]">${isF ? 'Unfollow' : 'Follow Instructor'}</button>
@@ -1754,13 +1772,10 @@
                     const pic = document.getElementById('nav-profile-pic');
                     if (pic) {
                         pic.innerHTML = `<img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-full h-full object-cover bg-black">`;
-                        // Bleeding admin ring implementation via Tailwind Arbitrary Shadow properties
-                        pic.className = `w-9 h-9 md:w-10 md:h-10 rounded-full border-[3px] overflow-hidden cursor-pointer block select-none hover:scale-[1.1] transition-all duration-300 shadow-lg ${profile.role === 'super_admin' ? 'border-red-600 shadow-[0_0_20px_rgba(220,38,38,0.8)]' : (profile.role === 'teacher' ? 'border-brandBlue shadow-brandBlue/30' : 'border-brandOrange shadow-brandOrange/30')}`;
+                        pic.className = `w-9 h-9 md:w-10 md:h-10 rounded-full border-[3px] overflow-hidden cursor-pointer block select-none hover:scale-[1.1] transition-all duration-300 shadow-lg ${profile.role === 'super_admin' ? 'border-red-600 shadow-[0_0_20px_rgba(220,38,38,0.8)]' : (profile.role === 'teacher' ? 'border-brandBlue shadow-[0_0_15px_rgba(0,74,128,0.4)]' : 'border-brandOrange shadow-[0_0_15px_rgba(247,148,29,0.4)]')}`;
                     }
                     
-                    // Fetch existing notifications on load
                     fetchSystemNotifications();
-                    
                     showScreen('dashboard'); navigate(window.location.hash.substring(1) || 'home');
                     listenSystemEvents(); 
                     initializeSwipeGestures();
