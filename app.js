@@ -66,17 +66,7 @@ const adminDashboard =
 // =========================================
 
 
-/* adminBtn.addEventListener('click', () => {
 
-    adminDashboard.classList.remove('hidden');
-
-    loadPlans();
-    loadInstitutes();
-    loadPayments();
-    loadSubscriptions();
-
-});
-*/
 
 // =========================================
 // CLOSE DASHBOARD
