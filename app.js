@@ -65,7 +65,7 @@ const adminDashboard =
 // OPEN DASHBOARD
 // =========================================
 
-AdminButton.addEventListener('click', () => {
+adminButton.addEventListener('click', () => {
 
     adminDashboard.classList.remove('hidden');
 
