@@ -1758,7 +1758,13 @@
                 if (!docSnap.exists()) showScreen('onboarding-screen');
                 else {
                     profile = docSnap.data();
-
+                    
+              // Comment out these lines so it doesn't force show on the screen backdrop
+                    if (profile.role === "super_admin") {
+                        const adminBtn = document.getElementById("admin-panel-btn");
+                        if (adminBtn) adminBtn.classList.remove("hidden");
+                    } 
+                    
                     const pic = document.getElementById('nav-profile-pic');
                     if (pic) {
                         pic.innerHTML = `<img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-full h-full object-cover bg-black">`;
