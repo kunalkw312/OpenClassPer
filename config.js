@@ -18,5 +18,5 @@ export const customAiConfig = {
     // Replace 123.45.67.89 with your actual Hostinger VPS IP Address
     backendUrl: "https://dance-peroxide-tinfoil.ngrok-free.dev/", 
     projectKey: "my_super_secure_secret_agent_key_123",
-    groqKey: "" // Leave this empty, you don't need Groq anymore!
+
 };
