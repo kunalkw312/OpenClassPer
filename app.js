@@ -66,7 +66,7 @@ const adminDashboard =
 // =========================================
 
 
-/* adminBtn.addEventListener('click', () => {
+ adminBtn.addEventListener('click', () => {
 
     adminDashboard.classList.remove('hidden');
 
@@ -76,7 +76,7 @@ const adminDashboard =
     loadSubscriptions();
 
 });
-*/
+
 
 // =========================================
 // CLOSE DASHBOARD
