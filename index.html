@@ -3,11 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#050505">
     
-
-
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+                    .then(() => console.log('PWA Registered'))
+                    .catch(err => console.error('SW Registration Failed:', err));
+            });
+        }
+    </script>
+  
     <title>OpenClass | Premium SaaS LMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -1758,13 +1766,7 @@
                 if (!docSnap.exists()) showScreen('onboarding-screen');
                 else {
                     profile = docSnap.data();
-                    
-              // Comment out these lines so it doesn't force show on the screen backdrop
-                    if (profile.role === "super_admin") {
-                        const adminBtn = document.getElementById("admin-panel-btn");
-                        if (adminBtn) adminBtn.classList.remove("hidden");
-                    } 
-                    
+
                     const pic = document.getElementById('nav-profile-pic');
                     if (pic) {
                         pic.innerHTML = `<img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-full h-full object-cover bg-black">`;
