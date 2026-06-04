@@ -31,6 +31,17 @@
         tailwind.config = { darkMode: 'class', theme: { extend: { colors: { brandBlue: '#004a80', brandOrange: '#f7941d' } } } }
     </script>
     <style>
+
+        /* Prevents the dashboard wrapper from breaking fixed-position elements */
+#dashboard.fade-in {
+    animation: dashboardFadeIn 0.4s ease forwards !important;
+}
+
+@keyframes dashboardFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+        
         :root { 
             --text-main: #fdfbf7; 
             --bg-main: #050505; 
