@@ -59,9 +59,22 @@
             --border-color: rgba(0, 0, 0, 0.1);
         }
         
-        /* Softer, slower Theme Transitions to protect eyes */
-        html, body { transition: background-color 1s ease-in-out, color 1s ease-in-out; }
-        .glass, .input-field, #group-chat-window, #ai-chat-window, #ai-messages > div, #group-chat-messages > div > div > div { transition: background-color 1s ease-in-out, border-color 1s ease-in-out, color 1s ease-in-out, box-shadow 1s ease-in-out; }
+       /* Synchronized Theme Transitions */
+        *, *::before, *::after {
+            /* We strictly target ONLY colors/shadows so we don't break your transform/scale animations */
+            transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+            transition-duration: 0.4s; /* Sped up from 1s to 0.4s to prevent visual tearing */
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Ensure specific elements don't get overwritten by Tailwind's faster defaults during a theme swap */
+        html, body, .glass, .input-field {
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                        color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                        border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
