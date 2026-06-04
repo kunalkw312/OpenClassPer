@@ -41,7 +41,8 @@
     from { opacity: 0; }
     to { opacity: 1; }
 }
-        
+
+    
         :root { 
             --text-main: #fdfbf7; 
             --bg-main: #050505; 
@@ -376,14 +377,18 @@
         window._profileCropper = null;
         window._currentRotation = 0;
 
-     
         const tabsOrderIndex = ['home', 'groups', 'courses', 'content'];
         let touchStartX = 0;
         let touchStartY = 0;
         
         window.appLoadTime = Date.now();
         window.aiChatHistory = window.aiChatHistory || [];
-        
+
+        let cart = [];
+        try {
+            const preservedCart = localStorage.getItem('oc_cart_manifest');
+            if(preservedCart) { cart = JSON.parse(preservedCart); }
+        } catch(e) { cart = []; }
 
         function injectSkeletonState(targetElementId) {
             const el = document.getElementById(targetElementId);
@@ -396,7 +401,7 @@
                 </div>`;
         }
 
-       function initializeSwipeGestures() {
+        function initializeSwipeGestures() {
             // Attaching to 'document' ensures the swipe never stops working after page re-renders
             document.addEventListener('touchstart', (e) => { 
                 touchStartX = e.changedTouches[0].screenX; 
@@ -410,7 +415,7 @@
             }, { passive: true });
         }
 
-        function handleSwipeGestureEvaluation(startX, endX, startY, endY) {
+            function handleSwipeGestureEvaluation(startX, endX, startY, endY) {
             const thresholdX = 130; // Increased from 75. Makes it harder/less sensitive to trigger
             const maxVerticalWander = 75; // Prevents triggering if user is scrolling up/down
 
