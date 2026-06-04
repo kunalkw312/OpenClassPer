@@ -86,9 +86,15 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
             background-color: var(--bg-main); 
             color: var(--text-main); 
             overflow-x: hidden; 
-            padding-bottom: calc(95px + env(safe-area-inset-bottom)); 
+            /* Increased padding so content clears the AI button */
+            padding-bottom: calc(200px + env(safe-area-inset-bottom)); 
             overscroll-behavior-y: none;
             -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Desktop needs even more space because the AI button sits higher (bottom-48) */
+        @media (min-width: 768px) {
+            body { padding-bottom: calc(280px + env(safe-area-inset-bottom)); }
         }
 
         /* Custom Adaptive Scrollbar */
