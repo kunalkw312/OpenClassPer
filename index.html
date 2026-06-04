@@ -376,60 +376,14 @@
         window._profileCropper = null;
         window._currentRotation = 0;
 
-       let touchStartCoordsX = 0;
-       let touchEndCoordsX = 0;
-       let touchStartCoordsY = 0;
-       let touchEndCoordsY = 0;
-
-  function initializeSwipeGestures() {
-    // Attached to window so it always works, even if content is short
-    window.addEventListener('touchstart', (e) => { 
-        touchStartCoordsX = e.changedTouches[0].screenX; 
-        touchStartCoordsY = e.changedTouches[0].screenY; 
-    }, { passive: true });
-    
-    window.addEventListener('touchend', (e) => { 
-        touchEndCoordsX = e.changedTouches[0].screenX; 
-        touchEndCoordsY = e.changedTouches[0].screenY; 
-        handleSwipeGestureEvaluation(); 
-    }, { passive: true });
-}
-
-function handleSwipeGestureEvaluation() {
-    // Prevent swiping if a modal, the vault, or AI chat is currently open
-    if (!document.getElementById('custom-modal').classList.contains('hidden') || 
-        !document.getElementById('media-vault').classList.contains('hidden') ||
-        !document.getElementById('ai-chat-window').classList.contains('ai-drawer-hidden')) {
-        return;
-    }
-
-    const thresholdX = 130; // Increased to make it harder to trigger
-    const thresholdY = 60;  // Cancels swipe if you are scrolling up/down
-
-    const deltaX = touchEndCoordsX - touchStartCoordsX;
-    const deltaY = touchEndCoordsY - touchStartCoordsY;
-
-    // If the user is mostly scrolling vertically, ignore the horizontal swipe completely
-    if (Math.abs(deltaY) > thresholdY) return;
-    
-    // If the horizontal swipe isn't long enough, ignore it
-    if (Math.abs(deltaX) < thresholdX) return;
-
-    // We use the unified internal array. 
-    // Even though teachers see "Analytics" and "Dashboard", the engine routes them through "home" and "content"
-    const activeTabsArray = ['home', 'groups', 'courses', 'content'];
-
-    const currentTabPos = activeTabsArray.indexOf(currentTab);
-    if (currentTabPos === -1) return;
-
-    if (deltaX > 0) { 
-        // Swiped right -> Go left in array
-        if (currentTabPos > 0) setTab(activeTabsArray[currentTabPos - 1]); 
-    } else { 
-        // Swiped left -> Go right in array
-        if (currentTabPos < activeTabsArray.length - 1) setTab(activeTabsArray[currentTabPos + 1]); 
-    }
-}
+     
+        const tabsOrderIndex = ['home', 'groups', 'courses', 'content'];
+        let touchStartCoordsX = 0;
+        let touchEndCoordsX = 0;
+        
+        window.appLoadTime = Date.now();
+        window.aiChatHistory = window.aiChatHistory || [];
+        
 
         function injectSkeletonState(targetElementId) {
             const el = document.getElementById(targetElementId);
