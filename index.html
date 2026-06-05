@@ -31,17 +31,8 @@
         tailwind.config = { darkMode: 'class', theme: { extend: { colors: { brandBlue: '#004a80', brandOrange: '#f7941d' } } } }
     </script>
     <style>
-
-        /* Prevents the dashboard wrapper from breaking fixed-position elements */
-#dashboard.fade-in {
-    animation: dashboardFadeIn 0.4s ease forwards !important;
-}
-
-@keyframes dashboardFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
+        #dashboard.fade-in { animation: dashboardFadeIn 0.4s ease forwards !important; }
+        @keyframes dashboardFadeIn { from { opacity: 0; } to { opacity: 1; } }
     
         :root { 
             --text-main: #fdfbf7; 
@@ -50,7 +41,6 @@
             --input-bg: #111; 
             --border-color: rgba(255, 255, 255, 0.1);
         }
-        /* Optimized Off-White Light Theme */
         .light { 
             --text-main: #1a1a1a; 
             --bg-main: #fbf9f1; 
@@ -59,20 +49,16 @@
             --border-color: rgba(0, 0, 0, 0.1);
         }
         
-       /* Unified, Buttery Smooth Theme Transitions (Hardware Accelerated) */
-html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, select, a {
-    transition-property: background-color, border-color, color, fill, stroke, box-shadow;
-    transition-duration: 300ms !important;
-    transition-timing-function: ease-in-out !important;
-}
+        html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, select, a {
+            transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+            transition-duration: 300ms !important;
+            transition-timing-function: ease-in-out !important;
+        }
 
-/* Ensure hover transforms (like your buttons popping up) stay snappy and don't get slowed down by the color transition */
-.btn-brand, .hover\:scale-105, .group-hover\:scale-110 {
-    transition-property: transform, background-color, border-color, color, box-shadow !important;
-}
+        .btn-brand, .hover\:scale-105, .group-hover\:scale-110 {
+            transition-property: transform, background-color, border-color, color, box-shadow !important;
+        }
         
-        
-        /* Ensure specific elements don't get overwritten by Tailwind's faster defaults during a theme swap */
         html, body, .glass, .input-field {
             transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
                         color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
@@ -80,24 +66,20 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
                         box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: var(--bg-main); 
             color: var(--text-main); 
             overflow-x: hidden; 
-            /* Increased padding so content clears the AI button */
             padding-bottom: calc(200px + env(safe-area-inset-bottom)); 
             overscroll-behavior-y: none;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Desktop needs even more space because the AI button sits higher (bottom-48) */
         @media (min-width: 768px) {
             body { padding-bottom: calc(280px + env(safe-area-inset-bottom)); }
         }
 
-        /* Custom Adaptive Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(128, 128, 128, 0.3); border-radius: 10px; transition: background 0.3s; }
@@ -119,7 +101,6 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
         #toast-box { position: fixed; bottom: 8rem; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
         .toast-pill { background: rgba(15,15,15,0.95); backdrop-filter: blur(10px); color: #fff; padding: 0.8rem 1.8rem; border-radius: 99px; border: 1px solid rgba(255,255,255,0.1); font-size: 11px; font-weight: 800; text-transform: uppercase; animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        /* Fixed Video Player Wrapping & Constraints */
         #vault-wrapper { width: 100%; height: 100%; max-height: 85vh; display: flex; align-items: center; justify-content: center; background: #000; position: relative; overflow: hidden; border-radius: 1rem; }
         .plyr { width: 100%; border-radius: 1rem; overflow: hidden; background: #000; }
         .plyr video { max-height: 85vh; object-fit: contain; }
@@ -147,10 +128,10 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
         #ai-chat-window { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-origin: bottom right; }
         .ai-drawer-hidden { opacity: 0 !important; transform: scale(0.9) translateY(40px) !important; pointer-events: none !important; }
 
-        /* General Snappy Animations */
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popUp { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: none; } }    </style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: none; } }
+    </style>
 </head>
 <body class="selection:bg-brandOrange/30">
     <div id="toast-box"></div>
@@ -208,13 +189,20 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
             <div class="w-full max-w-md glass p-10 rounded-[3.5rem] text-center shadow-2xl transition-transform hover:scale-[1.02] duration-300">
                 <img src="https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg" class="h-20 mx-auto mb-6 rounded-2xl object-cover shadow-lg">
                 <h1 class="text-4xl font-black mb-8 italic">Open<span class="text-brandOrange">Class</span></h1>
+                
                 <div id="signup-fields" class="hidden space-y-4 mb-4">
                     <input type="text" id="reg-name" placeholder="Full Name" class="input-field">
-                    <select id="reg-role" class="input-field">
+                    <select id="reg-role" class="input-field" onchange="window.toggleRoleFields(this.value)">
                         <option value="student">Student Account</option>
                         <option value="teacher">Teacher Account</option>
                     </select>
+                    <select id="reg-privacy" class="input-field hidden">
+                        <option value="public">Public Account (Visible to all)</option>
+                        <option value="private">Private Account (Institute only)</option>
+                    </select>
+                    <input type="text" id="reg-institute-id" placeholder="Institute ID (Optional)" class="input-field">
                 </div>
+
                 <div class="space-y-4">
                     <input type="email" id="auth-email" placeholder="Email" class="input-field">
                     <input type="password" id="auth-pass" placeholder="Password" class="input-field" onkeydown="if(event.key==='Enter') handleAuth()">
@@ -223,13 +211,16 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5">
                         Continue with Google
                     </button>
-                    <button onclick="toggleAuth()" id="toggle-auth-btn" class="w-full text-[10px] text-zinc-500 font-bold uppercase mt-6 hover:text-brandOrange transition-colors">Create Profile</button>
+                    <div class="flex justify-between items-center mt-6">
+                        <button onclick="toggleAuth()" id="toggle-auth-btn" class="text-[10px] text-zinc-500 font-bold uppercase hover:text-brandOrange transition-colors">Create Profile</button>
+                        <button onclick="window.showInstituteForm()" class="text-[10px] text-brandBlue font-bold uppercase hover:text-brandOrange transition-colors">Register Your Institute</button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div id="verify-screen" class="hidden min-h-screen flex items-center justify-center p-6 relative fade-in">
-            <button onclick="showScreen('auth-screen')" class="absolute top-10 right-10 text-2xl font-black opacity-30 hover:opacity-100 transition-opacity">✕</button>
+            <button onclick="window.showScreen('auth-screen')" class="absolute top-10 right-10 text-2xl font-black opacity-30 hover:opacity-100 transition-opacity">✕</button>
             <div class="w-full max-w-md glass p-10 rounded-[3.5rem] text-center border border-brandOrange/20 shadow-2xl">
                 <h2 class="text-3xl font-black mb-4 italic">Verify Code</h2>
                 <p id="verify-note" class="text-zinc-500 text-[10px] mb-8 uppercase font-bold"></p>
@@ -336,35 +327,51 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
                     <h1 class="text-3xl md:text-4xl font-black italic text-brandOrange">Core Dashboard</h1>
                     <p class="text-xs opacity-50 uppercase tracking-widest font-bold mt-2">Super Administrator Access Level</p>
                 </div>
-                <button onclick="closeAdminDashboard()" class="bg-white/5 hover:bg-red-600 hover:scale-110 text-white w-12 h-12 rounded-full flex items-center justify-center transition-all font-black border border-white/10">✕</button>
+                <button onclick="window.closeAdminDashboard()" class="bg-white/5 hover:bg-red-600 hover:scale-110 text-white w-12 h-12 rounded-full flex items-center justify-center transition-all font-black border border-white/10">✕</button>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <button onclick="showSection('plans-section')" class="bg-brandBlue/20 text-brandBlue hover:bg-brandBlue hover:scale-105 hover:text-white border border-brandBlue/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Plans</button>
-                <button onclick="showSection('institutes-section')" class="bg-purple-500/20 text-purple-400 hover:bg-purple-600 hover:scale-105 hover:text-white border border-purple-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Institutes</button>
-                <button onclick="showSection('payments-section')" class="bg-brandOrange/20 text-brandOrange hover:bg-brandOrange hover:scale-105 hover:text-white border border-brandOrange/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Payments</button>
-                <button onclick="showSection('subscriptions-section')" class="bg-green-500/20 text-green-400 hover:bg-green-600 hover:scale-105 hover:text-white border border-green-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Subscriptions</button>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                <button onclick="window.showSection('plans-section')" class="bg-brandBlue/20 text-brandBlue hover:bg-brandBlue hover:scale-105 hover:text-white border border-brandBlue/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Plans</button>
+                <button onclick="window.showSection('institutes-section')" class="bg-purple-500/20 text-purple-400 hover:bg-purple-600 hover:scale-105 hover:text-white border border-purple-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Institutes</button>
+                <button onclick="window.showSection('payments-section')" class="bg-brandOrange/20 text-brandOrange hover:bg-brandOrange hover:scale-105 hover:text-white border border-brandOrange/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Payments</button>
+                <button onclick="window.showSection('subscriptions-section')" class="bg-green-500/20 text-green-400 hover:bg-green-600 hover:scale-105 hover:text-white border border-green-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Subscriptions</button>
+                <button onclick="window.loadAdminRequests()" class="bg-yellow-500/20 text-yellow-400 hover:bg-yellow-600 hover:scale-105 hover:text-white border border-yellow-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Requests</button>
             </div>
 
             <div class="flex-grow overflow-y-auto pr-4 custom-scrollbar">
                 
                 <div id="plans-section" class="admin-section hidden space-y-4 max-w-xl mx-auto fade-in">
                     <h2 class="text-2xl font-black italic text-brandBlue mb-6">Manage System Plans</h2>
-                    <input id="plan-id" type="text" placeholder="Document ID (monthly/yearly/free_trial)" class="input-field text-black dark:text-white">
-                    <input id="plan-name" type="text" placeholder="Plan Name" class="input-field text-black dark:text-white">
-                    <input id="plan-price" type="number" placeholder="Price" class="input-field text-black dark:text-white">
-                    <input id="plan-duration" type="number" placeholder="Duration Days" class="input-field text-black dark:text-white">
-                    <button onclick="addPlan()" class="w-full py-4 bg-brandBlue text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-blue-600 hover:scale-[1.02] transition-all mt-4">Inject Plan</button>
+                    <select id="plan-type-select" class="input-field text-black dark:text-white" onchange="window.handleAdminPlanUI(this.value)">
+                        <option value="free_trial">Free Trial Config</option>
+                        <option value="one_year">One Year Plan Config</option>
+                        <option value="custom">Add Custom Plan</option>
+                    </select>
+                    <div id="plan-fields-container" class="space-y-4 mt-4"></div>
+                    <button onclick="window.processPlanSave()" class="w-full py-4 bg-brandBlue text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-blue-600 hover:scale-[1.02] transition-all mt-4">Save Plan Configuration</button>
                     <div id="plans-list" class="mt-8 space-y-2 text-white"></div>
                 </div>
 
                 <div id="institutes-section" class="admin-section hidden space-y-4 max-w-xl mx-auto fade-in">
                     <h2 class="text-2xl font-black italic text-purple-400 mb-6">Register Institutes</h2>
-                    <input id="institute-name" type="text" placeholder="Institute Name" class="input-field text-black dark:text-white">
-                    <input id="institute-logo" type="text" placeholder="Logo URL" class="input-field text-black dark:text-white">
-                    <input id="institute-owner" type="text" placeholder="Owner UID" class="input-field text-black dark:text-white">
-                    <input id="institute-plan" type="text" placeholder="Current Plan Allocation" class="input-field text-black dark:text-white">
-                    <button onclick="addInstitute()" class="w-full py-4 bg-purple-600 text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-purple-700 hover:scale-[1.02] transition-all mt-4">Register Institute Node</button>
+                    <input id="inst-teacher-id" type="text" placeholder="Teacher's Owner ID" class="input-field text-black dark:text-white">
+                    <input id="inst-name" type="text" placeholder="Institute Name" class="input-field text-black dark:text-white">
+                    <input id="inst-logo" type="text" placeholder="Logo URL" class="input-field text-black dark:text-white">
+                    <select id="inst-privacy" class="input-field text-black dark:text-white">
+                        <option value="public">Public Content</option>
+                        <option value="private">Private (Gated)</option>
+                    </select>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[9px] uppercase opacity-50 ml-2">Plan Start</label>
+                            <input id="inst-start" type="date" class="input-field text-black dark:text-white mt-1">
+                        </div>
+                        <div>
+                            <label class="text-[9px] uppercase opacity-50 ml-2">Plan End</label>
+                            <input id="inst-end" type="date" class="input-field text-black dark:text-white mt-1">
+                        </div>
+                    </div>
+                    <button onclick="window.processInstituteSave()" class="w-full py-4 bg-purple-600 text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-purple-700 hover:scale-[1.02] transition-all mt-4">Generate & Register Node</button>
                     <div id="institutes-list" class="mt-8 space-y-2 text-white"></div>
                 </div>
 
@@ -374,7 +381,7 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
                     <input id="payment-amount" type="number" placeholder="Amount Processed" class="input-field text-black dark:text-white">
                     <input id="payment-gateway" type="text" placeholder="Gateway Node" class="input-field text-black dark:text-white">
                     <input id="payment-transaction" type="text" placeholder="Transaction Signature ID" class="input-field text-black dark:text-white">
-                    <button onclick="addPayment()" class="w-full py-4 bg-brandOrange text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-[#e0861a] hover:scale-[1.02] transition-all mt-4">Log Payment</button>
+                    <button onclick="window.addPayment()" class="w-full py-4 bg-brandOrange text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-[#e0861a] hover:scale-[1.02] transition-all mt-4">Log Payment</button>
                     <div id="payments-list" class="mt-8 space-y-2 text-white"></div>
                 </div>
 
@@ -383,8 +390,13 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
                     <input id="subscription-institute" type="text" placeholder="Institute ID" class="input-field text-black dark:text-white">
                     <input id="subscription-plan" type="text" placeholder="Plan ID" class="input-field text-black dark:text-white">
                     <input id="subscription-payment" type="text" placeholder="Payment Link ID" class="input-field text-black dark:text-white">
-                    <button onclick="addSubscription()" class="w-full py-4 bg-green-600 text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-green-700 hover:scale-[1.02] transition-all mt-4">Allocate Subscription</button>
+                    <button onclick="window.addSubscription()" class="w-full py-4 bg-green-600 text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-green-700 hover:scale-[1.02] transition-all mt-4">Allocate Subscription</button>
                     <div id="subscriptions-list" class="mt-8 space-y-2 text-white"></div>
+                </div>
+
+                <div id="requests-section" class="admin-section hidden space-y-4 max-w-2xl mx-auto fade-in">
+                    <h2 class="text-2xl font-black italic text-yellow-400 mb-6">Onboarding Requests</h2>
+                    <div id="admin-requests-list" class="space-y-3"></div>
                 </div>
             </div>
         </div>
@@ -396,7 +408,7 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
 
         let profile = null, isSignup = false, otpCode = null, tempUser = null, activeGroupId = null, currentTab = 'home', videoPlayer = null;
         let currentVideoContext = null, watermarkInterval = null, groupMessageTrackers = {}, activeLiveChatListenerUnsub = null;
-        let notificationsMap = []; // Now populated via Firebase
+        let notificationsMap = []; 
         
         window._profileCropper = null;
         window._currentRotation = 0;
@@ -414,6 +426,120 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
             if(preservedCart) { cart = JSON.parse(preservedCart); }
         } catch(e) { cart = []; }
 
+        // =========================================
+        // GLOBALS FIXES & NEW LOGIC 
+        // =========================================
+
+        window.showScreen = function(id) { 
+            ['auth-screen', 'verify-screen', 'onboarding-screen', 'dashboard'].forEach(s => document.getElementById(s).classList.add('hidden')); 
+            const s = document.getElementById(id);
+            s.classList.remove('hidden'); 
+            s.classList.remove('fade-in'); void s.offsetWidth; s.classList.add('fade-in');
+        };
+
+        window.toggleRoleFields = (role) => {
+            const privacySelect = document.getElementById('reg-privacy');
+            if (role === 'teacher') {
+                privacySelect.classList.remove('hidden');
+            } else {
+                privacySelect.classList.add('hidden');
+            }
+        };
+
+        window.showInstituteForm = () => {
+            const modal = document.getElementById('custom-modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('hidden');
+            content.innerHTML = `
+                <div class="fade-in">
+                    <h3 class="text-2xl font-black italic mb-2">Register Institute</h3>
+                    <p class="text-xs opacity-50 mb-6">Submit a request to onboard your campus.</p>
+                    <div class="space-y-4">
+                        <input id="req-inst-name" placeholder="Institute Name" class="input-field text-sm">
+                        <input id="req-inst-email" placeholder="Contact Email" type="email" class="input-field text-sm">
+                        <input id="req-inst-phone" placeholder="Contact Number" class="input-field text-sm">
+                        <div class="grid grid-cols-2 gap-4">
+                            <input id="req-inst-teachers" placeholder="# of Teachers" type="number" class="input-field text-sm">
+                            <input id="req-inst-students" placeholder="# of Students" type="number" class="input-field text-sm">
+                        </div>
+                        <textarea id="req-inst-address" placeholder="Physical Address" class="input-field text-sm h-24 resize-none"></textarea>
+                        <button onclick="submitInstituteRequest()" class="w-full py-4 btn-brand mt-2 text-xs">Submit Request</button>
+                    </div>
+                </div>
+            `;
+        };
+
+        window.submitInstituteRequest = async () => {
+            const data = {
+                name: document.getElementById('req-inst-name').value,
+                email: document.getElementById('req-inst-email').value,
+                phone: document.getElementById('req-inst-phone').value,
+                teachers: document.getElementById('req-inst-teachers').value,
+                students: document.getElementById('req-inst-students').value,
+                address: document.getElementById('req-inst-address').value,
+                status: 'pending',
+                createdAt: Core.serverTimestamp()
+            };
+            if(!data.name || !data.email) return toast("Name and Email are required", "error");
+            
+            await Core.addDoc(Core.collection(Core.db, "instituteRequests"), data);
+            toast("Request submitted successfully. Our team will contact you.");
+            window.closeCustomModal();
+        };
+
+        window.handleAuth = async () => {
+            const e = document.getElementById('auth-email').value, p = document.getElementById('auth-pass').value;
+            if (isSignup) {
+                tempUser = { 
+                    e, p, 
+                    n: document.getElementById('reg-name').value, 
+                    r: document.getElementById('reg-role').value,
+                    instId: document.getElementById('reg-institute-id').value.trim() || null,
+                    privacy: document.getElementById('reg-privacy').value || 'public'
+                };
+                otpCode = Math.floor(100000 + Math.random() * 900000);
+                try { 
+                    await Core.sendOTP(e, otpCode); 
+                    document.getElementById('verify-note').innerText = `OTP sent to ${e}`; 
+                    window.showScreen('verify-screen'); 
+                } catch(err) { toast("Relay network anomaly", "error"); }
+            } else { 
+                try { await Core.signInWithEmailAndPassword(Core.auth, e, p); } 
+                catch (err) { toast(err.message, "error"); } 
+            }
+        };
+
+        window.checkOTP = async () => {
+            if (document.getElementById('otp-input').value == otpCode) {
+                try {
+                    const { e, p, n, r, instId, privacy } = tempUser;
+                    const cred = await Core.createUserWithEmailAndPassword(Core.auth, e, p);
+                    
+                    let userData = { 
+                        name: n, role: r, email: e, subs: [], photo: "", 
+                        joined: new Date().toLocaleDateString(),
+                        instituteId: instId,
+                        privacyMode: privacy
+                    };
+
+                    if (r === 'teacher') {
+                        userData.teacherId = "OC-" + n.split(' ')[0].toUpperCase() + Math.floor(100+Math.random()*899);
+                        let expiry = new Date();
+                        expiry.setDate(expiry.getDate() + 14); // 14 day trial config
+                        userData.plan = 'free_trial';
+                        userData.planExpiresAt = expiry;
+                    }
+
+                    await Core.setDoc(Core.doc(Core.db, "users", cred.user.uid), userData);
+                    location.reload();
+                } catch(err) { toast(err.message, "error"); }
+            } else toast("Verification payload rejection", "error");
+        };
+
+        // =========================================
+        // END GLOBALS FIXES
+        // =========================================
+
         function injectSkeletonState(targetElementId) {
             const el = document.getElementById(targetElementId);
             if(!el) return;
@@ -426,7 +552,6 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
         }
 
         function initializeSwipeGestures() {
-            // Attaching to 'document' ensures the swipe never stops working after page re-renders
             document.addEventListener('touchstart', (e) => { 
                 touchStartX = e.changedTouches[0].screenX; 
                 touchStartY = e.changedTouches[0].screenY;
@@ -439,27 +564,20 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
             }, { passive: true });
         }
 
-            function handleSwipeGestureEvaluation(startX, endX, startY, endY) {
-            const thresholdX = 130; // Increased from 75. Makes it harder/less sensitive to trigger
-            const maxVerticalWander = 75; // Prevents triggering if user is scrolling up/down
+        function handleSwipeGestureEvaluation(startX, endX, startY, endY) {
+            const thresholdX = 130; 
+            const maxVerticalWander = 75; 
 
             const deltaX = endX - startX;
             const deltaY = endY - startY;
 
-            // Ignore the swipe if the user scrolled vertically more than horizontally
-            if (Math.abs(deltaY) > Math.abs(deltaX) || Math.abs(deltaY) > maxVerticalWander) {
-                return;
-            }
+            if (Math.abs(deltaY) > Math.abs(deltaX) || Math.abs(deltaY) > maxVerticalWander) return;
 
-            // Only trigger if the horizontal swipe is long enough
             if (Math.abs(deltaX) >= thresholdX) {
                 const currentTabPos = tabsOrderIndex.indexOf(currentTab);
-                
                 if (deltaX > 0) { 
-                    // Swiped Right -> Previous Tab
                     if (currentTabPos > 0) setTab(tabsOrderIndex[currentTabPos - 1]); 
                 } else { 
-                    // Swiped Left -> Next Tab
                     if (currentTabPos < tabsOrderIndex.length - 1) setTab(tabsOrderIndex[currentTabPos + 1]); 
                 }
             }
@@ -588,7 +706,6 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
             }, 180);
         };
 
-        // --- Persistent Notifications Engine ---
         async function fetchSystemNotifications() {
             if (!profile) return;
             const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
@@ -602,7 +719,6 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
                     if (data.createdAt && data.createdAt.toMillis() > threeDaysAgo.getTime()) {
                         notificationsMap.push({ id: doc.id, ...data, time: new Date(data.createdAt.toMillis()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
                     } else {
-                        // Cleanup old notifications
                         Core.deleteDoc(Core.doc(Core.db, "notifications", doc.id));
                     }
                 });
@@ -631,7 +747,6 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
                     text,
                     createdAt: Core.serverTimestamp()
                 });
-                // Optimistically update UI
                 notificationsMap.unshift({ id: docRef.id, type, text, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
                 const pill = document.getElementById('notify-pill');
                 if(pill) {
@@ -698,7 +813,7 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
                 const pill = document.getElementById('notify-pill');
                 if(pill) pill.classList.add('hidden');
                 toast("All notifications cleared");
-                closeCustomModal();
+                window.closeCustomModal();
             } catch(e) { console.error(e); }
         };
 
@@ -787,7 +902,7 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
         };
 
         window.openAdminPanel = () => {
-            closeCustomModal();
+            window.closeCustomModal();
             document.getElementById('admin-dashboard').classList.remove('hidden');
             window.showSection('plans-section');
         };
@@ -951,12 +1066,10 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
             } catch(e) { return 'recorded'; }
         };
 
-        // --- Live Chat Auto-Cleanup Routine ---
         window.cleanUpOldLiveChats = async (contentId) => {
             try {
                 const q = Core.query(Core.collection(Core.db, "liveChats"), Core.where("contentId", "==", contentId));
                 const snap = await Core.getDocs(q);
-                // Wiping old chats as requested to save space
                 snap.forEach(d => { Core.deleteDoc(Core.doc(Core.db, "liveChats", d.id)); });
             } catch(e) { console.error("Chat cleanup failed", e); }
         };
@@ -1045,7 +1158,7 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
 
             if (!videoId && !isDirectFile) {
                 window.open(rawUrl, '_blank');
-                closeVault();
+                window.closeVault();
                 toast("Redirecting to External Resource");
                 return;
             }
@@ -1127,7 +1240,7 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
             currentTab = t;
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`tab-${t}`)?.classList.add('active');
-            loadHome();
+            window.loadHome();
         };
 
         window.reactiveSearch = (val) => { if (val.length < 2) return; navigate('search', val); };
@@ -1136,7 +1249,7 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
 
         async function renderContent(p, q) {
             injectSkeletonState('main-content');
-            if (p === 'home') loadHome();
+            if (p === 'home') window.loadHome();
             else if (p === 'search') loadSearch(q);
             else if (p === 'profile') viewTeacher(q);
         }
@@ -1145,8 +1258,42 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
             const main = document.getElementById('main-content');
             if (!profile) return;
             updateCartPill();
+
+            // 1. Check Teacher Plan Lock
+            if (profile.role === 'teacher' && profile.planExpiresAt) {
+                if (new Date() > new Date(profile.planExpiresAt.seconds * 1000)) {
+                    main.innerHTML = `<div class="glass p-10 rounded-[3rem] text-center border border-red-500/30 fade-in shadow-2xl">
+                        <h2 class="text-3xl font-black text-red-500 mb-4 italic">Trial Expired</h2>
+                        <p class="mb-8 opacity-80 max-w-md mx-auto">Your free trial has ended. Please choose a paid plan to unlock your profile and continue managing your courses.</p>
+                        <button class="btn-brand px-10 py-4 mx-auto w-fit shadow-xl hover:scale-105 transition-transform">Upgrade Plan</button>
+                    </div>`;
+                    return;
+                }
+            }
+
+            // 2. Dynamic Institute Branding & Filtering Rules
+            let targetInstitute = null;
+            if (profile.instituteId) {
+                const iSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"), Core.where("uniqueId", "==", profile.instituteId)));
+                if (!iSnap.empty) {
+                    targetInstitute = iSnap.docs[0].data();
+                    
+                    // Update Branding
+                    const navBlock = document.getElementById('nav-branding-block');
+                    if (navBlock) {
+                        navBlock.innerHTML = `
+                            <img src="${targetInstitute.logo || 'https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg'}" class="h-8 md:h-10 rounded-xl group-hover:scale-110 transition-transform duration-300 shadow-md border border-white/10 object-cover bg-black">
+                            <h2 class="text-xl md:text-2xl font-black italic tracking-tighter transition-colors group-hover:text-brandBlue">${targetInstitute.name}</h2>
+                        `;
+                    }
+
+                    // Inherit rules for teachers
+                    if (profile.role === 'teacher') {
+                        profile.privacyMode = targetInstitute.privacyMode || profile.privacyMode;
+                    }
+                }
+            }
             
-            // Adjust Bottom Nav Text dynamically per role
             if (profile.role === 'teacher' || profile.role === 'super_admin') {
                 document.getElementById('tab-home').innerText = 'Analytics';
                 document.getElementById('tab-content').innerText = 'Dashboard';
@@ -1169,7 +1316,6 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
                 const coursesSorted = courseSnap.docs.sort((a,b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
 
                 if (currentTab === 'home') {
-                    // Analytics Tab with Centered Content and Bios
                     main.innerHTML = `
                     <div class="fade-in space-y-8">
                         <div class="glass p-8 rounded-[3rem] shadow-2xl flex flex-col md:flex-row items-center justify-center text-center md:text-left gap-8 border-brandBlue/30 hover:shadow-brandBlue/10 transition-shadow">
@@ -1211,7 +1357,6 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
                         </div>
                     </div>`;
                } else if (currentTab === 'content') {
-                    // Dashboard/Control Panel
                     main.innerHTML = `
                     <div class="flex flex-col gap-10 fade-in">
                         <div class="space-y-6 w-full max-w-4xl mx-auto">
@@ -1257,7 +1402,18 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
                 if (currentTab === 'home') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Suggested Syllabus</h3><div id="suggested-feed" class="grid md:grid-cols-2 gap-6 mb-12"></div><h3 class="text-2xl font-black italic mb-6 border-t border-[var(--border-color)] pt-8">Subscribed Feed Streams</h3><div id="feed" class="space-y-6"></div>`;
                     
-                    const allContent = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(40)));
+                    let contentQueryArgs = [Core.collection(Core.db, "content"), Core.limit(40)];
+                    
+                    // Filter visibility for students inside private institutes
+                    if (targetInstitute && targetInstitute.privacyMode === 'private') {
+                         const validTeachersSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"), Core.where("uniqueId", "==", targetInstitute.uniqueId)));
+                         const validTeacherIds = validTeachersSnap.docs.map(d => d.data().teacherId);
+                         if(validTeacherIds.length > 0) {
+                             contentQueryArgs = [Core.collection(Core.db, "content"), Core.where("tId", "in", validTeacherIds), Core.limit(40)];
+                         }
+                    }
+
+                    const allContent = await Core.getDocs(Core.query(...contentQueryArgs));
                     const allContentSorted = allContent.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
                     
                     renderFeed(allContentSorted.slice(0,6), false, 'suggested-feed');
@@ -1273,12 +1429,26 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
                     loadGroups();
                 } else if (currentTab === 'courses') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Marketplace Courses</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6"></div>`;
-                    const coSnap = await Core.getDocs(Core.collection(Core.db, "courses"));
+                    let courseQueryArgs = [Core.collection(Core.db, "courses")];
+                    if (targetInstitute && targetInstitute.privacyMode === 'private') {
+                         const validTeachersSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"), Core.where("uniqueId", "==", targetInstitute.uniqueId)));
+                         const validTeacherIds = validTeachersSnap.docs.map(d => d.data().teacherId);
+                         if(validTeacherIds.length > 0) courseQueryArgs = [Core.collection(Core.db, "courses"), Core.where("teacherId", "in", validTeacherIds)];
+                    }
+                    const coSnap = await Core.getDocs(Core.query(...courseQueryArgs));
                     const coSorted = coSnap.docs.sort((a,b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
                     renderCourses(coSorted, false);
                 } else if (currentTab === 'content') {
                     box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">All Course Materials</h3><div id="feed" class="space-y-4"></div>`;
-                    const allContentGlobal = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.limit(40)));
+                    
+                    let contentQueryArgs = [Core.collection(Core.db, "content"), Core.limit(40)];
+                    if (targetInstitute && targetInstitute.privacyMode === 'private') {
+                         const validTeachersSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"), Core.where("uniqueId", "==", targetInstitute.uniqueId)));
+                         const validTeacherIds = validTeachersSnap.docs.map(d => d.data().teacherId);
+                         if(validTeacherIds.length > 0) contentQueryArgs = [Core.collection(Core.db, "content"), Core.where("tId", "in", validTeacherIds), Core.limit(40)];
+                    }
+                    
+                    const allContentGlobal = await Core.getDocs(Core.query(...contentQueryArgs));
                     const allContentGlobalSorted = allContentGlobal.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
                     renderFeed(allContentGlobalSorted, false);
                 }
@@ -1312,7 +1482,7 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
                 pushSystemNotification("FOLLOWER EVICTED", `Roster change: A subscriber was disconnected.`);
                 toast("Follower removed and stream blacklisted");
                 manageFollowersRoster(teacherId);
-                loadHome();
+                window.loadHome();
             }
         };
 
@@ -1365,7 +1535,7 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
             localStorage.setItem('oc_cart_manifest', JSON.stringify(cart));
             updateCartPill();
             document.getElementById('custom-modal').classList.add('hidden');
-            loadHome();
+            window.loadHome();
         };
 
         function updateCartPill() {
@@ -1421,7 +1591,7 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
 
         window.loadSearch = async (q) => {
             const main = document.getElementById('main-content');
-            if (!q) return loadHome();
+            if (!q) return window.loadHome();
             injectSkeletonState('main-content');
             const [uS, cS, gS] = await Promise.all([Core.getDocs(Core.collection(Core.db, "users")), Core.getDocs(Core.collection(Core.db, "content")), Core.getDocs(Core.collection(Core.db, "groups"))]);
             const teachers = uS.docs.filter(d => d.data().role === 'teacher' && (d.data().name.toLowerCase().includes(q.toLowerCase()) || d.data().teacherId === q));
@@ -1468,33 +1638,13 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
             switchTeacherView('requests'); 
         };
 
-        window.handleAuth = async () => {
-            const e = document.getElementById('auth-email').value, p = document.getElementById('auth-pass').value;
-            if (isSignup) {
-                tempUser = { e, p, n: document.getElementById('reg-name').value, r: document.getElementById('reg-role').value };
-                otpCode = Math.floor(100000 + Math.random() * 900000);
-                try { await Core.sendOTP(e, otpCode); document.getElementById('verify-note').innerText = `OTP sent to ${e}`; showScreen('verify-screen'); } catch(err) { toast("Relay network anomaly", "error"); }
-            } else { try { await Core.signInWithEmailAndPassword(Core.auth, e, p); } catch (err) { toast(err.message, "error"); } }
-        };
-
-        window.checkOTP = async () => {
-            if (document.getElementById('otp-input').value == otpCode) {
-                try {
-                    const { e, p, n, r } = tempUser;
-                    const cred = await Core.createUserWithEmailAndPassword(Core.auth, e, p);
-                    await Core.setDoc(Core.doc(Core.db, "users", cred.user.uid), { name: n, role: r, teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), email: e, subs: [], photo: "", joined: new Date().toLocaleDateString() });
-                    location.reload();
-                } catch(err) { toast(err.message, "error"); }
-            } else toast("Verification payload rejection", "error");
-        };
-
         window.toggleAuth = () => { 
             isSignup = !isSignup; 
             const fields = document.getElementById('signup-fields');
             fields.classList.toggle('hidden'); 
             if(!fields.classList.contains('hidden')) { fields.classList.remove('fade-in'); void fields.offsetWidth; fields.classList.add('fade-in'); }
             document.getElementById('primary-auth-btn').innerText = isSignup ? "Verify Handshake" : "Sign In"; 
-            document.getElementById('toggle-auth-btn').innerText = isSignup ? "Return to active session" : "Initialize System Profile"; 
+            document.getElementById('toggle-auth-btn').innerText = isSignup ? "Return to active session" : "Create Profile"; 
         };
         
         window.handleGoogle = () => Core.signInWithPopup(Core.auth, Core.provider);
@@ -1514,7 +1664,7 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
             const n = document.getElementById('group-name').value; if (!n) return toast("Label missing");
             const c = "OC-" + Math.random().toString(36).substring(2, 8).toUpperCase();
             await Core.addDoc(Core.collection(Core.db, "groups"), { name: n, type: document.getElementById('group-type').value, code: c, teacherId: profile.teacherId, teacherName: profile.name, members: [Core.auth.currentUser.uid], pending: [], createdAt: Core.serverTimestamp() });
-            toast("Hub initiated"); loadHome();
+            toast("Hub initiated"); window.loadHome();
         };
 
         window.launchCourse = async () => {
@@ -1531,7 +1681,7 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
             await Core.addDoc(Core.collection(Core.db, "courses"), { 
                 title: t, description: d, thumbnail: window.getSmartPreview(vu[0]), playlist, price: p, teacherId: profile.teacherId, teacherName: profile.name, groupId: gRef.id, createdAt: Core.serverTimestamp() 
             });
-            toast("Course matrix active"); loadHome();
+            toast("Course matrix active"); window.loadHome();
         };
 
         window.joinGroup = async () => {
@@ -1547,7 +1697,7 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
                 await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { pending: Core.arrayUnion({ uid: Core.auth.currentUser.uid, name: profile.name }) });
                 pushSystemNotification("PENDING", `Access verification required for "${d.name}".`);
             }
-            toast("Access requested"); loadHome();
+            toast("Access requested"); window.loadHome();
         };
 
         window.openResource = async (id, url, title) => {
@@ -1621,7 +1771,7 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
             setTab('groups');
         };
 
-        window.delC = async (id) => { if(confirm("Confirm structural purge?")) { await Core.deleteDoc(Core.doc(Core.db,"courses",id)); document.getElementById('custom-modal').classList.add('hidden'); loadHome(); } };
+        window.delC = async (id) => { if(confirm("Confirm structural purge?")) { await Core.deleteDoc(Core.doc(Core.db,"courses",id)); document.getElementById('custom-modal').classList.add('hidden'); window.loadHome(); } };
 
         function renderFeed(docs, isT, target = 'feed') { 
             const container = document.getElementById(target) || document.getElementById('tab-display');
@@ -1656,9 +1806,9 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
             return `<div class="glass p-5 md:p-6 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center group shadow-md hover:shadow-xl transition-all gap-6 border border-[var(--border-color)] hover:border-brandBlue/30 hover:scale-[1.01] fade-in"><div class="flex items-center gap-5 md:gap-6 w-full md:w-auto"><div class="relative flex-shrink-0 self-start md:self-center overflow-hidden rounded-2xl border border-[var(--border-color)] shadow-lg"><img src="${window.getSmartPreview(i.url)}" class="w-32 h-20 md:w-36 md:h-24 object-cover bg-brandBlue group-hover:scale-110 transition-transform duration-500">${window.getFileBadge(i.url)}</div><div class="overflow-hidden flex flex-col justify-center"><h4 class="font-black text-lg md:text-xl italic truncate max-w-[200px] md:max-w-md pr-4 text-[var(--text-main)] drop-shadow-md mb-1">${i.title}</h4> ${liveStatusLabel}<p class="text-[9px] opacity-50 uppercase font-bold tracking-widest mt-1 pr-4 font-mono">${i.tName} • ${i.views || 0} Views</p></div></div><div class="flex gap-2 w-full md:w-auto justify-end"><button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand px-10 py-3.5 rounded-2xl font-black text-[10px] uppercase shadow-md hover:shadow-brandBlue/40">Access Core</button>${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-[var(--input-bg)] text-[var(--text-main)] rounded-xl hover:text-brandBlue hover:scale-110 transition-all border border-[var(--border-color)] shadow-sm">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-[var(--input-bg)] text-[var(--text-main)] rounded-xl hover:text-red-500 hover:bg-red-500/10 hover:scale-110 transition-all border border-[var(--border-color)] shadow-sm">🗑</button>` : ''}</div></div>`;
         }
         
-        window.delR = async (id) => { if(confirm("Confirm asset removal?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); loadHome(); } };
+        window.delR = async (id) => { if(confirm("Confirm asset removal?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); window.loadHome(); } };
         window.editR = (id,t,u) => { document.getElementById('modal-content').innerHTML = `<h3 class="text-xl font-black mb-6 italic fade-in">Edit Resource</h3><input id="ed-t" value="${t}" class="input-field mb-4 text-sm transition-colors"><input id="ed-u" value="${u}" class="input-field mb-6 text-sm transition-colors"><button onclick="saveR('${id}')" class="w-full py-4 btn-brand text-xs shadow-md hover:scale-[1.02] transition-transform">Save Changes</button>`; document.getElementById('custom-modal').classList.remove('hidden'); };
-        window.saveR = async (id) => { await Core.updateDoc(Core.doc(Core.db,"content",id), {title:document.getElementById('ed-t').value, url:document.getElementById('ed-u').value}); document.getElementById('custom-modal').classList.add('hidden'); loadHome(); };
+        window.saveR = async (id) => { await Core.updateDoc(Core.doc(Core.db,"content",id), {title:document.getElementById('ed-t').value, url:document.getElementById('ed-u').value}); document.getElementById('custom-modal').classList.add('hidden'); window.loadHome(); };
 
         window.publishContent = async () => {
             const t = document.getElementById('up-t').value, u = document.getElementById('up-u').value, y = document.getElementById('up-y').value;
@@ -1679,7 +1829,7 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
             } else {
                 pushSystemNotification("MATERIAL", `Asset sync: "${t}" published.`);
             }
-            toast("Resource published successfully"); loadHome();
+            toast("Resource published successfully"); window.loadHome();
         };
 
         window.openGroupChat = async (id, name) => {
@@ -1825,7 +1975,7 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
         Core.onAuthStateChanged(Core.auth, async (user) => {
             if (user) {
                 const docSnap = await Core.getDoc(Core.doc(Core.db, "users", user.uid));
-                if (!docSnap.exists()) showScreen('onboarding-screen');
+                if (!docSnap.exists()) window.showScreen('onboarding-screen');
                 else {
                     profile = docSnap.data();
                     const pic = document.getElementById('nav-profile-pic');
@@ -1835,11 +1985,11 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
                     }
                     
                     fetchSystemNotifications();
-                    showScreen('dashboard'); navigate(window.location.hash.substring(1) || 'home');
+                    window.showScreen('dashboard'); navigate(window.location.hash.substring(1) || 'home');
                     listenSystemEvents(); 
                     initializeSwipeGestures();
                 }
-            } else showScreen('auth-screen');
+            } else window.showScreen('auth-screen');
         });
 
         function listenSystemEvents() {
@@ -1923,29 +2073,6 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
             if(videoPlayer) { try { videoPlayer.destroy(); } catch(e){} videoPlayer = null; } 
         };
         
-        window.showSection = (id) => {
-            document.querySelectorAll('.admin-section').forEach(el => el.classList.add('hidden'));
-            const sec = document.getElementById(id);
-            sec.classList.remove('hidden');
-            sec.classList.remove('fade-in'); void sec.offsetWidth; sec.classList.add('fade-in');
-        };
-        
-        window.closeAdminDashboard = () => {
-            document.getElementById('admin-dashboard').classList.add('hidden');
-        };
-        
-        window.addPlan = () => { toast("Plan template injected successfully"); };
-        window.addInstitute = () => { toast("Institute registered in core ledger"); };
-        window.addPayment = () => { toast("Payment logged correctly"); };
-        window.addSubscription = () => { toast("Subscription granted successfully"); };
-
-        function showScreen(id) { 
-            ['auth-screen', 'verify-screen', 'onboarding-screen', 'dashboard'].forEach(s => document.getElementById(s).classList.add('hidden')); 
-            const s = document.getElementById(id);
-            s.classList.remove('hidden'); 
-            s.classList.remove('fade-in'); void s.offsetWidth; s.classList.add('fade-in');
-        }
-        
         function toast(m, type = "s") { const b = document.getElementById('toast-box'), d = document.createElement('div'); d.className = 'toast-pill'; if (type === "error") d.style.borderColor = "#ff4444"; d.innerText = m; b.appendChild(d); setTimeout(() => d.remove(), 2500); }
         if (localStorage.getItem('oc_theme') === 'true') document.documentElement.classList.add('light');
 
@@ -1969,8 +2096,8 @@ html, body, .glass, .input-field, div, p, span, h1, h2, h3, h4, button, input, s
                 return `<div class="glass p-5 md:p-6 rounded-[2rem] flex justify-between items-center group border border-[var(--border-color)] hover:border-brandBlue/30 shadow-sm hover:shadow-md transition-all hover:scale-[1.01] fade-in"><div><span class="text-[8px] text-brandBlue font-black uppercase tracking-widest">${g.type}</span><div class="flex items-center gap-3 mt-0.5"><h3 class="text-xl md:text-2xl font-black truncate max-w-[150px] md:max-w-xs text-[var(--text-main)] drop-shadow-sm group-hover:text-brandBlue transition-colors">${g.name}</h3><span id="badge-${d.id}" class="${unreadCount===0?'hidden':''} bg-brandBlue text-white text-[9px] font-extrabold px-2 py-0.5 rounded-lg shadow-md border border-white/10">${unreadCount}</span></div><p class="text-[10px] opacity-40 font-mono mt-1">${g.code}</p></div><div class="flex gap-2"><button onclick="openGroupChat('${d.id}', '${g.name}')" class="btn-brand px-5 md:px-6 py-3 text-[10px] shadow-md hover:shadow-brandBlue/30 hover:scale-105">Manage Pool</button><button onclick="delG('${d.id}')" class="bg-red-500/10 text-red-500 p-3 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm border border-red-500/20 hover:scale-110">🗑</button></div></div>`;
             }).join('')}</div>`;
         }
-        window.delG = async (id) => { if(confirm("Confirm asset group dissolution?")) { await Core.deleteDoc(Core.doc(Core.db, "groups", id)); loadHome(); } };
-        window.onclick = (e) => { if (e.target === document.getElementById('custom-modal')) closeCustomModal(); };
+        window.delG = async (id) => { if(confirm("Confirm asset group dissolution?")) { await Core.deleteDoc(Core.doc(Core.db, "groups", id)); window.loadHome(); } };
+        window.onclick = (e) => { if (e.target === document.getElementById('custom-modal')) window.closeCustomModal(); };
     </script>
 </body>
 </html>
