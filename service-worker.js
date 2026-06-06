@@ -1,4 +1,4 @@
-const CACHE_NAME = 'openclass-v4';
+const CACHE_NAME = 'openclass-v10';
 const ASSETS = [
   '/',
   '/index.html',
