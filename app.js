@@ -33,14 +33,14 @@ import {
 import { firebaseConfig, emailConfig } from "./config.js";
 
 // =========================================
-// INITIALIZATION & PERSISTENCE
+// INITIALIZATION
 // =========================================
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// Enable offline persistence for faster loads
+// Enable offline persistence
 enableIndexedDbPersistence(db).catch((err) => {
     if (err.code == 'failed-precondition') console.log("Persistence failed: Multiple tabs open");
     else if (err.code == 'unimplemented') console.log("Persistence not supported");
@@ -50,8 +50,9 @@ window.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const path = urlParams.get('p');
     if (path) {
-        if (typeof window.renderContent === 'function') {
-            window.renderContent(path);
+        // If the app was opened via 404 redirect, navigate to the correct page
+        if (typeof renderContent === 'function') {
+            renderContent(path);
         }
     }
 });
@@ -67,7 +68,7 @@ export {
 };
 
 // =========================================
-// GLOBAL UTILITY FUNCTIONS
+// UTILITY FUNCTIONS
 // =========================================
 
 export function getThumbnail(url) {
@@ -87,46 +88,18 @@ export async function sendOTP(email, code) {
     return await emailjs.send(emailConfig.serviceID, emailConfig.templateID, { to_email: email, otp: code });
 }
 
-window.copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
-        if(window.toast) window.toast("Copied to clipboard!", "success");
-    }).catch(err => {
-        console.error('Failed to copy: ', err);
-    });
-};
+// =========================================
+// ADMIN PANEL CORE VARIABLES
+// =========================================
 
-window.showIdPopup = (title, uniqueId) => {
-    const modal = document.getElementById('custom-modal');
-    const content = document.getElementById('modal-content');
-    if(!modal || !content) return alert(`${title}\nID: ${uniqueId}`);
-    
-    modal.classList.remove('hidden');
-    content.innerHTML = `
-        <div class="text-center fade-in space-y-6">
-            <div class="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto text-4xl mb-4 shadow-[0_0_30px_rgba(34,197,94,0.3)]">✓</div>
-            <h3 class="text-3xl font-black italic tracking-tight text-white">${title}</h3>
-            <p class="text-xs opacity-60 uppercase tracking-widest font-bold">Secure Access Node Generated</p>
-            
-            <div class="bg-zinc-950 border border-white/10 p-6 rounded-3xl mt-6 relative group flex flex-col items-center justify-center gap-4">
-                <p class="text-3xl font-mono text-brandOrange tracking-widest font-black select-all" id="generated-id-text">${uniqueId}</p>
-                <button onclick="copyToClipboard('${uniqueId}')" class="bg-brandOrange/10 text-brandOrange hover:bg-brandOrange hover:text-white border border-brandOrange/30 transition-all px-6 py-3 rounded-xl text-[10px] uppercase font-black tracking-widest flex items-center gap-2 shadow-sm">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                    Copy to Clipboard
-                </button>
-            </div>
-            
-            <button onclick="closeCustomModal()" class="w-full py-4 mt-4 bg-[var(--input-bg)] border border-[var(--border-color)] text-[var(--text-main)] hover:bg-[var(--border-color)] rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-md">Acknowledge</button>
-        </div>
-    `;
-};
-
+const adminBtn = document.getElementById('admin-panel-btn');
+const adminDashboard = document.getElementById('admin-dashboard');
 
 // =========================================
 // ADMIN UI CONTROLS
 // =========================================
 
 window.closeAdminDashboard = () => {
-    const adminDashboard = document.getElementById('admin-dashboard');
     if (adminDashboard) adminDashboard.classList.add('hidden');
 };
 
@@ -138,13 +111,14 @@ window.showSection = (sectionId) => {
     const activeSection = document.getElementById(sectionId);
     if (activeSection) {
         activeSection.classList.remove('hidden');
-        void activeSection.offsetWidth; // Trigger reflow
+        // Force reflow for animation
+        void activeSection.offsetWidth;
         activeSection.classList.add('fade-in');
     }
 };
 
 // =========================================
-// PLAN MANAGEMENT
+// PLAN MANAGEMENT (DYNAMIC)
 // =========================================
 
 window.handleAdminPlanUI = (type) => {
@@ -164,7 +138,7 @@ window.handleAdminPlanUI = (type) => {
     }
 };
 
-// Initialize default plan view
+// Initialize default plan view on load
 setTimeout(() => {
     if (document.getElementById('plan-type-select')) {
         window.handleAdminPlanUI('free_trial');
@@ -178,12 +152,12 @@ window.processPlanSave = async () => {
     try {
         if (type === 'free_trial') {
             const days = Number(document.getElementById('admin-plan-days').value);
-            if (!days) return window.toast("Please enter duration", "error");
+            if (!days) return alert("Please enter duration");
             data = { name: "Free Trial", duration: days, price: 0 };
             await setDoc(doc(db, "plans", "free_trial"), data);
         } else if (type === 'one_year') {
             const price = Number(document.getElementById('admin-plan-price').value);
-            if (!price && price !== 0) return window.toast("Please enter a price", "error");
+            if (!price && price !== 0) return alert("Please enter a price");
             data = { name: "One Year Plan", duration: 365, price: price };
             await setDoc(doc(db, "plans", "yearly"), data);
         } else {
@@ -191,18 +165,18 @@ window.processPlanSave = async () => {
             const days = Number(document.getElementById('admin-plan-days').value);
             const price = Number(document.getElementById('admin-plan-price').value);
             
-            if (!name || !days) return window.toast("Please enter name and duration", "error");
+            if (!name || !days) return alert("Please enter name and duration");
             
             const id = "plan_" + Date.now();
             data = { name, duration: days, price };
             await setDoc(doc(db, "plans", id), data);
         }
         
-        if(window.toast) window.toast("Plan Configuration Saved", "success");
-        window.loadPlans();
+        alert("Plan Configuration Saved Successfully");
+        loadPlans();
     } catch (e) {
         console.error("Error saving plan:", e);
-        if(window.toast) window.toast("Failed to save plan.", "error");
+        alert("Failed to save plan.");
     }
 };
 
@@ -226,9 +200,9 @@ window.loadPlans = async () => {
             <div class="bg-zinc-900 border border-white/10 p-4 rounded-xl mb-3 flex justify-between items-center hover:border-brandBlue/30 transition-colors">
                 <div>
                     <h3 class="text-sm font-black text-brandBlue uppercase tracking-widest">${data.name}</h3>
-                    <p class="text-xs opacity-70 mt-1 font-mono">Duration: ${data.duration} Days | Price: ₹${data.price}</p>
+                    <p class="text-xs opacity-70 mt-1">Duration: ${data.duration} Days | Price: ₹${data.price}</p>
                 </div>
-                <span class="text-[9px] font-mono bg-white/5 text-zinc-400 px-2 py-1 rounded border border-white/10">${docSnap.id}</span>
+                <span class="text-[9px] font-mono bg-white/5 px-2 py-1 rounded border border-white/10">${docSnap.id}</span>
             </div>`;
         });
     } catch (e) {
@@ -241,7 +215,30 @@ window.loadPlans = async () => {
 // INSTITUTE MANAGEMENT (ADVANCED)
 // =========================================
 
-let cachedInstitutes = [];
+window._institutesData = [];
+window._instSortBy = 'newest';
+window._instSearchQ = '';
+
+window.showInstituteSuccessPopup = (name, uniqueId) => {
+    const popup = document.createElement('div');
+    popup.id = "inst-success-popup";
+    popup.className = "fixed inset-0 z-[99999] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 fade-in";
+    popup.innerHTML = `
+        <div class="bg-zinc-950 border border-purple-500/30 p-8 md:p-10 rounded-[2.5rem] max-w-sm w-full text-center shadow-2xl relative">
+            <div class="w-20 h-20 bg-purple-500/20 text-purple-400 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 border border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.4)] animate-pulse">✓</div>
+            <h3 class="text-2xl font-black italic text-white mb-2">${name} Provisioned</h3>
+            <p class="text-xs opacity-60 mb-8 leading-relaxed">The institute node has been successfully verified. Secure the Unique Access ID below for member onboarding.</p>
+            <div class="bg-black border border-white/10 p-4 rounded-2xl flex items-center justify-between mb-8 group hover:border-purple-500/50 transition-colors shadow-inner">
+                <span class="font-mono text-purple-400 font-black tracking-widest text-xl drop-shadow-md">${uniqueId}</span>
+                <button onclick="navigator.clipboard.writeText('${uniqueId}'); this.innerText='Copied!'; setTimeout(()=>this.innerText='Copy ID', 2000);" class="bg-white/10 hover:bg-purple-600 text-white px-3 py-2 text-[10px] uppercase font-black tracking-widest rounded-xl transition-all group-hover:scale-105 shadow-sm">
+                    Copy ID
+                </button>
+            </div>
+            <button onclick="document.getElementById('inst-success-popup').remove()" class="w-full py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl transition-colors">Close Window</button>
+        </div>
+    `;
+    document.body.appendChild(popup);
+};
 
 window.processInstituteSave = async () => {
     const teacherId = document.getElementById('inst-teacher-id').value.trim();
@@ -250,10 +247,14 @@ window.processInstituteSave = async () => {
     const privacy = document.getElementById('inst-privacy').value;
     const start = document.getElementById('inst-start').value;
     const end = document.getElementById('inst-end').value;
-    const autoRenewal = document.getElementById('inst-auto-renew') ? document.getElementById('inst-auto-renew').checked : false;
+    
+    // Safety check if the element exists in HTML
+    const autoRenewCheckbox = document.getElementById('inst-auto-renew');
+    const autoRenew = autoRenewCheckbox ? autoRenewCheckbox.checked : false;
 
-    if (!name || !teacherId) return window.toast("Name and Teacher ID required.", "error");
+    if (!name || !teacherId) return alert("Crucial fields (Name, Teacher ID) are missing.");
 
+    // Generate Unique Institute ID
     const uniqueId = "INST-" + Math.random().toString(36).substring(2, 8).toUpperCase();
 
     try {
@@ -265,182 +266,180 @@ window.processInstituteSave = async () => {
             privacyMode: privacy,
             planStart: start, 
             planEnd: end, 
-            autoRenewal,
+            autoRenew,
             status: 'active',
             createdAt: serverTimestamp()
         });
 
-        window.showIdPopup("Institute Registered Successfully!", uniqueId);
+        window.showInstituteSuccessPopup(name, uniqueId);
         
         // Clear fields
         document.getElementById('inst-teacher-id').value = '';
         document.getElementById('inst-name').value = '';
         document.getElementById('inst-logo').value = '';
+        document.getElementById('inst-start').value = '';
+        document.getElementById('inst-end').value = '';
+        if(autoRenewCheckbox) autoRenewCheckbox.checked = false;
         
-        window.loadInstitutes();
+        loadInstitutes();
     } catch (e) {
         console.error("Error registering institute:", e);
-        if(window.toast) window.toast("Failed to register node.", "error");
+        alert("Failed to register the institute node.");
+    }
+};
+
+window.processInstituteUpdate = async (id) => {
+    const teacherId = document.getElementById('inst-teacher-id').value.trim();
+    const name = document.getElementById('inst-name').value.trim();
+    const logo = document.getElementById('inst-logo').value.trim();
+    const privacy = document.getElementById('inst-privacy').value;
+    const start = document.getElementById('inst-start').value;
+    const end = document.getElementById('inst-end').value;
+    
+    const autoRenewCheckbox = document.getElementById('inst-auto-renew');
+    const autoRenew = autoRenewCheckbox ? autoRenewCheckbox.checked : false;
+
+    if (!name || !teacherId) return alert("Crucial fields (Name, Teacher ID) are missing.");
+
+    try {
+        await updateDoc(doc(db, "institutes", id), {
+            teacherId, name, logo, privacyMode: privacy, planStart: start, planEnd: end, autoRenew
+        });
+        
+        alert("Institute Node Configuration Updated.");
+        
+        // Reset fields
+        document.getElementById('inst-teacher-id').value = '';
+        document.getElementById('inst-name').value = '';
+        document.getElementById('inst-logo').value = '';
+        document.getElementById('inst-start').value = '';
+        document.getElementById('inst-end').value = '';
+        if(autoRenewCheckbox) autoRenewCheckbox.checked = false;
+        
+        const btn = document.getElementById('inst-action-btn');
+        if(btn) {
+            btn.innerText = "Generate & Register Node";
+            btn.onclick = window.processInstituteSave;
+            btn.classList.replace('bg-blue-600', 'bg-purple-600');
+            btn.classList.replace('hover:bg-blue-700', 'hover:bg-purple-700');
+        }
+        
+        window.loadInstitutes();
+    } catch(e) { 
+        console.error(e); 
+        alert("Failed to update matrix."); 
+    }
+};
+
+window.editInstitute = async (id) => {
+    const inst = window._institutesData.find(i => i.id === id);
+    if(!inst) return;
+    
+    document.getElementById('inst-teacher-id').value = inst.teacherId || '';
+    document.getElementById('inst-name').value = inst.name || '';
+    document.getElementById('inst-logo').value = inst.logo || '';
+    document.getElementById('inst-privacy').value = inst.privacyMode || 'public';
+    document.getElementById('inst-start').value = inst.planStart || '';
+    document.getElementById('inst-end').value = inst.planEnd || '';
+    
+    const ar = document.getElementById('inst-auto-renew');
+    if(ar) ar.checked = inst.autoRenew || false;
+
+    const btn = document.getElementById('inst-action-btn');
+    if(btn) {
+        btn.innerText = "Update Configuration Node";
+        btn.onclick = () => window.processInstituteUpdate(id);
+        btn.classList.replace('bg-purple-600', 'bg-blue-600');
+        btn.classList.replace('hover:bg-purple-700', 'hover:bg-blue-700');
+    }
+    
+    document.getElementById('admin-dashboard').querySelector('.overflow-y-auto').scrollTop = 0;
+};
+
+window.deleteInstitute = async (id) => {
+    if(!confirm("Are you entirely sure you want to completely remove this institute node? This action is irreversible and purges all access links.")) return;
+    try {
+        await deleteDoc(doc(db, "institutes", id));
+        window.loadInstitutes();
+    } catch(e) { 
+        console.error(e); 
+        alert("System error removing institute."); 
     }
 };
 
 window.loadInstitutes = async () => {
     const container = document.getElementById('institutes-list');
     if (!container) return;
-    
-    // Inject search and sort controls if not present
-    if (!document.getElementById('inst-search-bar')) {
-        const controlsHTML = `
-            <div class="flex gap-2 mb-4">
-                <input type="text" id="inst-search-bar" onkeyup="filterInstitutes()" placeholder="Search Name or ID..." class="input-field text-xs p-3 flex-1 bg-zinc-900">
-                <select id="inst-sort-select" onchange="filterInstitutes()" class="input-field text-xs p-3 w-32 bg-zinc-900">
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="name">Name (A-Z)</option>
-                </select>
-            </div>
-            <div id="institutes-render-target" class="space-y-3"></div>
-        `;
-        container.innerHTML = controlsHTML;
-    }
-
-    const target = document.getElementById('institutes-render-target');
-    target.innerHTML = "<p class='opacity-50 text-xs py-4 text-center animate-pulse'>Fetching institute directory...</p>";
+    container.innerHTML = "<p class='opacity-50 text-xs py-2'>Fetching institute directory...</p>";
 
     try {
         const snap = await getDocs(collection(db, "institutes"));
-        cachedInstitutes = snap.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
-        window.filterInstitutes(); // Render via filter to respect current sort
+        window._institutesData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        window.renderInstitutesList();
     } catch (e) {
         console.error("Error loading institutes:", e);
-        target.innerHTML = "<p class='text-red-500 text-xs py-2'>Failed to load institutes.</p>";
+        container.innerHTML = "<p class='text-red-500 text-xs py-2'>Failed to load institutes.</p>";
     }
 };
 
-window.filterInstitutes = () => {
-    const query = (document.getElementById('inst-search-bar')?.value || '').toLowerCase();
-    const sortVal = document.getElementById('inst-sort-select')?.value || 'newest';
-    const target = document.getElementById('institutes-render-target');
-    
-    if(!target) return;
+window.renderInstitutesList = () => {
+    const container = document.getElementById('institutes-list');
+    if (!container) return;
 
-    let filtered = cachedInstitutes.filter(inst => 
-        (inst.name && inst.name.toLowerCase().includes(query)) || 
-        (inst.uniqueId && inst.uniqueId.toLowerCase().includes(query)) ||
-        (inst.teacherId && inst.teacherId.toLowerCase().includes(query))
-    );
-
-    if (sortVal === 'newest') {
-        filtered.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-    } else if (sortVal === 'oldest') {
-        filtered.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
-    } else if (sortVal === 'name') {
-        filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    let filtered = window._institutesData;
+    if(window._instSearchQ) {
+        const q = window._instSearchQ.toLowerCase();
+        filtered = filtered.filter(i => i.name.toLowerCase().includes(q) || i.uniqueId.toLowerCase().includes(q));
     }
+
+    if(window._instSortBy === 'newest') {
+        filtered.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+    } else if (window._instSortBy === 'oldest') {
+        filtered.sort((a, b) => (a.createdAt?.toMillis() || 0) - (b.createdAt?.toMillis() || 0));
+    } else if (window._instSortBy === 'name') {
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    let html = `
+        <div class="flex flex-col md:flex-row gap-3 mb-6 bg-white/5 p-4 rounded-2xl border border-white/5 shadow-inner">
+            <input type="text" placeholder="Search by name or unique ID..." class="bg-zinc-900 border border-white/10 text-white text-xs p-3 rounded-xl flex-1 outline-none focus:border-purple-500 transition-colors shadow-sm" oninput="window._instSearchQ=this.value; window.renderInstitutesList()">
+            <select class="bg-zinc-900 border border-white/10 text-white text-xs p-3 rounded-xl outline-none focus:border-purple-500 transition-colors shadow-sm cursor-pointer" onchange="window._instSortBy=this.value; window.renderInstitutesList()">
+                <option value="newest">Sort by: Newest First</option>
+                <option value="oldest">Sort by: Oldest First</option>
+                <option value="name">Sort by: A-Z Name</option>
+            </select>
+        </div>
+        <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar pb-10">
+    `;
 
     if (filtered.length === 0) {
-        target.innerHTML = "<p class='opacity-50 text-xs py-4 text-center'>No matching institutes found.</p>";
-        return;
-    }
+        html += `<div class="bg-zinc-900 border border-white/10 p-10 rounded-2xl text-center"><p class='opacity-30 uppercase font-black tracking-widest text-xs'>No institutes match parameters.</p></div>`;
+    } else {
+        filtered.forEach((data) => {
+            const autoRenewBadge = data.autoRenew ? `<span class="bg-green-500/20 text-green-400 text-[8px] px-2 py-0.5 rounded font-bold border border-green-500/20 shadow-sm ml-2">AUTO-RENEW ON</span>` : `<span class="bg-red-500/20 text-red-400 text-[8px] px-2 py-0.5 rounded font-bold border border-red-500/20 shadow-sm ml-2">AUTO-RENEW OFF</span>`;
 
-    target.innerHTML = filtered.map(data => `
-        <div class="bg-zinc-900 border border-white/10 p-4 rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:border-purple-500/30 transition-all shadow-sm">
-            <div class="flex items-center gap-4 w-full md:w-auto">
-                <img src="${data.logo || 'https://ui-avatars.com/api/?name='+encodeURIComponent(data.name)+'&background=a855f7&color=fff'}" class="w-12 h-12 rounded-xl object-cover border border-white/20 shrink-0 shadow-sm bg-black">
-                <div class="overflow-hidden">
-                    <h3 class="text-sm font-black text-purple-400 truncate">${data.name}</h3>
-                    <p class="text-[9px] opacity-70 mt-1 uppercase tracking-widest font-mono">
-                        <span class="text-white font-bold">${data.uniqueId}</span> | 
-                        OWNER: ${data.teacherId}
-                    </p>
-                    <div class="flex gap-2 mt-1.5">
-                        <span class="text-[8px] px-2 py-0.5 rounded-md ${data.privacyMode === 'private' ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'} uppercase font-black tracking-widest border border-white/5">${data.privacyMode}</span>
-                        ${data.autoRenewal ? `<span class="text-[8px] px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-400 uppercase font-black tracking-widest border border-white/5">Auto-Renew</span>` : ''}
-                    </div>
-                </div>
-            </div>
-            <div class="flex gap-2 shrink-0 w-full md:w-auto justify-end">
-                <button onclick="openEditInstituteModal('${data.docId}')" class="bg-white/5 hover:bg-white/10 text-white border border-white/10 px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all">Edit</button>
-            </div>
-        </div>
-    `).join('');
-};
-
-window.openEditInstituteModal = (docId) => {
-    const inst = cachedInstitutes.find(i => i.docId === docId);
-    if(!inst) return;
-
-    const modal = document.getElementById('custom-modal');
-    const content = document.getElementById('modal-content');
-    
-    content.innerHTML = `
-        <div class="fade-in space-y-4">
-            <div class="flex justify-between items-center mb-2">
-                <h3 class="text-2xl font-black italic text-purple-400">Edit Institute</h3>
-                <button onclick="closeCustomModal()" class="text-white/50 hover:text-white font-bold">✕</button>
-            </div>
-            <p class="text-[10px] opacity-50 font-mono mb-4">Editing Node: ${inst.uniqueId}</p>
-            
-            <div class="space-y-3">
-                <div>
-                    <label class="text-[9px] uppercase font-bold opacity-50 ml-2">Institute Name</label>
-                    <input id="edit-inst-name" type="text" value="${inst.name}" class="input-field text-sm p-3 bg-zinc-900 mt-1">
-                </div>
-                <div>
-                    <label class="text-[9px] uppercase font-bold opacity-50 ml-2">Logo URL</label>
-                    <input id="edit-inst-logo" type="text" value="${inst.logo || ''}" class="input-field text-sm p-3 bg-zinc-900 mt-1">
-                </div>
-                <div>
-                    <label class="text-[9px] uppercase font-bold opacity-50 ml-2">Privacy Mode</label>
-                    <select id="edit-inst-privacy" class="input-field text-sm p-3 bg-zinc-900 mt-1">
-                        <option value="public" ${inst.privacyMode==='public'?'selected':''}>Public Content</option>
-                        <option value="private" ${inst.privacyMode==='private'?'selected':''}>Private (Gated)</option>
-                    </select>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
+            html += `
+            <div class="bg-zinc-900 border border-white/10 p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between hover:border-purple-500/30 transition-colors shadow-md gap-4 fade-in">
+                <div class="flex items-center gap-4">
+                    <img src="${data.logo || 'https://ui-avatars.com/api/?name='+encodeURIComponent(data.name)}" class="w-12 h-12 rounded-xl object-cover border border-white/20 shadow-sm bg-black">
                     <div>
-                        <label class="text-[9px] uppercase font-bold opacity-50 ml-2">Plan Start</label>
-                        <input id="edit-inst-start" type="date" value="${inst.planStart || ''}" class="input-field text-sm p-3 bg-zinc-900 mt-1">
-                    </div>
-                    <div>
-                        <label class="text-[9px] uppercase font-bold opacity-50 ml-2">Plan End</label>
-                        <input id="edit-inst-end" type="date" value="${inst.planEnd || ''}" class="input-field text-sm p-3 bg-zinc-900 mt-1">
+                        <h3 class="text-base font-black text-purple-400">${data.name}</h3>
+                        <p class="text-[10px] opacity-70 mt-1 uppercase tracking-widest font-mono">ID: <span class="text-white bg-white/5 px-1 py-0.5 rounded">${data.uniqueId}</span> | MODE: ${data.privacyMode}</p>
+                        <p class="text-[9px] opacity-50 mt-1 uppercase tracking-widest font-mono">Validity: ${data.planStart || 'N/A'} to ${data.planEnd || 'N/A'} ${autoRenewBadge}</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3 p-3 bg-zinc-900 border border-white/10 rounded-xl mt-2">
-                    <input type="checkbox" id="edit-inst-renew" ${inst.autoRenewal?'checked':''} class="w-4 h-4 accent-purple-500">
-                    <label for="edit-inst-renew" class="text-[10px] font-black uppercase tracking-widest cursor-pointer select-none">Enable Auto-Renewal</label>
+                <div class="flex flex-col gap-2 md:items-end shrink-0">
+                    <span class="text-[9px] font-bold text-green-400 uppercase bg-green-500/10 px-3 py-1 rounded border border-green-500/20 shadow-sm self-start md:self-auto">${data.status}</span>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <button onclick="window.editInstitute('${data.id}')" class="flex-1 md:flex-none text-[10px] text-blue-400 font-bold uppercase tracking-widest hover:text-white bg-blue-500/10 hover:bg-blue-600 px-4 py-2 rounded-xl transition-all border border-blue-500/20 shadow-sm">Edit Node</button>
+                        <button onclick="window.deleteInstitute('${data.id}')" class="flex-1 md:flex-none text-[10px] text-red-400 font-bold uppercase tracking-widest hover:text-white bg-red-500/10 hover:bg-red-600 px-4 py-2 rounded-xl transition-all border border-red-500/20 shadow-sm">Purge</button>
+                    </div>
                 </div>
-            </div>
-            
-            <button onclick="saveInstituteEdit('${docId}')" class="w-full py-4 bg-purple-600 text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-purple-700 hover:scale-[1.02] transition-all mt-6">Update Parameters</button>
-        </div>
-    `;
-    modal.classList.remove('hidden');
-};
-
-window.saveInstituteEdit = async (docId) => {
-    const name = document.getElementById('edit-inst-name').value.trim();
-    const logo = document.getElementById('edit-inst-logo').value.trim();
-    const privacyMode = document.getElementById('edit-inst-privacy').value;
-    const planStart = document.getElementById('edit-inst-start').value;
-    const planEnd = document.getElementById('edit-inst-end').value;
-    const autoRenewal = document.getElementById('edit-inst-renew').checked;
-
-    if (!name) return window.toast("Name cannot be empty", "error");
-
-    try {
-        await updateDoc(doc(db, "institutes", docId), {
-            name, logo, privacyMode, planStart, planEnd, autoRenewal
+            </div>`;
         });
-        
-        if(window.toast) window.toast("Institute updated successfully", "success");
-        window.closeCustomModal();
-        window.loadInstitutes(); // Refresh data
-    } catch (e) {
-        console.error("Update error:", e);
-        if(window.toast) window.toast("Failed to update record.", "error");
     }
+    html += `</div>`;
+    container.innerHTML = html;
 };
 
 // =========================================
@@ -453,7 +452,7 @@ window.addPayment = async () => {
     const paymentGateway = document.getElementById('payment-gateway').value.trim();
     const transactionId = document.getElementById('payment-transaction').value.trim();
 
-    if (!instituteId || !amount || !transactionId) return window.toast("Fill all necessary payment fields.", "error");
+    if (!instituteId || !amount || !transactionId) return alert("Fill all necessary payment fields.");
 
     try {
         await addDoc(collection(db, "payments"), {
@@ -465,17 +464,17 @@ window.addPayment = async () => {
             timestamp: serverTimestamp()
         });
 
-        if(window.toast) window.toast("Payment Logged Successfully", "success");
+        alert("Payment Logged Successfully");
         
         document.getElementById('payment-institute').value = '';
         document.getElementById('payment-amount').value = '';
         document.getElementById('payment-gateway').value = '';
         document.getElementById('payment-transaction').value = '';
         
-        window.loadPayments();
+        loadPayments();
     } catch (e) {
         console.error("Error logging payment:", e);
-        if(window.toast) window.toast("Failed to log payment transaction.", "error");
+        alert("Failed to log payment transaction.");
     }
 };
 
@@ -499,12 +498,9 @@ window.loadPayments = async () => {
             <div class="bg-zinc-900 border border-white/10 p-4 rounded-xl mb-3 flex justify-between items-center hover:border-brandOrange/30 transition-colors">
                 <div>
                     <h3 class="text-sm font-black text-brandOrange">₹${data.amount}</h3>
-                    <p class="text-[9px] opacity-70 mt-1 uppercase tracking-widest font-mono">TXN: ${data.transactionId} <br> INST: ${data.instituteId}</p>
+                    <p class="text-[10px] opacity-70 mt-1 uppercase tracking-widest font-mono">TXN: ${data.transactionId} | INST: ${data.instituteId}</p>
                 </div>
-                <div class="text-right">
-                    <span class="text-[8px] font-bold bg-green-500/20 text-green-400 px-2 py-1 rounded border border-green-500/20 uppercase tracking-widest shadow-sm">${data.status}</span>
-                    <p class="text-[8px] opacity-40 uppercase tracking-widest mt-2">${data.paymentGateway}</p>
-                </div>
+                <span class="text-[9px] font-bold bg-green-500/20 text-green-400 px-2 py-1 rounded border border-green-500/20 uppercase tracking-widest">${data.status}</span>
             </div>`;
         });
     } catch (e) {
@@ -522,15 +518,15 @@ window.addSubscription = async () => {
     const planId = document.getElementById('subscription-plan').value.trim();
     const paymentId = document.getElementById('subscription-payment').value.trim();
 
-    if (!instituteId || !planId) return window.toast("Institute ID and Plan ID are required.", "error");
+    if (!instituteId || !planId) return alert("Institute ID and Plan ID are required.");
 
     let expiry = new Date();
     if (planId.toLowerCase().includes("month") || planId === "free_trial") {
         expiry.setDate(expiry.getDate() + 30);
-    } else if (planId.toLowerCase().includes("year") || planId === "yearly") {
+    } else if (planId.toLowerCase().includes("year")) {
         expiry.setDate(expiry.getDate() + 365);
     } else {
-        expiry.setDate(expiry.getDate() + 30); 
+        expiry.setDate(expiry.getDate() + 30); // Fallback
     }
 
     try {
@@ -543,16 +539,16 @@ window.addSubscription = async () => {
             status: "active"
         });
 
-        if(window.toast) window.toast("Subscription Granted Successfully", "success");
+        alert("Subscription Granted");
         
         document.getElementById('subscription-institute').value = '';
         document.getElementById('subscription-plan').value = '';
         document.getElementById('subscription-payment').value = '';
         
-        window.loadSubscriptions();
+        loadSubscriptions();
     } catch (e) {
         console.error("Error granting subscription:", e);
-        if(window.toast) window.toast("Failed to allocate subscription.", "error");
+        alert("Failed to allocate subscription.");
     }
 };
 
@@ -572,16 +568,13 @@ window.loadSubscriptions = async () => {
 
         snap.forEach((docSnap) => {
             const data = docSnap.data();
-            const startStr = data.startDate ? new Date(data.startDate.seconds * 1000).toLocaleDateString() : 'N/A';
-            
             container.innerHTML += `
             <div class="bg-zinc-900 border border-white/10 p-4 rounded-xl mb-3 flex justify-between items-center hover:border-green-500/30 transition-colors">
                 <div>
                     <h3 class="text-sm font-black text-green-400 uppercase tracking-widest">${data.planId}</h3>
-                    <p class="text-[9px] opacity-70 mt-1 uppercase tracking-widest font-mono">INST: ${data.instituteId}</p>
-                    <p class="text-[8px] opacity-40 font-mono mt-1 border-t border-white/10 pt-1">Started: ${startStr}</p>
+                    <p class="text-[10px] opacity-70 mt-1 uppercase tracking-widest font-mono">INST: ${data.instituteId}</p>
                 </div>
-                <span class="text-[9px] font-bold bg-green-500/20 text-green-400 px-3 py-1 rounded-lg border border-green-500/20 uppercase tracking-widest shadow-sm">${data.status}</span>
+                <span class="text-[9px] font-bold bg-green-500/20 text-green-400 px-2 py-1 rounded border border-green-500/20 uppercase tracking-widest">${data.status}</span>
             </div>`;
         });
     } catch (e) {
@@ -591,14 +584,83 @@ window.loadSubscriptions = async () => {
 };
 
 // =========================================
-// ONBOARDING REQUESTS VIEWER (ADVANCED)
+// ONBOARDING REQUESTS VIEWER
 // =========================================
+
+window.viewInstituteRequest = (dataString, id) => {
+    const d = JSON.parse(decodeURIComponent(dataString));
+    
+    const popup = document.createElement('div');
+    popup.id = "inst-request-modal";
+    popup.className = "fixed inset-0 z-[99999] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 fade-in";
+    popup.innerHTML = `
+        <div class="bg-zinc-950 border border-yellow-500/30 p-8 rounded-[2.5rem] max-w-lg w-full shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <button onclick="document.getElementById('inst-request-modal').remove()" class="absolute top-6 right-6 text-white/50 hover:text-white font-black text-xl hover:scale-110 transition-transform">✕</button>
+            <h3 class="text-2xl font-black italic text-yellow-400 mb-2 border-b border-white/10 pb-6 flex items-center gap-3">
+                <span class="bg-yellow-500/20 text-yellow-500 w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-inner border border-yellow-500/30">?</span>
+                Node Review
+            </h3>
+            
+            <div class="space-y-5 mt-6 text-sm">
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                    <p class="text-[10px] uppercase font-black tracking-widest opacity-50 text-yellow-500 mb-1">Institute Name</p>
+                    <p class="font-bold text-white text-xl">${d.name}</p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <p class="text-[10px] uppercase font-black tracking-widest opacity-50 text-yellow-500 mb-1">Email Address</p>
+                        <p class="font-bold text-white break-all">${d.email}</p>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <p class="text-[10px] uppercase font-black tracking-widest opacity-50 text-yellow-500 mb-1">Contact Phone</p>
+                        <p class="font-bold text-white">${d.phone}</p>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <p class="text-[10px] uppercase font-black tracking-widest opacity-50 text-yellow-500 mb-1">Total Teachers</p>
+                        <p class="font-bold text-white">${d.teachers || 'N/A'}</p>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <p class="text-[10px] uppercase font-black tracking-widest opacity-50 text-yellow-500 mb-1">Total Students</p>
+                        <p class="font-bold text-white">${d.students || 'N/A'}</p>
+                    </div>
+                </div>
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                    <p class="text-[10px] uppercase font-black tracking-widest opacity-50 text-yellow-500 mb-2">Physical Address</p>
+                    <p class="font-bold text-zinc-300 leading-relaxed">${d.address || 'Not Provided'}</p>
+                </div>
+                <div>
+                    <p class="text-[10px] uppercase font-black tracking-widest opacity-50 text-yellow-500 mb-2 ml-2">Application Status</p>
+                    <span class="inline-block text-[10px] uppercase tracking-widest font-black bg-yellow-500/20 text-yellow-400 px-4 py-1.5 rounded-lg border border-yellow-500/20 shadow-sm ml-2">${d.status}</span>
+                </div>
+            </div>
+            
+            <div class="flex gap-3 mt-8 border-t border-white/10 pt-6">
+                <button onclick="window.markInstituteRequest('${id}', 'approved')" class="flex-1 py-4 bg-green-500 text-black font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-green-400 transition-colors shadow-[0_5px_15px_rgba(34,197,94,0.3)] hover:scale-105">Approve Node</button>
+                <button onclick="window.markInstituteRequest('${id}', 'rejected')" class="flex-1 py-4 bg-red-600/20 text-red-500 border border-red-500/30 font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-red-600 hover:text-white transition-colors shadow-sm hover:scale-105">Reject Request</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(popup);
+};
+
+window.markInstituteRequest = async (id, status) => {
+    try {
+        await updateDoc(doc(db, "instituteRequests", id), { status: status });
+        alert(`Request definitively marked as ${status.toUpperCase()}.`);
+        const modal = document.getElementById('inst-request-modal');
+        if(modal) modal.remove();
+        window.loadAdminRequests();
+    } catch(e) {
+        console.error(e);
+        alert("Failed to update status payload.");
+    }
+};
 
 window.loadAdminRequests = async () => {
     window.showSection('requests-section');
     const container = document.getElementById('admin-requests-list');
     if (!container) return;
-    container.innerHTML = "<p class='opacity-50 text-xs py-2 text-center animate-pulse'>Scanning queue...</p>";
+    container.innerHTML = "<p class='opacity-50 text-xs py-2 text-center'>Scanning queue...</p>";
 
     try {
         const snap = await getDocs(query(collection(db, "instituteRequests"), orderBy("createdAt", "desc")));
@@ -607,104 +669,44 @@ window.loadAdminRequests = async () => {
         if (snap.empty) {
             container.innerHTML = `
             <div class="bg-zinc-900 border border-white/10 p-10 rounded-2xl text-center shadow-inner">
-                <p class="opacity-30 uppercase font-black tracking-widest text-xs">No pending requests in queue</p>
+                <p class="opacity-30 uppercase font-black tracking-widest text-xs">No pending requests</p>
             </div>`;
             return;
         }
         
-        let html = '';
         snap.forEach(docSnap => {
             const d = docSnap.data();
-            const docId = docSnap.id;
-            html += `
-            <div class="bg-zinc-900 border border-white/10 p-5 rounded-2xl flex flex-col md:flex-row justify-between md:items-center gap-4 text-white shadow-sm hover:border-yellow-500/40 transition-all hover:scale-[1.01]">
-                <div class="w-full">
-                    <div class="flex items-center gap-3 mb-2">
-                        <h4 class="font-black text-lg text-yellow-400 tracking-tight truncate max-w-[250px]">${d.name}</h4>
-                        <span class="text-[8px] uppercase tracking-widest font-black bg-yellow-500/20 text-yellow-400 px-2.5 py-1 rounded-md border border-yellow-500/20 shadow-sm">${d.status}</span>
+            // Stringify payload securely to pass inside HTML onclick attribute
+            const payload = encodeURIComponent(JSON.stringify(d));
+
+            container.innerHTML += `
+            <div class="bg-zinc-900 border border-white/10 p-5 rounded-2xl flex flex-col md:flex-row justify-between md:items-center gap-4 text-white shadow-md hover:border-yellow-500/30 transition-all hover:scale-[1.01] fade-in">
+                <div>
+                    <div class="flex items-center gap-3 mb-1">
+                        <h4 class="font-black text-lg text-yellow-400 tracking-tight">${d.name}</h4>
+                        <span class="text-[8px] uppercase tracking-widest font-bold bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded border border-yellow-500/20 shadow-sm">${d.status}</span>
                     </div>
-                    <div class="flex items-center gap-3 text-[10px] opacity-70 font-mono mb-3 bg-black/20 p-2 rounded-lg w-fit border border-white/5">
-                        <span class="truncate max-w-[150px]">✉️ ${d.email}</span>
-                        <span class="opacity-30">|</span>
-                        <span>📞 ${d.phone}</span>
-                    </div>
-                    <div class="flex gap-4 text-[9px] uppercase tracking-widest font-black text-zinc-400">
-                        <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 rounded-full bg-brandBlue"></div> Teachers: ${d.teachers}</span>
-                        <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 rounded-full bg-purple-500"></div> Students: ${d.students}</span>
-                    </div>
+                    <p class="text-xs opacity-70 font-mono">${d.email} &nbsp;•&nbsp; ${d.phone}</p>
+                    <p class="text-[10px] mt-2 opacity-50 uppercase tracking-widest font-bold flex gap-4">
+                        <span>👥 Teachers: ${d.teachers}</span>
+                        <span>🎓 Students: ${d.students}</span>
+                    </p>
                 </div>
-                <div class="flex gap-2 shrink-0 mt-2 md:mt-0 w-full md:w-auto">
-                    <button onclick="reviewInstituteRequest('${docId}', 'approve')" class="flex-1 md:flex-none bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white border border-green-500/20 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm">Approve</button>
-                    <button onclick="reviewInstituteRequest('${docId}', 'deny')" class="flex-1 md:flex-none bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm">Deny</button>
+                <div class="flex gap-2 shrink-0">
+                    <button onclick="window.viewInstituteRequest('${payload}', '${docSnap.id}')" class="bg-yellow-500 text-black px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-transform shadow-[0_5px_15px_rgba(234,179,8,0.3)]">Review Node</button>
                 </div>
             </div>`;
         });
-        container.innerHTML = html;
     } catch (e) {
         console.error("Error loading requests:", e);
         container.innerHTML = "<p class='text-red-500 text-xs py-2 text-center'>Failed to fetch onboarding queue.</p>";
     }
 };
 
-window.reviewInstituteRequest = async (docId, action) => {
-    try {
-        const reqDocRef = doc(db, "instituteRequests", docId);
-        const reqSnap = await getDoc(reqDocRef);
-        
-        if (!reqSnap.exists()) {
-            if(window.toast) window.toast("Request no longer exists.", "error");
-            return;
-        }
-
-        const data = reqSnap.data();
-
-        if (action === 'approve') {
-            // Move data to institutes and auto-generate ID
-            const uniqueId = "INST-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-            
-            await addDoc(collection(db, "institutes"), {
-                uniqueId,
-                name: data.name,
-                teacherId: "PENDING-OWNER", // Usually they are an external request, so manual assignment might be needed later
-                contactEmail: data.email,
-                contactPhone: data.phone,
-                privacyMode: 'public', // default
-                status: 'active',
-                createdAt: serverTimestamp(),
-                approvedFromRequest: true
-            });
-
-            // Delete request
-            await deleteDoc(reqDocRef);
-            
-            window.showIdPopup(`Institute Approved: ${data.name}`, uniqueId);
-            window.loadAdminRequests();
-            
-        } else if (action === 'deny') {
-            if(!confirm("Are you sure you want to permanently deny and delete this request?")) return;
-            await deleteDoc(reqDocRef);
-            if(window.toast) window.toast("Request denied and removed.", "success");
-            window.loadAdminRequests();
-        }
-
-    } catch(e) {
-        console.error("Error processing request:", e);
-        if(window.toast) window.toast("Action failed due to network error.", "error");
-    }
-};
-
-
-// =========================================
-// GLOBAL NAVIGATION LISTENERS
-// =========================================
-
-// Global handlers to ensure admin data loads appropriately when switching sections via clicks
+// Global handlers to ensure admin data loads when switching sections
 document.addEventListener('click', (e) => {
-    if (e.target && e.target.getAttribute('onclick')) {
-        const action = e.target.getAttribute('onclick');
-        if (action.includes("showSection('plans-section')")) window.loadPlans();
-        if (action.includes("showSection('institutes-section')")) window.loadInstitutes();
-        if (action.includes("showSection('payments-section')")) window.loadPayments();
-        if (action.includes("showSection('subscriptions-section')")) window.loadSubscriptions();
-    }
+    if (e.target && e.target.getAttribute('onclick') === "showSection('plans-section')") loadPlans();
+    if (e.target && e.target.getAttribute('onclick') === "showSection('institutes-section')") loadInstitutes();
+    if (e.target && e.target.getAttribute('onclick') === "showSection('payments-section')") loadPayments();
+    if (e.target && e.target.getAttribute('onclick') === "showSection('subscriptions-section')") loadSubscriptions();
 });
