@@ -197,7 +197,7 @@ window.loadPlans = async () => {
         snap.forEach((docSnap) => {
             const data = docSnap.data();
             container.innerHTML += `
-            <div class="bg-zinc-900 border border-white/10 p-4 rounded-xl mb-3 flex justify-between items-center hover:border-brandBlue/30 transition-colors">
+            <div class="bg-zinc-900 border border-white/10 p-4 rounded-xl mb-3 flex justify-between items-center">
                 <div>
                     <h3 class="text-sm font-black text-brandBlue uppercase tracking-widest">${data.name}</h3>
                     <p class="text-xs opacity-70 mt-1">Duration: ${data.duration} Days | Price: ₹${data.price}</p>
@@ -212,32 +212,35 @@ window.loadPlans = async () => {
 };
 
 // =========================================
-// INSTITUTE MANAGEMENT (ADVANCED)
+// INSTITUTE MANAGEMENT
 // =========================================
 
-window._institutesData = [];
-window._instSortBy = 'newest';
-window._instSearchQ = '';
-
-window.showInstituteSuccessPopup = (name, uniqueId) => {
-    const popup = document.createElement('div');
-    popup.id = "inst-success-popup";
-    popup.className = "fixed inset-0 z-[99999] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 fade-in";
-    popup.innerHTML = `
-        <div class="bg-zinc-950 border border-purple-500/30 p-8 md:p-10 rounded-[2.5rem] max-w-sm w-full text-center shadow-2xl relative">
-            <div class="w-20 h-20 bg-purple-500/20 text-purple-400 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 border border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.4)] animate-pulse">✓</div>
-            <h3 class="text-2xl font-black italic text-white mb-2">${name} Provisioned</h3>
-            <p class="text-xs opacity-60 mb-8 leading-relaxed">The institute node has been successfully verified. Secure the Unique Access ID below for member onboarding.</p>
-            <div class="bg-black border border-white/10 p-4 rounded-2xl flex items-center justify-between mb-8 group hover:border-purple-500/50 transition-colors shadow-inner">
-                <span class="font-mono text-purple-400 font-black tracking-widest text-xl drop-shadow-md">${uniqueId}</span>
-                <button onclick="navigator.clipboard.writeText('${uniqueId}'); this.innerText='Copied!'; setTimeout(()=>this.innerText='Copy ID', 2000);" class="bg-white/10 hover:bg-purple-600 text-white px-3 py-2 text-[10px] uppercase font-black tracking-widest rounded-xl transition-all group-hover:scale-105 shadow-sm">
-                    Copy ID
-                </button>
+window.showInstituteSuccessModal = (name, logo, uniqueId) => {
+    const modal = document.getElementById('custom-modal');
+    const content = document.getElementById('modal-content');
+    if (!modal || !content) {
+        alert(`Institute Node Registered!\nUnique Access ID: ${uniqueId}`);
+        return;
+    }
+    modal.classList.remove('hidden');
+    content.innerHTML = `
+        <div class="fade-in text-center p-6 md:p-10">
+            <img src="${logo || 'https://ui-avatars.com/api/?name='+encodeURIComponent(name)}" class="w-24 h-24 mx-auto rounded-2xl object-cover border-[3px] border-purple-500 mb-6 shadow-xl bg-black">
+            <h2 class="text-3xl font-black italic text-purple-400 mb-2">${name}</h2>
+            <p class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-6 text-white">Institute Successfully Registered</p>
+            
+            <div class="bg-zinc-950 border border-white/10 p-5 rounded-2xl flex items-center justify-between mb-8 shadow-inner">
+                <div class="text-left">
+                    <p class="text-[8px] uppercase tracking-widest text-purple-400 font-bold mb-1">Unique Access ID</p>
+                    <span class="font-mono text-xl tracking-widest font-black text-white" id="new-inst-id">${uniqueId}</span>
+                </div>
+                <button onclick="navigator.clipboard.writeText('${uniqueId}'); this.innerText='COPIED!'; setTimeout(()=>this.innerText='COPY', 2000);" class="bg-purple-500/20 text-purple-400 hover:bg-purple-600 hover:text-white border border-purple-500/30 px-5 py-3 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all shadow-md">Copy</button>
             </div>
-            <button onclick="document.getElementById('inst-success-popup').remove()" class="w-full py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl transition-colors">Close Window</button>
+            
+            <p class="text-[10px] opacity-40 mb-6 italic leading-relaxed text-white">Share this unique ID with students and teachers to allow them to join your private or public campus matrix.</p>
+            <button onclick="document.getElementById('custom-modal').classList.add('hidden')" class="w-full py-4 bg-purple-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-purple-700 hover:scale-[1.02] transition-all">Acknowledge & Close</button>
         </div>
     `;
-    document.body.appendChild(popup);
 };
 
 window.processInstituteSave = async () => {
@@ -247,14 +250,9 @@ window.processInstituteSave = async () => {
     const privacy = document.getElementById('inst-privacy').value;
     const start = document.getElementById('inst-start').value;
     const end = document.getElementById('inst-end').value;
-    
-    // Safety check if the element exists in HTML
-    const autoRenewCheckbox = document.getElementById('inst-auto-renew');
-    const autoRenew = autoRenewCheckbox ? autoRenewCheckbox.checked : false;
 
     if (!name || !teacherId) return alert("Crucial fields (Name, Teacher ID) are missing.");
 
-    // Generate Unique Institute ID
     const uniqueId = "INST-" + Math.random().toString(36).substring(2, 8).toUpperCase();
 
     try {
@@ -266,20 +264,21 @@ window.processInstituteSave = async () => {
             privacyMode: privacy,
             planStart: start, 
             planEnd: end, 
-            autoRenew,
             status: 'active',
             createdAt: serverTimestamp()
         });
 
-        window.showInstituteSuccessPopup(name, uniqueId);
+        if (typeof window.showInstituteSuccessModal === 'function') {
+            window.showInstituteSuccessModal(name, logo, uniqueId);
+        } else {
+            alert(`Institute Node Registered!\nUnique Access ID: ${uniqueId}`);
+        }
         
-        // Clear fields
         document.getElementById('inst-teacher-id').value = '';
         document.getElementById('inst-name').value = '';
         document.getElementById('inst-logo').value = '';
         document.getElementById('inst-start').value = '';
         document.getElementById('inst-end').value = '';
-        if(autoRenewCheckbox) autoRenewCheckbox.checked = false;
         
         loadInstitutes();
     } catch (e) {
@@ -288,51 +287,44 @@ window.processInstituteSave = async () => {
     }
 };
 
-window.processInstituteUpdate = async (id) => {
+window.updateInstitute = async () => {
+    if(!window._editingInstId) return;
     const teacherId = document.getElementById('inst-teacher-id').value.trim();
     const name = document.getElementById('inst-name').value.trim();
     const logo = document.getElementById('inst-logo').value.trim();
     const privacy = document.getElementById('inst-privacy').value;
     const start = document.getElementById('inst-start').value;
     const end = document.getElementById('inst-end').value;
-    
-    const autoRenewCheckbox = document.getElementById('inst-auto-renew');
-    const autoRenew = autoRenewCheckbox ? autoRenewCheckbox.checked : false;
-
-    if (!name || !teacherId) return alert("Crucial fields (Name, Teacher ID) are missing.");
 
     try {
-        await updateDoc(doc(db, "institutes", id), {
-            teacherId, name, logo, privacyMode: privacy, planStart: start, planEnd: end, autoRenew
+        await updateDoc(doc(db, "institutes", window._editingInstId), {
+            teacherId, name, logo, privacyMode: privacy, planStart: start, planEnd: end
         });
+        alert("Institute Updated Successfully!");
         
-        alert("Institute Node Configuration Updated.");
-        
-        // Reset fields
         document.getElementById('inst-teacher-id').value = '';
         document.getElementById('inst-name').value = '';
         document.getElementById('inst-logo').value = '';
         document.getElementById('inst-start').value = '';
         document.getElementById('inst-end').value = '';
-        if(autoRenewCheckbox) autoRenewCheckbox.checked = false;
         
-        const btn = document.getElementById('inst-action-btn');
-        if(btn) {
-            btn.innerText = "Generate & Register Node";
-            btn.onclick = window.processInstituteSave;
-            btn.classList.replace('bg-blue-600', 'bg-purple-600');
-            btn.classList.replace('hover:bg-blue-700', 'hover:bg-purple-700');
+        const instActionBtn = document.getElementById('inst-action-btn');
+        if(instActionBtn) {
+            instActionBtn.innerText = 'Generate & Register Node';
+            instActionBtn.onclick = () => window.processInstituteSave();
         }
         
-        window.loadInstitutes();
+        window._editingInstId = null;
+        loadInstitutes();
     } catch(e) { 
-        console.error(e); 
-        alert("Failed to update matrix."); 
+        console.error("Error updating institute:", e);
+        alert("Failed to update institute."); 
     }
 };
 
-window.editInstitute = async (id) => {
-    const inst = window._institutesData.find(i => i.id === id);
+window.editInstitute = (id) => {
+    if(!window.allInstitutes) return;
+    const inst = window.allInstitutes.find(i => i.id === id);
     if(!inst) return;
     
     document.getElementById('inst-teacher-id').value = inst.teacherId || '';
@@ -341,29 +333,51 @@ window.editInstitute = async (id) => {
     document.getElementById('inst-privacy').value = inst.privacyMode || 'public';
     document.getElementById('inst-start').value = inst.planStart || '';
     document.getElementById('inst-end').value = inst.planEnd || '';
-    
-    const ar = document.getElementById('inst-auto-renew');
-    if(ar) ar.checked = inst.autoRenew || false;
 
-    const btn = document.getElementById('inst-action-btn');
-    if(btn) {
-        btn.innerText = "Update Configuration Node";
-        btn.onclick = () => window.processInstituteUpdate(id);
-        btn.classList.replace('bg-purple-600', 'bg-blue-600');
-        btn.classList.replace('hover:bg-purple-700', 'hover:bg-blue-700');
+    window._editingInstId = id;
+    
+    // Ensure the button acts as Update
+    let instActionBtn = document.getElementById('inst-action-btn');
+    if(!instActionBtn) {
+        // Find it if ID wasn't explicitly set in HTML
+        const btns = document.querySelectorAll('#institutes-section button');
+        btns.forEach(b => {
+            if(b.innerText.includes('Generate & Register Node') || b.innerText.includes('Update Institute Node')) {
+                instActionBtn = b;
+                instActionBtn.id = 'inst-action-btn'; // set ID for future
+            }
+        });
     }
     
-    document.getElementById('admin-dashboard').querySelector('.overflow-y-auto').scrollTop = 0;
+    if(instActionBtn) {
+        instActionBtn.innerText = 'Update Institute Node';
+        instActionBtn.onclick = () => window.updateInstitute();
+    }
+    
+    const adminDashboard = document.getElementById('admin-dashboard');
+    if(adminDashboard) adminDashboard.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-window.deleteInstitute = async (id) => {
-    if(!confirm("Are you entirely sure you want to completely remove this institute node? This action is irreversible and purges all access links.")) return;
+window.initiateInstituteDeletion = async (id, name) => {
+    const adminEmail = auth.currentUser?.email;
+    if(!adminEmail) return alert("Admin authenticated session required for OTP verification.");
+    if(!confirm(`WARNING: Are you sure you want to permanently delete the institute: ${name}?`)) return;
+
+    const otp = Math.floor(100000 + Math.random() * 900000);
     try {
-        await deleteDoc(doc(db, "institutes", id));
-        window.loadInstitutes();
-    } catch(e) { 
-        console.error(e); 
-        alert("System error removing institute."); 
+        await sendOTP(adminEmail, otp);
+        const userOtp = prompt(`Security Verification: OTP sent to ${adminEmail}.\nEnter 6-digit OTP to confirm deletion of ${name}:`);
+        
+        if(userOtp && userOtp == otp) {
+            await deleteDoc(doc(db, "institutes", id));
+            alert("Institute deleted permanently.");
+            loadInstitutes();
+        } else if (userOtp) {
+            alert("Invalid OTP. Deletion cancelled.");
+        }
+    } catch(e) {
+        console.error(e);
+        alert("Failed to send verification OTP.");
     }
 };
 
@@ -374,72 +388,71 @@ window.loadInstitutes = async () => {
 
     try {
         const snap = await getDocs(collection(db, "institutes"));
-        window._institutesData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        window.renderInstitutesList();
+        window.allInstitutes = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        window.renderInstitutesUI();
     } catch (e) {
         console.error("Error loading institutes:", e);
         container.innerHTML = "<p class='text-red-500 text-xs py-2'>Failed to load institutes.</p>";
     }
 };
 
-window.renderInstitutesList = () => {
+window.renderInstitutesUI = () => {
     const container = document.getElementById('institutes-list');
-    if (!container) return;
+    if(!container) return;
+    
+    let search = document.getElementById('inst-search')?.value.toLowerCase() || '';
+    let sort = document.getElementById('inst-sort')?.value || 'newest';
 
-    let filtered = window._institutesData;
-    if(window._instSearchQ) {
-        const q = window._instSearchQ.toLowerCase();
-        filtered = filtered.filter(i => i.name.toLowerCase().includes(q) || i.uniqueId.toLowerCase().includes(q));
-    }
+    let filtered = window.allInstitutes.filter(i =>
+        (i.name && i.name.toLowerCase().includes(search)) ||
+        (i.uniqueId && i.uniqueId.toLowerCase().includes(search)) ||
+        (i.teacherId && i.teacherId.toLowerCase().includes(search))
+    );
 
-    if(window._instSortBy === 'newest') {
-        filtered.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
-    } else if (window._instSortBy === 'oldest') {
-        filtered.sort((a, b) => (a.createdAt?.toMillis() || 0) - (b.createdAt?.toMillis() || 0));
-    } else if (window._instSortBy === 'name') {
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
-    }
+    if(sort === 'newest') filtered.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+    else if(sort === 'oldest') filtered.sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+    else if(sort === 'active') filtered.sort((a,b) => a.status === 'active' ? -1 : 1);
+    else if(sort === 'private') filtered.sort((a,b) => a.privacyMode === 'private' ? -1 : 1);
 
-    let html = `
-        <div class="flex flex-col md:flex-row gap-3 mb-6 bg-white/5 p-4 rounded-2xl border border-white/5 shadow-inner">
-            <input type="text" placeholder="Search by name or unique ID..." class="bg-zinc-900 border border-white/10 text-white text-xs p-3 rounded-xl flex-1 outline-none focus:border-purple-500 transition-colors shadow-sm" oninput="window._instSearchQ=this.value; window.renderInstitutesList()">
-            <select class="bg-zinc-900 border border-white/10 text-white text-xs p-3 rounded-xl outline-none focus:border-purple-500 transition-colors shadow-sm cursor-pointer" onchange="window._instSortBy=this.value; window.renderInstitutesList()">
-                <option value="newest">Sort by: Newest First</option>
-                <option value="oldest">Sort by: Oldest First</option>
-                <option value="name">Sort by: A-Z Name</option>
+    let controlsHTML = `
+        <div class="flex flex-col md:flex-row gap-2 mb-4">
+            <input type="text" id="inst-search" oninput="window.renderInstitutesUI()" value="${search}" placeholder="Search Name, ID, Owner ID..." class="input-field text-black dark:text-white flex-1 text-xs">
+            <select id="inst-sort" onchange="window.renderInstitutesUI()" class="input-field text-black dark:text-white text-xs w-full md:w-1/3">
+                <option value="newest" ${sort==='newest'?'selected':''}>Newest First</option>
+                <option value="oldest" ${sort==='oldest'?'selected':''}>Oldest First</option>
+                <option value="active" ${sort==='active'?'selected':''}>Active Status First</option>
+                <option value="private" ${sort==='private'?'selected':''}>Private Networks</option>
             </select>
         </div>
-        <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar pb-10">
+        <div id="inst-render-target" class="space-y-3"></div>
     `;
+    container.innerHTML = controlsHTML;
 
-    if (filtered.length === 0) {
-        html += `<div class="bg-zinc-900 border border-white/10 p-10 rounded-2xl text-center"><p class='opacity-30 uppercase font-black tracking-widest text-xs'>No institutes match parameters.</p></div>`;
-    } else {
-        filtered.forEach((data) => {
-            const autoRenewBadge = data.autoRenew ? `<span class="bg-green-500/20 text-green-400 text-[8px] px-2 py-0.5 rounded font-bold border border-green-500/20 shadow-sm ml-2">AUTO-RENEW ON</span>` : `<span class="bg-red-500/20 text-red-400 text-[8px] px-2 py-0.5 rounded font-bold border border-red-500/20 shadow-sm ml-2">AUTO-RENEW OFF</span>`;
-
-            html += `
-            <div class="bg-zinc-900 border border-white/10 p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between hover:border-purple-500/30 transition-colors shadow-md gap-4 fade-in">
-                <div class="flex items-center gap-4">
-                    <img src="${data.logo || 'https://ui-avatars.com/api/?name='+encodeURIComponent(data.name)}" class="w-12 h-12 rounded-xl object-cover border border-white/20 shadow-sm bg-black">
-                    <div>
-                        <h3 class="text-base font-black text-purple-400">${data.name}</h3>
-                        <p class="text-[10px] opacity-70 mt-1 uppercase tracking-widest font-mono">ID: <span class="text-white bg-white/5 px-1 py-0.5 rounded">${data.uniqueId}</span> | MODE: ${data.privacyMode}</p>
-                        <p class="text-[9px] opacity-50 mt-1 uppercase tracking-widest font-mono">Validity: ${data.planStart || 'N/A'} to ${data.planEnd || 'N/A'} ${autoRenewBadge}</p>
-                    </div>
-                </div>
-                <div class="flex flex-col gap-2 md:items-end shrink-0">
-                    <span class="text-[9px] font-bold text-green-400 uppercase bg-green-500/10 px-3 py-1 rounded border border-green-500/20 shadow-sm self-start md:self-auto">${data.status}</span>
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <button onclick="window.editInstitute('${data.id}')" class="flex-1 md:flex-none text-[10px] text-blue-400 font-bold uppercase tracking-widest hover:text-white bg-blue-500/10 hover:bg-blue-600 px-4 py-2 rounded-xl transition-all border border-blue-500/20 shadow-sm">Edit Node</button>
-                        <button onclick="window.deleteInstitute('${data.id}')" class="flex-1 md:flex-none text-[10px] text-red-400 font-bold uppercase tracking-widest hover:text-white bg-red-500/10 hover:bg-red-600 px-4 py-2 rounded-xl transition-all border border-red-500/20 shadow-sm">Purge</button>
-                    </div>
-                </div>
-            </div>`;
-        });
+    const target = document.getElementById('inst-render-target');
+    if(!filtered.length) { 
+        target.innerHTML = "<p class='opacity-50 text-xs py-4 text-center border border-dashed border-white/10 rounded-xl'>No institutes match your criteria.</p>"; 
+        return; 
     }
-    html += `</div>`;
-    container.innerHTML = html;
+
+    target.innerHTML = filtered.map(data => `
+        <div class="bg-zinc-900 border border-white/10 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <img src="${data.logo || 'https://ui-avatars.com/api/?name='+data.name}" class="w-12 h-12 rounded-xl object-cover border border-white/20 bg-black">
+                <div>
+                    <h3 class="text-sm font-black text-purple-400 tracking-tight">${data.name}</h3>
+                    <p class="text-[10px] opacity-80 mt-1 font-mono tracking-widest text-brandBlue">ID: ${data.uniqueId} <span class="text-white opacity-50">|</span> Owner: ${data.teacherId}</p>
+                    <p class="text-[9px] opacity-50 mt-1 uppercase tracking-widest flex gap-3">
+                        <span>Mode: <b class="${data.privacyMode === 'private' ? 'text-red-400' : 'text-green-400'}">${data.privacyMode}</b></span>
+                        <span>End: <b>${data.planEnd || 'No Expiry'}</b></span>
+                    </p>
+                </div>
+            </div>
+            <div class="flex md:flex-col gap-2 shrink-0">
+                <button onclick="window.editInstitute('${data.id}')" class="flex-1 bg-blue-500/20 text-blue-400 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all border border-blue-500/20 shadow-sm">Edit</button>
+                <button onclick="window.initiateInstituteDeletion('${data.id}', '${data.name}')" class="flex-1 bg-red-500/20 text-red-500 hover:bg-red-600 hover:text-white px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all border border-red-500/20 shadow-sm">Delete</button>
+            </div>
+        </div>
+    `).join('');
 };
 
 // =========================================
@@ -495,7 +508,7 @@ window.loadPayments = async () => {
         snap.forEach((docSnap) => {
             const data = docSnap.data();
             container.innerHTML += `
-            <div class="bg-zinc-900 border border-white/10 p-4 rounded-xl mb-3 flex justify-between items-center hover:border-brandOrange/30 transition-colors">
+            <div class="bg-zinc-900 border border-white/10 p-4 rounded-xl mb-3 flex justify-between items-center">
                 <div>
                     <h3 class="text-sm font-black text-brandOrange">₹${data.amount}</h3>
                     <p class="text-[10px] opacity-70 mt-1 uppercase tracking-widest font-mono">TXN: ${data.transactionId} | INST: ${data.instituteId}</p>
@@ -536,7 +549,8 @@ window.addSubscription = async () => {
             paymentId,
             startDate: serverTimestamp(),
             expiryDate: expiry,
-            status: "active"
+            status: "active",
+            autoRenew: true
         });
 
         alert("Subscription Granted");
@@ -549,6 +563,16 @@ window.addSubscription = async () => {
     } catch (e) {
         console.error("Error granting subscription:", e);
         alert("Failed to allocate subscription.");
+    }
+};
+
+window.toggleSubscriptionRenewal = async (id, newValue) => {
+    try {
+        await updateDoc(doc(db, "subscriptions", id), { autoRenew: newValue });
+        loadSubscriptions();
+    } catch(e) {
+        console.error("Failed to toggle renewal", e);
+        alert("Failed to toggle auto renewal status.");
     }
 };
 
@@ -568,13 +592,30 @@ window.loadSubscriptions = async () => {
 
         snap.forEach((docSnap) => {
             const data = docSnap.data();
+            const isAutoRenew = data.autoRenew !== false; // Default to true if undefined
+            
+            const startStr = data.startDate ? new Date(data.startDate.seconds * 1000).toLocaleDateString() : 'N/A';
+            const expStr = data.expiryDate ? new Date(data.expiryDate.seconds * 1000).toLocaleDateString() : 'N/A';
+            
             container.innerHTML += `
-            <div class="bg-zinc-900 border border-white/10 p-4 rounded-xl mb-3 flex justify-between items-center hover:border-green-500/30 transition-colors">
-                <div>
-                    <h3 class="text-sm font-black text-green-400 uppercase tracking-widest">${data.planId}</h3>
-                    <p class="text-[10px] opacity-70 mt-1 uppercase tracking-widest font-mono">INST: ${data.instituteId}</p>
+            <div class="bg-zinc-900 border border-white/10 p-5 rounded-2xl mb-3 flex flex-col gap-4 shadow-sm hover:border-green-500/30 transition-colors">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-sm font-black text-green-400 uppercase tracking-widest">${data.planId}</h3>
+                        <p class="text-[10px] opacity-70 mt-1 uppercase tracking-widest font-mono">INST: ${data.instituteId}</p>
+                    </div>
+                    <span class="text-[9px] font-bold bg-green-500/20 text-green-400 px-3 py-1.5 rounded-lg border border-green-500/20 uppercase tracking-widest">${data.status}</span>
                 </div>
-                <span class="text-[9px] font-bold bg-green-500/20 text-green-400 px-2 py-1 rounded border border-green-500/20 uppercase tracking-widest">${data.status}</span>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-t border-white/10 pt-4 gap-4">
+                    <div class="text-[10px] uppercase tracking-widest opacity-80 font-mono space-y-1.5 bg-black/30 p-3 rounded-lg w-full md:w-auto">
+                        <p>Start Date: <span class="text-white">${startStr}</span></p>
+                        <p>Expiry Date: <span class="text-white">${expStr}</span></p>
+                        <p>Auto-Renewal: <span class="${isAutoRenew ? 'text-green-400 drop-shadow-[0_0_5px_rgba(74,222,128,0.5)]' : 'text-red-400'} font-black">${isAutoRenew ? 'ACTIVE' : 'DISABLED'}</span></p>
+                    </div>
+                    <button onclick="window.toggleSubscriptionRenewal('${docSnap.id}', ${!isAutoRenew})" class="${isAutoRenew ? 'bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-600' : 'bg-green-500/10 text-green-400 border border-green-500/30 hover:bg-green-600'} hover:text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all w-full md:w-auto shadow-sm">
+                        ${isAutoRenew ? 'Disable Auto-Renew' : 'Enable Auto-Renew'}
+                    </button>
+                </div>
             </div>`;
         });
     } catch (e) {
@@ -587,72 +628,13 @@ window.loadSubscriptions = async () => {
 // ONBOARDING REQUESTS VIEWER
 // =========================================
 
-window.viewInstituteRequest = (dataString, id) => {
-    const d = JSON.parse(decodeURIComponent(dataString));
-    
-    const popup = document.createElement('div');
-    popup.id = "inst-request-modal";
-    popup.className = "fixed inset-0 z-[99999] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 fade-in";
-    popup.innerHTML = `
-        <div class="bg-zinc-950 border border-yellow-500/30 p-8 rounded-[2.5rem] max-w-lg w-full shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <button onclick="document.getElementById('inst-request-modal').remove()" class="absolute top-6 right-6 text-white/50 hover:text-white font-black text-xl hover:scale-110 transition-transform">✕</button>
-            <h3 class="text-2xl font-black italic text-yellow-400 mb-2 border-b border-white/10 pb-6 flex items-center gap-3">
-                <span class="bg-yellow-500/20 text-yellow-500 w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-inner border border-yellow-500/30">?</span>
-                Node Review
-            </h3>
-            
-            <div class="space-y-5 mt-6 text-sm">
-                <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
-                    <p class="text-[10px] uppercase font-black tracking-widest opacity-50 text-yellow-500 mb-1">Institute Name</p>
-                    <p class="font-bold text-white text-xl">${d.name}</p>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
-                        <p class="text-[10px] uppercase font-black tracking-widest opacity-50 text-yellow-500 mb-1">Email Address</p>
-                        <p class="font-bold text-white break-all">${d.email}</p>
-                    </div>
-                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
-                        <p class="text-[10px] uppercase font-black tracking-widest opacity-50 text-yellow-500 mb-1">Contact Phone</p>
-                        <p class="font-bold text-white">${d.phone}</p>
-                    </div>
-                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
-                        <p class="text-[10px] uppercase font-black tracking-widest opacity-50 text-yellow-500 mb-1">Total Teachers</p>
-                        <p class="font-bold text-white">${d.teachers || 'N/A'}</p>
-                    </div>
-                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
-                        <p class="text-[10px] uppercase font-black tracking-widest opacity-50 text-yellow-500 mb-1">Total Students</p>
-                        <p class="font-bold text-white">${d.students || 'N/A'}</p>
-                    </div>
-                </div>
-                <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
-                    <p class="text-[10px] uppercase font-black tracking-widest opacity-50 text-yellow-500 mb-2">Physical Address</p>
-                    <p class="font-bold text-zinc-300 leading-relaxed">${d.address || 'Not Provided'}</p>
-                </div>
-                <div>
-                    <p class="text-[10px] uppercase font-black tracking-widest opacity-50 text-yellow-500 mb-2 ml-2">Application Status</p>
-                    <span class="inline-block text-[10px] uppercase tracking-widest font-black bg-yellow-500/20 text-yellow-400 px-4 py-1.5 rounded-lg border border-yellow-500/20 shadow-sm ml-2">${d.status}</span>
-                </div>
-            </div>
-            
-            <div class="flex gap-3 mt-8 border-t border-white/10 pt-6">
-                <button onclick="window.markInstituteRequest('${id}', 'approved')" class="flex-1 py-4 bg-green-500 text-black font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-green-400 transition-colors shadow-[0_5px_15px_rgba(34,197,94,0.3)] hover:scale-105">Approve Node</button>
-                <button onclick="window.markInstituteRequest('${id}', 'rejected')" class="flex-1 py-4 bg-red-600/20 text-red-500 border border-red-500/30 font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-red-600 hover:text-white transition-colors shadow-sm hover:scale-105">Reject Request</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(popup);
-};
-
-window.markInstituteRequest = async (id, status) => {
+window.updateInstRequestStatus = async (id, status) => {
     try {
-        await updateDoc(doc(db, "instituteRequests", id), { status: status });
-        alert(`Request definitively marked as ${status.toUpperCase()}.`);
-        const modal = document.getElementById('inst-request-modal');
-        if(modal) modal.remove();
+        await updateDoc(doc(db, "instituteRequests", id), { status });
         window.loadAdminRequests();
     } catch(e) {
-        console.error(e);
-        alert("Failed to update status payload.");
+        console.error("Error updating request", e);
+        alert("Failed to update registration request status.");
     }
 };
 
@@ -676,24 +658,35 @@ window.loadAdminRequests = async () => {
         
         snap.forEach(docSnap => {
             const d = docSnap.data();
-            // Stringify payload securely to pass inside HTML onclick attribute
-            const payload = encodeURIComponent(JSON.stringify(d));
-
+            const submittedDate = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleString() : 'Unknown Time';
+            
             container.innerHTML += `
-            <div class="bg-zinc-900 border border-white/10 p-5 rounded-2xl flex flex-col md:flex-row justify-between md:items-center gap-4 text-white shadow-md hover:border-yellow-500/30 transition-all hover:scale-[1.01] fade-in">
-                <div>
-                    <div class="flex items-center gap-3 mb-1">
-                        <h4 class="font-black text-lg text-yellow-400 tracking-tight">${d.name}</h4>
-                        <span class="text-[8px] uppercase tracking-widest font-bold bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded border border-yellow-500/20 shadow-sm">${d.status}</span>
+            <div class="bg-zinc-950 border border-white/10 p-6 rounded-3xl flex flex-col gap-5 text-white shadow-lg hover:border-yellow-500/30 transition-all group">
+                <div class="flex justify-between items-start border-b border-white/5 pb-4">
+                    <div>
+                        <h4 class="font-black text-xl text-yellow-400 tracking-tight group-hover:text-yellow-300 transition-colors">${d.name}</h4>
+                        <p class="text-[9px] opacity-40 uppercase tracking-widest font-mono mt-1">Submitted: ${submittedDate}</p>
                     </div>
-                    <p class="text-xs opacity-70 font-mono">${d.email} &nbsp;•&nbsp; ${d.phone}</p>
-                    <p class="text-[10px] mt-2 opacity-50 uppercase tracking-widest font-bold flex gap-4">
-                        <span>👥 Teachers: ${d.teachers}</span>
-                        <span>🎓 Students: ${d.students}</span>
-                    </p>
+                    <span class="text-[9px] uppercase tracking-widest font-black ${d.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/20' : (d.status === 'approved' ? 'bg-green-500/20 text-green-400 border border-green-500/20' : 'bg-red-500/20 text-red-400 border border-red-500/20')} px-3 py-1.5 rounded-lg shadow-sm">${d.status}</span>
                 </div>
-                <div class="flex gap-2 shrink-0">
-                    <button onclick="window.viewInstituteRequest('${payload}', '${docSnap.id}')" class="bg-yellow-500 text-black px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-transform shadow-[0_5px_15px_rgba(234,179,8,0.3)]">Review Node</button>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs bg-black/40 p-4 rounded-2xl border border-white/5">
+                    <div><span class="opacity-50 uppercase tracking-widest text-[9px] font-black block mb-1">Contact Email</span><p class="font-mono text-brandBlue">${d.email}</p></div>
+                    <div><span class="opacity-50 uppercase tracking-widest text-[9px] font-black block mb-1">Contact Phone</span><p class="font-mono">${d.phone}</p></div>
+                    <div><span class="opacity-50 uppercase tracking-widest text-[9px] font-black block mb-1">Total Teachers</span><p class="font-bold text-brandOrange">${d.teachers}</p></div>
+                    <div><span class="opacity-50 uppercase tracking-widest text-[9px] font-black block mb-1">Total Students</span><p class="font-bold text-brandOrange">${d.students}</p></div>
+                    <div class="md:col-span-2"><span class="opacity-50 uppercase tracking-widest text-[9px] font-black block mb-1">Physical Address</span><p class="opacity-90 leading-relaxed">${d.address}</p></div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-3 mt-2">
+                    ${d.status === 'pending' ? `
+                        <button onclick="window.updateInstRequestStatus('${docSnap.id}', 'approved')" class="flex-1 bg-green-500/20 text-green-400 hover:bg-green-500 hover:text-white px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all border border-green-500/30 shadow-md">Approve Request</button>
+                        <button onclick="window.updateInstRequestStatus('${docSnap.id}', 'rejected')" class="flex-1 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all border border-red-500/30 shadow-md">Reject Request</button>
+                    ` : `
+                        <div class="w-full bg-white/5 border border-white/10 rounded-xl py-3 text-center">
+                            <p class="text-[10px] uppercase font-black opacity-40 tracking-widest">Request Processed & Closed</p>
+                        </div>
+                    `}
                 </div>
             </div>`;
         });
@@ -705,8 +698,9 @@ window.loadAdminRequests = async () => {
 
 // Global handlers to ensure admin data loads when switching sections
 document.addEventListener('click', (e) => {
-    if (e.target && e.target.getAttribute('onclick') === "showSection('plans-section')") loadPlans();
-    if (e.target && e.target.getAttribute('onclick') === "showSection('institutes-section')") loadInstitutes();
-    if (e.target && e.target.getAttribute('onclick') === "showSection('payments-section')") loadPayments();
-    if (e.target && e.target.getAttribute('onclick') === "showSection('subscriptions-section')") loadSubscriptions();
+    if (e.target && e.target.getAttribute('onclick') === "window.showSection('plans-section')") loadPlans();
+    if (e.target && e.target.getAttribute('onclick') === "window.showSection('institutes-section')") loadInstitutes();
+    if (e.target && e.target.getAttribute('onclick') === "window.showSection('payments-section')") loadPayments();
+    if (e.target && e.target.getAttribute('onclick') === "window.showSection('subscriptions-section')") loadSubscriptions();
+    if (e.target && e.target.getAttribute('onclick') === "window.loadAdminRequests()") window.loadAdminRequests();
 });
