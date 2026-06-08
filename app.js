@@ -183,21 +183,21 @@ window.processPlanSave = async () => {
 window.loadPlans = async () => {
     const container = document.getElementById('plans-list');
     if (!container) return;
-    container.innerHTML = "<p class='opacity-50 text-xs py-2 text-[var(--text-main)]'>Fetching plans matrix...</p>";
+    container.innerHTML = "<p class='opacity-50 text-[var(--text-main)] text-xs py-2'>Fetching plans matrix...</p>";
 
     try {
         const snap = await getDocs(collection(db, "plans"));
         container.innerHTML = "";
         
         if (snap.empty) {
-            container.innerHTML = "<p class='opacity-50 text-xs py-2 text-[var(--text-main)]'>No active plans configured.</p>";
+            container.innerHTML = "<p class='opacity-50 text-[var(--text-main)] text-xs py-2'>No active plans configured.</p>";
             return;
         }
 
         snap.forEach((docSnap) => {
             const data = docSnap.data();
             container.innerHTML += `
-            <div class="bg-[var(--input-bg)] border border-[var(--border-color)] p-4 rounded-xl mb-3 flex justify-between items-center text-[var(--text-main)]">
+            <div class="bg-[var(--input-bg)] border border-[var(--border-color)] text-[var(--text-main)] p-4 rounded-xl mb-3 flex justify-between items-center">
                 <div>
                     <h3 class="text-sm font-black text-brandBlue uppercase tracking-widest">${data.name}</h3>
                     <p class="text-xs opacity-70 mt-1">Duration: ${data.duration} Days | Price: ₹${data.price}</p>
@@ -224,20 +224,20 @@ window.showInstituteSuccessModal = (name, logo, uniqueId) => {
     }
     modal.classList.remove('hidden');
     content.innerHTML = `
-        <div class="fade-in text-center p-6 md:p-10 text-[var(--text-main)]">
-            <img src="${logo || 'https://ui-avatars.com/api/?name='+encodeURIComponent(name)}" class="w-24 h-24 mx-auto rounded-2xl object-cover border-[3px] border-purple-500 mb-6 shadow-xl bg-[var(--bg-main)]">
+        <div class="fade-in text-center p-6 md:p-10">
+            <img src="${logo || 'https://ui-avatars.com/api/?name='+encodeURIComponent(name)}" class="w-24 h-24 mx-auto rounded-2xl object-cover border-[3px] border-purple-500 mb-6 shadow-xl bg-black">
             <h2 class="text-3xl font-black italic text-purple-400 mb-2">${name}</h2>
-            <p class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-6">Institute Successfully Registered</p>
+            <p class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-6 text-[var(--text-main)]">Institute Successfully Registered</p>
             
             <div class="bg-[var(--input-bg)] border border-[var(--border-color)] p-5 rounded-2xl flex items-center justify-between mb-8 shadow-inner">
                 <div class="text-left">
                     <p class="text-[8px] uppercase tracking-widest text-purple-400 font-bold mb-1">Unique Access ID</p>
-                    <span class="font-mono text-xl tracking-widest font-black" id="new-inst-id">${uniqueId}</span>
+                    <span class="font-mono text-xl tracking-widest font-black text-[var(--text-main)]" id="new-inst-id">${uniqueId}</span>
                 </div>
                 <button onclick="navigator.clipboard.writeText('${uniqueId}'); this.innerText='COPIED!'; setTimeout(()=>this.innerText='COPY', 2000);" class="bg-purple-500/20 text-purple-400 hover:bg-purple-600 hover:text-white border border-purple-500/30 px-5 py-3 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all shadow-md">Copy</button>
             </div>
             
-            <p class="text-[10px] opacity-40 mb-6 italic leading-relaxed">Share this unique ID with students and teachers to allow them to join your private or public campus matrix.</p>
+            <p class="text-[10px] opacity-40 mb-6 italic leading-relaxed text-[var(--text-main)]">Share this unique ID with students and teachers to allow them to join your private or public campus matrix.</p>
             <button onclick="document.getElementById('custom-modal').classList.add('hidden')" class="w-full py-4 bg-purple-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-purple-700 hover:scale-[1.02] transition-all">Acknowledge & Close</button>
         </div>
     `;
@@ -336,15 +336,13 @@ window.editInstitute = (id) => {
 
     window._editingInstId = id;
     
-    // Ensure the button acts as Update
     let instActionBtn = document.getElementById('inst-action-btn');
     if(!instActionBtn) {
-        // Find it if ID wasn't explicitly set in HTML
         const btns = document.querySelectorAll('#institutes-section button');
         btns.forEach(b => {
             if(b.innerText.includes('Generate & Register Node') || b.innerText.includes('Update Institute Node')) {
                 instActionBtn = b;
-                instActionBtn.id = 'inst-action-btn'; // set ID for future
+                instActionBtn.id = 'inst-action-btn'; 
             }
         });
     }
@@ -437,10 +435,10 @@ window.renderInstitutesUI = () => {
     target.innerHTML = filtered.map(data => `
         <div class="bg-[var(--input-bg)] border border-[var(--border-color)] p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4 text-[var(--text-main)]">
             <div class="flex items-center gap-4">
-                <img src="${data.logo || 'https://ui-avatars.com/api/?name='+data.name}" class="w-12 h-12 rounded-xl object-cover border border-[var(--border-color)] bg-[var(--bg-main)]">
+                <img src="${data.logo || 'https://ui-avatars.com/api/?name='+data.name}" class="w-12 h-12 rounded-xl object-cover border border-[var(--border-color)] bg-black">
                 <div>
                     <h3 class="text-sm font-black text-purple-400 tracking-tight">${data.name}</h3>
-                    <p class="text-[10px] opacity-80 mt-1 font-mono tracking-widest text-brandBlue">ID: ${data.uniqueId} <span class="opacity-50">|</span> Owner: ${data.teacherId}</p>
+                    <p class="text-[10px] opacity-80 mt-1 font-mono tracking-widest text-brandBlue">ID: ${data.uniqueId} <span class="opacity-50 text-[var(--text-main)]">|</span> Owner: ${data.teacherId}</p>
                     <p class="text-[9px] opacity-50 mt-1 uppercase tracking-widest flex gap-3">
                         <span>Mode: <b class="${data.privacyMode === 'private' ? 'text-red-400' : 'text-green-400'}">${data.privacyMode}</b></span>
                         <span>End: <b>${data.planEnd || 'No Expiry'}</b></span>
@@ -494,14 +492,14 @@ window.addPayment = async () => {
 window.loadPayments = async () => {
     const container = document.getElementById('payments-list');
     if (!container) return;
-    container.innerHTML = "<p class='opacity-50 text-xs py-2 text-[var(--text-main)]'>Scanning transaction ledger...</p>";
+    container.innerHTML = "<p class='opacity-50 text-[var(--text-main)] text-xs py-2'>Scanning transaction ledger...</p>";
 
     try {
         const snap = await getDocs(query(collection(db, "payments"), orderBy("timestamp", "desc")));
         container.innerHTML = "";
         
         if (snap.empty) {
-            container.innerHTML = "<p class='opacity-50 text-xs py-2 text-[var(--text-main)]'>No transactions found.</p>";
+            container.innerHTML = "<p class='opacity-50 text-[var(--text-main)] text-xs py-2'>No transactions found.</p>";
             return;
         }
 
@@ -513,7 +511,7 @@ window.loadPayments = async () => {
                     <h3 class="text-sm font-black text-brandOrange">₹${data.amount}</h3>
                     <p class="text-[10px] opacity-70 mt-1 uppercase tracking-widest font-mono">TXN: ${data.transactionId} | INST: ${data.instituteId}</p>
                 </div>
-                <span class="text-[9px] font-bold bg-green-500/20 text-green-400 px-2 py-1 rounded border border-green-500/20 uppercase tracking-widest">${data.status}</span>
+                <span class="text-[9px] font-bold bg-green-500/20 text-green-500 px-2 py-1 rounded border border-green-500/20 uppercase tracking-widest">${data.status}</span>
             </div>`;
         });
     } catch (e) {
@@ -579,14 +577,14 @@ window.toggleSubscriptionRenewal = async (id, newValue) => {
 window.loadSubscriptions = async () => {
     const container = document.getElementById('subscriptions-list');
     if (!container) return;
-    container.innerHTML = "<p class='opacity-50 text-xs py-2 text-[var(--text-main)]'>Loading active allocations...</p>";
+    container.innerHTML = "<p class='opacity-50 text-[var(--text-main)] text-xs py-2'>Loading active allocations...</p>";
 
     try {
         const snap = await getDocs(query(collection(db, "subscriptions"), orderBy("startDate", "desc")));
         container.innerHTML = "";
         
         if (snap.empty) {
-            container.innerHTML = "<p class='opacity-50 text-xs py-2 text-[var(--text-main)]'>No active subscriptions.</p>";
+            container.innerHTML = "<p class='opacity-50 text-[var(--text-main)] text-xs py-2'>No active subscriptions.</p>";
             return;
         }
 
@@ -601,18 +599,18 @@ window.loadSubscriptions = async () => {
             <div class="bg-[var(--input-bg)] border border-[var(--border-color)] p-5 rounded-2xl mb-3 flex flex-col gap-4 shadow-sm hover:border-green-500/30 transition-colors text-[var(--text-main)]">
                 <div class="flex justify-between items-center">
                     <div>
-                        <h3 class="text-sm font-black text-green-400 uppercase tracking-widest">${data.planId}</h3>
+                        <h3 class="text-sm font-black text-green-500 uppercase tracking-widest">${data.planId}</h3>
                         <p class="text-[10px] opacity-70 mt-1 uppercase tracking-widest font-mono">INST: ${data.instituteId}</p>
                     </div>
-                    <span class="text-[9px] font-bold bg-green-500/20 text-green-400 px-3 py-1.5 rounded-lg border border-green-500/20 uppercase tracking-widest">${data.status}</span>
+                    <span class="text-[9px] font-bold bg-green-500/20 text-green-500 px-3 py-1.5 rounded-lg border border-green-500/20 uppercase tracking-widest">${data.status}</span>
                 </div>
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-t border-[var(--border-color)] pt-4 gap-4">
                     <div class="text-[10px] uppercase tracking-widest opacity-80 font-mono space-y-1.5 bg-[var(--bg-main)] p-3 rounded-lg w-full md:w-auto">
-                        <p>Start Date: <span>${startStr}</span></p>
-                        <p>Expiry Date: <span>${expStr}</span></p>
-                        <p>Auto-Renewal: <span class="${isAutoRenew ? 'text-green-400 drop-shadow-[0_0_5px_rgba(74,222,128,0.5)]' : 'text-red-400'} font-black">${isAutoRenew ? 'ACTIVE' : 'DISABLED'}</span></p>
+                        <p>Start Date: <span class="font-black">${startStr}</span></p>
+                        <p>Expiry Date: <span class="font-black">${expStr}</span></p>
+                        <p>Auto-Renewal: <span class="${isAutoRenew ? 'text-green-500 drop-shadow-[0_0_5px_rgba(74,222,128,0.5)]' : 'text-red-500'} font-black">${isAutoRenew ? 'ACTIVE' : 'DISABLED'}</span></p>
                     </div>
-                    <button onclick="window.toggleSubscriptionRenewal('${docSnap.id}', ${!isAutoRenew})" class="${isAutoRenew ? 'bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-600' : 'bg-green-500/10 text-green-400 border border-green-500/30 hover:bg-green-600'} hover:text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all w-full md:w-auto shadow-sm">
+                    <button onclick="window.toggleSubscriptionRenewal('${docSnap.id}', ${!isAutoRenew})" class="${isAutoRenew ? 'bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-600' : 'bg-green-500/10 text-green-500 border border-green-500/30 hover:bg-green-600'} hover:text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all w-full md:w-auto shadow-sm">
                         ${isAutoRenew ? 'Disable Auto-Renew' : 'Enable Auto-Renew'}
                     </button>
                 </div>
@@ -642,7 +640,7 @@ window.loadAdminRequests = async () => {
     window.showSection('requests-section');
     const container = document.getElementById('admin-requests-list');
     if (!container) return;
-    container.innerHTML = "<p class='opacity-50 text-xs py-2 text-center text-[var(--text-main)]'>Scanning queue...</p>";
+    container.innerHTML = "<p class='opacity-50 text-[var(--text-main)] text-xs py-2 text-center'>Scanning queue...</p>";
 
     try {
         const snap = await getDocs(query(collection(db, "instituteRequests"), orderBy("createdAt", "desc")));
@@ -650,8 +648,8 @@ window.loadAdminRequests = async () => {
         
         if (snap.empty) {
             container.innerHTML = `
-            <div class="bg-[var(--input-bg)] border border-[var(--border-color)] p-10 rounded-2xl text-center shadow-inner text-[var(--text-main)]">
-                <p class="opacity-30 uppercase font-black tracking-widest text-xs">No pending requests</p>
+            <div class="bg-[var(--input-bg)] border border-[var(--border-color)] p-10 rounded-2xl text-center shadow-inner">
+                <p class="opacity-30 uppercase font-black tracking-widest text-xs text-[var(--text-main)]">No pending requests</p>
             </div>`;
             return;
         }
@@ -664,7 +662,7 @@ window.loadAdminRequests = async () => {
             <div class="bg-[var(--input-bg)] border border-[var(--border-color)] p-6 rounded-3xl flex flex-col gap-5 text-[var(--text-main)] shadow-lg hover:border-yellow-500/30 transition-all group">
                 <div class="flex justify-between items-start border-b border-[var(--border-color)] pb-4">
                     <div>
-                        <h4 class="font-black text-xl text-yellow-400 tracking-tight group-hover:text-yellow-500 transition-colors">${d.name}</h4>
+                        <h4 class="font-black text-xl text-yellow-500 tracking-tight transition-colors">${d.name}</h4>
                         <p class="text-[9px] opacity-40 uppercase tracking-widest font-mono mt-1">Submitted: ${submittedDate}</p>
                     </div>
                     <span class="text-[9px] uppercase tracking-widest font-black ${d.status === 'pending' ? 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/20' : (d.status === 'approved' ? 'bg-green-500/20 text-green-500 border border-green-500/20' : 'bg-red-500/20 text-red-500 border border-red-500/20')} px-3 py-1.5 rounded-lg shadow-sm">${d.status}</span>
@@ -680,11 +678,11 @@ window.loadAdminRequests = async () => {
 
                 <div class="flex flex-col md:flex-row gap-3 mt-2">
                     ${d.status === 'pending' ? `
-                        <button onclick="window.updateInstRequestStatus('${docSnap.id}', 'approved')" class="flex-1 bg-green-500/20 text-green-500 hover:bg-green-500 hover:text-white px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all border border-green-500/30 shadow-md">Approve Request</button>
-                        <button onclick="window.updateInstRequestStatus('${docSnap.id}', 'rejected')" class="flex-1 bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all border border-red-500/30 shadow-md">Reject Request</button>
+                        <button onclick="window.updateInstRequestStatus('${docSnap.id}', 'approved')" class="flex-1 bg-green-500/20 text-green-500 hover:bg-green-600 hover:text-white px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all border border-green-500/30 shadow-md">Approve Request</button>
+                        <button onclick="window.updateInstRequestStatus('${docSnap.id}', 'rejected')" class="flex-1 bg-red-500/20 text-red-500 hover:bg-red-600 hover:text-white px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all border border-red-500/30 shadow-md">Reject Request</button>
                     ` : `
-                        <div class="w-full bg-[var(--border-color)] border border-[var(--border-color)] rounded-xl py-3 text-center">
-                            <p class="text-[10px] uppercase font-black opacity-40 tracking-widest text-[var(--text-main)]">Request Processed & Closed</p>
+                        <div class="w-full bg-[var(--bg-main)] border border-[var(--border-color)] rounded-xl py-3 text-center">
+                            <p class="text-[10px] uppercase font-black opacity-40 tracking-widest">Request Processed & Closed</p>
                         </div>
                     `}
                 </div>
