@@ -132,7 +132,6 @@
         @keyframes popUp { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: none; } }
         
-        /* Profile Ring Styling Utility Class Placeholder */
         .profile-ring-stacked { border-radius: 50%; padding: 2px; }
     </style>
 </head>
@@ -195,7 +194,7 @@
                 
                 <div id="signup-fields" class="hidden space-y-4 mb-4">
                     <input type="text" id="reg-name" placeholder="Full Name" class="input-field">
-                    <select id="reg-role" class="input-field" onchange="window.toggleRoleFields(this.value, 'reg-privacy')">
+                    <select id="reg-role" class="input-field" onchange="window.toggleRoleFields(this.value)">
                         <option value="student">Student Account</option>
                         <option value="teacher">Teacher Account</option>
                     </select>
@@ -279,13 +278,9 @@
             <h2 class="text-3xl font-black mb-6 italic">Finalize Profile</h2>
             <div class="space-y-4">
                 <input type="text" id="ob-name" placeholder="Full Name" class="input-field">
-                <select id="ob-role" class="input-field" onchange="window.toggleRoleFields(this.value, 'ob-privacy')">
+                <select id="ob-role" class="input-field">
                     <option value="student">Student</option>
                     <option value="teacher">Teacher</option>
-                </select>
-                <select id="ob-privacy" class="input-field hidden">
-                    <option value="public">Public Account (Visible to all)</option>
-                    <option value="private">Private Account (Requires Approval)</option>
                 </select>
                 <input type="password" id="ob-pass" placeholder="Secure Password" class="input-field">
                 <button onclick="finalizeProfile()" class="w-full py-5 btn-brand shadow-xl">Activate Account</button>
@@ -326,23 +321,23 @@
         </div>
     </div>
 
-    <div id="admin-dashboard" class="hidden fixed inset-0 bg-black/80 dark:bg-black/95 backdrop-blur-xl z-[9999] flex items-center justify-center p-4 fade-in">
-        <div class="glass bg-[var(--bg-main)] text-[var(--text-main)] w-full max-w-6xl h-[95%] rounded-[3rem] p-8 md:p-10 overflow-hidden flex flex-col shadow-2xl border border-[var(--border-color)]">
+    <div id="admin-dashboard" class="hidden fixed inset-0 bg-[var(--glass-bg)] backdrop-blur-xl z-[9999] flex items-center justify-center p-4 fade-in">
+        <div class="bg-[var(--bg-main)] border border-[var(--border-color)] text-[var(--text-main)] w-full max-w-6xl h-[95%] rounded-[3rem] p-8 md:p-10 overflow-hidden flex flex-col shadow-2xl">
             
             <div class="flex justify-between items-center mb-8 border-b border-[var(--border-color)] pb-6">
                 <div>
                     <h1 class="text-3xl md:text-4xl font-black italic text-brandOrange">Core Dashboard</h1>
                     <p class="text-xs opacity-50 uppercase tracking-widest font-bold mt-2">Super Administrator Access Level</p>
                 </div>
-                <button onclick="window.closeAdminDashboard()" class="bg-[var(--input-bg)] text-[var(--text-main)] hover:bg-red-600 hover:scale-110 hover:text-white w-12 h-12 rounded-full flex items-center justify-center transition-all font-black border border-[var(--border-color)]">✕</button>
+                <button onclick="window.closeAdminDashboard()" class="bg-[var(--input-bg)] hover:bg-red-600 hover:scale-110 text-[var(--text-main)] hover:text-white w-12 h-12 rounded-full flex items-center justify-center transition-all font-black border border-[var(--border-color)]">✕</button>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-                <button onclick="window.showSection('plans-section')" class="bg-brandBlue/10 text-brandBlue hover:bg-brandBlue hover:scale-105 hover:text-white border border-brandBlue/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Plans</button>
-                <button onclick="window.showSection('institutes-section')" class="bg-purple-500/10 text-purple-500 hover:bg-purple-600 hover:scale-105 hover:text-white border border-purple-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Institutes</button>
-                <button onclick="window.showSection('payments-section')" class="bg-brandOrange/10 text-brandOrange hover:bg-brandOrange hover:scale-105 hover:text-white border border-brandOrange/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Payments</button>
-                <button onclick="window.showSection('subscriptions-section')" class="bg-green-500/10 text-green-500 hover:bg-green-600 hover:scale-105 hover:text-white border border-green-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Subscriptions</button>
-                <button onclick="window.loadAdminRequests()" class="bg-yellow-500/10 text-yellow-500 hover:bg-yellow-600 hover:scale-105 hover:text-white border border-yellow-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Requests</button>
+                <button onclick="window.showSection('plans-section')" class="bg-brandBlue/20 text-brandBlue hover:bg-brandBlue hover:scale-105 hover:text-white border border-brandBlue/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Plans</button>
+                <button onclick="window.showSection('institutes-section')" class="bg-purple-500/20 text-purple-400 hover:bg-purple-600 hover:scale-105 hover:text-white border border-purple-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Institutes</button>
+                <button onclick="window.showSection('payments-section')" class="bg-brandOrange/20 text-brandOrange hover:bg-brandOrange hover:scale-105 hover:text-white border border-brandOrange/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Payments</button>
+                <button onclick="window.showSection('subscriptions-section')" class="bg-green-500/20 text-green-500 hover:bg-green-600 hover:scale-105 hover:text-white border border-green-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Subscriptions</button>
+                <button onclick="window.loadAdminRequests()" class="bg-yellow-500/20 text-yellow-500 hover:bg-yellow-600 hover:scale-105 hover:text-white border border-yellow-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Requests</button>
             </div>
 
             <div class="flex-grow overflow-y-auto pr-4 custom-scrollbar">
@@ -356,14 +351,14 @@
                     </select>
                     <div id="plan-fields-container" class="space-y-4 mt-4"></div>
                     <button onclick="window.processPlanSave()" class="w-full py-4 bg-brandBlue text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-blue-600 hover:scale-[1.02] transition-all mt-4">Save Plan Configuration</button>
-                    <div id="plans-list" class="mt-8 space-y-2 text-[var(--text-main)]"></div>
+                    <div id="plans-list" class="mt-8 space-y-2"></div>
                 </div>
 
                 <div id="institutes-section" class="admin-section hidden space-y-4 max-w-4xl mx-auto fade-in">
                     <h2 class="text-2xl font-black italic text-purple-400 mb-6">Institute Registry</h2>
                     <div class="grid md:grid-cols-2 gap-8">
-                        <div class="space-y-4 bg-[var(--input-bg)] p-6 rounded-3xl border border-[var(--border-color)] shadow-sm">
-                            <h3 class="text-[10px] font-black uppercase tracking-widest text-purple-500 mb-4">Node Configuration</h3>
+                        <div class="space-y-4 bg-[var(--input-bg)] p-6 rounded-3xl border border-[var(--border-color)]">
+                            <h3 class="text-[10px] font-black uppercase tracking-widest text-purple-400 mb-4">Node Configuration</h3>
                             <input id="inst-teacher-id" type="text" placeholder="Teacher's Owner ID" class="input-field">
                             <input id="inst-name" type="text" placeholder="Institute Name" class="input-field">
                             <input id="inst-logo" type="text" placeholder="Logo URL" class="input-field">
@@ -384,7 +379,7 @@
                             <button id="inst-action-btn" onclick="window.processInstituteSave()" class="w-full py-4 bg-purple-600 text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-purple-700 hover:scale-[1.02] transition-all mt-4">Generate & Register Node</button>
                         </div>
                         <div>
-                            <div id="institutes-list" class="space-y-2 text-[var(--text-main)]"></div>
+                            <div id="institutes-list" class="space-y-2"></div>
                         </div>
                     </div>
                 </div>
@@ -396,7 +391,7 @@
                     <input id="payment-gateway" type="text" placeholder="Gateway Node" class="input-field">
                     <input id="payment-transaction" type="text" placeholder="Transaction Signature ID" class="input-field">
                     <button onclick="window.addPayment()" class="w-full py-4 bg-brandOrange text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-[#e0861a] hover:scale-[1.02] transition-all mt-4">Log Payment</button>
-                    <div id="payments-list" class="mt-8 space-y-2 text-[var(--text-main)]"></div>
+                    <div id="payments-list" class="mt-8 space-y-2"></div>
                 </div>
 
                 <div id="subscriptions-section" class="admin-section hidden space-y-4 max-w-xl mx-auto fade-in">
@@ -405,12 +400,12 @@
                     <input id="subscription-plan" type="text" placeholder="Plan ID" class="input-field">
                     <input id="subscription-payment" type="text" placeholder="Payment Link ID" class="input-field">
                     <button onclick="window.addSubscription()" class="w-full py-4 bg-green-600 text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-green-700 hover:scale-[1.02] transition-all mt-4">Allocate Subscription</button>
-                    <div id="subscriptions-list" class="mt-8 space-y-2 text-[var(--text-main)]"></div>
+                    <div id="subscriptions-list" class="mt-8 space-y-2"></div>
                 </div>
 
                 <div id="requests-section" class="admin-section hidden space-y-4 max-w-2xl mx-auto fade-in">
                     <h2 class="text-2xl font-black italic text-yellow-500 mb-6">Onboarding Requests</h2>
-                    <div id="admin-requests-list" class="space-y-3 text-[var(--text-main)]"></div>
+                    <div id="admin-requests-list" class="space-y-3"></div>
                 </div>
             </div>
         </div>
@@ -423,12 +418,13 @@
         let profile = null, isSignup = false, otpCode = null, tempUser = null, activeGroupId = null, currentTab = 'home', videoPlayer = null;
         let currentVideoContext = null, watermarkInterval = null, groupMessageTrackers = {}, activeLiveChatListenerUnsub = null;
         let notificationsMap = []; 
-        let currentInstituteMap = {}; // Cache for badges
+        let currentInstituteMap = {}; 
         
         window._profileCropper = null;
         window._currentRotation = 0;
         window._currentContentList = [];
         window._currentCourseList = [];
+        window._tempGooglePhoto = "";
 
         const tabsOrderIndex = ['home', 'groups', 'courses', 'content'];
         let touchStartX = 0;
@@ -447,14 +443,6 @@
         // GLOBALS FIXES & NEW LOGIC 
         // =========================================
 
-        window.toast = function(m, type = "s") { 
-            const b = document.getElementById('toast-box'), d = document.createElement('div'); 
-            d.className = 'toast-pill'; 
-            if (type === "error") d.style.borderColor = "#ff4444"; 
-            d.innerText = m; b.appendChild(d); 
-            setTimeout(() => d.remove(), 2500); 
-        };
-
         window.showScreen = function(id) { 
             ['auth-screen', 'verify-screen', 'onboarding-screen', 'dashboard'].forEach(s => document.getElementById(s).classList.add('hidden')); 
             const s = document.getElementById(id);
@@ -462,11 +450,12 @@
             s.classList.remove('fade-in'); void s.offsetWidth; s.classList.add('fade-in');
         };
 
-        window.toggleRoleFields = (role, targetId = 'reg-privacy') => {
-            const privacySelect = document.getElementById(targetId);
-            if(privacySelect) {
-                if (role === 'teacher') privacySelect.classList.remove('hidden');
-                else privacySelect.classList.add('hidden');
+        window.toggleRoleFields = (role) => {
+            const privacySelect = document.getElementById('reg-privacy');
+            if (role === 'teacher') {
+                privacySelect.classList.remove('hidden');
+            } else {
+                privacySelect.classList.add('hidden');
             }
         };
 
@@ -487,7 +476,7 @@
                             <input id="req-inst-students" placeholder="# of Students" type="number" class="input-field text-sm">
                         </div>
                         <textarea id="req-inst-address" placeholder="Physical Address" class="input-field text-sm h-24 resize-none"></textarea>
-                        <button onclick="submitInstituteRequest()" class="w-full py-4 btn-brand mt-2 text-xs">Submit Request</button>
+                        <button onclick="window.submitInstituteRequest()" class="w-full py-4 btn-brand mt-2 text-xs">Submit Request</button>
                     </div>
                 </div>
             `;
@@ -504,10 +493,10 @@
                 status: 'pending',
                 createdAt: Core.serverTimestamp()
             };
-            if(!data.name || !data.email) return window.toast("Name and Email are required", "error");
+            if(!data.name || !data.email) return toast("Name and Email are required", "error");
             
             await Core.addDoc(Core.collection(Core.db, "instituteRequests"), data);
-            window.toast("Request submitted successfully. Our team will contact you.");
+            toast("Request submitted successfully. Our team will contact you.");
             window.closeCustomModal();
         };
 
@@ -526,10 +515,10 @@
                     await Core.sendOTP(e, otpCode); 
                     document.getElementById('verify-note').innerText = `OTP sent to ${e}`; 
                     window.showScreen('verify-screen'); 
-                } catch(err) { window.toast("Relay network anomaly", "error"); }
+                } catch(err) { toast("Relay network anomaly", "error"); }
             } else { 
                 try { await Core.signInWithEmailAndPassword(Core.auth, e, p); } 
-                catch (err) { window.toast(err.message, "error"); } 
+                catch (err) { toast(err.message, "error"); } 
             }
         };
 
@@ -549,15 +538,15 @@
                     if (r === 'teacher') {
                         userData.teacherId = "OC-" + n.split(' ')[0].toUpperCase() + Math.floor(100+Math.random()*899);
                         let expiry = new Date();
-                        expiry.setDate(expiry.getDate() + 14); // 14 day trial config
+                        expiry.setDate(expiry.getDate() + 14); 
                         userData.plan = 'free_trial';
                         userData.planExpiresAt = expiry;
                     }
 
                     await Core.setDoc(Core.doc(Core.db, "users", cred.user.uid), userData);
                     location.reload();
-                } catch(err) { window.toast(err.message, "error"); }
-            } else window.toast("Verification payload rejection", "error");
+                } catch(err) { toast(err.message, "error"); }
+            } else toast("Verification payload rejection", "error");
         };
 
         // UI STYLING HELPERS
@@ -587,7 +576,7 @@
 
         window.renderInstBadgeHtml = (instData, extraClasses = '') => {
             if(!instData || !instData.logo) return '';
-            return `<img src="${instData.logo}" class="${extraClasses} bg-[var(--bg-main)]" title="${instData.name}">`;
+            return `<img src="${instData.logo}" class="absolute -bottom-2 -right-2 w-8 h-8 md:w-10 md:h-10 rounded-xl border-[2px] border-[var(--bg-main)] object-cover bg-black shadow-lg z-20 ${extraClasses}" title="${instData.name}">`;
         };
 
         function injectSkeletonState(targetElementId) {
@@ -595,9 +584,9 @@
             if(!el) return;
             el.innerHTML = `
                 <div class="space-y-4 animate-pulse w-full fade-in">
-                    <div class="h-24 bg-zinc-400/20 dark:bg-zinc-800/50 rounded-3xl w-full border border-[var(--border-color)]"></div>
-                    <div class="h-24 bg-zinc-400/20 dark:bg-zinc-800/50 rounded-3xl w-full border border-[var(--border-color)]"></div>
-                    <div class="h-24 bg-zinc-400/20 dark:bg-zinc-800/50 rounded-3xl w-full border border-[var(--border-color)]"></div>
+                    <div class="h-24 bg-[var(--border-color)] rounded-3xl w-full border border-[var(--border-color)]"></div>
+                    <div class="h-24 bg-[var(--border-color)] rounded-3xl w-full border border-[var(--border-color)]"></div>
+                    <div class="h-24 bg-[var(--border-color)] rounded-3xl w-full border border-[var(--border-color)]"></div>
                 </div>`;
         }
 
@@ -706,7 +695,7 @@
             if (e.key === 'PrintScreen') {
                 document.getElementById('anti-theft-blank').style.display = 'flex';
                 if (videoPlayer && typeof videoPlayer.pause === 'function') videoPlayer.pause();
-                window.toast("Protected Asset Locked", "error");
+                toast("Protected Asset Locked", "error");
             }
         });
 
@@ -714,7 +703,7 @@
             if ((e.metaKey || e.ctrlKey || e.shiftKey) && ['s', 'S', '4', '3', 'p', 'P'].includes(e.key)) {
                 document.getElementById('anti-theft-blank').style.display = 'flex';
                 if (videoPlayer && typeof videoPlayer.pause === 'function') videoPlayer.pause();
-                window.toast("Capture Interrupted", "error");
+                toast("Capture Interrupted", "error");
             }
         });
 
@@ -802,7 +791,7 @@
                 if(pill) {
                     pill.innerText = notificationsMap.length;
                     pill.classList.remove('hidden');
-                    window.toast(`🔔 ${type}: ${text.substring(0, 40)}...`);
+                    toast(`🔔 ${type}: ${text.substring(0, 40)}...`);
                 }
             } catch(e) { console.error(e); }
         };
@@ -851,7 +840,7 @@
                     pill.innerText = notificationsMap.length;
                     if(notificationsMap.length === 0) pill.classList.add('hidden');
                 }
-            } catch(e) { console.error(e); window.toast("Failed to clear", "error"); }
+            } catch(e) { console.error(e); toast("Failed to clear", "error"); }
         };
 
         window.clearAllNotifications = async () => {
@@ -862,7 +851,7 @@
                 notificationsMap = [];
                 const pill = document.getElementById('notify-pill');
                 if(pill) pill.classList.add('hidden');
-                window.toast("All notifications cleared");
+                toast("All notifications cleared");
                 window.closeCustomModal();
             } catch(e) { console.error(e); }
         };
@@ -963,17 +952,17 @@
 
         window.joinInstituteFromProfile = async () => {
             const id = document.getElementById('profile-join-inst-id').value.trim().toUpperCase();
-            if(!id) return window.toast("Enter valid Institute ID", "error");
+            if(!id) return toast("Enter valid Institute ID", "error");
             try {
                 const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"), Core.where("uniqueId", "==", id)));
-                if(snap.empty) return window.toast("Institute node not found", "error");
+                if(snap.empty) return toast("Institute node not found", "error");
                 
                 await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { instituteId: id });
-                window.toast("Successfully connected to institute hub!");
+                toast("Successfully connected to institute hub!");
                 setTimeout(() => location.reload(), 1500);
             } catch(e) {
                 console.error(e);
-                window.toast("Failed to process network join request", "error");
+                toast("Failed to process network join request", "error");
             }
         };
 
@@ -986,8 +975,8 @@
         window.processLocalAvatarUpload = (input) => {
             const file = input.files[0];
             if (!file) return;
-            if (!file.type.startsWith("image/")) return window.toast("Only image files are allowed", "error");
-            if (file.size > 5 * 1024 * 1024) return window.toast("Image size should be below 5MB", "error");
+            if (!file.type.startsWith("image/")) return toast("Only image files are allowed", "error");
+            if (file.size > 5 * 1024 * 1024) return toast("Image size should be below 5MB", "error");
             
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -1000,7 +989,7 @@
                             <h3 class="text-2xl font-black italic">Crop Profile Photo</h3>
                             <button onclick="showProfileSettings()" class="w-10 h-10 rounded-full bg-[var(--border-color)] hover:bg-brandOrange hover:scale-110 transition-all font-bold text-[var(--text-main)] hover:text-white">✕</button>
                         </div>
-                        <div class="bg-black rounded-3xl overflow-hidden border border-white/10 h-64 flex items-center justify-center">
+                        <div class="bg-black rounded-3xl overflow-hidden border border-[var(--border-color)] h-64 flex items-center justify-center">
                             <img id="cropper-image" src="${e.target.result}" class="max-w-full max-h-full">
                         </div>
                         <div class="flex flex-wrap gap-3 justify-center">
@@ -1032,14 +1021,14 @@
             const finalImage = croppedCanvas.toDataURL('image/jpeg', 0.9);
             window._tempHubAvatarBuffer = finalImage;
             window._profileCropper.destroy(); window._profileCropper = null;
-            showProfileSettings(); window.toast("Profile image updated");
+            showProfileSettings(); toast("Profile image updated");
         };
 
         window.removeCurrentProfilePhoto = () => {
             const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=ff6b00&color=fff&size=256`;
             document.getElementById('profile-hub-preview').src = avatar;
             window._tempHubAvatarBuffer = avatar;
-            window.toast("Profile photo removed");
+            toast("Profile photo removed");
         };
 
         window.generateSmartAvatar = () => {
@@ -1048,13 +1037,13 @@
             const avatarUrl = `https://api.dicebear.com/7.x/${randomStyle}/svg?seed=${encodeURIComponent(profile.name + Math.random())}`;
             document.getElementById('profile-hub-preview').src = avatarUrl;
             window._tempHubAvatarBuffer = avatarUrl;
-            window.toast("New digital avatar generated");
+            toast("New digital avatar generated");
         };
 
         window.saveProfileWorkspaceChanges = async (event) => {
             const updatedName = document.getElementById('profile-hub-name').value.trim();
             const updatedBio = document.getElementById('profile-hub-bio').value.trim();
-            if (!updatedName) return window.toast("Name cannot be left blank", "error");
+            if (!updatedName) return toast("Name cannot be left blank", "error");
             
             const saveButton = event.target;
             saveButton.innerHTML = "Saving...";
@@ -1065,11 +1054,11 @@
                 if (window._tempHubAvatarBuffer) updatePayload.photo = window._tempHubAvatarBuffer;
                 
                 await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), updatePayload);
-                window.toast("Profile updated successfully");
+                toast("Profile updated successfully");
                 setTimeout(() => location.reload(), 1000);
             } catch(e) {
                 console.error(e);
-                window.toast("Failed to update profile block", "error");
+                toast("Failed to update profile block", "error");
             } finally {
                 saveButton.innerHTML = "Save Profile Changes";
                 saveButton.disabled = false;
@@ -1081,7 +1070,7 @@
             if(!confirm("Final verification: You will lose all your course access and progress. Proceed?")) return;
             
             const dynamicVerificationToken = Math.floor(100000 + Math.random() * 900000);
-            window.toast("Sending security verification code...");
+            toast("Sending security verification code...");
             
             try {
                 await Core.sendOTP(profile.email, dynamicVerificationToken);
@@ -1096,14 +1085,14 @@
                         <button onclick="finalizeDestructivePurge(${dynamicVerificationToken})" class="w-full py-4 bg-red-600 text-white font-black uppercase rounded-2xl tracking-widest text-xs shadow-lg hover:bg-red-700 hover:scale-[1.02] transition-all">Permanently Delete Account</button>
                     </div>
                 `;
-            } catch(e) { window.toast("Verification dispatch failed", "error"); }
+            } catch(e) { toast("Verification dispatch failed", "error"); }
         };
 
         window.finalizeDestructivePurge = async (matchToken) => {
             const inputVal = document.getElementById('purge-token-input').value;
-            if(inputVal != matchToken) return window.toast("Incorrect verification code", "error");
+            if(inputVal != matchToken) return toast("Incorrect verification code", "error");
             
-            window.toast("Deleting account logs...");
+            toast("Deleting account logs...");
             await Core.deleteDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid));
             
             if(Core.auth.currentUser) {
@@ -1235,7 +1224,7 @@
             if (!videoId && !isDirectFile) {
                 window.open(rawUrl, '_blank');
                 window.closeVault();
-                window.toast("Redirecting to External Resource");
+                toast("Redirecting to External Resource");
                 return;
             }
 
@@ -1388,9 +1377,12 @@
                 target.innerHTML = sorted.map(d => {
                     const c = d.data();
                     return `<div class="glass p-4 rounded-2xl flex justify-between items-center border border-[var(--border-color)] hover:border-brandBlue/30 transition-colors shadow-sm hover:scale-[1.01] fade-in">
-                        <div class="flex items-center gap-4 truncate pr-4 flex-1">
+                        <div class="flex items-center gap-4 flex-1 overflow-hidden">
                             <img src="${window.getSmartPreview(c.url)}" class="w-16 h-10 object-cover rounded-lg shrink-0 border border-[var(--border-color)]">
-                            <div class="truncate"><h4 class="font-bold text-sm truncate">${c.title}</h4><p class="text-[9px] opacity-50 uppercase tracking-widest mt-1">${c.type} Asset • ${new Date(c.date?.seconds*1000).toLocaleDateString()}</p></div>
+                            <div class="truncate flex-1 min-w-0 pr-4">
+                                <h4 class="font-bold text-sm truncate w-full block">${c.title}</h4>
+                                <p class="text-[9px] opacity-50 uppercase tracking-widest mt-1">${c.type} Asset • ${new Date(c.date?.seconds*1000).toLocaleDateString()}</p>
+                            </div>
                         </div>
                         <div class="text-right shrink-0"><p class="text-lg font-black text-brandOrange">${c.views || 0}</p><p class="text-[8px] opacity-50 uppercase tracking-widest">Views</p></div>
                     </div>`;
@@ -1427,7 +1419,7 @@
                     const navBlock = document.getElementById('nav-branding-block');
                     if (navBlock) {
                         navBlock.innerHTML = `
-                            <img src="${targetInstitute.logo || 'https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg'}" class="h-8 md:h-10 rounded-xl group-hover:scale-110 transition-transform duration-300 shadow-md border border-[var(--border-color)] object-cover bg-[var(--bg-main)]">
+                            <img src="${targetInstitute.logo || 'https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg'}" class="h-8 md:h-10 rounded-xl group-hover:scale-110 transition-transform duration-300 shadow-md border border-[var(--border-color)] object-cover bg-black">
                             <h2 class="text-xl md:text-2xl font-black italic tracking-tighter transition-colors group-hover:text-brandBlue">${targetInstitute.name}</h2>
                         `;
                     }
@@ -1470,12 +1462,12 @@
                         <div class="glass p-8 rounded-[3rem] shadow-2xl flex flex-col md:flex-row items-center justify-center text-center md:text-left gap-8 border-brandBlue/30 hover:shadow-brandBlue/10 transition-shadow">
                             <div class="relative inline-block">
                                 <img src="${profile.photo || 'https://ui-avatars.com/api/?name='+profile.name}" class="w-28 h-28 rounded-full object-cover bg-black shadow-lg hover:scale-105 transition-transform" style="${ringStyle}">
-                                ${window.renderInstBadgeHtml(targetInstitute, 'absolute -bottom-2 -right-2 w-10 h-10 rounded-xl border-[2px] border-[var(--bg-main)] object-cover shadow-lg z-20')}
+                                ${window.renderInstBadgeHtml(targetInstitute)}
                             </div>
                             <div class="flex-1">
                                 <h2 class="text-3xl font-black italic flex items-center justify-center md:justify-start gap-3">
                                     ${profile.name}
-                                    ${profile.privacyMode === 'private' ? '<span class="text-[10px] bg-red-500 text-white px-2 py-1 rounded-md shadow-sm not-italic uppercase tracking-widest ml-1">Private</span>' : ''}
+                                    ${profile.privacyMode === 'private' ? '<span class="inline-flex items-center justify-center text-[9px] bg-red-500/10 text-red-500 border border-red-500/20 px-2 py-0.5 rounded-md uppercase tracking-widest font-black not-italic ml-2 align-middle">Private</span>' : ''}
                                 </h2>
                                 <p class="text-xs font-bold opacity-50 uppercase tracking-widest mt-1 mb-2 font-mono">${profile.teacherId}</p>
                                 ${profile.bio ? `<p class="text-sm opacity-80 leading-relaxed max-w-xl mx-auto md:mx-0">${profile.bio}</p>` : ''}
@@ -1512,7 +1504,7 @@
                         </div>
                         <div id="perf-matrix-target" class="space-y-3"></div>
                     </div>`;
-                    window.sortPerformanceMatrix('newest'); // Initial render
+                    window.sortPerformanceMatrix('newest'); 
                } else if (currentTab === 'content') {
                     main.innerHTML = `
                     <div class="flex flex-col gap-10 fade-in">
@@ -1561,14 +1553,12 @@
                     
                     let contentQueryArgs = [Core.collection(Core.db, "content"), Core.limit(40)];
                     
-                    // Enforce Institute Privacy Rules for Students
                     if (targetInstitute && targetInstitute.privacyMode === 'private') {
                          const validTeachersSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"), Core.where("uniqueId", "==", targetInstitute.uniqueId)));
                          const validTeacherIds = validTeachersSnap.docs.map(d => d.data().teacherId);
                          if(validTeacherIds.length > 0) {
                              contentQueryArgs = [Core.collection(Core.db, "content"), Core.where("tId", "in", validTeacherIds), Core.limit(40)];
                          } else {
-                             // Force empty result if private but no teachers found
                              contentQueryArgs = [Core.collection(Core.db, "content"), Core.where("tId", "==", "BLOCK_ALL")];
                          }
                     }
@@ -1576,13 +1566,11 @@
                     const allContent = await Core.getDocs(Core.query(...contentQueryArgs));
                     let allContentDocs = allContent.docs;
 
-                    // Locally filter out content from private teachers or private institutes user is not part of
                     const validPublicDocs = [];
                     for(let d of allContentDocs) {
                         const cData = d.data();
                         let allow = true;
                         
-                        // Check teacher privacy
                         const tSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId", "==", cData.tId)));
                         if(!tSnap.empty) {
                             const tData = tSnap.docs[0].data();
@@ -1717,9 +1705,9 @@
 
             if (accept) {
                 await Core.updateDoc(Core.doc(Core.db, "users", uid), { subs: Core.arrayUnion(profile.teacherId) });
-                window.toast("Follower request approved");
+                toast("Follower request approved");
             } else {
-                window.toast("Follower request rejected");
+                toast("Follower request rejected");
             }
             manageFollowersRoster(profile.teacherId);
         };
@@ -1728,7 +1716,7 @@
             if(confirm("Confirm user eviction and blocking from channel profile stream?")) {
                 await Core.updateDoc(Core.doc(Core.db, "users", uid), { subs: Core.arrayRemove(teacherId) });
                 pushSystemNotification("FOLLOWER EVICTED", `Roster change: A subscriber was disconnected.`);
-                window.toast("Follower removed and stream blacklisted");
+                toast("Follower removed and stream blacklisted");
                 manageFollowersRoster(teacherId);
                 window.loadHome();
             }
@@ -1750,14 +1738,14 @@
                 html += `<h4 class="text-[10px] font-black uppercase text-yellow-500 tracking-widest mb-2">Pending Join Requests</h4>`;
                 data.pending.forEach(p => {
                     html += `<div class="bg-yellow-500/10 p-4 rounded-xl flex justify-between items-center border border-yellow-500/20 shadow-sm fade-in mb-3">
-                                <div><p class="font-bold text-sm text-yellow-400">${p.name}</p></div>
+                                <div><p class="font-bold text-sm text-yellow-500">${p.name}</p></div>
                                 <div class="flex gap-2">
                                     <button onclick="modReq('${groupId}','${p.uid}','${p.name}',true, true)" class="px-4 py-2 bg-green-500 text-white rounded-lg text-[9px] font-black uppercase hover:scale-105 shadow-sm">Accept</button>
                                     <button onclick="modReq('${groupId}','${p.uid}','${p.name}',false, true)" class="px-4 py-2 bg-red-500/20 text-red-500 rounded-lg text-[9px] font-black uppercase hover:scale-105 shadow-sm">Reject</button>
                                 </div>
                             </div>`;
                 });
-                html += `<div class="h-px bg-white/10 w-full my-6"></div>`;
+                html += `<div class="h-px bg-[var(--border-color)] w-full my-6"></div>`;
             }
 
             html += `<h4 class="text-[10px] font-black uppercase tracking-widest mb-2 opacity-50">Active Hub Members</h4>`;
@@ -1783,7 +1771,7 @@
             if (confirm("Confirm complete revocation of asset pool access credentials for this individual user?")) {
                 await Core.updateDoc(Core.doc(Core.db, "groups", groupId), { members: Core.arrayRemove(uid) });
                 pushSystemNotification("ACCESS REVOKED", `A student was removed from "${groupName}".`);
-                window.toast("Access cleared and denied.");
+                toast("Access cleared and denied.");
                 manageGroupRoster(groupId, groupName);
             }
         };
@@ -1792,10 +1780,10 @@
             const index = cart.findIndex(item => item.id === id);
             if (index > -1) { 
                 cart.splice(index, 1); 
-                window.toast("Course removed from dynamic manifest"); 
+                toast("Course removed from dynamic manifest"); 
             } else { 
                 cart.push({ id, title, price }); 
-                window.toast("Added to checkout manifest"); 
+                toast("Added to checkout manifest"); 
             }
             localStorage.setItem('oc_cart_manifest', JSON.stringify(cart));
             updateCartPill();
@@ -1849,7 +1837,7 @@
             cart = []; 
             localStorage.removeItem('oc_cart_manifest');
             updateCartPill();
-            window.toast("Bulk transaction approved! Learning matrix operational.");
+            toast("Bulk transaction approved! Learning matrix operational.");
             document.getElementById('custom-modal').classList.add('hidden');
             setTab('groups');
         };
@@ -1859,23 +1847,26 @@
             if (!q) return window.loadHome();
             injectSkeletonState('main-content');
             const [uS, cS, gS] = await Promise.all([Core.getDocs(Core.collection(Core.db, "users")), Core.getDocs(Core.collection(Core.db, "content")), Core.getDocs(Core.collection(Core.db, "groups"))]);
-            
             const teachers = uS.docs.filter(d => d.data().role === 'teacher' && (d.data().name.toLowerCase().includes(q.toLowerCase()) || d.data().teacherId === q));
-            const content = cS.docs.filter(d => d.data().title.toLowerCase().includes(q.toLowerCase())).sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
             const groups = gS.docs.filter(d => d.data().code === q || d.data().name.toLowerCase().includes(q.toLowerCase()));
             
-            // Filter private content in search results
-            const validSearchContent = [];
-            for (let d of content) {
+            // Filter content strictly enforcing privacy controls
+            const validContent = [];
+            for (let d of cS.docs) {
                 const cData = d.data();
+                if(!cData.title.toLowerCase().includes(q.toLowerCase())) continue;
+                
                 let allow = true;
-                const tSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId", "==", cData.tId)));
-                if (!tSnap.empty) {
-                    const tData = tSnap.docs[0].data();
-                    if (tData.privacyMode === 'private' && (!profile.subs || !profile.subs.includes(cData.tId)) && profile.teacherId !== cData.tId && profile.role !== 'super_admin') allow = false;
+                const tSnap = teachers.find(t => t.data().teacherId === cData.tId) || uS.docs.find(u => u.data().teacherId === cData.tId);
+                if (tSnap) {
+                    const tData = tSnap.data();
+                    if (tData.privacyMode === 'private' && (!profile.subs || !profile.subs.includes(cData.tId)) && profile.teacherId !== cData.tId && profile.role !== 'super_admin') {
+                        allow = false;
+                    }
                 }
-                if (allow) validSearchContent.push(d);
+                if (allow) validContent.push(d);
             }
+            const content = validContent.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
 
             let html = `<div class="space-y-12 fade-in">`;
             if(teachers.length) {
@@ -1884,23 +1875,26 @@
                     const uData = m.data();
                     const ringStyle = await window.updateProfileRing(m.id, uData.role, uData.teacherId);
                     
-                    let instBadge = '';
+                    let instBadgeHtml = "";
                     if(uData.instituteId) {
                         const instData = await window.getInstBadgeData(uData.instituteId);
-                        if(instData) instBadge = window.renderInstBadgeHtml(instData, 'w-6 h-6 rounded-md border border-[var(--border-color)] object-cover shrink-0 relative bottom-auto right-auto');
+                        if(instData && instData.logo) {
+                            instBadgeHtml = `<img src="${instData.logo}" class="w-5 h-5 rounded-full object-cover border-[1px] border-[var(--bg-main)] inline-block mr-2" title="${instData.name}">`;
+                        }
                     }
 
-                    html += `<div onclick="viewTeacher('${uData.teacherId}')" class="glass p-5 rounded-[2rem] flex justify-between items-center cursor-pointer group border border-[var(--border-color)] hover:border-brandBlue/30 hover:shadow-lg transition-all shadow-sm hover:scale-[1.01]">
-                        <div class="flex items-center gap-4 md:gap-5">
-                            <img src="${uData.photo || 'https://ui-avatars.com/api/?name='+encodeURIComponent(uData.name)}" class="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover shadow-md transition-transform group-hover:scale-110 shrink-0" style="${ringStyle}">
-                            <div class="flex flex-col">
-                                <h3 class="text-lg md:text-xl font-black italic pr-2 text-[var(--text-main)] group-hover:text-brandBlue transition-colors flex items-center gap-2 flex-wrap">
-                                    ${instBadge} ${uData.name}
-                                    ${uData.privacyMode === 'private' ? '<span class="text-[9px] bg-red-500 text-white px-2 py-0.5 rounded-md uppercase not-italic tracking-widest shrink-0 ml-1">Private</span>' : ''}
+                    html += `<div onclick="viewTeacher('${uData.teacherId}')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center cursor-pointer group border border-[var(--border-color)] hover:border-brandBlue/30 hover:shadow-lg transition-all shadow-sm hover:scale-[1.01]">
+                        <div class="flex items-center gap-5 md:gap-6">
+                            <img src="${uData.photo || 'https://ui-avatars.com/api/?name='+encodeURIComponent(uData.name)}" class="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover shadow-md transition-transform group-hover:scale-110" style="${ringStyle}">
+                            <div>
+                                <h3 class="text-lg md:text-xl font-black italic pr-2 text-[var(--text-main)] group-hover:text-brandBlue transition-colors flex items-center">
+                                    ${instBadgeHtml}${uData.name} 
+                                    ${uData.privacyMode === 'private' ? '<span class="inline-flex items-center justify-center text-[9px] bg-red-500/10 text-red-500 border border-red-500/20 px-2 py-0.5 rounded-md uppercase tracking-widest font-black not-italic ml-2 align-middle">Private</span>' : ''}
                                 </h3>
-                                <p class="text-[9px] opacity-50 font-bold pr-2 tracking-widest mt-1 font-mono">${uData.teacherId}</p>
+                                <p class="text-[9px] opacity-50 font-bold pr-2 tracking-widest mt-0.5 font-mono">${uData.teacherId}</p>
                             </div>
                         </div>
+                        <p class="text-brandBlue font-black uppercase text-[10px] pr-2 hidden md:block group-hover:translate-x-1 transition-transform">Biography →</p>
                     </div>`;
                 }
                 html += `</div></div>`;
@@ -1908,13 +1902,18 @@
             if(groups.length) {
                 html += `<div><h3 class="text-[10px] font-black uppercase opacity-40 mb-4 ml-4 tracking-widest">Groups</h3><div class="grid gap-4">${groups.map(g => `<div class="glass p-5 md:p-6 rounded-[2.5rem] flex justify-between items-center border border-[var(--border-color)] shadow-sm hover:border-brandOrange/30 transition-all hover:scale-[1.01] hover:shadow-lg"><div><span class="text-[8px] text-brandOrange font-black uppercase tracking-widest">${g.data().type}</span><h3 class="text-lg font-black mt-1 pr-2">${g.data().name}</h3><p class="text-[10px] opacity-50 pr-2 font-mono mt-1">${g.data().code}</p></div><button onclick="handleHubSearchJoin('${g.id}','${g.data().code}')" class="btn-brand px-6 py-2.5 text-[10px] shadow-sm hover:scale-110">Access</button></div>`).join('')}</div></div>`;
             }
-            if(validSearchContent.length) {
+            if(content.length) {
                 html += `<div><h3 class="text-[10px] font-black uppercase opacity-40 mb-4 ml-4 tracking-widest">Lessons Catalog</h3><div class="grid gap-4">`;
-                const contentHtmlPromises = validSearchContent.map(d => window.renderResourceCardHtml(d, false));
+                const contentHtmlPromises = content.map(d => window.renderResourceCardHtml(d, false));
                 const contentHtmlArr = await Promise.all(contentHtmlPromises);
                 html += contentHtmlArr.join('');
                 html += `</div></div>`;
             }
+            
+            if (!teachers.length && !groups.length && !content.length) {
+                 html += `<div class="text-center py-20 opacity-50 font-black uppercase tracking-widest text-[10px]">No results found.</div>`;
+            }
+
             html += `</div>`;
             main.innerHTML = html;
         };
@@ -1934,7 +1933,34 @@
                 area.innerHTML = `<div id="request-list" class="space-y-3 mt-4 text-[10px] opacity-40 text-center font-bold tracking-widest uppercase py-6 fade-in">Scanning admissions...</div>`;
                 const groups = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId", "==", profile.teacherId)));
                 let html = '';
-                groups.forEach(g => { const d = g.data(); if(d.pending?.length) d.pending.forEach(p => { html += `<div class="bg-[var(--input-bg)] p-4 rounded-xl flex flex-col gap-3 border border-[var(--border-color)] shadow-sm fade-in hover:scale-[1.02] transition-transform"><div><p class="text-[9px] text-brandOrange font-black tracking-widest uppercase mb-1">${d.name}</p><p class="font-bold text-sm pr-2">${p.name}</p></div><div class="flex gap-2"><button onclick="modReq('${g.id}','${p.uid}','${p.name}',true, false)" class="flex-1 py-2 bg-green-600/20 text-green-500 hover:bg-green-600 hover:text-white transition-all rounded-xl text-[10px] font-black uppercase border border-green-500/20 hover:scale-105 shadow-sm">Accept</button><button onclick="modReq('${g.id}','${p.uid}','${p.name}',false, false)" class="flex-1 py-2 bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white transition-all rounded-xl text-[10px] font-black uppercase border border-red-500/20 hover:scale-105 shadow-sm">Deny</button></div></div>`; }); });
+                
+                // Render Group Join Requests
+                groups.forEach(g => { 
+                    const d = g.data(); 
+                    if(d.pending?.length) {
+                        d.pending.forEach(p => { 
+                            html += `<div class="bg-[var(--input-bg)] p-4 rounded-xl flex flex-col gap-3 border border-[var(--border-color)] shadow-sm fade-in hover:scale-[1.02] transition-transform"><div><p class="text-[9px] text-brandOrange font-black tracking-widest uppercase mb-1">${d.name} Hub Request</p><p class="font-bold text-sm pr-2">${p.name}</p></div><div class="flex gap-2"><button onclick="modReq('${g.id}','${p.uid}','${p.name}',true, false)" class="flex-1 py-2 bg-green-600/20 text-green-500 hover:bg-green-600 hover:text-white transition-all rounded-xl text-[10px] font-black uppercase border border-green-500/20 hover:scale-105 shadow-sm">Accept</button><button onclick="modReq('${g.id}','${p.uid}','${p.name}',false, false)" class="flex-1 py-2 bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white transition-all rounded-xl text-[10px] font-black uppercase border border-red-500/20 hover:scale-105 shadow-sm">Deny</button></div></div>`; 
+                        }); 
+                    }
+                });
+
+                // Render Profile Follower Requests
+                if (profile.pendingSubs && profile.pendingSubs.length > 0) {
+                    for(let pUid of profile.pendingSubs) {
+                        const uSnap = await Core.getDoc(Core.doc(Core.db, "users", pUid));
+                        if(uSnap.exists()) {
+                            const u = uSnap.data();
+                            html += `<div class="bg-[var(--input-bg)] p-4 rounded-xl flex flex-col gap-3 border border-[var(--border-color)] shadow-sm fade-in hover:scale-[1.02] transition-transform">
+                                <div><p class="text-[9px] text-brandBlue font-black tracking-widest uppercase mb-1">Profile Access Request</p><p class="font-bold text-sm pr-2">${u.name}</p></div>
+                                <div class="flex gap-2">
+                                    <button onclick="resolveFollowerRequest('${pUid}', true); setTimeout(()=>switchTeacherView('requests'), 500);" class="flex-1 py-2 bg-green-600/20 text-green-500 hover:bg-green-600 hover:text-white transition-all rounded-xl text-[10px] font-black uppercase border border-green-500/20 hover:scale-105 shadow-sm">Accept</button>
+                                    <button onclick="resolveFollowerRequest('${pUid}', false); setTimeout(()=>switchTeacherView('requests'), 500);" class="flex-1 py-2 bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white transition-all rounded-xl text-[10px] font-black uppercase border border-red-500/20 hover:scale-105 shadow-sm">Deny</button>
+                                </div>
+                            </div>`;
+                        }
+                    }
+                }
+
                 document.getElementById('request-list').innerHTML = html || `<p class="text-[10px] opacity-40 text-center font-bold tracking-widest uppercase py-6 fade-in">Clear Gate Management Queue</p>`;
             }
         };
@@ -1975,34 +2001,20 @@
         window.logout = () => Core.signOut(Core.auth).then(() => { localStorage.removeItem('oc_cart_manifest'); location.reload(); });
 
         window.finalizeProfile = async () => {
-            const n = document.getElementById('ob-name').value, 
-                  p = document.getElementById('ob-pass').value, 
-                  r = document.getElementById('ob-role').value;
-            
-            const priv = document.getElementById('ob-privacy')?.value || 'public';
-            
-            if (!n || !p) return window.toast("Form fields incomplete", "error");
+            const n = document.getElementById('ob-name').value, p = document.getElementById('ob-pass').value, r = document.getElementById('ob-role').value;
+            if (!n || !p) return toast("Form fields incomplete", "error");
             try {
                 await Core.updatePassword(Core.auth.currentUser, p);
-                await Core.setDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { 
-                    name: n, 
-                    role: r, 
-                    teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), 
-                    email: Core.auth.currentUser.email, 
-                    subs: [], 
-                    pendingSubs: [], 
-                    photo: Core.auth.currentUser.photoURL || "", 
-                    privacyMode: priv 
-                });
+                await Core.setDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { name: n, role: r, teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), email: Core.auth.currentUser.email, subs: [], pendingSubs: [], photo: window._tempGooglePhoto || Core.auth.currentUser.photoURL || "", privacyMode: 'public' });
                 location.reload();
-            } catch(e) { window.toast(e.message, "error"); }
+            } catch(e) { toast(e.message, "error"); }
         };
 
         window.createGroup = async () => {
-            const n = document.getElementById('group-name').value; if (!n) return window.toast("Label missing");
+            const n = document.getElementById('group-name').value; if (!n) return toast("Label missing");
             const c = "OC-" + Math.random().toString(36).substring(2, 8).toUpperCase();
             await Core.addDoc(Core.collection(Core.db, "groups"), { name: n, type: document.getElementById('group-type').value, code: c, teacherId: profile.teacherId, teacherName: profile.name, members: [Core.auth.currentUser.uid], pending: [], createdAt: Core.serverTimestamp() });
-            window.toast("Hub initiated"); window.loadHome();
+            toast("Hub initiated"); window.loadHome();
         };
 
         window.launchCourse = async () => {
@@ -2010,7 +2022,7 @@
             let p = tier === 'free' ? "0" : document.getElementById('c-price').value;
             const vt = Array.from(document.querySelectorAll('.cv-t')).map(i => i.value);
             const vu = Array.from(document.querySelectorAll('.cv-u')).map(i => i.value);
-            if (!t || !vu[0]) return window.toast("Validation indicators incomplete", "error");
+            if (!t || !vu[0]) return toast("Validation indicators incomplete", "error");
             const playlist = vt.map((title, i) => ({ title, url: vu[i] }));
             const code = "HUB-" + Math.random().toString(36).substring(2, 8).toUpperCase();
             const gRef = await Core.addDoc(Core.collection(Core.db, "groups"), { 
@@ -2019,15 +2031,15 @@
             await Core.addDoc(Core.collection(Core.db, "courses"), { 
                 title: t, description: d, thumbnail: window.getSmartPreview(vu[0]), playlist, price: p, teacherId: profile.teacherId, teacherName: profile.name, groupId: gRef.id, createdAt: Core.serverTimestamp() 
             });
-            window.toast("Course matrix active"); window.loadHome();
+            toast("Course matrix active"); window.loadHome();
         };
 
         window.joinGroup = async () => {
             const c = (document.getElementById('hub-code')?.value || document.getElementById('g-search').value).trim().toUpperCase();
             const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("code", "==", c)));
-            if (snap.empty) return window.toast("Group code not found", "error");
+            if (snap.empty) return toast("Group code not found", "error");
             const g = snap.docs[0], d = g.data();
-            if (d.members && d.members.includes(Core.auth.currentUser.uid)) return window.toast("Already a member of this hub");
+            if (d.members && d.members.includes(Core.auth.currentUser.uid)) return toast("Already a member of this hub");
             if (d.type === 'public') {
                 await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
                 pushSystemNotification("HUB JOINED", `You entered "${d.name}".`);
@@ -2035,7 +2047,7 @@
                 await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { pending: Core.arrayUnion({ uid: Core.auth.currentUser.uid, name: profile.name }) });
                 pushSystemNotification("PENDING", `Access verification required for "${d.name}".`);
             }
-            window.toast("Access requested"); window.loadHome();
+            toast("Access requested"); window.loadHome();
         };
 
         window.openResource = async (id, url, title) => {
@@ -2045,7 +2057,7 @@
                     const data = checkDoc.data();
                     const status = window.checkLiveStatus(data.liveDate, data.liveStartTime, data.liveEndTime);
                     if(status === 'scheduled') {
-                        window.toast(`Broadcast locked until start configuration: ${data.liveDate} at ${data.liveStartTime}`, "error");
+                        toast(`Broadcast locked until start configuration: ${data.liveDate} at ${data.liveStartTime}`, "error");
                         return;
                     }
                     await Core.updateDoc(Core.doc(Core.db, "content", id), { views: Core.increment(1) });
@@ -2123,7 +2135,7 @@
 
         window.enrollCourse = async (cid, gid) => {
             await Core.updateDoc(Core.doc(Core.db, "groups", gid), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
-            window.toast("Enrolled successfully!");
+            toast("Enrolled successfully!");
             document.getElementById('custom-modal').classList.add('hidden');
             setTab('groups');
         };
@@ -2152,7 +2164,7 @@
                 const tSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId", "==", c.teacherId)));
                 if(!tSnap.empty && tSnap.docs[0].data().instituteId) {
                     const instData = await window.getInstBadgeData(tSnap.docs[0].data().instituteId);
-                    if(instData) badgeStr = window.renderInstBadgeHtml(instData, 'absolute bottom-2 right-2 w-8 h-8 md:w-10 md:h-10 rounded-xl border-[2px] border-[var(--bg-main)] object-cover shadow-lg z-20');
+                    if(instData) badgeStr = window.renderInstBadgeHtml(instData, 'w-8 h-8 md:w-10 md:h-10 border-2 right-2 bottom-2');
                 }
 
                 html += `<div class="glass p-5 rounded-[2.5rem] border border-[var(--border-color)] flex flex-col justify-between h-auto shadow-md hover:border-brandOrange/30 hover:scale-[1.02] transition-all"><div class="w-full flex items-center justify-center overflow-hidden rounded-2xl mb-5 bg-zinc-950/40 aspect-video shadow-inner relative"><img src="${c.thumbnail}" class="w-full h-full object-cover border border-[var(--border-color)] hover:scale-110 transition-transform duration-500">${badgeStr}</div><div><h2 class="text-xl font-black italic mb-2 truncate pr-4 text-[var(--text-main)]">${c.title}</h2><div class="flex justify-between items-center mt-5"><h3 class="text-lg font-black text-brandOrange drop-shadow-md">₹${c.price === '0' ? 'FREE' : c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2.5 text-[10px] shadow-sm hover:shadow-brandOrange/40 hover:scale-110">Inspect</button></div></div></div>`;
@@ -2180,27 +2192,29 @@
             const tSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId", "==", i.tId)));
             if(!tSnap.empty && tSnap.docs[0].data().instituteId) {
                 const instData = await window.getInstBadgeData(tSnap.docs[0].data().instituteId);
-                // Fixed Institute Badge size and placement under title
-                if(instData) badgeHtml = window.renderInstBadgeHtml(instData, 'w-4 h-4 rounded-full inline-block mr-1 border border-[var(--border-color)] object-cover relative bottom-auto right-auto');
+                if(instData && instData.logo) {
+                    badgeHtml = `<img src="${instData.logo}" class="w-4 h-4 rounded-full object-cover border border-[var(--border-color)] inline-block" title="${instData.name}">`;
+                }
             }
 
-            return `<div class="glass p-4 md:p-5 rounded-[2rem] flex flex-col md:flex-row justify-between items-start md:items-center group shadow-md hover:shadow-xl transition-all gap-4 border border-[var(--border-color)] hover:border-brandBlue/30 hover:scale-[1.01] fade-in">
-                <div class="flex flex-col md:flex-row items-start md:items-center gap-4 w-full md:w-auto overflow-hidden">
-                    <div class="relative flex-shrink-0 w-full md:w-48 h-40 md:h-28 overflow-hidden rounded-2xl border border-[var(--border-color)] shadow-sm">
-                        <img src="${window.getSmartPreview(i.url)}" class="w-full h-full object-cover bg-brandBlue group-hover:scale-110 transition-transform duration-500 rounded-2xl">
+            return `<div class="glass p-4 md:p-5 rounded-[2rem] flex flex-col md:flex-row justify-between items-center group shadow-sm hover:shadow-md transition-all gap-5 border border-[var(--border-color)] hover:border-brandBlue/30 hover:scale-[1.01] fade-in">
+                <div class="flex items-center gap-4 md:gap-5 w-full md:w-auto flex-1 overflow-hidden">
+                    <div class="relative flex-shrink-0 self-center overflow-visible rounded-xl border border-[var(--border-color)] shadow-sm">
+                        <img src="${window.getSmartPreview(i.url)}" class="w-24 h-24 md:w-32 md:h-28 object-cover bg-brandBlue group-hover:scale-105 transition-transform duration-500 rounded-xl">
                         ${window.getFileBadge(i.url)}
                     </div>
-                    <div class="flex flex-col justify-center w-full min-w-0">
-                        <h4 class="font-black text-lg md:text-xl italic line-clamp-2 pr-2 text-[var(--text-main)] drop-shadow-sm mb-1 leading-tight">${i.title}</h4>
+                    <div class="overflow-hidden flex flex-col justify-center flex-1">
+                        <h4 class="font-black text-base md:text-lg italic line-clamp-2 pr-2 text-[var(--text-main)] drop-shadow-md mb-1 whitespace-normal break-words">${i.title}</h4> 
                         ${liveStatusLabel}
-                        <div class="flex items-center flex-wrap text-[10px] opacity-70 uppercase font-bold tracking-widest mt-1 font-mono">
-                            ${badgeHtml} <span class="truncate max-w-[120px]">${i.tName}</span> <span class="mx-2 opacity-50">•</span> <span>${i.views || 0} Views</span>
-                        </div>
+                        <p class="text-[10px] md:text-xs opacity-60 uppercase font-bold tracking-widest mt-1 pr-2 font-mono flex items-center gap-1.5 flex-wrap">
+                            ${badgeHtml} <span>${i.tName}</span> <span class="opacity-50">•</span> <span>${i.views || 0} Views</span>
+                        </p>
                     </div>
                 </div>
-                <div class="flex gap-2 w-full md:w-auto justify-end mt-2 md:mt-0 shrink-0">
-                    <button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand px-8 py-3 rounded-xl font-black text-[10px] uppercase shadow-md hover:shadow-brandBlue/40">Access Core</button>
-                    ${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-[var(--input-bg)] text-[var(--text-main)] rounded-xl hover:text-brandBlue hover:scale-105 transition-all border border-[var(--border-color)] shadow-sm">✎</button><button onclick="delR('${d.id}')" class="p-3 bg-[var(--input-bg)] text-[var(--text-main)] rounded-xl hover:text-red-500 hover:bg-red-500/10 hover:scale-105 transition-all border border-[var(--border-color)] shadow-sm">🗑</button>` : ''}
+                <div class="flex gap-2 w-full md:w-auto justify-end shrink-0 mt-2 md:mt-0">
+                    <button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow md:flex-none btn-brand px-6 md:px-8 py-3 rounded-xl font-black text-[10px] uppercase shadow-sm hover:shadow-brandBlue/40">Access Core</button>
+                    ${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-[var(--input-bg)] text-[var(--text-main)] rounded-xl hover:text-brandBlue hover:scale-110 transition-all border border-[var(--border-color)] shadow-sm">✎</button>
+                    <button onclick="delR('${d.id}')" class="p-3 bg-[var(--input-bg)] text-[var(--text-main)] rounded-xl hover:text-red-500 hover:bg-red-500/10 hover:scale-110 transition-all border border-[var(--border-color)] shadow-sm">🗑</button>` : ''}
                 </div>
             </div>`;
         };
@@ -2211,7 +2225,7 @@
 
         window.publishContent = async () => {
             const t = document.getElementById('up-t').value, u = document.getElementById('up-u').value, y = document.getElementById('up-y').value;
-            if (!t || !u) return window.toast("Resource path vectors empty", "error");
+            if (!t || !u) return toast("Resource path vectors empty", "error");
             
             let payload = { title: t, url: u, type: y, tId: profile.teacherId, tName: profile.name, views: 0, date: Core.serverTimestamp() };
             
@@ -2228,7 +2242,7 @@
             } else {
                 pushSystemNotification("MATERIAL", `Asset sync: "${t}" published.`);
             }
-            window.toast("Resource published successfully"); window.loadHome();
+            toast("Resource published successfully"); window.loadHome();
         };
 
         window.openGroupChat = async (id, name) => {
@@ -2276,7 +2290,7 @@
 
             const activeBackendUrl = customAiConfig.backendApiUrl || customAiConfig.backendUrl;
 
-            if (!activeBackendUrl) { window.toast("AI Config Missing: Check config.js spelling.", "error"); return; }
+            if (!activeBackendUrl) { toast("AI Config Missing: Check config.js spelling.", "error"); return; }
 
             const chat = document.getElementById('ai-messages');
             
@@ -2328,7 +2342,7 @@
             } catch (e) {
                 document.getElementById(loadingId)?.remove();
                 chat.innerHTML += `<div class="bg-red-500/10 border border-red-500/30 p-4 rounded-2xl rounded-tl-sm max-w-[85%] text-sm text-red-500 leading-relaxed font-bold shadow-md fade-in">Network Interruption: ${e.message}</div>`;
-                window.toast("AI Core handshake interruption", "error"); 
+                toast("AI Core handshake interruption", "error"); 
                 console.error(e);
             }
         };
@@ -2344,6 +2358,14 @@
             const isPendingF = profile.pendingSubs && profile.pendingSubs.includes(tId);
             
             const ringStyle = await window.updateProfileRing(uS.docs[0].id, tD.role, tD.teacherId);
+            
+            let instBadgeHtml = "";
+            if(tD.instituteId) {
+                const instData = await window.getInstBadgeData(tD.instituteId);
+                if(instData && instData.logo) {
+                    instBadgeHtml = `<img src="${instData.logo}" class="w-6 h-6 md:w-8 md:h-8 rounded-full object-cover border-[2px] border-[var(--bg-main)] shadow-sm mr-2" title="${instData.name}">`;
+                }
+            }
             
             // Teacher Privacy Check
             let canViewContent = true;
@@ -2361,27 +2383,21 @@
                 buttonText = 'Request Access';
                 if(isPendingF) {
                     buttonText = 'Request Pending';
-                    buttonClasses = 'bg-zinc-800 border border-zinc-700 text-zinc-400 cursor-not-allowed opacity-70';
+                    buttonClasses = 'bg-[var(--border-color)] border border-[var(--border-color)] text-zinc-400 cursor-not-allowed opacity-70';
                 }
-            }
-            
-            let instBadge = '';
-            if (tD.instituteId) {
-                const instData = await window.getInstBadgeData(tD.instituteId);
-                if (instData) instBadge = window.renderInstBadgeHtml(instData, 'w-8 h-8 md:w-10 md:h-10 rounded-lg border border-[var(--border-color)] object-cover shrink-0 relative bottom-auto right-auto');
             }
 
             main.innerHTML = `<div class="space-y-10 fade-in">
                 <div class="glass p-6 md:p-10 rounded-[4rem] border border-brandBlue/30 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6 shadow-2xl relative overflow-hidden hover:shadow-brandBlue/20 transition-all">
                     <div class="absolute -right-20 -top-20 w-64 h-64 bg-brandBlue/10 blur-3xl rounded-full pointer-events-none"></div>
                     <div class="flex flex-col md:flex-row items-center gap-6 md:gap-8 relative z-10">
-                        <img src="${tD.photo || 'https://ui-avatars.com/api/?name='+encodeURIComponent(tD.name)}" class="w-24 h-24 md:w-28 md:h-28 rounded-full object-cover bg-black shadow-2xl hover:scale-105 transition-transform shrink-0" style="${ringStyle}">
+                        <img src="${tD.photo || 'https://ui-avatars.com/api/?name='+encodeURIComponent(tD.name)}" class="w-24 h-24 md:w-28 md:h-28 rounded-full object-cover bg-black shadow-2xl hover:scale-105 transition-transform" style="${ringStyle}">
                         <div>
-                            <h2 class="text-3xl md:text-4xl font-black italic tracking-tighter pr-4 drop-shadow-md text-[var(--text-main)] flex items-center justify-center md:justify-start gap-3 flex-wrap">
-                                ${instBadge} ${tD.name}
-                                ${tD.privacyMode === 'private' ? '<span class="text-[10px] bg-red-500 text-white border border-red-500/30 px-2.5 py-1 rounded-md shadow-sm not-italic uppercase tracking-widest shrink-0 ml-1">Private</span>' : ''}
+                            <h2 class="text-3xl md:text-5xl font-black italic tracking-tighter pr-4 drop-shadow-md text-[var(--text-main)] flex items-center justify-center md:justify-start">
+                                ${instBadgeHtml}${tD.name}
+                                ${tD.privacyMode === 'private' ? '<span class="inline-flex items-center justify-center text-[10px] bg-red-500/10 text-red-500 border border-red-500/20 px-2 py-0.5 rounded-md uppercase tracking-widest font-black not-italic ml-2 align-middle">Private</span>' : ''}
                             </h2>
-                            <p class="text-[10px] md:text-xs font-bold text-brandBlue uppercase tracking-widest mt-2 font-mono shadow-sm p-1.5 bg-brandBlue/10 border border-brandBlue/20 rounded-lg w-fit mx-auto md:mx-0">${tD.teacherId}</p>
+                            <p class="text-[10px] md:text-xs font-bold text-brandBlue uppercase tracking-widest mt-1 font-mono shadow-sm p-1.5 bg-brandBlue/10 border border-brandBlue/20 rounded-lg w-fit inline-block md:inline">${tD.teacherId}</p>
                             ${tD.bio ? `<p class="mt-4 text-sm opacity-80 leading-relaxed max-w-xl mx-auto md:mx-0">${tD.bio}</p>` : ''}
                         </div>
                     </div>
@@ -2390,7 +2406,9 @@
                 
                 ${canViewContent ? `
                     <h3 class="text-2xl font-black mb-6 italic">Course Collections</h3>
-                    <div id="courses-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div>
+                    <div id="courses-feed" class="grid md:grid-cols-2 gap-6
+
+mb-10"></div>
                     <h3 class="text-2xl font-black mb-6 italic">Syllabus Catalog Items</h3>
                     <div id="feed" class="space-y-4"></div>
                 ` : `
@@ -2419,7 +2437,7 @@
                 if(!tSnap.empty) {
                     const tUid = tSnap.docs[0].id;
                     await Core.updateDoc(Core.doc(Core.db, "users", tUid), { pendingSubs: Core.arrayUnion(Core.auth.currentUser.uid) });
-                    window.toast("Access Request Sent");
+                    toast("Access Request Sent");
                     
                     if(!profile.pendingSubs) profile.pendingSubs = [];
                     profile.pendingSubs.push(tId);
@@ -2436,16 +2454,17 @@
 
         Core.onAuthStateChanged(Core.auth, async (user) => {
             if (user) {
+                // Temporarily cache Google Photo if it's a new user from Google Auth
+                if (user.photoURL) window._tempGooglePhoto = user.photoURL;
+
                 const docSnap = await Core.getDoc(Core.doc(Core.db, "users", user.uid));
-                if (!docSnap.exists()) {
-                    document.getElementById('ob-name').value = user.displayName || '';
-                    window.showScreen('onboarding-screen');
-                } else {
+                if (!docSnap.exists()) window.showScreen('onboarding-screen');
+                else {
                     profile = docSnap.data();
                     const pic = document.getElementById('nav-profile-pic');
                     if (pic) {
                         const ringStyle = await window.updateProfileRing(user.uid, profile.role, profile.teacherId);
-                        pic.innerHTML = `<img src="${profile.photo || 'https://ui-avatars.com/api/?name='+encodeURIComponent(profile.name)}" class="w-full h-full object-cover bg-[var(--bg-main)] rounded-full hover:scale-110 transition-transform duration-300" style="${ringStyle}">`;
+                        pic.innerHTML = `<img src="${profile.photo || 'https://ui-avatars.com/api/?name='+encodeURIComponent(profile.name)}" class="w-full h-full object-cover bg-black rounded-full hover:scale-110 transition-transform duration-300" style="${ringStyle}">`;
                     }
                     
                     fetchSystemNotifications();
@@ -2537,6 +2556,7 @@
             if(videoPlayer) { try { videoPlayer.destroy(); } catch(e){} videoPlayer = null; } 
         };
         
+        function toast(m, type = "s") { const b = document.getElementById('toast-box'), d = document.createElement('div'); d.className = 'toast-pill'; if (type === "error") d.style.borderColor = "#ff4444"; d.innerText = m; b.appendChild(d); setTimeout(() => d.remove(), 2500); }
         if (localStorage.getItem('oc_theme') === 'true') document.documentElement.classList.add('light');
 
         async function loadGroups() {
