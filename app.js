@@ -126,14 +126,14 @@ window.handleAdminPlanUI = (type) => {
     if (!container) return;
     
     if (type === 'free_trial') {
-        container.innerHTML = `<input id="admin-plan-days" type="number" placeholder="Duration (Days)" class="input-field text-black dark:text-white">`;
+        container.innerHTML = `<input id="admin-plan-days" type="number" placeholder="Duration (Days)" class="input-field">`;
     } else if (type === 'one_year') {
-        container.innerHTML = `<input id="admin-plan-price" type="number" placeholder="Price (₹)" class="input-field text-black dark:text-white">`;
+        container.innerHTML = `<input id="admin-plan-price" type="number" placeholder="Price (₹)" class="input-field">`;
     } else {
         container.innerHTML = `
-            <input id="admin-plan-name" type="text" placeholder="Plan Name" class="input-field text-black dark:text-white">
-            <input id="admin-plan-days" type="number" placeholder="Duration (Days)" class="input-field text-black dark:text-white">
-            <input id="admin-plan-price" type="number" placeholder="Price (₹)" class="input-field text-black dark:text-white">
+            <input id="admin-plan-name" type="text" placeholder="Plan Name" class="input-field">
+            <input id="admin-plan-days" type="number" placeholder="Duration (Days)" class="input-field">
+            <input id="admin-plan-price" type="number" placeholder="Price (₹)" class="input-field">
         `;
     }
 };
@@ -197,12 +197,12 @@ window.loadPlans = async () => {
         snap.forEach((docSnap) => {
             const data = docSnap.data();
             container.innerHTML += `
-            <div class="bg-zinc-900 border border-white/10 p-4 rounded-xl mb-3 flex justify-between items-center">
+            <div class="bg-[var(--input-bg)] border border-[var(--border-color)] text-[var(--text-main)] p-4 rounded-xl mb-3 flex justify-between items-center shadow-sm">
                 <div>
                     <h3 class="text-sm font-black text-brandBlue uppercase tracking-widest">${data.name}</h3>
                     <p class="text-xs opacity-70 mt-1">Duration: ${data.duration} Days | Price: ₹${data.price}</p>
                 </div>
-                <span class="text-[9px] font-mono bg-white/5 px-2 py-1 rounded border border-white/10">${docSnap.id}</span>
+                <span class="text-[9px] font-mono text-brandBlue bg-brandBlue/10 px-2 py-1 rounded border border-brandBlue/20">${docSnap.id}</span>
             </div>`;
         });
     } catch (e) {
@@ -224,20 +224,20 @@ window.showInstituteSuccessModal = (name, logo, uniqueId) => {
     }
     modal.classList.remove('hidden');
     content.innerHTML = `
-        <div class="fade-in text-center p-6 md:p-10">
-            <img src="${logo || 'https://ui-avatars.com/api/?name='+encodeURIComponent(name)}" class="w-24 h-24 mx-auto rounded-2xl object-cover border-[3px] border-purple-500 mb-6 shadow-xl bg-black">
+        <div class="fade-in text-center p-6 md:p-10 text-[var(--text-main)]">
+            <img src="${logo || 'https://ui-avatars.com/api/?name='+encodeURIComponent(name)}" class="w-24 h-24 mx-auto rounded-2xl object-cover border-[3px] border-purple-500 mb-6 shadow-xl bg-[var(--bg-main)]">
             <h2 class="text-3xl font-black italic text-purple-400 mb-2">${name}</h2>
-            <p class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-6 text-white">Institute Successfully Registered</p>
+            <p class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-6">Institute Successfully Registered</p>
             
-            <div class="bg-zinc-950 border border-white/10 p-5 rounded-2xl flex items-center justify-between mb-8 shadow-inner">
+            <div class="bg-[var(--input-bg)] border border-[var(--border-color)] p-5 rounded-2xl flex items-center justify-between mb-8 shadow-inner">
                 <div class="text-left">
                     <p class="text-[8px] uppercase tracking-widest text-purple-400 font-bold mb-1">Unique Access ID</p>
-                    <span class="font-mono text-xl tracking-widest font-black text-white" id="new-inst-id">${uniqueId}</span>
+                    <span class="font-mono text-xl tracking-widest font-black" id="new-inst-id">${uniqueId}</span>
                 </div>
-                <button onclick="navigator.clipboard.writeText('${uniqueId}'); this.innerText='COPIED!'; setTimeout(()=>this.innerText='COPY', 2000);" class="bg-purple-500/20 text-purple-400 hover:bg-purple-600 hover:text-white border border-purple-500/30 px-5 py-3 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all shadow-md">Copy</button>
+                <button onclick="navigator.clipboard.writeText('${uniqueId}'); this.innerText='COPIED!'; setTimeout(()=>this.innerText='COPY', 2000);" class="bg-purple-500/20 text-purple-400 hover:bg-purple-600 hover:text-[var(--bg-main)] border border-purple-500/30 px-5 py-3 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all shadow-md">Copy</button>
             </div>
             
-            <p class="text-[10px] opacity-40 mb-6 italic leading-relaxed text-white">Share this unique ID with students and teachers to allow them to join your private or public campus matrix.</p>
+            <p class="text-[10px] opacity-40 mb-6 italic leading-relaxed">Share this unique ID with students and teachers to allow them to join your private or public campus matrix.</p>
             <button onclick="document.getElementById('custom-modal').classList.add('hidden')" class="w-full py-4 bg-purple-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-purple-700 hover:scale-[1.02] transition-all">Acknowledge & Close</button>
         </div>
     `;
@@ -416,8 +416,8 @@ window.renderInstitutesUI = () => {
 
     let controlsHTML = `
         <div class="flex flex-col md:flex-row gap-2 mb-4">
-            <input type="text" id="inst-search" oninput="window.renderInstitutesUI()" value="${search}" placeholder="Search Name, ID, Owner ID..." class="input-field text-black dark:text-white flex-1 text-xs">
-            <select id="inst-sort" onchange="window.renderInstitutesUI()" class="input-field text-black dark:text-white text-xs w-full md:w-1/3">
+            <input type="text" id="inst-search" oninput="window.renderInstitutesUI()" value="${search}" placeholder="Search Name, ID, Owner ID..." class="input-field flex-1 text-xs">
+            <select id="inst-sort" onchange="window.renderInstitutesUI()" class="input-field text-xs w-full md:w-1/3">
                 <option value="newest" ${sort==='newest'?'selected':''}>Newest First</option>
                 <option value="oldest" ${sort==='oldest'?'selected':''}>Oldest First</option>
                 <option value="active" ${sort==='active'?'selected':''}>Active Status First</option>
@@ -430,26 +430,26 @@ window.renderInstitutesUI = () => {
 
     const target = document.getElementById('inst-render-target');
     if(!filtered.length) { 
-        target.innerHTML = "<p class='opacity-50 text-xs py-4 text-center border border-dashed border-white/10 rounded-xl'>No institutes match your criteria.</p>"; 
+        target.innerHTML = "<p class='opacity-50 text-xs py-4 text-center border border-dashed border-[var(--border-color)] rounded-xl'>No institutes match your criteria.</p>"; 
         return; 
     }
 
     target.innerHTML = filtered.map(data => `
-        <div class="bg-zinc-900 border border-white/10 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="bg-[var(--input-bg)] border border-[var(--border-color)] text-[var(--text-main)] p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
             <div class="flex items-center gap-4">
-                <img src="${data.logo || 'https://ui-avatars.com/api/?name='+data.name}" class="w-12 h-12 rounded-xl object-cover border border-white/20 bg-black">
+                <img src="${data.logo || 'https://ui-avatars.com/api/?name='+data.name}" class="w-12 h-12 rounded-xl object-cover border border-[var(--border-color)] bg-[var(--bg-main)]">
                 <div>
                     <h3 class="text-sm font-black text-purple-400 tracking-tight">${data.name}</h3>
-                    <p class="text-[10px] opacity-80 mt-1 font-mono tracking-widest text-brandBlue">ID: ${data.uniqueId} <span class="text-white opacity-50">|</span> Owner: ${data.teacherId}</p>
+                    <p class="text-[10px] opacity-80 mt-1 font-mono tracking-widest text-brandBlue">ID: ${data.uniqueId} <span class="opacity-50">|</span> Owner: ${data.teacherId}</p>
                     <p class="text-[9px] opacity-50 mt-1 uppercase tracking-widest flex gap-3">
-                        <span>Mode: <b class="${data.privacyMode === 'private' ? 'text-red-400' : 'text-green-400'}">${data.privacyMode}</b></span>
+                        <span>Mode: <b class="${data.privacyMode === 'private' ? 'text-red-400' : 'text-green-500'}">${data.privacyMode}</b></span>
                         <span>End: <b>${data.planEnd || 'No Expiry'}</b></span>
                     </p>
                 </div>
             </div>
             <div class="flex md:flex-col gap-2 shrink-0">
-                <button onclick="window.editInstitute('${data.id}')" class="flex-1 bg-blue-500/20 text-blue-400 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all border border-blue-500/20 shadow-sm">Edit</button>
-                <button onclick="window.initiateInstituteDeletion('${data.id}', '${data.name}')" class="flex-1 bg-red-500/20 text-red-500 hover:bg-red-600 hover:text-white px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all border border-red-500/20 shadow-sm">Delete</button>
+                <button onclick="window.editInstitute('${data.id}')" class="flex-1 bg-blue-500/10 text-blue-500 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all border border-blue-500/20 shadow-sm">Edit</button>
+                <button onclick="window.initiateInstituteDeletion('${data.id}', '${data.name}')" class="flex-1 bg-red-500/10 text-red-500 hover:bg-red-600 hover:text-white px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all border border-red-500/20 shadow-sm">Delete</button>
             </div>
         </div>
     `).join('');
@@ -508,12 +508,12 @@ window.loadPayments = async () => {
         snap.forEach((docSnap) => {
             const data = docSnap.data();
             container.innerHTML += `
-            <div class="bg-zinc-900 border border-white/10 p-4 rounded-xl mb-3 flex justify-between items-center">
+            <div class="bg-[var(--input-bg)] border border-[var(--border-color)] text-[var(--text-main)] p-4 rounded-xl mb-3 flex justify-between items-center shadow-sm">
                 <div>
                     <h3 class="text-sm font-black text-brandOrange">₹${data.amount}</h3>
                     <p class="text-[10px] opacity-70 mt-1 uppercase tracking-widest font-mono">TXN: ${data.transactionId} | INST: ${data.instituteId}</p>
                 </div>
-                <span class="text-[9px] font-bold bg-green-500/20 text-green-400 px-2 py-1 rounded border border-green-500/20 uppercase tracking-widest">${data.status}</span>
+                <span class="text-[9px] font-bold bg-green-500/20 text-green-500 px-2 py-1 rounded border border-green-500/20 uppercase tracking-widest">${data.status}</span>
             </div>`;
         });
     } catch (e) {
@@ -598,21 +598,21 @@ window.loadSubscriptions = async () => {
             const expStr = data.expiryDate ? new Date(data.expiryDate.seconds * 1000).toLocaleDateString() : 'N/A';
             
             container.innerHTML += `
-            <div class="bg-zinc-900 border border-white/10 p-5 rounded-2xl mb-3 flex flex-col gap-4 shadow-sm hover:border-green-500/30 transition-colors">
+            <div class="bg-[var(--input-bg)] border border-[var(--border-color)] text-[var(--text-main)] p-5 rounded-2xl mb-3 flex flex-col gap-4 shadow-sm hover:border-green-500/30 transition-colors">
                 <div class="flex justify-between items-center">
                     <div>
-                        <h3 class="text-sm font-black text-green-400 uppercase tracking-widest">${data.planId}</h3>
+                        <h3 class="text-sm font-black text-green-500 uppercase tracking-widest">${data.planId}</h3>
                         <p class="text-[10px] opacity-70 mt-1 uppercase tracking-widest font-mono">INST: ${data.instituteId}</p>
                     </div>
-                    <span class="text-[9px] font-bold bg-green-500/20 text-green-400 px-3 py-1.5 rounded-lg border border-green-500/20 uppercase tracking-widest">${data.status}</span>
+                    <span class="text-[9px] font-bold bg-green-500/20 text-green-500 px-3 py-1.5 rounded-lg border border-green-500/20 uppercase tracking-widest">${data.status}</span>
                 </div>
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-t border-white/10 pt-4 gap-4">
-                    <div class="text-[10px] uppercase tracking-widest opacity-80 font-mono space-y-1.5 bg-black/30 p-3 rounded-lg w-full md:w-auto">
-                        <p>Start Date: <span class="text-white">${startStr}</span></p>
-                        <p>Expiry Date: <span class="text-white">${expStr}</span></p>
-                        <p>Auto-Renewal: <span class="${isAutoRenew ? 'text-green-400 drop-shadow-[0_0_5px_rgba(74,222,128,0.5)]' : 'text-red-400'} font-black">${isAutoRenew ? 'ACTIVE' : 'DISABLED'}</span></p>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-t border-[var(--border-color)] pt-4 gap-4">
+                    <div class="text-[10px] uppercase tracking-widest opacity-80 font-mono space-y-1.5 bg-[var(--bg-main)] p-3 rounded-lg w-full md:w-auto">
+                        <p>Start Date: <span class="font-bold">${startStr}</span></p>
+                        <p>Expiry Date: <span class="font-bold">${expStr}</span></p>
+                        <p>Auto-Renewal: <span class="${isAutoRenew ? 'text-green-500 drop-shadow-[0_0_5px_rgba(74,222,128,0.5)]' : 'text-red-500'} font-black">${isAutoRenew ? 'ACTIVE' : 'DISABLED'}</span></p>
                     </div>
-                    <button onclick="window.toggleSubscriptionRenewal('${docSnap.id}', ${!isAutoRenew})" class="${isAutoRenew ? 'bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-600' : 'bg-green-500/10 text-green-400 border border-green-500/30 hover:bg-green-600'} hover:text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all w-full md:w-auto shadow-sm">
+                    <button onclick="window.toggleSubscriptionRenewal('${docSnap.id}', ${!isAutoRenew})" class="${isAutoRenew ? 'bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-600' : 'bg-green-500/10 text-green-500 border border-green-500/30 hover:bg-green-600'} hover:text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all w-full md:w-auto shadow-sm">
                         ${isAutoRenew ? 'Disable Auto-Renew' : 'Enable Auto-Renew'}
                     </button>
                 </div>
@@ -650,7 +650,7 @@ window.loadAdminRequests = async () => {
         
         if (snap.empty) {
             container.innerHTML = `
-            <div class="bg-zinc-900 border border-white/10 p-10 rounded-2xl text-center shadow-inner">
+            <div class="bg-[var(--input-bg)] border border-[var(--border-color)] text-[var(--text-main)] p-10 rounded-2xl text-center shadow-inner">
                 <p class="opacity-30 uppercase font-black tracking-widest text-xs">No pending requests</p>
             </div>`;
             return;
@@ -661,16 +661,16 @@ window.loadAdminRequests = async () => {
             const submittedDate = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleString() : 'Unknown Time';
             
             container.innerHTML += `
-            <div class="bg-zinc-950 border border-white/10 p-6 rounded-3xl flex flex-col gap-5 text-white shadow-lg hover:border-yellow-500/30 transition-all group">
-                <div class="flex justify-between items-start border-b border-white/5 pb-4">
+            <div class="bg-[var(--input-bg)] border border-[var(--border-color)] text-[var(--text-main)] p-6 rounded-3xl flex flex-col gap-5 shadow-lg hover:border-yellow-500/30 transition-all group">
+                <div class="flex justify-between items-start border-b border-[var(--border-color)] pb-4">
                     <div>
-                        <h4 class="font-black text-xl text-yellow-400 tracking-tight group-hover:text-yellow-300 transition-colors">${d.name}</h4>
+                        <h4 class="font-black text-xl text-yellow-500 tracking-tight group-hover:text-yellow-400 transition-colors">${d.name}</h4>
                         <p class="text-[9px] opacity-40 uppercase tracking-widest font-mono mt-1">Submitted: ${submittedDate}</p>
                     </div>
-                    <span class="text-[9px] uppercase tracking-widest font-black ${d.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/20' : (d.status === 'approved' ? 'bg-green-500/20 text-green-400 border border-green-500/20' : 'bg-red-500/20 text-red-400 border border-red-500/20')} px-3 py-1.5 rounded-lg shadow-sm">${d.status}</span>
+                    <span class="text-[9px] uppercase tracking-widest font-black ${d.status === 'pending' ? 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/20' : (d.status === 'approved' ? 'bg-green-500/20 text-green-500 border border-green-500/20' : 'bg-red-500/20 text-red-500 border border-red-500/20')} px-3 py-1.5 rounded-lg shadow-sm">${d.status}</span>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs bg-black/40 p-4 rounded-2xl border border-white/5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs bg-[var(--bg-main)] p-4 rounded-2xl border border-[var(--border-color)]">
                     <div><span class="opacity-50 uppercase tracking-widest text-[9px] font-black block mb-1">Contact Email</span><p class="font-mono text-brandBlue">${d.email}</p></div>
                     <div><span class="opacity-50 uppercase tracking-widest text-[9px] font-black block mb-1">Contact Phone</span><p class="font-mono">${d.phone}</p></div>
                     <div><span class="opacity-50 uppercase tracking-widest text-[9px] font-black block mb-1">Total Teachers</span><p class="font-bold text-brandOrange">${d.teachers}</p></div>
@@ -680,10 +680,10 @@ window.loadAdminRequests = async () => {
 
                 <div class="flex flex-col md:flex-row gap-3 mt-2">
                     ${d.status === 'pending' ? `
-                        <button onclick="window.updateInstRequestStatus('${docSnap.id}', 'approved')" class="flex-1 bg-green-500/20 text-green-400 hover:bg-green-500 hover:text-white px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all border border-green-500/30 shadow-md">Approve Request</button>
-                        <button onclick="window.updateInstRequestStatus('${docSnap.id}', 'rejected')" class="flex-1 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all border border-red-500/30 shadow-md">Reject Request</button>
+                        <button onclick="window.updateInstRequestStatus('${docSnap.id}', 'approved')" class="flex-1 bg-green-500/10 text-green-500 hover:bg-green-600 hover:text-white px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all border border-green-500/30 shadow-md">Approve Request</button>
+                        <button onclick="window.updateInstRequestStatus('${docSnap.id}', 'rejected')" class="flex-1 bg-red-500/10 text-red-500 hover:bg-red-600 hover:text-white px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all border border-red-500/30 shadow-md">Reject Request</button>
                     ` : `
-                        <div class="w-full bg-white/5 border border-white/10 rounded-xl py-3 text-center">
+                        <div class="w-full bg-[var(--bg-main)] border border-[var(--border-color)] rounded-xl py-3 text-center">
                             <p class="text-[10px] uppercase font-black opacity-40 tracking-widest">Request Processed & Closed</p>
                         </div>
                     `}
