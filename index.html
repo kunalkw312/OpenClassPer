@@ -439,10 +439,6 @@
             if(preservedCart) { cart = JSON.parse(preservedCart); }
         } catch(e) { cart = []; }
 
-        // =========================================
-        // GLOBALS & NEW LAYOUT LOGIC 
-        // =========================================
-
         window.showScreen = function(id) { 
             ['auth-screen', 'verify-screen', 'onboarding-screen', 'dashboard'].forEach(s => document.getElementById(s).classList.add('hidden')); 
             const s = document.getElementById(id);
@@ -476,32 +472,38 @@
                             <input id="req-inst-students" placeholder="# of Students" type="number" class="input-field text-sm">
                         </div>
                         <textarea id="req-inst-address" placeholder="Physical Address" class="input-field text-sm h-24 resize-none"></textarea>
-                        <button id="req-inst-submit-btn" onclick="window.submitInstituteRequest()" class="w-full py-4 btn-brand mt-2 text-xs">Submit Request</button>
+                        <button id="req-inst-btn" onclick="window.submitInstituteRequest()" class="w-full py-4 btn-brand mt-2 text-xs">Submit Request</button>
                     </div>
                 </div>
             `;
         };
 
         window.submitInstituteRequest = async () => {
-            const btn = document.getElementById('req-inst-submit-btn');
+            const btn = document.getElementById('req-inst-btn');
+            if(btn) { btn.innerText = "Submitting..."; btn.disabled = true; }
+            
             try {
-                if(btn) { btn.innerHTML = "Submitting..."; btn.disabled = true; }
+                const name = document.getElementById('req-inst-name')?.value.trim() || "";
+                const email = document.getElementById('req-inst-email')?.value.trim() || "";
+                const phone = document.getElementById('req-inst-phone')?.value.trim() || "";
+                const teachers = document.getElementById('req-inst-teachers')?.value || "0";
+                const students = document.getElementById('req-inst-students')?.value || "0";
+                const address = document.getElementById('req-inst-address')?.value.trim() || "";
+                
+                if(!name || !email) {
+                    toast("Name and Email are required", "error");
+                    if(btn) { btn.innerText = "Submit Request"; btn.disabled = false; }
+                    return;
+                }
                 
                 const data = {
-                    name: document.getElementById('req-inst-name').value.trim(),
-                    email: document.getElementById('req-inst-email').value.trim(),
-                    phone: document.getElementById('req-inst-phone').value.trim(),
-                    teachers: document.getElementById('req-inst-teachers').value,
-                    students: document.getElementById('req-inst-students').value,
-                    address: document.getElementById('req-inst-address').value.trim(),
+                    name, email, phone, teachers, students, address,
                     status: 'pending',
-                    createdAt: Core.serverTimestamp()
+                    createdAt: new Date()
                 };
                 
-                if(!data.name || !data.email) {
-                    toast("Name and Email are required", "error");
-                    if(btn) { btn.innerHTML = "Submit Request"; btn.disabled = false; }
-                    return;
+                if(typeof Core.serverTimestamp === 'function') {
+                    data.createdAt = Core.serverTimestamp();
                 }
                 
                 await Core.addDoc(Core.collection(Core.db, "instituteRequests"), data);
@@ -509,8 +511,8 @@
                 window.closeCustomModal();
             } catch (error) {
                 console.error("Submission Error: ", error);
-                toast("Failed to submit request. Check network connection.", "error");
-                if(btn) { btn.innerHTML = "Submit Request"; btn.disabled = false; }
+                toast("Failed to submit request.", "error");
+                if(btn) { btn.innerText = "Submit Request"; btn.disabled = false; }
             }
         };
 
@@ -563,7 +565,6 @@
             } else toast("Verification payload rejection", "error");
         };
 
-        // UI STYLING HELPERS
         window.updateProfileRing = async (uid, role, teacherId) => {
             let colors = [];
             if(role === 'super_admin') colors.push('#dc2626');
@@ -1560,20 +1561,20 @@
                         </div>
                         <div class="w-full space-y-8"><div id="tab-display" class="min-h-[500px] fade-in w-full"></div></div>
                     </div>`;
-                    document.getElementById('tab-display').innerHTML = `<h3 class="text-2xl font-black italic mb-6 border-b border-[var(--border-color)] pb-4">Published Resource Materials</h3><div id="feed" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>`;
+                    document.getElementById('tab-display').innerHTML = `<h3 class="text-2xl font-black italic mb-6 border-b border-[var(--border-color)] pb-4">Published Resource Materials</h3><div id="feed" class="space-y-4"></div>`;
                     renderFeed(contentSorted, true);
                 } else if (currentTab === 'groups') {
                     main.innerHTML = `<div id="tab-display" class="fade-in"><h3 class="text-2xl font-black italic mb-6">Your Managed Hubs</h3><div id="student-groups" class="space-y-4"></div></div>`;
                     renderGroups(groupSnap.docs, true);
                 } else if (currentTab === 'courses') {
-                    main.innerHTML = `<div id="tab-display" class="fade-in"><h3 class="text-2xl font-black italic mb-6">Course Matrix</h3><div id="courses-feed" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div></div>`;
+                    main.innerHTML = `<div id="tab-display" class="fade-in"><h3 class="text-2xl font-black italic mb-6">Course Matrix</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6"></div></div>`;
                     renderCourses(coursesSorted, true);
                 }
             } else {
-                main.innerHTML = `<div id="tab-display" class="max-w-6xl mx-auto min-h-[600px] fade-in"></div>`;
+                main.innerHTML = `<div id="tab-display" class="max-w-4xl mx-auto min-h-[600px] fade-in"></div>`;
                 const box = document.getElementById('tab-display');
                 if (currentTab === 'home') {
-                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Suggested Syllabus</h3><div id="suggested-feed" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"></div><h3 class="text-2xl font-black italic mb-6 border-t border-[var(--border-color)] pt-8">Subscribed Feed Streams</h3><div id="feed" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>`;
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Suggested Syllabus</h3><div id="suggested-feed" class="grid md:grid-cols-2 gap-6 mb-12"></div><h3 class="text-2xl font-black italic mb-6 border-t border-[var(--border-color)] pt-8">Subscribed Feed Streams</h3><div id="feed" class="space-y-6"></div>`;
                     
                     let contentQueryArgs = [Core.collection(Core.db, "content"), Core.limit(40)];
                     
@@ -1614,13 +1615,13 @@
                         const subContent = allContentSorted.filter(doc => profile.subs.includes(doc.data().tId));
                         await renderFeed(subContent, false, 'feed');
                     } else {
-                        document.getElementById('feed').innerHTML = `<div class="glass col-span-full p-10 rounded-[3rem] text-center border border-[var(--border-color)] shadow-sm hover:scale-[1.02] transition-transform"><p class="text-sm font-bold opacity-40 py-6 leading-relaxed">Follow instructors in the campus network <br>to populate your feed matrix.</p></div>`;
+                        document.getElementById('feed').innerHTML = `<div class="glass p-10 rounded-[3rem] text-center border border-[var(--border-color)] shadow-sm hover:scale-[1.02] transition-transform"><p class="text-sm font-bold opacity-40 py-6 leading-relaxed">Follow instructors in the campus network <br>to populate your feed matrix.</p></div>`;
                     }
                 } else if (currentTab === 'groups') {
                     box.innerHTML = `<div class="glass p-6 md:p-8 rounded-[3rem] mb-10 shadow-lg border border-brandBlue/20 hover:shadow-brandBlue/20 transition-all"><h3 class="text-2xl font-black mb-6 italic">Join Campus Hub</h3><div class="flex gap-3"><input id="hub-code" placeholder="OC-XXXXXX" class="input-field shadow-inner font-mono tracking-wider"><button onclick="joinGroup()" class="btn-brand px-10 shadow-md">Join</button></div></div><h3 class="text-2xl font-black mb-6 italic">Enrolled Hubs Matrix</h3><div id="student-groups" class="space-y-4"></div>`;
                     loadGroups();
                 } else if (currentTab === 'courses') {
-                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Marketplace Courses</h3><div id="courses-feed" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>`;
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">Marketplace Courses</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6"></div>`;
                     let courseQueryArgs = [Core.collection(Core.db, "courses")];
                     if (targetInstitute && targetInstitute.privacyMode === 'private') {
                          const validTeachersSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"), Core.where("uniqueId", "==", targetInstitute.uniqueId)));
@@ -1645,7 +1646,7 @@
                     const coSorted = validPublicCourses.sort((a,b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
                     await renderCourses(coSorted, false);
                 } else if (currentTab === 'content') {
-                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">All Course Materials</h3><div id="feed" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>`;
+                    box.innerHTML = `<h3 class="text-2xl font-black italic mb-6">All Course Materials</h3><div id="feed" class="space-y-4"></div>`;
                     
                     let contentQueryArgs = [Core.collection(Core.db, "content"), Core.limit(40)];
                     if (targetInstitute && targetInstitute.privacyMode === 'private') {
@@ -1959,7 +1960,7 @@
                 html += `<div><h3 class="text-[10px] font-black uppercase opacity-40 mb-4 ml-4 tracking-widest">Groups</h3><div class="grid gap-4">${groups.map(g => `<div class="glass p-5 md:p-6 rounded-[2.5rem] flex justify-between items-center border border-[var(--border-color)] shadow-sm hover:border-brandOrange/30 transition-all hover:scale-[1.01] hover:shadow-lg"><div><span class="text-[8px] text-brandOrange font-black uppercase tracking-widest">${g.data().type}</span><h3 class="text-lg font-black mt-1 pr-2">${g.data().name}</h3><p class="text-[10px] opacity-50 pr-2 font-mono mt-1">${g.data().code}</p></div><button onclick="handleHubSearchJoin('${g.id}','${g.data().code}')" class="btn-brand px-6 py-2.5 text-[10px] shadow-sm hover:scale-110">Access</button></div>`).join('')}</div></div>`;
             }
             if(content.length) {
-                html += `<div><h3 class="text-[10px] font-black uppercase opacity-40 mb-4 ml-4 tracking-widest">Lessons Catalog</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`;
+                html += `<div><h3 class="text-[10px] font-black uppercase opacity-40 mb-4 ml-4 tracking-widest">Lessons Catalog</h3><div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">`;
                 const contentHtmlPromises = content.map(d => window.renderResourceCardHtml(d, false));
                 const contentHtmlArr = await Promise.all(contentHtmlPromises);
                 html += contentHtmlArr.join('');
@@ -2053,20 +2054,14 @@
             document.getElementById('toggle-auth-btn').innerText = isSignup ? "Return to active session" : "Create Profile"; 
         };
         
-        window.handleGoogle = async () => {
-            try {
-                // Instantiating Provider through Core mapping safely
-                const provider = new Core.GoogleAuthProvider();
-                await Core.signInWithPopup(Core.auth, provider);
-            } catch (error) {
-                // Silently swallow popup-closed-by-user to prevent unhandled rejection crashes
-                if (error.code !== 'auth/popup-closed-by-user') {
-                    console.error("Google Auth Error:", error);
-                    toast("Authentication failed. Please try again.", "error");
+        window.handleGoogle = () => {
+            Core.signInWithPopup(Core.auth, Core.provider).catch(err => {
+                if(err.code !== 'auth/popup-closed-by-user') {
+                    toast(err.message, "error");
                 }
-            }
+            });
         };
-        
+
         window.logout = () => Core.signOut(Core.auth).then(() => { localStorage.removeItem('oc_cart_manifest'); location.reload(); });
 
         window.finalizeProfile = async () => {
@@ -2224,7 +2219,7 @@
             const container = document.getElementById('courses-feed');
             if (!container) return;
             
-            let html = ``;
+            let html = `<div class="grid md:grid-cols-2 gap-6 w-full fade-in">`;
             for(let doc of docs) {
                 const c = doc.data();
                 let badgeStr = "";
@@ -2236,8 +2231,9 @@
                     if(instData) badgeStr = window.renderInstBadgeHtml(instData, 'w-8 h-8 md:w-10 md:h-10 border-2 right-2 bottom-2');
                 }
 
-                html += `<div class="glass p-5 rounded-[2.5rem] border border-[var(--border-color)] flex flex-col justify-between h-auto shadow-md hover:border-brandOrange/30 hover:scale-[1.02] transition-all fade-in"><div class="w-full flex items-center justify-center overflow-hidden rounded-2xl mb-5 bg-zinc-950/40 aspect-video shadow-inner relative"><img src="${c.thumbnail}" class="w-full h-full object-cover border border-[var(--border-color)] hover:scale-110 transition-transform duration-500">${badgeStr}</div><div><h2 class="text-xl font-black italic mb-2 truncate pr-4 text-[var(--text-main)]">${c.title}</h2><div class="flex justify-between items-center mt-5"><h3 class="text-lg font-black text-brandOrange drop-shadow-md">₹${c.price === '0' ? 'FREE' : c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2.5 text-[10px] shadow-sm hover:shadow-brandOrange/40 hover:scale-110">Inspect</button></div></div></div>`;
+                html += `<div class="glass p-5 rounded-[2.5rem] border border-[var(--border-color)] flex flex-col justify-between h-auto shadow-md hover:border-brandOrange/30 hover:scale-[1.02] transition-all"><div class="w-full flex items-center justify-center overflow-hidden rounded-2xl mb-5 bg-zinc-950/40 aspect-video shadow-inner relative"><img src="${c.thumbnail}" class="w-full h-full object-cover border border-[var(--border-color)] hover:scale-110 transition-transform duration-500">${badgeStr}</div><div><h2 class="text-xl font-black italic mb-2 truncate pr-4 text-[var(--text-main)]">${c.title}</h2><div class="flex justify-between items-center mt-5"><h3 class="text-lg font-black text-brandOrange drop-shadow-md">₹${c.price === '0' ? 'FREE' : c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2.5 text-[10px] shadow-sm hover:shadow-brandOrange/40 hover:scale-110">Inspect</button></div></div></div>`;
             }
+            html += `</div>`;
             container.innerHTML = html;
         }
 
@@ -2248,56 +2244,42 @@
             if (i.type === 'live') {
                 const status = window.checkLiveStatus(i.liveDate, i.liveStartTime, i.liveEndTime);
                 if (status === 'scheduled') {
-                    liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-blue-600/20 text-blue-500 text-[8px] font-black tracking-widest px-2 py-1 rounded-md mt-1.5 w-fit shadow-sm">SCHEDULED: ${i.liveStartTime}</span>`;
+                    liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-blue-600/20 text-blue-500 text-[8px] font-black tracking-widest px-2.5 py-1 rounded-md border border-blue-500/20 shadow-sm mt-1 mb-2 w-fit">SCHEDULED: ${i.liveStartTime}</span>`;
                 } else if (status === 'live') {
-                    liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-red-600/20 text-red-600 text-[8px] font-black tracking-widest px-2 py-1 rounded-md mt-1.5 w-fit shadow-sm"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_5px_red]"></span>LIVE NOW</span>`;
+                    liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-red-600/20 text-red-600 text-[8px] font-black tracking-widest px-2.5 py-1 rounded-md border border-red-500/20 shadow-sm mt-1 mb-2 w-fit"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_red]"></span>LIVE NOW</span>`;
                 } else {
-                    liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-brandOrange/20 text-brandOrange text-[8px] font-black tracking-widest px-2 py-1 rounded-md mt-1.5 w-fit shadow-sm">RECORDED</span>`;
+                    liveStatusLabel = `<span class="inline-flex items-center gap-1.5 bg-brandOrange/20 text-brandOrange text-[8px] font-black tracking-widest px-2.5 py-1 rounded-md border border-brandOrange/20 shadow-sm mt-1 mb-2 w-fit"><span class="w-1.5 h-1.5 rounded-full bg-brandOrange shadow-[0_0_8px_#f7941d]"></span>RECORDED</span>`;
                 }
             }
 
             let badgeHtml = "";
-            let teacherPhoto = `https://ui-avatars.com/api/?name=${encodeURIComponent(i.tName)}&background=111&color=fff`;
             const tSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId", "==", i.tId)));
-            
-            if(!tSnap.empty) {
-                const tData = tSnap.docs[0].data();
-                if(tData.photo) teacherPhoto = tData.photo;
-                if(tData.instituteId) {
-                    const instData = await window.getInstBadgeData(tData.instituteId);
-                    if(instData && instData.logo) {
-                        badgeHtml = `<img src="${instData.logo}" class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full object-cover border border-[var(--bg-main)] bg-black z-10" title="${instData.name}">`;
-                    }
+            if(!tSnap.empty && tSnap.docs[0].data().instituteId) {
+                const instData = await window.getInstBadgeData(tSnap.docs[0].data().instituteId);
+                if(instData && instData.logo) {
+                    badgeHtml = `<img src="${instData.logo}" class="w-5 h-5 rounded-full object-cover border border-[var(--border-color)] shrink-0 bg-black" title="${instData.name}">`;
                 }
             }
 
-            const dateStr = i.date ? new Date(i.date.seconds*1000).toLocaleDateString() : 'Recent';
-
-            return `<div class="glass p-4 rounded-[1.5rem] flex flex-col group shadow-sm hover:shadow-md transition-all border border-[var(--border-color)] hover:border-brandBlue/30 hover:scale-[1.01] fade-in h-full flex flex-col justify-between">
-                <div>
-                    <div class="relative w-full aspect-video rounded-xl overflow-hidden shrink-0 shadow-sm border border-[var(--border-color)] cursor-pointer" onclick="openResource('${d.id}','${i.url}','${i.title}')">
-                        <img src="${window.getSmartPreview(i.url)}" class="w-full h-full object-cover bg-black group-hover:scale-105 transition-transform duration-500">
-                        ${window.getFileBadge(i.url)}
-                    </div>
-                    
-                    <div class="flex gap-3 mt-4 px-1">
-                        <div class="shrink-0 relative mt-1 cursor-pointer" onclick="viewTeacher('${i.tId}')">
-                            <img src="${teacherPhoto}" class="w-10 h-10 rounded-full object-cover border border-[var(--border-color)] shadow-sm">
-                            ${badgeHtml}
-                        </div>
-                        <div class="flex flex-col overflow-hidden w-full">
-                            <h4 class="font-black text-sm md:text-base italic line-clamp-2 text-[var(--text-main)] leading-snug break-words group-hover:text-brandBlue transition-colors cursor-pointer" onclick="openResource('${d.id}','${i.url}','${i.title}')">${i.title}</h4>
-                            ${liveStatusLabel}
-                            <p class="text-[10px] opacity-60 uppercase font-bold tracking-widest mt-1.5 font-mono truncate cursor-pointer hover:text-brandOrange" onclick="viewTeacher('${i.tId}')">${i.tName}</p>
-                            <p class="text-[9px] opacity-50 uppercase font-bold tracking-widest font-mono mt-0.5">${i.views || 0} Views • ${dateStr}</p>
-                        </div>
-                    </div>
+            return `<div class="glass p-4 md:p-5 rounded-[2rem] flex flex-col group shadow-sm hover:shadow-lg transition-all border border-[var(--border-color)] hover:border-brandOrange/30 hover:-translate-y-1 fade-in h-full relative overflow-hidden">
+                <div class="relative w-full aspect-video overflow-hidden rounded-2xl shadow-sm mb-4 shrink-0 bg-zinc-950 flex items-center justify-center border border-[var(--border-color)]">
+                    <img src="${window.getSmartPreview(i.url)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    ${window.getFileBadge(i.url)}
                 </div>
-
-                <div class="flex gap-2 w-full mt-5 shrink-0 px-1">
-                    <button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow btn-brand py-3.5 rounded-xl font-black text-[10px] uppercase shadow-sm hover:shadow-brandBlue/40 hover:scale-[1.02] transition-transform">Open</button>
-                    ${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="px-4 py-3 bg-[var(--input-bg)] text-[var(--text-main)] rounded-xl hover:text-brandBlue hover:scale-110 transition-all border border-[var(--border-color)] shadow-sm">✎</button>
-                    <button onclick="delR('${d.id}')" class="px-4 py-3 bg-[var(--input-bg)] text-[var(--text-main)] rounded-xl hover:text-red-500 hover:bg-red-500/10 hover:scale-110 transition-all border border-[var(--border-color)] shadow-sm">🗑</button>` : ''}
+                <div class="flex flex-col flex-grow px-1">
+                    <h4 class="font-black text-base md:text-lg italic line-clamp-2 text-[var(--text-main)] drop-shadow-sm mb-1 leading-snug break-words group-hover:text-brandOrange transition-colors">${i.title}</h4> 
+                    ${liveStatusLabel}
+                    <div class="flex items-center gap-2 mt-1 mb-4 text-[10px] md:text-xs opacity-70 uppercase font-bold tracking-widest font-mono">
+                        ${badgeHtml} 
+                        <span class="truncate max-w-[120px] md:max-w-[180px]">${i.tName}</span> 
+                        <span class="opacity-30">•</span> 
+                        <span class="shrink-0">${i.views || 0} Views</span>
+                    </div>
+                    <div class="mt-auto flex gap-2 w-full pt-2">
+                        <button onclick="openResource('${d.id}','${i.url}','${i.title}')" class="flex-grow btn-brand px-4 py-3 rounded-xl font-black text-[10px] uppercase shadow-sm hover:shadow-brandOrange/40">Open</button>
+                        ${isT ? `<button onclick="editR('${d.id}','${i.title}','${i.url}')" class="p-3 bg-[var(--input-bg)] text-[var(--text-main)] rounded-xl hover:text-brandBlue hover:scale-110 transition-all border border-[var(--border-color)] shadow-sm shrink-0">✎</button>
+                        <button onclick="delR('${d.id}')" class="p-3 bg-[var(--input-bg)] text-[var(--text-main)] rounded-xl hover:text-red-500 hover:bg-red-500/10 hover:scale-110 transition-all border border-[var(--border-color)] shadow-sm shrink-0">🗑</button>` : ''}
+                    </div>
                 </div>
             </div>`;
         };
@@ -2489,9 +2471,9 @@
                 
                 ${canViewContent ? `
                     <h3 class="text-2xl font-black mb-6 italic">Course Collections</h3>
-                    <div id="courses-feed" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10"></div>
+                    <div id="courses-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div>
                     <h3 class="text-2xl font-black mb-6 italic">Syllabus Catalog Items</h3>
-                    <div id="feed" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                    <div id="feed" class="space-y-4"></div>
                 ` : `
                     <div class="glass p-12 text-center rounded-[3rem] border border-[var(--border-color)]">
                         <div class="text-4xl mb-4">🔒</div>
