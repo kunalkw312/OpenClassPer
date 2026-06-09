@@ -337,7 +337,6 @@
                 <button onclick="window.showSection('institutes-section')" class="bg-purple-500/20 text-purple-400 hover:bg-purple-600 hover:scale-105 hover:text-white border border-purple-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Institutes</button>
                 <button onclick="window.showSection('payments-section')" class="bg-brandOrange/20 text-brandOrange hover:bg-brandOrange hover:scale-105 hover:text-white border border-brandOrange/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Payments</button>
                 <button onclick="window.showSection('subscriptions-section')" class="bg-green-500/20 text-green-500 hover:bg-green-600 hover:scale-105 hover:text-white border border-green-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Subscriptions</button>
-                <!-- OVERRIDDEN ONCLICK FOR VIEW MODE ONLY -->
                 <button onclick="window.handleAdminRequestsView()" class="bg-yellow-500/20 text-yellow-500 hover:bg-yellow-600 hover:scale-105 hover:text-white border border-yellow-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Requests</button>
             </div>
 
@@ -427,6 +426,9 @@
         window._currentCourseList = [];
         window._tempGooglePhoto = "";
 
+        // NEW GLOBAL STORAGE FOR REQUESTS
+        window._currentAdminRequests = [];
+
         const tabsOrderIndex = ['home', 'groups', 'courses', 'content'];
         let touchStartX = 0;
         let touchStartY = 0;
@@ -507,7 +509,6 @@
                     data.createdAt = Core.serverTimestamp();
                 }
                 
-                // Directly executing the write. Will throw 'permission-denied' if rules are not updated.
                 await Core.addDoc(Core.collection(Core.db, "instituteRequests"), data);
                 
                 toast("Request submitted successfully. Our team will contact you.");
@@ -1029,8 +1030,7 @@
             window.showSection('plans-section');
         };
 
-        // NEW OVERRIDDEN IMPLEMENTATION FOR VIEW ONLY
-        window._adminReqCache = {};
+        // FIXED IMPLEMENTATION FOR VIEW ONLY
         window.handleAdminRequestsView = async () => {
             // First display the UI Section
             if (typeof window.showSection === 'function') {
@@ -1053,13 +1053,11 @@
                 }
                 
                 let reqs = [];
-                window._adminReqCache = {};
-                snap.forEach(doc => { 
-                    const data = {id: doc.id, ...doc.data()};
-                    reqs.push(data);
-                    window._adminReqCache[doc.id] = data;
-                });
+                snap.forEach(doc => { reqs.push({id: doc.id, ...doc.data()}); });
                 reqs.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+                // STORE SECURELY IN GLOBAL VARIABLE TO AVOID ONCLICK ESCAPING BUGS
+                window._currentAdminRequests = reqs;
 
                 let html = '';
                 reqs.forEach(d => {
@@ -1078,9 +1076,10 @@
             }
         };
 
-        window.viewInstituteRequest = (id) => {
-            const d = window._adminReqCache[id];
-            if(!d) return;
+        window.viewInstituteRequest = (reqId) => {
+            const d = window._currentAdminRequests?.find(r => r.id === reqId);
+            if (!d) return;
+
             const modal = document.getElementById('custom-modal');
             const content = document.getElementById('modal-content');
             modal.classList.remove('hidden');
@@ -2368,18 +2367,14 @@
             }
 
             return `<div class="flex flex-col group cursor-pointer w-full" onclick="openResource('${d.id}','${i.url}','${i.title}')">
-                <!-- Thumbnail -->
                 <div class="relative w-full aspect-video rounded-2xl overflow-hidden shadow-md border border-[var(--border-color)] bg-zinc-950 mb-3 group-hover:shadow-lg group-hover:border-brandOrange/50 transition-all group-hover:scale-[1.02]">
                     <img src="${window.getSmartPreview(i.url)}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     ${window.getFileBadge(i.url)}
                 </div>
                 
-                <!-- Metadata -->
                 <div class="flex gap-3 px-1">
-                    <!-- Avatar -->
                     <img src="${avatarSrc}" class="w-9 h-9 rounded-full object-cover shrink-0 border border-[var(--border-color)] bg-black shadow-sm mt-0.5">
                     
-                    <!-- Text Info -->
                     <div class="flex flex-col flex-1 min-w-0">
                         <h4 class="font-bold text-sm md:text-base text-[var(--text-main)] leading-snug line-clamp-2 break-words group-hover:text-brandOrange transition-colors">${i.title}</h4>
                         ${liveStatusLabel}
@@ -2392,7 +2387,6 @@
                             </div>
                         </div>
                         
-                        <!-- Actions -->
                         ${isT ? `<div class="flex gap-2 mt-3 w-full" onclick="event.stopPropagation()">
                             <button onclick="editR('${d.id}','${i.title}','${i.url}')" class="flex-1 p-2 bg-[var(--input-bg)] text-[var(--text-main)] rounded-xl hover:text-brandBlue hover:border-brandBlue transition-all border border-[var(--border-color)] shadow-sm text-xs font-bold">Edit</button>
                             <button onclick="delR('${d.id}')" class="flex-1 p-2 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all border border-red-500/20 shadow-sm text-xs font-bold">Delete</button>
