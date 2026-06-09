@@ -337,7 +337,7 @@
                 <button onclick="window.showSection('institutes-section')" class="bg-purple-500/20 text-purple-400 hover:bg-purple-600 hover:scale-105 hover:text-white border border-purple-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Institutes</button>
                 <button onclick="window.showSection('payments-section')" class="bg-brandOrange/20 text-brandOrange hover:bg-brandOrange hover:scale-105 hover:text-white border border-brandOrange/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Payments</button>
                 <button onclick="window.showSection('subscriptions-section')" class="bg-green-500/20 text-green-500 hover:bg-green-600 hover:scale-105 hover:text-white border border-green-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Subscriptions</button>
-                <button onclick="window.loadAdminRequests()" class="bg-yellow-500/20 text-yellow-500 hover:bg-yellow-600 hover:scale-105 hover:text-white border border-yellow-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Requests</button>
+                <button onclick="window.handleAdminRequestsView()" class="bg-yellow-500/20 text-yellow-500 hover:bg-yellow-600 hover:scale-105 hover:text-white border border-yellow-500/30 p-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">Requests</button>
             </div>
 
             <div class="flex-grow overflow-y-auto pr-4 custom-scrollbar">
@@ -499,30 +499,24 @@
                 const data = {
                     name, email, phone, teachers, students, address,
                     status: 'pending',
-                    createdAt: new Date() // Fallback timestamp
+                    createdAt: new Date()
                 };
                 
                 if(typeof Core.serverTimestamp === 'function') {
                     data.createdAt = Core.serverTimestamp();
                 }
                 
-                // Note: The unauthenticated DB write fails because of Firebase Security Rules.
-                // We wrap this inside a try-catch to simulate success in the UI while alerting developers.
-                try {
-                    await Core.addDoc(Core.collection(Core.db, "instituteRequests"), data);
-                } catch(err) {
-                    if(err.code === 'permission-denied') {
-                        console.warn("FIREBASE RULES BLOCK: The write to 'instituteRequests' was blocked because unauthenticated writes are restricted in your Firestore Rules. Simulating success for UI testing.");
-                    } else {
-                        throw err;
-                    }
-                }
+                await Core.addDoc(Core.collection(Core.db, "instituteRequests"), data);
                 
                 toast("Request submitted successfully. Our team will contact you.");
                 window.closeCustomModal();
             } catch (error) {
                 console.error("Submission Error: ", error);
-                toast("Failed to submit request.", "error");
+                if (error.code === 'permission-denied') {
+                    toast("Database blocked request: Please update Firebase Rules.", "error");
+                } else {
+                    toast("Failed to submit request.", "error");
+                }
                 if(btn) { btn.innerText = "Submit Request"; btn.disabled = false; }
             }
         };
@@ -1031,6 +1025,73 @@
             window.closeCustomModal();
             document.getElementById('admin-dashboard').classList.remove('hidden');
             window.showSection('plans-section');
+        };
+
+        // NEW OVERRIDDEN IMPLEMENTATION FOR VIEW ONLY
+        window.handleAdminRequestsView = async () => {
+            // First display the UI Section
+            if (typeof window.showSection === 'function') {
+                window.showSection('requests-section');
+            } else {
+                document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
+                document.getElementById('requests-section')?.classList.remove('hidden');
+            }
+            
+            const container = document.getElementById('admin-requests-list');
+            if(!container) return;
+            
+            container.innerHTML = '<p class="text-xs opacity-50 py-4 text-center">Loading requests...</p>';
+            
+            try {
+                const snap = await Core.getDocs(Core.collection(Core.db, "instituteRequests"));
+                if(snap.empty) {
+                    container.innerHTML = '<p class="text-xs opacity-50 py-4 text-center">No pending requests.</p>';
+                    return;
+                }
+                
+                let reqs = [];
+                snap.forEach(doc => { reqs.push({id: doc.id, ...doc.data()}); });
+                reqs.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+                let html = '';
+                reqs.forEach(d => {
+                    const reqString = encodeURIComponent(JSON.stringify(d));
+                    html += `<div class="glass p-5 rounded-2xl flex justify-between items-center border border-[var(--border-color)] shadow-sm hover:border-brandOrange/30 transition-all mb-3">
+                        <div>
+                            <p class="font-bold text-sm text-[var(--text-main)]">${d.name || 'Unknown Institute'}</p>
+                            <p class="text-[10px] opacity-50 font-mono mt-1">${d.email || 'No email'}</p>
+                        </div>
+                        <button onclick="window.viewInstituteRequest('${reqString}')" class="btn-brand px-6 py-2.5 text-[10px] shadow-sm hover:scale-105 shrink-0">View Details</button>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            } catch(e) {
+                console.error(e);
+                container.innerHTML = '<p class="text-red-500 text-xs py-2 text-center">Failed to fetch onboarding queue.</p>';
+            }
+        };
+
+        window.viewInstituteRequest = (dataStr) => {
+            const d = JSON.parse(decodeURIComponent(dataStr));
+            const modal = document.getElementById('custom-modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('hidden');
+            content.innerHTML = `
+                <div class="fade-in">
+                    <h3 class="text-2xl font-black italic mb-6">Institute Request</h3>
+                    <div class="space-y-4 bg-[var(--input-bg)] p-6 rounded-2xl border border-[var(--border-color)]">
+                        <div><p class="text-[9px] font-black uppercase tracking-widest opacity-40">Institute Name</p><p class="text-sm font-bold mt-1">${d.name}</p></div>
+                        <div><p class="text-[9px] font-black uppercase tracking-widest opacity-40">Contact Email</p><p class="text-sm font-bold mt-1">${d.email}</p></div>
+                        <div><p class="text-[9px] font-black uppercase tracking-widest opacity-40">Contact Phone</p><p class="text-sm font-bold mt-1">${d.phone || 'N/A'}</p></div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><p class="text-[9px] font-black uppercase tracking-widest opacity-40">Teachers</p><p class="text-sm font-bold mt-1">${d.teachers || '0'}</p></div>
+                            <div><p class="text-[9px] font-black uppercase tracking-widest opacity-40">Students</p><p class="text-sm font-bold mt-1">${d.students || '0'}</p></div>
+                        </div>
+                        <div><p class="text-[9px] font-black uppercase tracking-widest opacity-40">Physical Address</p><p class="text-sm font-bold mt-1">${d.address || 'N/A'}</p></div>
+                    </div>
+                    <button onclick="closeCustomModal()" class="w-full py-4 mt-6 bg-[var(--input-bg)] text-[var(--text-main)] border border-[var(--border-color)] rounded-xl text-xs font-black uppercase tracking-widest hover:bg-brandOrange hover:border-brandOrange hover:text-white transition-all shadow-sm">Close View</button>
+                </div>
+            `;
         };
 
         window.processLocalAvatarUpload = (input) => {
