@@ -16,7 +16,7 @@
         }
     </script>
   
-    <title>OpenClass | Premium SaaS LMS</title>
+    <title>OpenClass App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
@@ -202,7 +202,7 @@
                         <option value="public">Public Account (Visible to all)</option>
                         <option value="private">Private Account (Requires Approval)</option>
                     </select>
-                    <input type="text" id="reg-institute-id" placeholder="Institute ID (Optional)" class="input-field">
+                    <!-- Institute ID Box Completely Extracted From Code -->
                 </div>
 
                 <div class="space-y-4">
@@ -213,9 +213,8 @@
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5">
                         Continue with Google
                     </button>
-                    <div class="flex justify-between items-center mt-6">
+                    <div class="flex justify-center items-center mt-6">
                         <button onclick="toggleAuth()" id="toggle-auth-btn" class="text-[10px] text-zinc-500 font-bold uppercase hover:text-brandOrange transition-colors">Create Profile</button>
-                        <button onclick="window.showInstituteForm()" class="text-[10px] text-brandBlue font-bold uppercase hover:text-brandOrange transition-colors">Register Your Institute</button>
                     </div>
                 </div>
             </div>
@@ -416,6 +415,11 @@
         import * as Core from "./app.js";
         import { customAiConfig } from "./config.js";
 
+        // ========================================================
+        // CRUCIAL HARDCODED PARAMETER FOR FIXED CAMPUS OPERATION
+        // ========================================================
+        window.HARDCODED_INSTITUTE_ID = "INST-DEMO12"; 
+
         let profile = null, isSignup = false, otpCode = null, tempUser = null, activeGroupId = null, currentTab = 'home', videoPlayer = null;
         let currentVideoContext = null, watermarkInterval = null, groupMessageTrackers = {}, activeLiveChatListenerUnsub = null;
         let notificationsMap = []; 
@@ -426,9 +430,26 @@
         window._currentContentList = [];
         window._currentCourseList = [];
         window._tempGooglePhoto = "";
-
-        // NEW GLOBAL STORAGE FOR REQUESTS
         window._currentAdminRequests = [];
+
+        // Track native PWA installer prompt setup
+        let deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            console.log("'beforeinstallprompt' event caught and stored.");
+        });
+
+        window.triggerPWAInstallationPipeline = async () => {
+            if (!deferredPrompt) {
+                toast("App already installed or device environment restricted.", "error");
+                return;
+            }
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User installation choice outcome: ${outcome}`);
+            deferredPrompt = null;
+        };
 
         const tabsOrderIndex = ['home', 'groups', 'courses', 'content'];
         let touchStartX = 0;
@@ -459,72 +480,6 @@
             }
         };
 
-        window.showInstituteForm = () => {
-            const modal = document.getElementById('custom-modal');
-            const content = document.getElementById('modal-content');
-            modal.classList.remove('hidden');
-            content.innerHTML = `
-                <div class="fade-in">
-                    <h3 class="text-2xl font-black italic mb-2">Register Institute</h3>
-                    <p class="text-xs opacity-50 mb-6">Submit a request to onboard your campus.</p>
-                    <div class="space-y-4">
-                        <input id="req-inst-name" placeholder="Institute Name" class="input-field text-sm">
-                        <input id="req-inst-email" placeholder="Contact Email" type="email" class="input-field text-sm">
-                        <input id="req-inst-phone" placeholder="Contact Number" class="input-field text-sm">
-                        <div class="grid grid-cols-2 gap-4">
-                            <input id="req-inst-teachers" placeholder="# of Teachers" type="number" class="input-field text-sm">
-                            <input id="req-inst-students" placeholder="# of Students" type="number" class="input-field text-sm">
-                        </div>
-                        <textarea id="req-inst-address" placeholder="Physical Address" class="input-field text-sm h-24 resize-none"></textarea>
-                        <button id="req-inst-btn" onclick="window.submitInstituteRequest()" class="w-full py-4 btn-brand mt-2 text-xs hover:scale-[1.02] transition-transform">Submit Request</button>
-                    </div>
-                </div>
-            `;
-        };
-
-        window.submitInstituteRequest = async () => {
-            const btn = document.getElementById('req-inst-btn');
-            if(btn) { btn.innerText = "Submitting..."; btn.disabled = true; }
-            
-            try {
-                const name = document.getElementById('req-inst-name')?.value.trim() || "";
-                const email = document.getElementById('req-inst-email')?.value.trim() || "";
-                const phone = document.getElementById('req-inst-phone')?.value.trim() || "";
-                const teachers = document.getElementById('req-inst-teachers')?.value || "0";
-                const students = document.getElementById('req-inst-students')?.value || "0";
-                const address = document.getElementById('req-inst-address')?.value.trim() || "";
-                
-                if(!name || !email) {
-                    toast("Name and Email are required", "error");
-                    if(btn) { btn.innerText = "Submit Request"; btn.disabled = false; }
-                    return;
-                }
-                
-                const data = {
-                    name, email, phone, teachers, students, address,
-                    status: 'pending',
-                    createdAt: new Date()
-                };
-                
-                if(typeof Core.serverTimestamp === 'function') {
-                    data.createdAt = Core.serverTimestamp();
-                }
-                
-                await Core.addDoc(Core.collection(Core.db, "instituteRequests"), data);
-                
-                toast("Request submitted successfully. Our team will contact you.");
-                window.closeCustomModal();
-            } catch (error) {
-                console.error("Submission Error: ", error);
-                if (error.code === 'permission-denied') {
-                    toast("Database blocked request: Please update Firebase Rules.", "error");
-                } else {
-                    toast("Failed to submit request.", "error");
-                }
-                if(btn) { btn.innerText = "Submit Request"; btn.disabled = false; }
-            }
-        };
-
         window.handleAuth = async () => {
             const e = document.getElementById('auth-email').value, p = document.getElementById('auth-pass').value;
             if (isSignup) {
@@ -532,7 +487,7 @@
                     e, p, 
                     n: document.getElementById('reg-name').value, 
                     r: document.getElementById('reg-role').value,
-                    instId: document.getElementById('reg-institute-id').value.trim() || null,
+                    instId: window.HARDCODED_INSTITUTE_ID, // Forces hardcoded campus context seamlessly
                     privacy: document.getElementById('reg-privacy').value || 'public'
                 };
                 otpCode = Math.floor(100000 + Math.random() * 900000);
@@ -902,31 +857,12 @@
             
             const ringStyle = await window.updateProfileRing(Core.auth.currentUser.uid, profile.role, profile.teacherId);
             
-            let joinHubSectionHtml = `
-                <div class="flex gap-2">
-                    <input id="profile-join-inst-id" placeholder="Enter Institute ID (e.g. INST-XXXXXX)" class="input-field text-xs flex-1 transition-all">
-                    <button onclick="joinInstituteFromProfile()" class="bg-brandBlue text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md hover:scale-105 transition-all">Join Hub</button>
-                </div>
-            `;
-            
-            if(profile.instituteId) {
-                joinHubSectionHtml = `
-                    <div class="bg-brandBlue/10 border border-brandBlue/20 p-4 rounded-2xl flex justify-between items-center transition-colors">
-                        <div>
-                            <p class="text-[10px] uppercase font-black tracking-widest text-brandBlue">Active Institute</p>
-                            <p class="text-sm font-bold mt-1 text-[var(--text-main)]">${profile.instituteId}</p>
-                        </div>
-                        <button onclick="leaveInstituteFromProfile()" class="bg-red-500/10 text-red-500 border border-red-500/20 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all shadow-sm">Leave Institute</button>
-                    </div>
-                `;
-            }
-
             content.innerHTML = `
                 <div class="relative fade-in">
                     <div class="flex items-center justify-between mb-8">
                         <div>
                             <h3 class="text-3xl font-black italic">Profile Settings</h3>
-                            <p class="text-xs opacity-50 mt-1">Manage your identity & workspace preferences</p>
+                            <p class="text-xs opacity-50 mt-1">Manage your identity preferences</p>
                         </div>
                     </div>
                     <div class="space-y-8">
@@ -971,9 +907,11 @@
                         </div>
                         <button onclick="saveProfileWorkspaceChanges(event)" class="w-full py-4 btn-brand text-xs rounded-2xl font-black uppercase tracking-widest hover:scale-[1.02] transition-all shadow-lg">Save Profile Changes</button>
                         
-                        <div class="mt-8 border-t border-[var(--border-color)] pt-8">
-                            <h4 class="text-xs font-black uppercase tracking-widest opacity-50 mb-4">Campus Matrix Connection</h4>
-                            ${joinHubSectionHtml}
+                        <!-- NEW PWA LAUNCHER BLOCK INJECTED HERE -->
+                        <div class="mt-6 pt-4 border-t border-[var(--border-color)]">
+                            <button onclick="window.triggerPWAInstallationPipeline()" class="w-full py-4 bg-zinc-900 border border-brandOrange/30 text-brandOrange rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-brandOrange hover:text-white transition-all shadow-md">
+                                📥 Download as an Application
+                            </button>
                         </div>
 
                         <div class="pt-8 border-t border-red-500/10 mt-10">
@@ -997,38 +935,24 @@
             `;
         };
 
-        window.joinInstituteFromProfile = async () => {
-            const id = document.getElementById('profile-join-inst-id').value.trim().toUpperCase();
-            if(!id) return toast("Enter valid Institute ID", "error");
+        window.finalizeProfile = async () => {
+            const n = document.getElementById('ob-name').value, p = document.getElementById('ob-pass').value, r = document.getElementById('ob-role').value;
+            if (!n || !p) return toast("Form fields incomplete", "error");
             try {
-                const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"), Core.where("uniqueId", "==", id)));
-                if(snap.empty) return toast("Institute node not found", "error");
-                
-                await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { instituteId: id });
-                toast("Successfully connected to institute hub!");
-                setTimeout(() => location.reload(), 1500);
-            } catch(e) {
-                console.error(e);
-                toast("Failed to process network join request", "error");
-            }
-        };
-
-        window.leaveInstituteFromProfile = async () => {
-            if(!confirm("Are you sure you want to leave your current institute? You will lose access to its private network.")) return;
-            try {
-                await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { instituteId: null });
-                toast("Left institute successfully.");
-                setTimeout(() => location.reload(), 1500);
-            } catch(e) {
-                console.error(e);
-                toast("Failed to leave institute", "error");
-            }
-        };
-
-        window.openAdminPanel = () => {
-            window.closeCustomModal();
-            document.getElementById('admin-dashboard').classList.remove('hidden');
-            window.showSection('plans-section');
+                await Core.updatePassword(Core.auth.currentUser, p);
+                await Core.setDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { 
+                    name: n, 
+                    role: r, 
+                    teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), 
+                    email: Core.auth.currentUser.email, 
+                    subs: [], 
+                    pendingSubs: [], 
+                    photo: window._tempGooglePhoto || Core.auth.currentUser.photoURL || "", 
+                    privacyMode: 'public',
+                    instituteId: window.HARDCODED_INSTITUTE_ID // Implicit layout linkage during onboarding setup
+                });
+                location.reload();
+            } catch(e) { toast(e.message, "error"); }
         };
 
         window.handleAdminRequestsView = async () => {
@@ -1449,7 +1373,6 @@
             else if (p === 'profile') viewTeacher(q);
         }
 
-        // Analytics Card Handlers
         window.showAnalyticsModal = async (type) => {
             const modal = document.getElementById('custom-modal');
             const content = document.getElementById('modal-content');
@@ -1554,7 +1477,6 @@
                         `;
                     }
 
-                    // Inherit rules for teachers
                     if (profile.role === 'teacher') {
                         profile.privacyMode = targetInstitute.privacyMode || profile.privacyMode;
                     }
@@ -2007,14 +1929,12 @@
             
             const teachers = uS.docs.filter(d => {
                 const ud = d.data();
-                // Block external teachers if student is in private node
                 if (isolatedInstId && ud.instituteId !== isolatedInstId) return false;
                 return ud.role === 'teacher' && (ud.name.toLowerCase().includes(q.toLowerCase()) || ud.teacherId === q);
             });
             
             const groups = gS.docs.filter(d => {
                 const gd = d.data();
-                // Block external hubs if student is in private node
                 if (isolatedTids.length > 0 && !isolatedTids.includes(gd.teacherId)) return false;
                 return gd.code === q || gd.name.toLowerCase().includes(q.toLowerCase());
             });
@@ -2024,7 +1944,6 @@
                 const cData = d.data();
                 if(!cData.title.toLowerCase().includes(q.toLowerCase())) continue;
                 
-                // Block external content if student is in private node
                 if (isolatedTids.length > 0 && !isolatedTids.includes(cData.tId)) continue;
                 
                 let allow = true;
@@ -2107,7 +2026,6 @@
                 const groups = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId", "==", profile.teacherId)));
                 let html = '';
                 
-                // Render Group Join Requests
                 groups.forEach(g => { 
                     const d = g.data(); 
                     if(d.pending?.length) {
@@ -2117,7 +2035,6 @@
                     }
                 });
 
-                // Render Profile Follower Requests
                 if (profile.pendingSubs && profile.pendingSubs.length > 0) {
                     for(let pUid of profile.pendingSubs) {
                         const uSnap = await Core.getDoc(Core.doc(Core.db, "users", pUid));
@@ -2179,581 +2096,6 @@
         };
 
         window.logout = () => Core.signOut(Core.auth).then(() => { localStorage.removeItem('oc_cart_manifest'); location.reload(); });
-
-        window.finalizeProfile = async () => {
-            const n = document.getElementById('ob-name').value, p = document.getElementById('ob-pass').value, r = document.getElementById('ob-role').value;
-            if (!n || !p) return toast("Form fields incomplete", "error");
-            try {
-                await Core.updatePassword(Core.auth.currentUser, p);
-                await Core.setDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { name: n, role: r, teacherId: "OC-"+n.split(' ')[0].toUpperCase()+Math.floor(100+Math.random()*899), email: Core.auth.currentUser.email, subs: [], pendingSubs: [], photo: window._tempGooglePhoto || Core.auth.currentUser.photoURL || "", privacyMode: 'public' });
-                location.reload();
-            } catch(e) { toast(e.message, "error"); }
-        };
-
-        window.createGroup = async () => {
-            const n = document.getElementById('group-name').value; if (!n) return toast("Label missing");
-            const c = "OC-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-            await Core.addDoc(Core.collection(Core.db, "groups"), { name: n, type: document.getElementById('group-type').value, code: c, teacherId: profile.teacherId, teacherName: profile.name, members: [Core.auth.currentUser.uid], pending: [], createdAt: Core.serverTimestamp() });
-            toast("Hub initiated"); window.loadHome();
-        };
-
-        window.launchCourse = async () => {
-            const t = document.getElementById('c-title').value, d = document.getElementById('c-desc').value, tier = document.getElementById('c-tier').value;
-            let p = tier === 'free' ? "0" : document.getElementById('c-price').value;
-            const vt = Array.from(document.querySelectorAll('.cv-t')).map(i => i.value);
-            const vu = Array.from(document.querySelectorAll('.cv-u')).map(i => i.value);
-            if (!t || !vu[0]) return toast("Validation indicators incomplete", "error");
-            const playlist = vt.map((title, i) => ({ title, url: vu[i] }));
-            const code = "HUB-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-            const gRef = await Core.addDoc(Core.collection(Core.db, "groups"), { 
-                name: `${t} (Core Sync Hub)`, type: 'private', code, teacherId: profile.teacherId, teacherName: profile.name, members: [Core.auth.currentUser.uid], pending: [], createdAt: Core.serverTimestamp() 
-            });
-            await Core.addDoc(Core.collection(Core.db, "courses"), { 
-                title: t, description: d, thumbnail: window.getSmartPreview(vu[0]), playlist, price: p, teacherId: profile.teacherId, teacherName: profile.name, groupId: gRef.id, createdAt: Core.serverTimestamp() 
-            });
-            toast("Course matrix active"); window.loadHome();
-        };
-
-        window.joinGroup = async () => {
-            const c = (document.getElementById('hub-code')?.value || document.getElementById('g-search').value).trim().toUpperCase();
-            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("code", "==", c)));
-            if (snap.empty) return toast("Group code not found", "error");
-            const g = snap.docs[0], d = g.data();
-            if (d.members && d.members.includes(Core.auth.currentUser.uid)) return toast("Already a member of this hub");
-            if (d.type === 'public') {
-                await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
-                pushSystemNotification("HUB JOINED", `You entered "${d.name}".`);
-            } else {
-                await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { pending: Core.arrayUnion({ uid: Core.auth.currentUser.uid, name: profile.name }) });
-                pushSystemNotification("PENDING", `Access verification required for "${d.name}".`);
-            }
-            toast("Access requested"); window.loadHome();
-        };
-
-        window.openResource = async (id, url, title) => {
-            if(id && id !== 'null') {
-                const checkDoc = await Core.getDoc(Core.doc(Core.db, "content", id));
-                if(checkDoc.exists()) {
-                    const data = checkDoc.data();
-                    const status = window.checkLiveStatus(data.liveDate, data.liveStartTime, data.liveEndTime);
-                    if(status === 'scheduled') {
-                        toast(`Broadcast locked until start configuration: ${data.liveDate} at ${data.liveStartTime}`, "error");
-                        return;
-                    }
-                    await Core.updateDoc(Core.doc(Core.db, "content", id), { views: Core.increment(1) });
-                    
-                    const vid = window.extractYTId(url) || "";
-                    
-                    document.getElementById('media-vault').classList.remove('hidden');
-                    setupPlayer(id, vid, { 
-                        title, 
-                        link: url, 
-                        isLiveBroadcast: (data.type === 'live'),
-                        liveDate: data.liveDate,
-                        liveStartTime: data.liveStartTime,
-                        liveEndTime: data.liveEndTime,
-                        endTargetClockStr: data.liveEndTime ? `${data.liveDate} ${data.liveEndTime}` : null 
-                    }, url);
-                    return;
-                }
-            }
-            
-            const fallbackVid = window.extractYTId(url) || "";
-            document.getElementById('media-vault').classList.remove('hidden');
-            setupPlayer(id, fallbackVid, { title, link: url, isLiveBroadcast: false }, url);
-        };
-
-        window.openCourse = async (id) => {
-            const snap = await Core.getDoc(Core.doc(Core.db, "courses", id));
-            const c = snap.data();
-            const isT = c.teacherId === profile.teacherId;
-            const content = document.getElementById('modal-content');
-            const inCart = cart && cart.some(item => item.id === id);
-            
-            toggleBottomNavBarVisibility(false);
-            
-            let instBadgeStr = "";
-            const tSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId", "==", c.teacherId)));
-            if(!tSnap.empty) {
-                const tData = tSnap.docs[0].data();
-                if(tData.instituteId) {
-                    const instData = await window.getInstBadgeData(tData.instituteId);
-                    if(instData) {
-                        instBadgeStr = `<div class="absolute top-4 right-4 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 flex items-center gap-2 shadow-lg z-20">
-                            <img src="${instData.logo}" class="w-5 h-5 rounded-full object-cover bg-white">
-                            <span class="text-[9px] font-black uppercase tracking-widest text-white">${instData.name}</span>
-                        </div>`;
-                    }
-                }
-            }
-
-            content.innerHTML = `
-                <div class="fade-in">
-                    <div class="relative w-full h-auto max-h-64 rounded-3xl mb-6 shadow-2xl border border-[var(--border-color)] overflow-hidden">
-                        <img src="${c.thumbnail}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700">
-                        ${instBadgeStr}
-                    </div>
-                    <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-black italic text-brandOrange pr-4">${c.title}</h2>${isT ? `<button onclick="delC('${id}')" class="text-red-500 font-black uppercase text-[10px] tracking-widest border border-red-500/20 bg-red-500/10 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white hover:scale-105 transition-all">Purge</button>` : ''}</div>
-                    <p class="opacity-80 mb-8 text-sm leading-relaxed pr-4 text-[var(--text-main)] opacity-80">${c.description}</p>
-                    <div class="space-y-3 mb-8">
-                        <p class="text-[9px] font-black uppercase opacity-40 tracking-widest mb-1 border-b border-[var(--border-color)] pb-2">Course Syllabus Blueprint</p>
-                        ${c.playlist.map((v, i) => `
-                            <div onclick="openResource('null','${v.url}','${v.title}')" class="bg-[var(--input-bg)] p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-[var(--border-color)] hover:border-brandOrange/30 border border-[var(--border-color)] transition-all shadow-sm hover:scale-[1.02]">
-                                <p class="text-xs font-bold pr-4">${i+1}. ${v.title}</p>
-                                <span class="text-[9px] text-brandOrange font-black uppercase tracking-widest shrink-0 shadow-[0_0_10px_rgba(247,148,29,0.1)]">Access</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div class="flex gap-4">
-                        <button onclick="toggleCartAction('${id}','${c.title}','${c.price}')" class="flex-1 py-4 glass tracking-widest text-[10px] font-black uppercase rounded-2xl border border-[var(--border-color)] shadow-md hover:bg-[var(--border-color)] hover:scale-105 transition-all text-[var(--text-main)]">${inCart?'Drop from Cart':'Add to Cart'}</button>
-                        <button onclick="enrollCourse('${id}','${c.groupId}')" class="flex-1 py-4 btn-brand shadow-xl text-[10px] hover:scale-105">${parseFloat(c.price)===0?'Instant Enrolment':`Acquire (₹${c.price})`}</button>
-                    </div>
-                </div>
-            `;
-            document.getElementById('custom-modal').classList.remove('hidden');
-        };
-
-        window.enrollCourse = async (cid, gid) => {
-            await Core.updateDoc(Core.doc(Core.db, "groups", gid), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
-            toast("Enrolled successfully!");
-            document.getElementById('custom-modal').classList.add('hidden');
-            setTab('groups');
-        };
-
-        window.delC = async (id) => { if(confirm("Confirm structural purge?")) { await Core.deleteDoc(Core.doc(Core.db,"courses",id)); document.getElementById('custom-modal').classList.add('hidden'); window.loadHome(); } };
-
-        async function renderFeed(docs, isT, target = 'feed') { 
-            const container = document.getElementById(target);
-            if (container) {
-                const htmlPromises = docs.map(d => window.renderResourceCardHtml(d, isT));
-                const htmlArr = await Promise.all(htmlPromises);
-                container.innerHTML = htmlArr.join('');
-            } 
-        }
-
-        async function renderCourses(docs, isT) {
-            const container = document.getElementById('courses-feed');
-            if (!container) return;
-            
-            let html = `<div class="grid md:grid-cols-2 gap-6 w-full fade-in">`;
-            for(let doc of docs) {
-                const c = doc.data();
-                let badgeStr = "";
-                
-                // Fetch Teacher & Institute for Badge
-                const tSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId", "==", c.teacherId)));
-                if(!tSnap.empty && tSnap.docs[0].data().instituteId) {
-                    const instData = await window.getInstBadgeData(tSnap.docs[0].data().instituteId);
-                    if(instData) badgeStr = window.renderInstBadgeHtml(instData, 'w-8 h-8 md:w-10 md:h-10 border-2 right-2 bottom-2');
-                }
-
-                html += `<div class="glass p-5 rounded-[2.5rem] border border-[var(--border-color)] flex flex-col justify-between h-auto shadow-md hover:border-brandOrange/30 hover:scale-[1.02] transition-all"><div class="w-full flex items-center justify-center overflow-hidden rounded-2xl mb-5 bg-zinc-950/40 aspect-video shadow-inner relative"><img src="${c.thumbnail}" class="w-full h-full object-cover border border-[var(--border-color)] hover:scale-110 transition-transform duration-500">${badgeStr}</div><div><h2 class="text-xl font-black italic mb-2 truncate pr-4 text-[var(--text-main)]">${c.title}</h2><div class="flex justify-between items-center mt-5"><h3 class="text-lg font-black text-brandOrange drop-shadow-md">₹${c.price === '0' ? 'FREE' : c.price}</h3><button onclick="openCourse('${doc.id}')" class="btn-brand px-6 py-2.5 text-[10px] shadow-sm hover:shadow-brandOrange/40 hover:scale-110">Inspect</button></div></div></div>`;
-            }
-            html += `</div>`;
-            container.innerHTML = html;
-        }
-
-        window.renderResourceCardHtml = async (d, isT) => {
-            const i = d.data();
-            let liveStatusLabel = '';
-            
-            if (i.type === 'live') {
-                const status = window.checkLiveStatus(i.liveDate, i.liveStartTime, i.liveEndTime);
-                if (status === 'scheduled') {
-                    liveStatusLabel = `<span class="inline-flex items-center gap-1 bg-blue-600/20 text-blue-500 text-[9px] font-black tracking-widest px-2 py-0.5 rounded border border-blue-500/20 shadow-sm mt-2 w-fit">SCHEDULED: ${i.liveStartTime}</span>`;
-                } else if (status === 'live') {
-                    liveStatusLabel = `<span class="inline-flex items-center gap-1 bg-red-600/20 text-red-600 text-[9px] font-black tracking-widest px-2 py-0.5 rounded border border-red-500/20 shadow-sm mt-2 w-fit"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_red]"></span>LIVE NOW</span>`;
-                } else {
-                    liveStatusLabel = `<span class="inline-flex items-center gap-1 bg-brandOrange/20 text-brandOrange text-[9px] font-black tracking-widest px-2 py-0.5 rounded border border-brandOrange/20 shadow-sm mt-2 w-fit">RECORDED</span>`;
-                }
-            }
-
-            let avatarSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(i.tName)}&background=111&color=fff`;
-            const tSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId", "==", i.tId)));
-            if(!tSnap.empty) {
-                const tData = tSnap.docs[0].data();
-                if(tData.photo) avatarSrc = tData.photo;
-            }
-
-            return `<div class="flex flex-col group cursor-pointer w-full" onclick="openResource('${d.id}','${i.url}','${i.title}')">
-                <!-- Thumbnail -->
-                <div class="relative w-full aspect-video rounded-2xl overflow-hidden shadow-md border border-[var(--border-color)] bg-zinc-950 mb-3 group-hover:shadow-lg group-hover:border-brandOrange/50 transition-all group-hover:scale-[1.02]">
-                    <img src="${window.getSmartPreview(i.url)}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                    ${window.getFileBadge(i.url)}
-                </div>
-                
-                <!-- Metadata -->
-                <div class="flex gap-3 px-1">
-                    <!-- Avatar -->
-                    <img src="${avatarSrc}" class="w-9 h-9 rounded-full object-cover shrink-0 border border-[var(--border-color)] bg-black shadow-sm mt-0.5">
-                    
-                    <!-- Text Info -->
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <h4 class="font-bold text-sm md:text-base text-[var(--text-main)] leading-snug line-clamp-2 break-words group-hover:text-brandOrange transition-colors">${i.title}</h4>
-                        ${liveStatusLabel}
-                        <div class="mt-1 flex flex-col gap-0.5 text-[11px] font-medium opacity-60 text-[var(--text-main)]">
-                            <span class="truncate w-full">${i.tName}</span>
-                            <div class="flex items-center gap-1.5">
-                                <span>${i.views || 0} views</span>
-                                <span class="text-[8px] opacity-50">•</span>
-                                <span>${new Date(i.date?.seconds*1000).toLocaleDateString(undefined, {month:'short', day:'numeric'})}</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Actions -->
-                        ${isT ? `<div class="flex gap-2 mt-3 w-full" onclick="event.stopPropagation()">
-                            <button onclick="editR('${d.id}','${i.title}','${i.url}')" class="flex-1 p-2 bg-[var(--input-bg)] text-[var(--text-main)] rounded-xl hover:text-brandBlue hover:border-brandBlue transition-all border border-[var(--border-color)] shadow-sm text-xs font-bold">Edit</button>
-                            <button onclick="delR('${d.id}')" class="flex-1 p-2 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all border border-red-500/20 shadow-sm text-xs font-bold">Delete</button>
-                        </div>` : ''}
-                    </div>
-                </div>
-            </div>`;
-        };
-        
-        window.delR = async (id) => { if(confirm("Confirm asset removal?")) { await Core.deleteDoc(Core.doc(Core.db,"content",id)); window.loadHome(); } };
-        window.editR = (id,t,u) => { document.getElementById('modal-content').innerHTML = `<h3 class="text-xl font-black mb-6 italic fade-in">Edit Resource</h3><input id="ed-t" value="${t}" class="input-field mb-4 text-sm transition-colors"><input id="ed-u" value="${u}" class="input-field mb-6 text-sm transition-colors"><button onclick="saveR('${id}')" class="w-full py-4 btn-brand text-xs shadow-md hover:scale-[1.02] transition-transform">Save Changes</button>`; document.getElementById('custom-modal').classList.remove('hidden'); };
-        window.saveR = async (id) => { await Core.updateDoc(Core.doc(Core.db,"content",id), {title:document.getElementById('ed-t').value, url:document.getElementById('ed-u').value}); document.getElementById('custom-modal').classList.add('hidden'); window.loadHome(); };
-
-        window.publishContent = async () => {
-            const t = document.getElementById('up-t').value, u = document.getElementById('up-u').value, y = document.getElementById('up-y').value;
-            if (!t || !u) return toast("Resource path vectors empty", "error");
-            
-            let payload = { title: t, url: u, type: y, tId: profile.teacherId, tName: profile.name, views: 0, date: Core.serverTimestamp() };
-            
-            if(y === 'live') {
-                payload.liveDate = document.getElementById('up-date').value || new Date().toISOString().split('T')[0];
-                payload.liveStartTime = document.getElementById('up-start-time').value || "00:00";
-                payload.liveEndTime = document.getElementById('up-end-time').value || "00:00";
-            }
-
-            await Core.addDoc(Core.collection(Core.db, "content"), payload);
-            
-            if(y === 'live') {
-                pushSystemNotification("LIVE LECTURE", `Scheduled: "${t}" on ${payload.liveDate} at ${payload.liveStartTime}.`);
-            } else {
-                pushSystemNotification("MATERIAL", `Asset sync: "${t}" published.`);
-            }
-            toast("Resource published successfully"); window.loadHome();
-        };
-
-        window.openGroupChat = async (id, name) => {
-            activeGroupId = id; 
-            toggleBottomNavBarVisibility(false);
-            const w = document.getElementById('group-chat-window');
-            w.classList.remove('hidden');
-            w.classList.add('fade-in');
-            document.getElementById('group-chat-title').innerText = name;
-            
-            const gDoc = await Core.getDoc(Core.doc(Core.db, "groups", id));
-            const isAdmin = gDoc.exists() && gDoc.data().teacherId === profile.teacherId;
-            const rosterBtn = document.getElementById('group-roster-btn');
-            if(isAdmin) { rosterBtn.style.display="block"; rosterBtn.onclick=()=>manageGroupRoster(id, name); }
-            else { rosterBtn.style.display="none"; }
-
-            groupMessageTrackers[id] = 0; 
-            
-            const q = Core.query(Core.collection(Core.db, "groupMessages"), Core.where("groupId", "==", id), Core.orderBy("createdAt", "asc"));
-            Core.onSnapshot(q, (snap) => {
-                document.getElementById('group-chat-messages').innerHTML = snap.docs.map(m => {
-                    const d = m.data(); const isM = d.senderId === Core.auth.currentUser.uid;
-                    return `<div class="flex ${isM ? 'flex-row-reverse' : 'flex-row'} items-end gap-3 fade-in"><img src="${d.senderPhoto || 'https://ui-avatars.com/api/?name='+d.sender}" class="w-8 h-8 rounded-full border border-[var(--border-color)] object-cover bg-[var(--input-bg)] shadow-sm"><div class="flex flex-col ${isM ? 'items-end' : 'items-start'}"><p class="text-[9px] opacity-50 uppercase font-black px-2 mb-1 text-[var(--text-main)] tracking-widest">${d.sender}</p><div class="inline-block p-3.5 md:p-4 rounded-2xl ${isM ? 'bg-brandOrange text-white shadow-[0_5px_15px_rgba(247,148,29,0.3)]' : 'bg-[var(--input-bg)] shadow-sm border border-[var(--border-color)] text-[var(--text-main)]'} text-sm leading-relaxed max-w-[85%] break-words">${d.text}</div></div></div>`;
-                }).join('');
-                document.getElementById('group-chat-messages').scrollTop = 99999;
-            });
-        };
-
-        window.sendGroupMessage = async () => {
-            const i = document.getElementById('group-message-input'), t = i.value.trim();
-            if (!t || !activeGroupId) return;
-            await Core.addDoc(Core.collection(Core.db, "groupMessages"), { groupId: activeGroupId, senderId: Core.auth.currentUser.uid, sender: profile.name, senderPhoto: profile.photo || '', text: t, createdAt: Core.serverTimestamp() });
-            i.value = '';
-        };
-
-        window.sendAIMessage = async () => {
-            const promptInput = document.getElementById('ai-input');
-            const fileInput = document.getElementById('ai-media-file');
-            const filePreview = document.getElementById('ai-file-preview');
-            
-            const m = promptInput.value.trim();
-            const file = fileInput.files[0];
-
-            if (!m && !file) return;
-
-            const activeBackendUrl = customAiConfig.backendApiUrl || customAiConfig.backendUrl;
-
-            if (!activeBackendUrl) { toast("AI Config Missing: Check config.js spelling.", "error"); return; }
-
-            const chat = document.getElementById('ai-messages');
-            
-            let userMsgHtml = `<div class="ml-auto bg-brandOrange text-white p-4 rounded-2xl rounded-tr-sm max-w-[85%] text-sm shadow-[0_5px_15px_rgba(247,148,29,0.3)] fade-in">`;
-            if (file) userMsgHtml += `<div class="text-[10px] opacity-70 mb-1 font-bold">📎 ${file.name}</div>`;
-            if (m) userMsgHtml += `<div class="leading-relaxed break-words">${m}</div>`;
-            userMsgHtml += `</div>`;
-            
-            chat.innerHTML += userMsgHtml;
-            
-            promptInput.value = ''; fileInput.value = ''; filePreview.innerText = ''; filePreview.classList.add('hidden');
-            chat.scrollTop = chat.scrollHeight;
-
-            window.aiChatHistory.push({ role: 'User', content: m || `[Uploaded File: ${file.name}]` });
-
-            const historyContext = window.aiChatHistory.map(msg => `${msg.role}: ${msg.content}`).join('\n');
-            const formData = new FormData();
-            const systemDirective = `System Directive: You are the virtual teacher core assistant of the OpenClass LMS ecosystem. Persona: Highly smart, productive, and helpful. You must speak very little. Keep your responses extremely concise, short, and to the point. Provide only the most important, actionable information without any fluff or unnecessary conversational filler.`;
-            const finalPrompt = `User: ${profile?.name}. Permission Tier: ${profile?.role}.\n${systemDirective}\n\n--- Recent Conversation History ---\n${historyContext}\n-----------------------------------\n\nCurrent Query: ${m}`;
-            
-            formData.append("prompt", finalPrompt);
-            if (currentVideoContext && currentVideoContext.link) formData.append("url", currentVideoContext.link);
-            if (file) formData.append("file", file);
-
-            const loadingId = 'ai-loading-' + Date.now();
-            chat.innerHTML += `
-            <div id="${loadingId}" class="flex items-center gap-3 bg-[var(--input-bg)] border border-[var(--border-color)] p-4 rounded-2xl rounded-tl-sm w-fit text-sm shadow-md fade-in">
-                <span class="flex gap-1"><span class="w-1.5 h-1.5 bg-brandOrange rounded-full animate-bounce" style="animation-delay: 0s;"></span><span class="w-1.5 h-1.5 bg-brandOrange rounded-full animate-bounce" style="animation-delay: 0.2s;"></span><span class="w-1.5 h-1.5 bg-brandOrange rounded-full animate-bounce" style="animation-delay: 0.4s;"></span></span>
-            </div>`;
-            chat.scrollTop = chat.scrollHeight;
-
-            try {
-                const baseUrl = activeBackendUrl.replace(/\/$/, ""); 
-                const response = await fetch(`${baseUrl}/v1/chat/process`, { method: "POST", headers: { "X-Project-Key": customAiConfig.projectKey, "X-Groq-Key": customAiConfig.groqKey }, body: formData });
-                const contentType = response.headers.get("content-type");
-                if (contentType && contentType.indexOf("application/json") === -1) throw new Error("API returned HTML instead of JSON. The ngrok URL might be wrong or down.");
-                const data = await response.json();
-                document.getElementById(loadingId).remove();
-                if (response.ok) {
-                    const textReply = data.response || "Task execution complete.";
-                    window.aiChatHistory.push({ role: 'AI', content: textReply });
-                    if (window.aiChatHistory.length > 10) window.aiChatHistory = window.aiChatHistory.slice(-10);
-                    chat.innerHTML += `<div class="bg-[var(--input-bg)] border border-[var(--border-color)] text-[var(--text-main)] p-4 rounded-2xl rounded-tl-sm max-w-[85%] text-sm leading-relaxed shadow-md fade-in">${textReply}</div>`;
-                } else {
-                    console.error("Error from custom backend:", data.detail);
-                    chat.innerHTML += `<div class="bg-red-500/10 border border-red-500/30 p-4 rounded-2xl rounded-tl-sm max-w-[85%] text-sm text-red-500 leading-relaxed font-bold shadow-md fade-in">System Error: ${data.detail || 'Backend processing rejected payload.'}</div>`;
-                }
-                chat.scrollTop = chat.scrollHeight;
-            } catch (e) {
-                document.getElementById(loadingId)?.remove();
-                chat.innerHTML += `<div class="bg-red-500/10 border border-red-500/30 p-4 rounded-2xl rounded-tl-sm max-w-[85%] text-sm text-red-500 leading-relaxed font-bold shadow-md fade-in">Network Interruption: ${e.message}</div>`;
-                toast("AI Core handshake interruption", "error"); 
-                console.error(e);
-            }
-        };
-
-        window.viewTeacher = async (tId) => {
-            const main = document.getElementById('main-content');
-            injectSkeletonState('main-content');
-            const [uS, cS, coS] = await Promise.all([Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId", "==", tId))), Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "==", tId))), Core.getDocs(Core.query(Core.collection(Core.db, "courses"), Core.where("teacherId", "==", tId)))]);
-            if(uS.empty) return navigate('home');
-            
-            const tD = uS.docs[0].data();
-            const isF = profile.subs?.includes(tId);
-            const isPendingF = profile.pendingSubs && profile.pendingSubs.includes(tId);
-            const isSameInstitute = profile.instituteId && (tD.instituteId === profile.instituteId);
-            
-            const ringStyle = await window.updateProfileRing(uS.docs[0].id, tD.role, tD.teacherId);
-            
-            let instBadgeHtml = "";
-            if(tD.instituteId) {
-                const instData = await window.getInstBadgeData(tD.instituteId);
-                if(instData && instData.logo) {
-                    instBadgeHtml = `<img src="${instData.logo}" class="w-6 h-6 md:w-8 md:h-8 rounded-full object-cover border-[2px] border-[var(--bg-main)] shadow-sm mr-2" title="${instData.name}">`;
-                }
-            }
-            
-            // Teacher Privacy Check
-            let canViewContent = true;
-            if(tD.privacyMode === 'private' && !isF && !isSameInstitute && profile.teacherId !== tD.teacherId && profile.role !== 'super_admin') {
-                canViewContent = false;
-            }
-
-            const contentSorted = cS.docs.sort((a,b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
-            const coursesSorted = coS.docs.sort((a,b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
-
-            let buttonText = isF ? 'Unfollow' : 'Follow Instructor';
-            let buttonClasses = isF ? 'bg-[var(--input-bg)] border border-[var(--border-color)] hover:bg-[var(--border-color)] text-[var(--text-main)]' : 'btn-brand shadow-[0_10px_20px_rgba(0,74,128,0.3)] hover:shadow-brandBlue/50';
-            let disableBtn = false;
-            
-            if (isSameInstitute) {
-                buttonText = 'Campus Instructor';
-                buttonClasses = 'bg-brandBlue/10 text-brandBlue border border-brandBlue/20 cursor-default opacity-80';
-                disableBtn = true;
-            } else if (tD.privacyMode === 'private' && !isF) {
-                buttonText = 'Request Access';
-                if(isPendingF) {
-                    buttonText = 'Request Pending';
-                    buttonClasses = 'bg-[var(--border-color)] border border-[var(--border-color)] text-zinc-400 cursor-not-allowed opacity-70';
-                    disableBtn = true;
-                }
-            }
-
-            main.innerHTML = `<div class="space-y-10 fade-in">
-                <div class="glass p-6 md:p-10 rounded-[4rem] border border-brandBlue/30 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6 shadow-2xl relative overflow-hidden hover:shadow-brandBlue/20 transition-all">
-                    <div class="absolute -right-20 -top-20 w-64 h-64 bg-brandBlue/10 blur-3xl rounded-full pointer-events-none"></div>
-                    <div class="flex flex-col md:flex-row items-center gap-6 md:gap-8 relative z-10">
-                        <img src="${tD.photo || 'https://ui-avatars.com/api/?name='+encodeURIComponent(tD.name)}" class="w-24 h-24 md:w-28 md:h-28 rounded-full object-cover bg-black shadow-2xl hover:scale-105 transition-transform" style="${ringStyle}">
-                        <div>
-                            <h2 class="text-3xl md:text-5xl font-black italic tracking-tighter pr-4 drop-shadow-md text-[var(--text-main)] flex items-center justify-center md:justify-start">
-                                ${instBadgeHtml}${tD.name}
-                                ${tD.privacyMode === 'private' ? '<span class="inline-flex items-center justify-center text-[10px] bg-red-500/10 text-red-500 border border-red-500/20 px-2 py-0.5 rounded-md uppercase tracking-widest font-black not-italic ml-2 align-middle">Private</span>' : ''}
-                            </h2>
-                            <p class="text-[10px] md:text-xs font-bold text-brandBlue uppercase tracking-widest mt-1 font-mono shadow-sm p-1.5 bg-brandBlue/10 border border-brandBlue/20 rounded-lg w-fit inline-block md:inline">${tD.teacherId}</p>
-                            ${tD.bio ? `<p class="mt-4 text-sm opacity-80 leading-relaxed max-w-xl mx-auto md:mx-0">${tD.bio}</p>` : ''}
-                        </div>
-                    </div>
-                    ${profile.teacherId !== tD.teacherId ? `<button onclick="handleSub('${tId}', ${isF}, '${tD.privacyMode}', ${isPendingF})" class="w-full md:w-auto px-10 py-4 md:py-5 ${buttonClasses} rounded-2xl font-black text-xs uppercase tracking-widest transition-all z-10 relative hover:scale-[1.02]" ${disableBtn ? 'disabled' : ''}>${buttonText}</button>` : ''}
-                </div>
-                
-                ${canViewContent ? `
-                    <h3 class="text-2xl font-black mb-6 italic">Course Collections</h3>
-                    <div id="courses-feed" class="grid md:grid-cols-2 gap-6 mb-10"></div>
-                    <h3 class="text-2xl font-black mb-6 italic">Syllabus Catalog Items</h3>
-                    <div id="feed" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-                ` : `
-                    <div class="glass p-12 text-center rounded-[3rem] border border-[var(--border-color)]">
-                        <div class="text-4xl mb-4">🔒</div>
-                        <h3 class="text-2xl font-black italic text-red-500 mb-2">Private Account</h3>
-                        <p class="opacity-60 text-sm">You must request access from this instructor to view their courses and content.</p>
-                    </div>
-                `}
-            </div>`;
-            
-            if(canViewContent) {
-                await renderFeed(contentSorted, false); 
-                await renderCourses(coursesSorted);
-            }
-        };
-
-        window.handleSub = async (tId, isF, privacyMode, isPendingF) => {
-            if(isPendingF) return; // Do nothing if already pending
-            
-            const userRef = Core.doc(Core.db, "users", Core.auth.currentUser.uid);
-            
-            if(privacyMode === 'private' && !isF) {
-                // Request Access
-                const tSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId", "==", tId)));
-                if(!tSnap.empty) {
-                    const tUid = tSnap.docs[0].id;
-                    await Core.updateDoc(Core.doc(Core.db, "users", tUid), { pendingSubs: Core.arrayUnion(Core.auth.currentUser.uid) });
-                    toast("Access Request Sent");
-                    
-                    if(!profile.pendingSubs) profile.pendingSubs = [];
-                    profile.pendingSubs.push(tId);
-                    viewTeacher(tId);
-                }
-            } else {
-                // Normal Follow / Unfollow
-                await Core.updateDoc(userRef, { subs: isF ? Core.arrayRemove(tId) : Core.arrayUnion(tId) });
-                profile.subs = isF ? profile.subs.filter(i => i !== tId) : [...(profile.subs||[]), tId];
-                pushSystemNotification("INSTRUCTOR CONNECT", `Tracking settings modified for "${tId}".`);
-                viewTeacher(tId);
-            }
-        };
-
-        Core.onAuthStateChanged(Core.auth, async (user) => {
-            if (user) {
-                // Temporarily cache Google Photo if it's a new user from Google Auth
-                if (user.photoURL) window._tempGooglePhoto = user.photoURL;
-
-                const docSnap = await Core.getDoc(Core.doc(Core.db, "users", user.uid));
-                if (!docSnap.exists()) window.showScreen('onboarding-screen');
-                else {
-                    profile = docSnap.data();
-                    const pic = document.getElementById('nav-profile-pic');
-                    if (pic) {
-                        const ringStyle = await window.updateProfileRing(user.uid, profile.role, profile.teacherId);
-                        pic.innerHTML = `<img src="${profile.photo || 'https://ui-avatars.com/api/?name='+encodeURIComponent(profile.name)}" class="w-full h-full object-cover bg-black rounded-full hover:scale-110 transition-transform duration-300" style="${ringStyle}">`;
-                    }
-                    
-                    fetchSystemNotifications();
-                    window.showScreen('dashboard'); navigate(window.location.hash.substring(1) || 'home');
-                    listenSystemEvents(); 
-                    initializeSwipeGestures();
-                }
-            } else window.showScreen('auth-screen');
-        });
-
-        function listenSystemEvents() {
-            Core.onSnapshot(Core.collection(Core.db, "groupMessages"), (snap) => {
-                if(document.getElementById('group-chat-window').classList.contains('hidden') === false) {
-                    if(activeGroupId) groupMessageTrackers[activeGroupId] = 0;
-                }
-                snap.docChanges().forEach(change => {
-                    if (change.type === "added") {
-                        const msg = change.doc.data();
-                        if (msg.groupId && msg.groupId !== activeGroupId && msg.senderId !== Core.auth.currentUser.uid) {
-                            groupMessageTrackers[msg.groupId] = (groupMessageTrackers[msg.groupId] || 0) + 1;
-                            updateNotificationUIBadge(msg.groupId);
-                        }
-                    }
-                });
-            });
-
-            if(profile.role === 'student' && profile.subs && profile.subs.length > 0) {
-                const contentQuery = Core.query(Core.collection(Core.db, "content"), Core.orderBy("date", "desc"), Core.limit(10));
-                Core.onSnapshot(contentQuery, (snap) => {
-                    snap.docChanges().forEach(change => {
-                        if (change.type === "added") {
-                            const data = change.doc.data();
-                            const docTimestamp = data.date ? data.date.toMillis() : 0;
-                            if (docTimestamp > window.appLoadTime && profile.subs.includes(data.tId)) {
-                                pushSystemNotification("NEW SYLLABUS", `${data.tName} published ${data.title}`);
-                            }
-                        }
-                    });
-                });
-            }
-        }
-
-        function updateNotificationUIBadge(gid) {
-            const el = document.getElementById(`badge-${gid}`);
-            const count = groupMessageTrackers[gid] || 0;
-            if(el) {
-                if(count > 0) { el.innerText = count + " new"; el.classList.remove('hidden'); }
-                else { el.classList.add('hidden'); }
-            }
-        }
-
-        window.toggleAIChat = () => {
-            const chatWindow = document.getElementById('ai-chat-window');
-            if(chatWindow.classList.contains('ai-drawer-hidden')) {
-                chatWindow.classList.remove('ai-drawer-hidden');
-                toggleBottomNavBarVisibility(false);
-                setTimeout(() => document.getElementById('ai-input').focus(), 300);
-            } else {
-                chatWindow.classList.add('ai-drawer-hidden');
-                toggleBottomNavBarVisibility(true);
-            }
-        };
-        
-        window.closeGroupChat = () => { 
-            const w = document.getElementById('group-chat-window');
-            w.classList.add('hidden'); 
-            w.classList.remove('fade-in');
-            activeGroupId = null; 
-            toggleBottomNavBarVisibility(true);
-            loadGroups(); 
-        };
-        
-        window.toggleMode = () => { 
-            document.documentElement.classList.toggle('light'); 
-            localStorage.setItem('oc_theme', document.documentElement.classList.contains('light')); 
-        };
-        
-        window.closeCustomModal = () => {
-            document.getElementById('custom-modal').classList.add('hidden');
-            toggleBottomNavBarVisibility(true);
-        };
-        
-        window.closeVault = () => { 
-            document.getElementById('media-vault').classList.add('hidden'); 
-            currentVideoContext = null; 
-            toggleBottomNavBarVisibility(true);
-            if(activeLiveChatListenerUnsub) { activeLiveChatListenerUnsub(); activeLiveChatListenerUnsub = null; }
-            if(window._disengageShields) window._disengageShields();
-            if(videoPlayer) { try { videoPlayer.destroy(); } catch(e){} videoPlayer = null; } 
-        };
-        
-        function toast(m, type = "s") { const b = document.getElementById('toast-box'), d = document.createElement('div'); d.className = 'toast-pill'; if (type === "error") d.style.borderColor = "#ff4444"; d.innerText = m; b.appendChild(d); setTimeout(() => d.remove(), 2500); }
-        if (localStorage.getItem('oc_theme') === 'true') document.documentElement.classList.add('light');
 
         async function loadGroups() {
             const container = document.getElementById('student-groups'); if (!container) return;
