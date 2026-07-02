@@ -15,8 +15,6 @@ export const emailConfig = {
 };
 
 export const customAiConfig = {
-    // Replace 123.45.67.89 with your actual Hostinger VPS IP Address
-    backendUrl: "https://dance-peroxide-tinfoil.ngrok-free.dev/", 
+    backendUrl: "http://195.35.7.120:8000/", 
     projectKey: "my_super_secure_secret_agent_key_123",
-
 };
