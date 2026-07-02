@@ -15,6 +15,6 @@ export const emailConfig = {
 };
 
 export const customAiConfig = {
-    backendUrl: "http://195.35.7.120:8000/", 
+    backendUrl: "https://dance-peroxide-tinfoil.ngrok-free.dev/", 
     projectKey: "my_super_secure_secret_agent_key_123",
 };
