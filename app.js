@@ -1,38 +1,68 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, updatePassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, updateDoc, increment, deleteDoc, arrayUnion, arrayRemove, serverTimestamp, onSnapshot, orderBy, limit, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-import { firebaseConfig, emailConfig } from "./config.js";
+import { firebaseConfig, emailConfig } from "./config.js"
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// Enable offline database persistence
+// Enable offline persistence
 enableIndexedDbPersistence(db).catch((err) => {
     if (err.code == 'failed-precondition') console.log("Persistence failed: Multiple tabs open");
     else if (err.code == 'unimplemented') console.log("Persistence not supported");
 });
 
-// Navigate correctly if opened via redirect parameters
+// Add this after your app initialization logic
 window.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener("DOMContentLoaded", () => {
+
+    //loadPlans();
+    loadInstitutePlans();
+    loadInstitutes();
+
+    const planType =
+        document.getElementById("plan-type");
+
+    const startDate =
+        document.getElementById("inst-start");
+
+    if(planType){
+        planType.addEventListener(
+            "change",
+            updatePlanDates
+        );
+    }
+
+    if(startDate){
+        startDate.addEventListener(
+            "change",
+            updatePlanDates
+        );
+    }
+});
     const urlParams = new URLSearchParams(window.location.search);
     const path = urlParams.get('p');
-    if (path && window.renderContent) {
-        window.renderContent(path);
+
+    if (path) {
+        // 404 redirect किंवा direct open handle
+        renderContent(path);
     }
-    
-    // Automatically initialize admin dashboard structures if containers exist
-    if (document.getElementById('plans-list')) {
-        loadPlans();
-        loadPayments();
-        loadSubscriptions();
+
+    // date change listener (only if elements exist)
+    const startDateInput = document.getElementById("startDateInput");
+    const planType = document.getElementById("planType");
+
+    if (startDateInput && planType) {
+        startDateInput.addEventListener("change", () => {
+            planType.dispatchEvent(new Event("change"));
+        });
     }
 });
 
+
 export const provider = new GoogleAuthProvider();
-if (window.emailjs) {
-    emailjs.init(emailConfig.publicKey);
-}
+emailjs.init(emailConfig.publicKey);
 
 export { 
     doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, updateDoc, 
@@ -41,209 +71,766 @@ export {
     signOut, signInWithPopup, updatePassword, sendPasswordResetEmail
 };
 
+// ... (Rest of your original getThumbnail and sendOTP functions remain the same)
 export function getThumbnail(url) {
     try {
         let id = '';
+
         if(url.includes('v=')) id = url.split('v=')[1].split('&')[0];
         else if(url.includes('youtu.be/')) id = url.split('/').pop().split('?')[0];
         else if(url.includes('/shorts/')) id = url.split('/shorts/')[1].split('?')[0];
         else if(url.includes('/live/')) id = url.split('/live/')[1].split('?')[0];
-        return id ? `https://img.youtube.com/vi/${id}/mqdefault.jpg` : 'https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg';
-    } catch(e) { return 'https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg'; }
-}
 
+        return id
+            ? `https://img.youtube.com/vi/${id}/maxresdefault.jpg`
+            : 'https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg';
+
+    } catch(e) {
+        return 'https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg';
+    }
+}
 export async function sendOTP(email, code) {
-    if (!window.emailjs) throw new Error("Email engine uninitialized");
     return await emailjs.send(emailConfig.serviceID, emailConfig.templateID, { to_email: email, otp: code });
 }
 
 // =========================================
-// ADMIN CONTROL PANEL MODIFICATIONS
+// ADMIN PANEL
+// =========================================
+
+const adminBtn =
+    document.getElementById('admin-panel-btn');
+
+const adminDashboard =
+    document.getElementById('admin-dashboard');
+
+
+// =========================================
+// OPEN DASHBOARD
+// =========================================
+
+
+
+// =========================================
+// CLOSE DASHBOARD
 // =========================================
 
 window.closeAdminDashboard = () => {
-    const adminDashboard = document.getElementById('admin-dashboard');
-    if (adminDashboard) adminDashboard.classList.add('hidden');
+
+    adminDashboard.classList.add('hidden');
+
 };
 
-// Plan Field Component Layout Generator
-window.handleAdminPlanUI = (type) => {
-    const container = document.getElementById('plan-fields-container');
-    if(!container) return;
-    
-    if(type === 'free_trial') {
-        container.innerHTML = `
-            <input id="plan-id" type="text" value="free_trial" class="input-field text-sm" readonly>
-            <input id="plan-name" type="text" value="Free Trial Setup" class="input-field text-sm">
-            <input id="plan-price" type="number" value="0" class="input-field text-sm">
-            <input id="plan-duration" type="number" value="14" class="input-field text-sm" placeholder="Duration (Days)">
-        `;
-    } else if (type === 'one_year') {
-        container.innerHTML = `
-            <input id="plan-id" type="text" value="one_year" class="input-field text-sm" readonly>
-            <input id="plan-name" type="text" value="One Year Premium Tier" class="input-field text-sm">
-            <input id="plan-price" type="number" placeholder="Price (₹)" class="input-field text-sm">
-            <input id="plan-duration" type="number" value="365" class="input-field text-sm" readonly>
-        `;
-    } else {
-        container.innerHTML = `
-            <input id="plan-id" type="text" placeholder="Unique Plan Code ID" class="input-field text-sm">
-            <input id="plan-name" type="text" placeholder="Plan Display Title" class="input-field text-sm">
-            <input id="plan-price" type="number" placeholder="Price (₹)" class="input-field text-sm">
-            <input id="plan-duration" type="number" placeholder="Duration (Days)" class="input-field text-sm">
-        `;
-    }
+
+// =========================================
+// SHOW SECTION
+// =========================================
+
+window.showSection = (sectionId) => {
+
+    document.querySelectorAll('.admin-section')
+        .forEach(section => {
+
+            section.classList.add('hidden');
+
+        });
+
+    document.getElementById(sectionId)
+        .classList.remove('hidden');
+
 };
 
-window.processPlanSave = async () => {
-    const idField = document.getElementById('plan-id');
-    const nameField = document.getElementById('plan-name');
-    const priceField = document.getElementById('plan-price');
-    const durationField = document.getElementById('plan-duration');
 
-    if(!idField || !nameField || !priceField || !durationField) return;
 
-    const id = idField.value.trim().toLowerCase();
-    const name = nameField.value.trim();
-    const price = Number(priceField.value);
-    const duration = Number(durationField.value);
+// =========================================
+// ADD PLAN
+// =========================================
 
-    if (!id || !name || isNaN(price) || isNaN(duration)) {
-        alert("Please configure all plan specifications correctly.");
+
+
+
+// =========================================
+// LOAD PLANS
+// =========================================
+
+async function loadPlans() {
+
+    const container =
+        document.getElementById("plans-list");
+
+    container.innerHTML = "";
+
+    const snap =
+        await getDocs(collection(db, "plans"));
+
+    snap.forEach((docSnap) => {
+
+        const data = docSnap.data();
+
+        container.innerHTML += `
+
+        <div class="border p-4 rounded-xl mb-3">
+
+            <h3 class="text-xl font-black">
+                ${data.name}
+            </h3>
+
+            <p>
+                ${data.years || 0} Years
+                ${data.months || 0} Months
+                ${data.days || 0} Days
+            </p>
+
+        </div>
+        `;
+    });
+}
+window.processPlanSave = async function () {
+
+    const planName =
+        document.getElementById("custom-plan-name").value;
+
+    const years =
+        parseInt(document.getElementById("custom-plan-years").value) || 0;
+
+    const months =
+        parseInt(document.getElementById("custom-plan-months").value) || 0;
+
+    const days =
+        parseInt(document.getElementById("custom-plan-days").value) || 0;
+if(
+ !planName ||
+ (years===0 && months===0 && days===0)
+){
+   alert("Enter Plan Name and Duration");
+   return;
+}
+    await addDoc(collection(db, "plans"), {
+        name: planName,
+        years,
+        months,
+        days,
+        createdAt: Date.now()
+    });
+
+    alert("Plan Saved");
+
+   // loadPlans();
+
+    // IMPORTANT
+    loadInstitutePlans();
+};
+async function loadInstitutePlans() {
+
+    const planDropdown =
+        document.getElementById("plan-type");
+
+    // Default options thev
+    planDropdown.innerHTML = `
+        <option value="free_trial">Free Trial (15 Days)</option>
+        <option value="one_year">One Year Plan</option>
+    `;
+
+    const snap =
+        await getDocs(collection(db, "plans"));
+
+    snap.forEach((docSnap) => {
+
+        const plan = docSnap.data();
+
+        planDropdown.innerHTML += `
+            <option value="${docSnap.id}">
+ ${plan.name}
+ (${plan.years || 0}Y
+ ${plan.months || 0}M
+ ${plan.days || 0}D)
+</option>
+        `;
+    });
+}
+document.addEventListener("DOMContentLoaded", () => {
+
+    const planType = document.getElementById("plan-type");
+    const startDateInput = document.getElementById("inst-start");
+    const endDateInput =document.getElementById("inst-end")
+
+    if (!planType || !startDateInput || !endDateInput) {
+        console.log("Missing HTML elements");
         return;
     }
 
-    await setDoc(doc(db, "plans", id), { name, price, duration });
-    alert("System service plan synchronized successfully.");
-    loadPlans();
-};
+    loadInstitutePlans();
 
-async function loadPlans() {
-    const container = document.getElementById('plans-list');
-    if (!container) return;
-    container.innerHTML = "";
+    planType.addEventListener("change", async () => {
+if(!startDateInput.value){
 
-    const snap = await getDocs(collection(db, "plans"));
-    snap.forEach((docSnap) => {
-        const data = docSnap.data();
-        container.innerHTML += `
-        <div class="glass p-4 rounded-xl border border-[var(--border-color)] mb-3 shadow-sm">
-            <h3 class="text-sm font-black uppercase text-brandOrange">${data.name}</h3>
-            <p class="text-xs opacity-70 mt-1">Price: ₹${data.price} | Term: ${data.duration} days</p>
-            <p class="text-[9px] font-mono opacity-40 mt-0.5">Reference ID: ${docSnap.id}</p>
-        </div>`;
+   const today = new Date();
+
+   startDateInput.value =
+   today.toISOString().split("T")[0];
+}
+
+const start =
+new Date(startDateInput.value);
+
+let end =
+new Date(start);
+
+        if (planType.value === "free_trial") {
+            end.setDate(end.getDate() + 15);
+        }
+        else if (planType.value === "one_year") {
+            end.setFullYear(end.getFullYear() + 1);
+        }
+        else {
+            const planRef = doc(db, "plans", planType.value);
+            const planSnap = await getDoc(planRef);
+
+            if (planSnap.exists()) {
+                const plan = planSnap.data();
+
+                end.setFullYear(end.getFullYear() + (plan.years || 0));
+                end.setMonth(end.getMonth() + (plan.months || 0));
+                end.setDate(end.getDate() + (plan.days || 0));
+            }
+        }
+
+        endDateInput.value = end.toISOString().split("T")[0];
     });
+});
+// =========================================
+// ADD INSTITUTE
+// =========================================
+
+window.addInstitute = async () => {
+    console.log(document.getElementById("institute-name"));
+console.log(document.getElementById("institute-logo"));
+console.log(document.getElementById("institute-owner"));
+console.log(document.getElementById("plan-type"));
+console.log(document.getElementById("inst-start"));
+console.log(document.getElementById("inst-end"));
+
+    try {
+const name =document.getElementById("inst-name").value.trim();
+const logo = document.getElementById("inst-logo").value.trim();
+const ownerId = document.getElementById("inst-teacher-id").value.trim();
+const currentPlan =document.getElementById("plan-type").value;
+const startDate =document.getElementById("inst-start").value;
+const endDate =document.getElementById("inst-end").value;
+
+        if (!name) {
+            alert("Institute Name Required");
+            return;
+        }
+
+        if (!currentPlan) {
+            alert("Select Plan");
+            return;
+        }
+
+        let planName = "";
+        let years = 0;
+        let months = 0;
+        let days = 0;
+
+        // Free Trial
+        if (currentPlan === "free_trial") {
+
+            planName = "Free Trial";
+            days = 15;
+
+        }
+
+        // One Year Plan
+        else if (currentPlan === "one_year") {
+
+            planName = "One Year Plan";
+            years = 1;
+
+        }
+
+        // Custom Plan
+        else {
+
+            const planRef =
+                doc(db, "plans", currentPlan);
+
+            const planSnap =
+                await getDoc(planRef);
+
+            if (planSnap.exists()) {
+
+                const plan =
+                    planSnap.data();
+
+                planName =
+                    plan.name || "";
+
+                years =
+                    plan.years || 0;
+
+                months =
+                    plan.months || 0;
+
+                days =
+                    plan.days || 0;
+            }
+        }
+
+        await addDoc(collection(db, "institutes"), {
+
+            name,
+            logo,
+            ownerId,
+
+            currentPlan,
+            planName,
+
+            years,
+            months,
+            days,
+
+            startDate,
+            endDate,
+
+            subscriptionStatus: "active",
+
+            createdAt: serverTimestamp()
+        });
+
+        alert("Institute Added Successfully");
+
+        document.getElementById("inst-name").value = "";
+document.getElementById("inst-logo").value = "";
+document.getElementById("inst-teacher-id").value = "";
+
+        loadInstitutes();
+
+    } catch (error) {
+
+        console.error(error);
+      //  alert("Error Adding Institute");
+    }
+};
+async function calculateEndDate(planId, startDate = new Date()) {
+
+    const start = new Date(startDate);
+
+    // default plans
+    if (planId === "free_trial") {
+        start.setDate(start.getDate() + 15);
+        return start;
+    }
+
+    if (planId === "one_year") {
+        start.setFullYear(start.getFullYear() + 1);
+        return start;
+    }
+
+    // custom plan from DB
+    const planRef = doc(db, "plans", planId);
+    const planSnap = await getDoc(planRef);
+
+    if (!planSnap.exists()) return start;
+
+    const plan = planSnap.data();
+
+    start.setFullYear(start.getFullYear() + (plan.years || 0));
+    start.setMonth(start.getMonth() + (plan.months || 0));
+    start.setDate(start.getDate() + (plan.days || 0));
+
+    return start;
+}
+
+window.updatePlanDates = async function () {
+
+    const planType =
+        document.getElementById("plan-type");
+
+    const startDateInput =
+        document.getElementById("inst-start");
+
+    const endDateInput =
+        document.getElementById("inst-end");
+        console.log("updatePlanDates running");
+
+console.log("Selected Plan:",
+    planType.value);
+
+console.log("Start Input:",
+    startDateInput);
+
+console.log("End Input:",
+    endDateInput);
+
+    if (!planType || !startDateInput || !endDateInput) {
+        return;
+    }
+
+    const today = new Date();
+
+    if (!startDateInput.value) {
+        startDateInput.value =
+            today.toISOString().split("T")[0];
+    }
+
+    const start =
+        new Date(startDateInput.value);
+
+    // Free Trial
+    if (planType.value === "free_trial") {
+
+        let end = new Date(start);
+
+        end.setDate(end.getDate() + 15);
+
+        endDateInput.value =
+            end.toISOString().split("T")[0];
+
+        return;
+    }
+
+    // One Year
+    if (planType.value === "one_year") {
+
+        let end = new Date(start);
+
+        end.setFullYear(end.getFullYear() + 1);
+
+        endDateInput.value =
+            end.toISOString().split("T")[0];
+
+        return;
+    }
+        // Custom Plan
+const planDoc = await getDoc(
+    doc(db, "plans", planType.value)
+);
+
+if (!planDoc.exists()) return;
+
+const plan = planDoc.data();
+
+let end = new Date(start);
+
+end.setFullYear(
+    end.getFullYear() + (plan.years || 0)
+);
+
+end.setMonth(
+    end.getMonth() + (plan.months || 0)
+);
+
+end.setDate(
+    end.getDate() + (plan.days || 0)
+);
+
+endDateInput.value =
+    end.toISOString().split("T")[0];
+}
+
+//block content
+async function checkInstituteExpiry(instituteId) {
+
+    const instituteRef = doc(db, "institutes", instituteId);
+
+    const instituteSnap = await getDoc(instituteRef);
+
+    if (!instituteSnap.exists()) return false;
+
+    const institute = instituteSnap.data();
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(institute.endDate);
+    endDate.setHours(0, 0, 0, 0);
+
+    if (today > endDate) {
+
+        await updateDoc(instituteRef, {
+            subscriptionStatus: "expired"
+        });
+
+        return false;
+    }
+
+    return true;
 }
 
 // =========================================
-// LEDGER ENTRIES: PAYMENTS & ACCESS ALLOCATIONS
+// LOAD INSTITUTES
+// =========================================
+
+async function loadInstitutes() {
+
+    const container =
+        document.getElementById("institutes-list");
+
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    const snap =
+        await getDocs(
+            collection(db, "institutes")
+        );
+snap.forEach(async (docSnap) => {
+
+    const data = docSnap.data();
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(data.endDate);
+    endDate.setHours(0, 0, 0, 0);
+
+    const status = today > endDate ? "Expired" : "Active";
+
+    if (
+    today > endDate &&
+    data.subscriptionStatus !== "expired"
+) {
+
+    updateDoc(
+        doc(db, "institutes", docSnap.id),
+        {
+            subscriptionStatus: "expired"
+        }
+    );
+}
+        container.innerHTML += `
+
+        <div class="border p-4 rounded-xl mb-3">
+
+            <h3 class="text-xl font-black">
+                ${data.name || ""}
+            </h3>
+
+            <p>
+                Plan:
+                ${data.planName || data.currentPlan || "-"}
+            </p>
+
+            <p>
+                Duration:
+                ${data.years || 0}Y
+                ${data.months || 0}M
+                ${data.days || 0}D
+            </p>
+
+            <p>
+                Start Date:
+                ${data.startDate || "-"}
+            </p>
+
+            <p>
+                Expiry Date:
+                ${data.endDate || "-"}
+            </p>
+
+            <p>
+                Status:
+                ${status}
+            </p>
+
+        </div>
+        `;
+    });
+}
+
+
+
+// =========================================
+// ADD PAYMENT
 // =========================================
 
 window.addPayment = async () => {
-    const instId = document.getElementById('payment-institute').value.trim();
-    const amount = Number(document.getElementById('payment-amount').value);
-    const gateway = document.getElementById('payment-gateway').value.trim();
-    const txId = document.getElementById('payment-transaction').value.trim();
 
-    if(!instId || isNaN(amount) || !txId) {
-        alert("Please document all receipt reference fields.");
-        return;
-    }
+    const instituteId =
+        document.getElementById('payment-institute').value;
+
+    const amount =
+        Number(document.getElementById('payment-amount').value);
+
+    const paymentGateway =
+        document.getElementById('payment-gateway').value;
+
+    const transactionId =
+        document.getElementById('payment-transaction').value;
 
     await addDoc(collection(db, "payments"), {
-        instituteId: instId,
+
+        instituteId,
         amount,
-        paymentGateway: gateway || "Manual",
-        transactionId: txId,
-        status: "success",
-        timestamp: serverTimestamp()
+        paymentGateway,
+        transactionId,
+
+        status: "success"
+
     });
 
-    alert("Payment record logged successfully.");
+    alert("Payment Added");
+
     loadPayments();
+
 };
+
+
+// =========================================
+// LOAD PAYMENTS
+// =========================================
 
 async function loadPayments() {
-    const container = document.getElementById('payments-list');
-    if(!container) return;
+
+    const container =
+        document.getElementById('payments-list');
+
     container.innerHTML = "";
 
-    const snap = await getDocs(collection(db, "payments"));
+    const snap =
+        await getDocs(collection(db, "payments"));
+
     snap.forEach((docSnap) => {
+
         const data = docSnap.data();
+
         container.innerHTML += `
-        <div class="glass p-4 rounded-xl border border-[var(--border-color)] mb-3 shadow-sm text-xs">
-            <p class="font-bold text-brandOrange">Amount: ₹${data.amount}</p>
-            <p class="opacity-60 mt-0.5">Target Campus: ${data.instituteId}</p>
-            <p class="opacity-40 text-[9px] font-mono mt-0.5">TX: ${data.transactionId} (${data.paymentGateway})</p>
-        </div>`;
+
+        <div class="border p-4 rounded-xl mb-3">
+
+            <p>
+
+                Amount: ₹${data.amount}
+
+            </p>
+
+            <p>
+
+                Status: ${data.status}
+
+            </p>
+
+            <p>
+
+                Gateway: ${data.paymentGateway}
+
+            </p>
+
+        </div>
+        `;
     });
 }
+
+
+
+// =========================================
+// ADD SUBSCRIPTION
+// =========================================
 
 window.addSubscription = async () => {
-    const instituteId = document.getElementById('subscription-institute').value.trim();
-    const planId = document.getElementById('subscription-plan').value.trim().toLowerCase();
-    const paymentId = document.getElementById('subscription-payment').value.trim();
 
-    if(!instituteId || !planId) {
-        alert("Please assign a valid Institute ID and Plan designation mapping.");
-        return;
-    }
+    const instituteId =
+        document.getElementById('subscription-institute').value;
+
+    const planId =
+        document.getElementById('subscription-plan').value;
+
+    const paymentId =
+        document.getElementById('subscription-payment').value;
 
     let expiry = new Date();
-    if (planId === "yearly" || planId === "one_year") {
-        expiry.setDate(expiry.getDate() + 365);
-    } else if (planId === "free_trial") {
-        expiry.setDate(expiry.getDate() + 14);
-    } else {
-        expiry.setDate(expiry.getDate() + 30); // Default dynamic standard monthly term
+
+    if (planId === "monthly") {
+
+        expiry.setDate(expiry.getDate() + 30);
+
     }
 
-    // Check if configuration maps to specific duration
-    try {
-        const planCheck = await getDoc(doc(db, "plans", planId));
-        if(planCheck.exists()) {
-            expiry = new Date();
-            expiry.setDate(expiry.getDate() + Number(planCheck.data().duration || 30));
-        }
-    } catch(e){}
+    if (planId === "yearly") {
+
+        expiry.setDate(expiry.getDate() + 365);
+
+    }
+
+    if (planId === "free_trial") {
+
+        expiry.setDate(expiry.getDate() + 30);
+
+    }
 
     await addDoc(collection(db, "subscriptions"), {
+
         instituteId,
         planId,
-        paymentId: paymentId || "System_Grant",
+        paymentId,
+
         startDate: serverTimestamp(),
+
         expiryDate: expiry,
+
         status: "active"
+
     });
 
-    // Mirror status payload parameters directly onto target campus registry nodes
-    const instQuery = await getDocs(query(collection(db, "institutes"), where("uniqueId", "==", instituteId)));
-    if(!instQuery.empty) {
-        await updateDoc(doc(db, "institutes", instQuery.docs[0].id), {
-            currentPlan: planId,
-            subscriptionStatus: "active",
-            expiryDate: expiry
-        });
-    }
+    alert("Subscription Added");
 
-    alert("System access layer successfully granted.");
     loadSubscriptions();
+
 };
 
+
+// =========================================
+// LOAD SUBSCRIPTIONS
+// =========================================
+
 async function loadSubscriptions() {
-    const container = document.getElementById('subscriptions-list');
-    if(!container) return;
+
+    const container =
+        document.getElementById('subscriptions-list');
+
     container.innerHTML = "";
 
-    const snap = await getDocs(collection(db, "subscriptions"));
+    const snap =
+        await getDocs(collection(db, "subscriptions"));
+
     snap.forEach((docSnap) => {
+
         const data = docSnap.data();
-        const expiryLabel = data.expiryDate?.seconds ? new Date(data.expiryDate.seconds * 1000).toLocaleDateString() : 'Active';
+
         container.innerHTML += `
-        <div class="glass p-4 rounded-xl border border-[var(--border-color)] mb-3 shadow-sm text-xs">
-            <p class="font-bold text-purple-400">Campus Code: ${data.instituteId}</p>
-            <p class="opacity-60 mt-0.5">Tier: ${data.planId.toUpperCase()} | Valid Until: ${expiryLabel}</p>
-        </div>`;
+
+        <div class="border p-4 rounded-xl mb-3">
+
+            <p>
+
+                Institute: ${data.instituteId}
+
+            </p>
+
+            <p>
+
+                Plan: ${data.planId}
+
+            </p>
+
+            <p>
+
+                Status: ${data.status}
+
+            </p>
+
+        </div>
+        `;
     });
 }
+document.addEventListener(
+"DOMContentLoaded",
+() => {
+
+    loadPlans();
+
+    loadInstitutePlans();
+
+    loadInstitutes();
+
+});
