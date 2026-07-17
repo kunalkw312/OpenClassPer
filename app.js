@@ -46,7 +46,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (path) {
         // 404 redirect किंवा direct open handle
-        renderContent(path);
+        if (typeof renderContent === 'function') renderContent(path);
     }
 
     // date change listener (only if elements exist)
@@ -92,6 +92,81 @@ export function getThumbnail(url) {
 export async function sendOTP(email, code) {
     return await emailjs.send(emailConfig.serviceID, emailConfig.templateID, { to_email: email, otp: code });
 }
+
+
+// =========================================
+// NEW: CUSTOM NOTIFICATIONS & PAYMENTS HOOKS
+// =========================================
+
+window._processCustomNotif = async (title, body) => {
+    try {
+        const uid = auth.currentUser.uid;
+        const userSnap = await getDoc(doc(db, "users", uid));
+        if (!userSnap.exists()) return;
+        const profile = userSnap.data();
+
+        let targetUids = [];
+
+        // Fetch students under this teacher's institute if applicable
+        if (profile.instituteId) {
+            const qInst = query(collection(db, "users"), where("instituteId", "==", profile.instituteId), where("role", "==", "student"));
+            const snapInst = await getDocs(qInst);
+            snapInst.forEach(d => targetUids.push(d.id));
+        }
+
+        // Fetch general followers
+        const qSubs = query(collection(db, "users"), where("subs", "array-contains", profile.teacherId || ""));
+        const snapSubs = await getDocs(qSubs);
+        snapSubs.forEach(d => {
+            if (!targetUids.includes(d.id)) targetUids.push(d.id);
+        });
+
+        // Batch create notifications
+        for (let targetUid of targetUids) {
+            await addDoc(collection(db, "notifications"), {
+                uid: targetUid,
+                type: "ANNOUNCEMENT",
+                text: `${title}: ${body}`,
+                createdAt: serverTimestamp()
+            });
+        }
+        console.log(`Custom notification successfully pushed to ${targetUids.length} students.`);
+    } catch (error) {
+        console.error("Error sending custom notifications: ", error);
+    }
+};
+
+window._processPaymentHook = async (planId) => {
+    try {
+        const uid = auth.currentUser.uid;
+        
+        if (planId === 'FULL_ACCESS') {
+            // Institute level Full Access Grant
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetInstId = urlParams.get('inst') || localStorage.getItem('locked_inst_id');
+            
+            if (targetInstId) {
+                await updateDoc(doc(db, "users", uid), {
+                    instituteId: targetInstId
+                });
+            }
+        } else {
+            // Individual Course/Group Access Grant
+            const courseSnap = await getDoc(doc(db, "courses", planId));
+            if (courseSnap.exists()) {
+                const courseData = courseSnap.data();
+                if (courseData.groupId) {
+                    await updateDoc(doc(db, "groups", courseData.groupId), {
+                        members: arrayUnion(uid)
+                    });
+                }
+            }
+        }
+    } catch (error) {
+        console.error("Error processing payment hook: ", error);
+    }
+};
+
 
 // =========================================
 // ADMIN PANEL
@@ -157,6 +232,7 @@ async function loadPlans() {
     const container =
         document.getElementById("plans-list");
 
+    if(!container) return;
     container.innerHTML = "";
 
     const snap =
@@ -187,16 +263,16 @@ async function loadPlans() {
 window.processPlanSave = async function () {
 
     const planName =
-        document.getElementById("custom-plan-name").value;
+        document.getElementById("custom-plan-name")?.value;
 
     const years =
-        parseInt(document.getElementById("custom-plan-years").value) || 0;
+        parseInt(document.getElementById("custom-plan-years")?.value) || 0;
 
     const months =
-        parseInt(document.getElementById("custom-plan-months").value) || 0;
+        parseInt(document.getElementById("custom-plan-months")?.value) || 0;
 
     const days =
-        parseInt(document.getElementById("custom-plan-days").value) || 0;
+        parseInt(document.getElementById("custom-plan-days")?.value) || 0;
 if(
  !planName ||
  (years===0 && months===0 && days===0)
@@ -223,6 +299,8 @@ async function loadInstitutePlans() {
 
     const planDropdown =
         document.getElementById("plan-type");
+
+        if (!planDropdown) return;
 
     // Default options thev
     planDropdown.innerHTML = `
@@ -685,6 +763,7 @@ async function loadPayments() {
     const container =
         document.getElementById('payments-list');
 
+    if(!container) return;
     container.innerHTML = "";
 
     const snap =
@@ -788,6 +867,7 @@ async function loadSubscriptions() {
     const container =
         document.getElementById('subscriptions-list');
 
+    if(!container) return;
     container.innerHTML = "";
 
     const snap =
