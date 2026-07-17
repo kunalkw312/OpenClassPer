@@ -1,46 +1,39 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, updatePassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, updateDoc, increment, deleteDoc, arrayUnion, arrayRemove, serverTimestamp, onSnapshot, orderBy, limit, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+// Replaced enableIndexedDbPersistence and getFirestore with the new modular caching methods
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, updateDoc, increment, deleteDoc, arrayUnion, arrayRemove, serverTimestamp, onSnapshot, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import { firebaseConfig, emailConfig } from "./config.js"
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app);
 
-// Enable offline persistence
-enableIndexedDbPersistence(db).catch((err) => {
-    if (err.code == 'failed-precondition') console.log("Persistence failed: Multiple tabs open");
-    else if (err.code == 'unimplemented') console.log("Persistence not supported");
+// FIXED: Using the new v11 recommended way to enable offline persistence
+export const db = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager()
+    })
 });
 
 // Add this after your app initialization logic
 window.addEventListener('DOMContentLoaded', () => {
     document.addEventListener("DOMContentLoaded", () => {
 
-    //loadPlans();
+    // loadPlans();
     loadInstitutePlans();
     loadInstitutes();
 
-    const planType =
-        document.getElementById("plan-type");
-
-    const startDate =
-        document.getElementById("inst-start");
+    const planType = document.getElementById("plan-type");
+    const startDate = document.getElementById("inst-start");
 
     if(planType){
-        planType.addEventListener(
-            "change",
-            updatePlanDates
-        );
+        planType.addEventListener("change", updatePlanDates);
     }
 
     if(startDate){
-        startDate.addEventListener(
-            "change",
-            updatePlanDates
-        );
+        startDate.addEventListener("change", updatePlanDates);
     }
 });
+
     const urlParams = new URLSearchParams(window.location.search);
     const path = urlParams.get('p');
 
@@ -62,7 +55,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 export const provider = new GoogleAuthProvider();
-emailjs.init(emailConfig.publicKey);
+// Ensure emailjs is loaded in your HTML before calling this
+if (typeof emailjs !== 'undefined') {
+    emailjs.init(emailConfig.publicKey);
+}
 
 export { 
     doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, updateDoc, 
@@ -172,55 +168,27 @@ window._processPaymentHook = async (planId) => {
 // ADMIN PANEL
 // =========================================
 
-const adminBtn =
-    document.getElementById('admin-panel-btn');
-
-const adminDashboard =
-    document.getElementById('admin-dashboard');
-
-
-// =========================================
-// OPEN DASHBOARD
-// =========================================
-
-
+const adminBtn = document.getElementById('admin-panel-btn');
+const adminDashboard = document.getElementById('admin-dashboard');
 
 // =========================================
 // CLOSE DASHBOARD
 // =========================================
-
 window.closeAdminDashboard = () => {
-
-    adminDashboard.classList.add('hidden');
-
+    if(adminDashboard) adminDashboard.classList.add('hidden');
 };
-
 
 // =========================================
 // SHOW SECTION
 // =========================================
-
 window.showSection = (sectionId) => {
+    document.querySelectorAll('.admin-section').forEach(section => {
+        section.classList.add('hidden');
+    });
 
-    document.querySelectorAll('.admin-section')
-        .forEach(section => {
-
-            section.classList.add('hidden');
-
-        });
-
-    document.getElementById(sectionId)
-        .classList.remove('hidden');
-
+    const targetSection = document.getElementById(sectionId);
+    if(targetSection) targetSection.classList.remove('hidden');
 };
-
-
-
-// =========================================
-// ADD PLAN
-// =========================================
-
-
 
 
 // =========================================
@@ -228,130 +196,99 @@ window.showSection = (sectionId) => {
 // =========================================
 
 async function loadPlans() {
-
-    const container =
-        document.getElementById("plans-list");
-
+    const container = document.getElementById("plans-list");
     if(!container) return;
     container.innerHTML = "";
 
-    const snap =
-        await getDocs(collection(db, "plans"));
-
-    snap.forEach((docSnap) => {
-
-        const data = docSnap.data();
-
-        container.innerHTML += `
-
-        <div class="border p-4 rounded-xl mb-3">
-
-            <h3 class="text-xl font-black">
-                ${data.name}
-            </h3>
-
-            <p>
-                ${data.years || 0} Years
-                ${data.months || 0} Months
-                ${data.days || 0} Days
-            </p>
-
-        </div>
-        `;
-    });
+    try {
+        const snap = await getDocs(collection(db, "plans"));
+        snap.forEach((docSnap) => {
+            const data = docSnap.data();
+            container.innerHTML += `
+            <div class="border p-4 rounded-xl mb-3">
+                <h3 class="text-xl font-black">${data.name}</h3>
+                <p>${data.years || 0} Years ${data.months || 0} Months ${data.days || 0} Days</p>
+            </div>
+            `;
+        });
+    } catch (error) {
+        console.warn("Could not load plans (check Firestore rules):", error.message);
+    }
 }
+
 window.processPlanSave = async function () {
+    const planName = document.getElementById("custom-plan-name")?.value;
+    const years = parseInt(document.getElementById("custom-plan-years")?.value) || 0;
+    const months = parseInt(document.getElementById("custom-plan-months")?.value) || 0;
+    const days = parseInt(document.getElementById("custom-plan-days")?.value) || 0;
+    
+    if(!planName || (years===0 && months===0 && days===0)){
+       alert("Enter Plan Name and Duration");
+       return;
+    }
+    
+    try {
+        await addDoc(collection(db, "plans"), {
+            name: planName,
+            years,
+            months,
+            days,
+            createdAt: Date.now()
+        });
 
-    const planName =
-        document.getElementById("custom-plan-name")?.value;
-
-    const years =
-        parseInt(document.getElementById("custom-plan-years")?.value) || 0;
-
-    const months =
-        parseInt(document.getElementById("custom-plan-months")?.value) || 0;
-
-    const days =
-        parseInt(document.getElementById("custom-plan-days")?.value) || 0;
-if(
- !planName ||
- (years===0 && months===0 && days===0)
-){
-   alert("Enter Plan Name and Duration");
-   return;
-}
-    await addDoc(collection(db, "plans"), {
-        name: planName,
-        years,
-        months,
-        days,
-        createdAt: Date.now()
-    });
-
-    alert("Plan Saved");
-
-   // loadPlans();
-
-    // IMPORTANT
-    loadInstitutePlans();
+        alert("Plan Saved");
+        loadInstitutePlans();
+    } catch (error) {
+        console.error("Error saving plan:", error.message);
+        alert("Failed to save plan. Check your permissions.");
+    }
 };
+
 async function loadInstitutePlans() {
+    const planDropdown = document.getElementById("plan-type");
+    if (!planDropdown) return;
 
-    const planDropdown =
-        document.getElementById("plan-type");
-
-        if (!planDropdown) return;
-
-    // Default options thev
+    // Default options
     planDropdown.innerHTML = `
         <option value="free_trial">Free Trial (15 Days)</option>
         <option value="one_year">One Year Plan</option>
     `;
 
-    const snap =
-        await getDocs(collection(db, "plans"));
-
-    snap.forEach((docSnap) => {
-
-        const plan = docSnap.data();
-
-        planDropdown.innerHTML += `
-            <option value="${docSnap.id}">
- ${plan.name}
- (${plan.years || 0}Y
- ${plan.months || 0}M
- ${plan.days || 0}D)
-</option>
-        `;
-    });
+    try {
+        const snap = await getDocs(collection(db, "plans"));
+        snap.forEach((docSnap) => {
+            const plan = docSnap.data();
+            planDropdown.innerHTML += `
+                <option value="${docSnap.id}">
+                    ${plan.name} (${plan.years || 0}Y ${plan.months || 0}M ${plan.days || 0}D)
+                </option>
+            `;
+        });
+    } catch (error) {
+        console.warn("Could not load custom plans into dropdown:", error.message);
+    }
 }
-document.addEventListener("DOMContentLoaded", () => {
 
+document.addEventListener("DOMContentLoaded", () => {
     const planType = document.getElementById("plan-type");
     const startDateInput = document.getElementById("inst-start");
-    const endDateInput =document.getElementById("inst-end")
+    const endDateInput = document.getElementById("inst-end");
 
     if (!planType || !startDateInput || !endDateInput) {
-        console.log("Missing HTML elements");
+        // FIXED: Removed console log to avoid spamming the console on irrelevant pages
         return;
     }
 
     loadInstitutePlans();
 
     planType.addEventListener("change", async () => {
-if(!startDateInput.value){
+        if(!startDateInput.value){
+           const today = new Date();
+           startDateInput.value = today.toISOString().split("T")[0];
+        }
 
-   const today = new Date();
-
-   startDateInput.value =
-   today.toISOString().split("T")[0];
-}
-
-const start =
-new Date(startDateInput.value);
-
-let end =
-new Date(start);
+        const start = new Date(startDateInput.value);
+        let end = new Date(start);
 
         if (planType.value === "free_trial") {
             end.setDate(end.getDate() + 15);
@@ -360,46 +297,42 @@ new Date(start);
             end.setFullYear(end.getFullYear() + 1);
         }
         else {
-            const planRef = doc(db, "plans", planType.value);
-            const planSnap = await getDoc(planRef);
+            try {
+                const planRef = doc(db, "plans", planType.value);
+                const planSnap = await getDoc(planRef);
 
-            if (planSnap.exists()) {
-                const plan = planSnap.data();
-
-                end.setFullYear(end.getFullYear() + (plan.years || 0));
-                end.setMonth(end.getMonth() + (plan.months || 0));
-                end.setDate(end.getDate() + (plan.days || 0));
+                if (planSnap.exists()) {
+                    const plan = planSnap.data();
+                    end.setFullYear(end.getFullYear() + (plan.years || 0));
+                    end.setMonth(end.getMonth() + (plan.months || 0));
+                    end.setDate(end.getDate() + (plan.days || 0));
+                }
+            } catch (error) {
+                console.error("Error fetching selected plan:", error.message);
             }
         }
 
         endDateInput.value = end.toISOString().split("T")[0];
     });
 });
+
 // =========================================
 // ADD INSTITUTE
 // =========================================
 
 window.addInstitute = async () => {
-    console.log(document.getElementById("institute-name"));
-console.log(document.getElementById("institute-logo"));
-console.log(document.getElementById("institute-owner"));
-console.log(document.getElementById("plan-type"));
-console.log(document.getElementById("inst-start"));
-console.log(document.getElementById("inst-end"));
-
     try {
-const name =document.getElementById("inst-name").value.trim();
-const logo = document.getElementById("inst-logo").value.trim();
-const ownerId = document.getElementById("inst-teacher-id").value.trim();
-const currentPlan =document.getElementById("plan-type").value;
-const startDate =document.getElementById("inst-start").value;
-const endDate =document.getElementById("inst-end").value;
+        const name = document.getElementById("inst-name").value.trim();
+        const logo = document.getElementById("inst-logo").value.trim();
+        const ownerId = document.getElementById("inst-teacher-id").value.trim();
+        const currentPlan = document.getElementById("plan-type").value;
+        const startDate = document.getElementById("inst-start").value;
+        const endDate = document.getElementById("inst-end").value;
 
         if (!name) {
             alert("Institute Name Required");
             return;
         }
-
         if (!currentPlan) {
             alert("Select Plan");
             return;
@@ -410,229 +343,115 @@ const endDate =document.getElementById("inst-end").value;
         let months = 0;
         let days = 0;
 
-        // Free Trial
         if (currentPlan === "free_trial") {
-
             planName = "Free Trial";
             days = 15;
-
-        }
-
-        // One Year Plan
-        else if (currentPlan === "one_year") {
-
+        } else if (currentPlan === "one_year") {
             planName = "One Year Plan";
             years = 1;
-
-        }
-
-        // Custom Plan
-        else {
-
-            const planRef =
-                doc(db, "plans", currentPlan);
-
-            const planSnap =
-                await getDoc(planRef);
-
+        } else {
+            const planRef = doc(db, "plans", currentPlan);
+            const planSnap = await getDoc(planRef);
             if (planSnap.exists()) {
-
-                const plan =
-                    planSnap.data();
-
-                planName =
-                    plan.name || "";
-
-                years =
-                    plan.years || 0;
-
-                months =
-                    plan.months || 0;
-
-                days =
-                    plan.days || 0;
+                const plan = planSnap.data();
+                planName = plan.name || "";
+                years = plan.years || 0;
+                months = plan.months || 0;
+                days = plan.days || 0;
             }
         }
 
         await addDoc(collection(db, "institutes"), {
-
-            name,
-            logo,
-            ownerId,
-
-            currentPlan,
-            planName,
-
-            years,
-            months,
-            days,
-
-            startDate,
-            endDate,
-
+            name, logo, ownerId, currentPlan, planName,
+            years, months, days, startDate, endDate,
             subscriptionStatus: "active",
-
             createdAt: serverTimestamp()
         });
 
         alert("Institute Added Successfully");
 
         document.getElementById("inst-name").value = "";
-document.getElementById("inst-logo").value = "";
-document.getElementById("inst-teacher-id").value = "";
+        document.getElementById("inst-logo").value = "";
+        document.getElementById("inst-teacher-id").value = "";
 
         loadInstitutes();
 
     } catch (error) {
-
         console.error(error);
-      //  alert("Error Adding Institute");
+        alert("Error Adding Institute. Check permissions.");
     }
 };
-async function calculateEndDate(planId, startDate = new Date()) {
-
-    const start = new Date(startDate);
-
-    // default plans
-    if (planId === "free_trial") {
-        start.setDate(start.getDate() + 15);
-        return start;
-    }
-
-    if (planId === "one_year") {
-        start.setFullYear(start.getFullYear() + 1);
-        return start;
-    }
-
-    // custom plan from DB
-    const planRef = doc(db, "plans", planId);
-    const planSnap = await getDoc(planRef);
-
-    if (!planSnap.exists()) return start;
-
-    const plan = planSnap.data();
-
-    start.setFullYear(start.getFullYear() + (plan.years || 0));
-    start.setMonth(start.getMonth() + (plan.months || 0));
-    start.setDate(start.getDate() + (plan.days || 0));
-
-    return start;
-}
 
 window.updatePlanDates = async function () {
+    const planType = document.getElementById("plan-type");
+    const startDateInput = document.getElementById("inst-start");
+    const endDateInput = document.getElementById("inst-end");
 
-    const planType =
-        document.getElementById("plan-type");
-
-    const startDateInput =
-        document.getElementById("inst-start");
-
-    const endDateInput =
-        document.getElementById("inst-end");
-        console.log("updatePlanDates running");
-
-console.log("Selected Plan:",
-    planType.value);
-
-console.log("Start Input:",
-    startDateInput);
-
-console.log("End Input:",
-    endDateInput);
-
-    if (!planType || !startDateInput || !endDateInput) {
-        return;
-    }
+    if (!planType || !startDateInput || !endDateInput) return;
 
     const today = new Date();
 
     if (!startDateInput.value) {
-        startDateInput.value =
-            today.toISOString().split("T")[0];
+        startDateInput.value = today.toISOString().split("T")[0];
     }
 
-    const start =
-        new Date(startDateInput.value);
+    const start = new Date(startDateInput.value);
 
-    // Free Trial
     if (planType.value === "free_trial") {
-
         let end = new Date(start);
-
         end.setDate(end.getDate() + 15);
-
-        endDateInput.value =
-            end.toISOString().split("T")[0];
-
+        endDateInput.value = end.toISOString().split("T")[0];
         return;
     }
 
-    // One Year
     if (planType.value === "one_year") {
+        let end = new Date(start);
+        end.setFullYear(end.getFullYear() + 1);
+        endDateInput.value = end.toISOString().split("T")[0];
+        return;
+    }
+    
+    try {
+        const planDoc = await getDoc(doc(db, "plans", planType.value));
+        if (!planDoc.exists()) return;
 
+        const plan = planDoc.data();
         let end = new Date(start);
 
-        end.setFullYear(end.getFullYear() + 1);
+        end.setFullYear(end.getFullYear() + (plan.years || 0));
+        end.setMonth(end.getMonth() + (plan.months || 0));
+        end.setDate(end.getDate() + (plan.days || 0));
 
-        endDateInput.value =
-            end.toISOString().split("T")[0];
-
-        return;
+        endDateInput.value = end.toISOString().split("T")[0];
+    } catch (error) {
+        console.error("Error updating plan dates:", error.message);
     }
-        // Custom Plan
-const planDoc = await getDoc(
-    doc(db, "plans", planType.value)
-);
-
-if (!planDoc.exists()) return;
-
-const plan = planDoc.data();
-
-let end = new Date(start);
-
-end.setFullYear(
-    end.getFullYear() + (plan.years || 0)
-);
-
-end.setMonth(
-    end.getMonth() + (plan.months || 0)
-);
-
-end.setDate(
-    end.getDate() + (plan.days || 0)
-);
-
-endDateInput.value =
-    end.toISOString().split("T")[0];
 }
 
-//block content
 async function checkInstituteExpiry(instituteId) {
+    try {
+        const instituteRef = doc(db, "institutes", instituteId);
+        const instituteSnap = await getDoc(instituteRef);
+        if (!instituteSnap.exists()) return false;
 
-    const instituteRef = doc(db, "institutes", instituteId);
+        const institute = instituteSnap.data();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-    const instituteSnap = await getDoc(instituteRef);
+        const endDate = new Date(institute.endDate);
+        endDate.setHours(0, 0, 0, 0);
 
-    if (!instituteSnap.exists()) return false;
-
-    const institute = instituteSnap.data();
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const endDate = new Date(institute.endDate);
-    endDate.setHours(0, 0, 0, 0);
-
-    if (today > endDate) {
-
-        await updateDoc(instituteRef, {
-            subscriptionStatus: "expired"
-        });
-
+        if (today > endDate) {
+            await updateDoc(instituteRef, {
+                subscriptionStatus: "expired"
+            });
+            return false;
+        }
+        return true;
+    } catch (error) {
+        console.warn("Permission error checking expiry:", error.message);
         return false;
     }
-
-    return true;
 }
 
 // =========================================
@@ -640,277 +459,163 @@ async function checkInstituteExpiry(instituteId) {
 // =========================================
 
 async function loadInstitutes() {
-
-    const container =
-        document.getElementById("institutes-list");
-
+    const container = document.getElementById("institutes-list");
     if (!container) return;
-
     container.innerHTML = "";
 
-    const snap =
-        await getDocs(
-            collection(db, "institutes")
-        );
-snap.forEach(async (docSnap) => {
+    try {
+        const snap = await getDocs(collection(db, "institutes"));
+        
+        snap.forEach(async (docSnap) => {
+            const data = docSnap.data();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const endDate = new Date(data.endDate);
+            endDate.setHours(0, 0, 0, 0);
 
-    const data = docSnap.data();
+            const status = today > endDate ? "Expired" : "Active";
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+            if (today > endDate && data.subscriptionStatus !== "expired") {
+                try {
+                    await updateDoc(doc(db, "institutes", docSnap.id), {
+                        subscriptionStatus: "expired"
+                    });
+                } catch (e) {
+                    console.warn("Could not update expired status:", e.message);
+                }
+            }
 
-    const endDate = new Date(data.endDate);
-    endDate.setHours(0, 0, 0, 0);
-
-    const status = today > endDate ? "Expired" : "Active";
-
-    if (
-    today > endDate &&
-    data.subscriptionStatus !== "expired"
-) {
-
-    updateDoc(
-        doc(db, "institutes", docSnap.id),
-        {
-            subscriptionStatus: "expired"
-        }
-    );
+            container.innerHTML += `
+            <div class="border p-4 rounded-xl mb-3">
+                <h3 class="text-xl font-black">${data.name || ""}</h3>
+                <p>Plan: ${data.planName || data.currentPlan || "-"}</p>
+                <p>Duration: ${data.years || 0}Y ${data.months || 0}M ${data.days || 0}D</p>
+                <p>Start Date: ${data.startDate || "-"}</p>
+                <p>Expiry Date: ${data.endDate || "-"}</p>
+                <p>Status: ${status}</p>
+            </div>
+            `;
+        });
+    } catch (error) {
+        console.warn("Could not load institutes (check Firestore rules):", error.message);
+    }
 }
-        container.innerHTML += `
-
-        <div class="border p-4 rounded-xl mb-3">
-
-            <h3 class="text-xl font-black">
-                ${data.name || ""}
-            </h3>
-
-            <p>
-                Plan:
-                ${data.planName || data.currentPlan || "-"}
-            </p>
-
-            <p>
-                Duration:
-                ${data.years || 0}Y
-                ${data.months || 0}M
-                ${data.days || 0}D
-            </p>
-
-            <p>
-                Start Date:
-                ${data.startDate || "-"}
-            </p>
-
-            <p>
-                Expiry Date:
-                ${data.endDate || "-"}
-            </p>
-
-            <p>
-                Status:
-                ${status}
-            </p>
-
-        </div>
-        `;
-    });
-}
-
-
 
 // =========================================
 // ADD PAYMENT
 // =========================================
 
 window.addPayment = async () => {
+    try {
+        const instituteId = document.getElementById('payment-institute').value;
+        const amount = Number(document.getElementById('payment-amount').value);
+        const paymentGateway = document.getElementById('payment-gateway').value;
+        const transactionId = document.getElementById('payment-transaction').value;
 
-    const instituteId =
-        document.getElementById('payment-institute').value;
+        await addDoc(collection(db, "payments"), {
+            instituteId,
+            amount,
+            paymentGateway,
+            transactionId,
+            status: "success"
+        });
 
-    const amount =
-        Number(document.getElementById('payment-amount').value);
-
-    const paymentGateway =
-        document.getElementById('payment-gateway').value;
-
-    const transactionId =
-        document.getElementById('payment-transaction').value;
-
-    await addDoc(collection(db, "payments"), {
-
-        instituteId,
-        amount,
-        paymentGateway,
-        transactionId,
-
-        status: "success"
-
-    });
-
-    alert("Payment Added");
-
-    loadPayments();
-
+        alert("Payment Added");
+        loadPayments();
+    } catch (error) {
+        console.error(error);
+        alert("Error Adding Payment. Check permissions.");
+    }
 };
-
 
 // =========================================
 // LOAD PAYMENTS
 // =========================================
 
 async function loadPayments() {
-
-    const container =
-        document.getElementById('payments-list');
-
+    const container = document.getElementById('payments-list');
     if(!container) return;
     container.innerHTML = "";
 
-    const snap =
-        await getDocs(collection(db, "payments"));
-
-    snap.forEach((docSnap) => {
-
-        const data = docSnap.data();
-
-        container.innerHTML += `
-
-        <div class="border p-4 rounded-xl mb-3">
-
-            <p>
-
-                Amount: ₹${data.amount}
-
-            </p>
-
-            <p>
-
-                Status: ${data.status}
-
-            </p>
-
-            <p>
-
-                Gateway: ${data.paymentGateway}
-
-            </p>
-
-        </div>
-        `;
-    });
+    try {
+        const snap = await getDocs(collection(db, "payments"));
+        snap.forEach((docSnap) => {
+            const data = docSnap.data();
+            container.innerHTML += `
+            <div class="border p-4 rounded-xl mb-3">
+                <p>Amount: ₹${data.amount}</p>
+                <p>Status: ${data.status}</p>
+                <p>Gateway: ${data.paymentGateway}</p>
+            </div>
+            `;
+        });
+    } catch (error) {
+         console.warn("Could not load payments:", error.message);
+    }
 }
-
-
 
 // =========================================
 // ADD SUBSCRIPTION
 // =========================================
 
 window.addSubscription = async () => {
+    try {
+        const instituteId = document.getElementById('subscription-institute').value;
+        const planId = document.getElementById('subscription-plan').value;
+        const paymentId = document.getElementById('subscription-payment').value;
 
-    const instituteId =
-        document.getElementById('subscription-institute').value;
+        let expiry = new Date();
 
-    const planId =
-        document.getElementById('subscription-plan').value;
+        if (planId === "monthly") expiry.setDate(expiry.getDate() + 30);
+        if (planId === "yearly") expiry.setDate(expiry.getDate() + 365);
+        if (planId === "free_trial") expiry.setDate(expiry.getDate() + 30);
 
-    const paymentId =
-        document.getElementById('subscription-payment').value;
+        await addDoc(collection(db, "subscriptions"), {
+            instituteId,
+            planId,
+            paymentId,
+            startDate: serverTimestamp(),
+            expiryDate: expiry,
+            status: "active"
+        });
 
-    let expiry = new Date();
-
-    if (planId === "monthly") {
-
-        expiry.setDate(expiry.getDate() + 30);
-
+        alert("Subscription Added");
+        loadSubscriptions();
+    } catch (error) {
+        console.error(error);
+        alert("Error adding subscription. Check permissions.");
     }
-
-    if (planId === "yearly") {
-
-        expiry.setDate(expiry.getDate() + 365);
-
-    }
-
-    if (planId === "free_trial") {
-
-        expiry.setDate(expiry.getDate() + 30);
-
-    }
-
-    await addDoc(collection(db, "subscriptions"), {
-
-        instituteId,
-        planId,
-        paymentId,
-
-        startDate: serverTimestamp(),
-
-        expiryDate: expiry,
-
-        status: "active"
-
-    });
-
-    alert("Subscription Added");
-
-    loadSubscriptions();
-
 };
-
 
 // =========================================
 // LOAD SUBSCRIPTIONS
 // =========================================
 
 async function loadSubscriptions() {
-
-    const container =
-        document.getElementById('subscriptions-list');
-
+    const container = document.getElementById('subscriptions-list');
     if(!container) return;
     container.innerHTML = "";
 
-    const snap =
-        await getDocs(collection(db, "subscriptions"));
-
-    snap.forEach((docSnap) => {
-
-        const data = docSnap.data();
-
-        container.innerHTML += `
-
-        <div class="border p-4 rounded-xl mb-3">
-
-            <p>
-
-                Institute: ${data.instituteId}
-
-            </p>
-
-            <p>
-
-                Plan: ${data.planId}
-
-            </p>
-
-            <p>
-
-                Status: ${data.status}
-
-            </p>
-
-        </div>
-        `;
-    });
+    try {
+        const snap = await getDocs(collection(db, "subscriptions"));
+        snap.forEach((docSnap) => {
+            const data = docSnap.data();
+            container.innerHTML += `
+            <div class="border p-4 rounded-xl mb-3">
+                <p>Institute: ${data.instituteId}</p>
+                <p>Plan: ${data.planId}</p>
+                <p>Status: ${data.status}</p>
+            </div>
+            `;
+        });
+    } catch (error) {
+        console.warn("Could not load subscriptions:", error.message);
+    }
 }
-document.addEventListener(
-"DOMContentLoaded",
-() => {
 
-    loadPlans();
-
-    loadInstitutePlans();
-
-    loadInstitutes();
-
+document.addEventListener("DOMContentLoaded", () => {
+    // Only attempt loading if elements exist (avoids permission errors on public pages)
+    if (document.getElementById("institutes-list")) loadInstitutes();
+    if (document.getElementById("plans-list")) loadPlans();
+    if (document.getElementById("plan-type")) loadInstitutePlans();
 });
