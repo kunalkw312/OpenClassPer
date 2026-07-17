@@ -165,101 +165,104 @@
             }
         }
 
-        /* ─── TOP NAVBAR (original) ─── */
-        .top-navbar {
-            padding: 0.75rem 1.25rem;
+        /* ─── TOP NAVBAR ─── */
+        .top-nav {
             background: var(--glass-bg);
+            backdrop-filter: blur(30px);
             border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
             position: sticky;
             top: 0;
             z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.5rem;
             flex-wrap: wrap;
-            padding-top: max(1rem, env(safe-area-inset-top));
         }
-        .top-navbar .brand {
+        .top-nav .brand {
             display: flex;
             align-items: center;
             gap: 0.5rem;
             cursor: pointer;
             flex-shrink: 0;
         }
-        .top-navbar .brand img {
+        .top-nav .brand img {
             height: 2rem;
             width: 2rem;
             border-radius: 0.75rem;
             object-fit: cover;
         }
-        .top-navbar .brand h2 {
+        .top-nav .brand h2 {
             font-size: 1.25rem;
             font-weight: 800;
             font-style: italic;
             letter-spacing: -0.02em;
-            white-space: nowrap;
         }
-        .top-navbar .brand h2 span {
+        .top-nav .brand h2 span {
             color: var(--brandOrange);
         }
-        .top-navbar .search-wrapper {
+        .top-nav .search-wrap {
+            flex: 1;
+            min-width: 120px;
+            max-width: 300px;
             display: flex;
             align-items: center;
             background: var(--input-bg);
             border: 1px solid var(--border-color);
-            border-radius: 99px;
-            padding: 0 0.75rem;
-            flex: 1 1 180px;
-            max-width: 300px;
+            border-radius: 2rem;
+            padding: 0.2rem 0.2rem 0.2rem 1rem;
             transition: all 0.3s;
         }
-        .top-navbar .search-wrapper input {
+        .top-nav .search-wrap input {
             background: transparent;
             border: none;
             outline: none;
             color: var(--text-main);
-            padding: 0.5rem 0.4rem;
-            font-size: 0.85rem;
+            font-size: 0.875rem;
             width: 100%;
+            padding: 0.4rem 0;
         }
-        .top-navbar .search-wrapper input::placeholder {
+        .top-nav .search-wrap input::placeholder {
             color: rgba(128, 128, 128, 0.5);
         }
-        .top-navbar .search-wrapper button {
+        .top-nav .search-wrap button {
             background: transparent;
             border: none;
             color: var(--text-main);
             opacity: 0.5;
+            padding: 0.5rem 0.8rem;
             cursor: pointer;
-            padding: 0.25rem;
+            transition: opacity 0.2s;
         }
-        .top-navbar .actions {
+        .top-nav .search-wrap button:hover {
+            opacity: 1;
+        }
+        .top-nav .nav-actions {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.5rem;
             flex-shrink: 0;
         }
-        .top-navbar .actions .icon-btn {
+        .top-nav .nav-actions .icon-btn {
             width: 2.25rem;
             height: 2.25rem;
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
             border-radius: 0.75rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
             color: var(--text-main);
+            font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.25s;
             position: relative;
         }
-        .top-navbar .actions .icon-btn:hover {
-            transform: scale(1.08);
+        .top-nav .nav-actions .icon-btn:hover {
+            transform: scale(1.05);
             border-color: var(--brandOrange);
         }
-        .top-navbar .actions .icon-btn .badge {
+        .top-nav .nav-actions .icon-btn .badge {
             position: absolute;
             top: -4px;
             right: -4px;
@@ -267,59 +270,47 @@
             color: #fff;
             font-size: 0.55rem;
             font-weight: 800;
+            border-radius: 50%;
             min-width: 1rem;
             height: 1rem;
-            border-radius: 99px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0 0.25rem;
-            border: 1px solid var(--bg-main);
+            padding: 0 0.2rem;
+            display: none;
         }
-        .top-navbar .actions .profile-pic {
+        .top-nav .nav-actions .profile-pic {
             width: 2.25rem;
             height: 2.25rem;
             border-radius: 50%;
             overflow: hidden;
+            border: 2px solid var(--border-color);
             cursor: pointer;
-            border: 2px solid var(--brandOrange);
+            transition: all 0.25s;
             flex-shrink: 0;
         }
-        .top-navbar .actions .profile-pic img {
+        .top-nav .nav-actions .profile-pic img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        @media (max-width: 640px) {
-            .top-navbar .brand h2 {
-                font-size: 1rem;
-            }
-            .top-navbar .search-wrapper {
-                max-width: 120px;
-            }
-            .top-navbar .actions .icon-btn {
-                width: 2rem;
-                height: 2rem;
-                font-size: 0.9rem;
-            }
-            .top-navbar .actions .profile-pic {
-                width: 2rem;
-                height: 2rem;
-            }
+        .top-nav .nav-actions .profile-pic:hover {
+            border-color: var(--brandOrange);
+            transform: scale(1.05);
         }
 
-        /* ─── PROFILE HEADER (compact) ─── */
+        /* ─── PROFILE HEADER (below navbar) ─── */
         .profile-header-compact {
             display: flex;
             align-items: center;
             gap: 16px;
             padding: 12px 16px;
+            margin: 0.5rem 1rem 0.5rem;
             border-radius: var(--radius-xl);
             background: var(--glass-bg);
             border: 1px solid var(--border-color);
             backdrop-filter: blur(20px);
             flex-wrap: wrap;
-            margin-bottom: 1.5rem;
         }
         .profile-header-compact .avatar {
             width: 56px;
@@ -369,16 +360,20 @@
             gap: 6px;
             white-space: nowrap;
         }
+        .profile-header-compact .quick-actions .qa-btn i {
+            font-size: 12px;
+            opacity: 0.7;
+        }
         .profile-header-compact .quick-actions .qa-btn:hover {
             border-color: var(--brandOrange);
             background: rgba(247, 148, 29, 0.08);
             transform: scale(1.03);
         }
-        .profile-header-compact .quick-actions .qa-btn i {
-            font-size: 12px;
-            opacity: 0.7;
-        }
+
         @media (max-width: 640px) {
+            .top-nav .search-wrap {
+                max-width: 140px;
+            }
             .profile-header-compact {
                 flex-direction: column;
                 align-items: stretch;
@@ -1256,6 +1251,191 @@
                 padding: 18px 16px;
             }
         }
+
+        /* ─── ADDITIONAL ORIGINAL STYLES (kept for compatibility) ─── */
+        .admin-tabs {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .social-icon {
+            font-size: 20px;
+            color: #6b7280;
+            transition: all .25s ease;
+        }
+        .social-icon:hover {
+            transform: scale(1.15);
+        }
+        .fa-whatsapp:hover {
+            color: #25D366;
+        }
+        .fa-instagram:hover {
+            color: #E4405F;
+        }
+        .fa-telegram:hover {
+            color: #229ED9;
+        }
+        .fa-youtube:hover {
+            color: #FF0000;
+        }
+        #plan-type {
+            min-height: 56px;
+            width: 100%;
+        }
+        .animate-pulse {
+            animation: pulse 1.4s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: .55; }
+            50% { opacity: 1; }
+        }
+        .search-container {
+            width: 40px;
+            transition: width .3s ease;
+            flex-shrink: 0;
+        }
+        .search-container.expanded {
+            width: min(240px, 45vw);
+        }
+        @media (max-width:480px) {
+            .search-container.expanded {
+                width: 120px;
+            }
+            #nav-branding-block h2 {
+                font-size: 14px;
+            }
+        }
+        .grid-btn-active {
+            background: rgba(247, 148, 29, 0.2) !important;
+            border: 1px solid rgba(247, 148, 29, 0.3) !important;
+            color: #f7941d !important;
+            transform: scale(1.05);
+        }
+        .profile-ring-stacked {
+            border-radius: 50%;
+            padding: 2px;
+        }
+        .app-offline-active {
+            filter: grayscale(1) contrast(1.1) !important;
+            pointer-events: none !important;
+        }
+        .app-offline-active #toast-box,
+        .app-offline-active .toast-pill {
+            filter: none !important;
+            pointer-events: auto !important;
+        }
+        #dashboard.fade-in {
+            animation: dashboardFadeIn 0.4s ease forwards !important;
+        }
+        @keyframes dashboardFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .analytics-card {
+            min-height: 120px;
+            padding: 18px;
+            border-radius: 24px;
+            transition: .3s;
+        }
+        @media(min-width:768px) {
+            .analytics-card {
+                min-height: 170px;
+                padding: 30px;
+                border-radius: 32px;
+            }
+        }
+        .analytics-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--brandBlue);
+            box-shadow: 0 15px 35px rgba(0, 118, 255, .12);
+        }
+        .analytics-icon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--brandBlue), #6fb7ff);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: .35s;
+        }
+        .analytics-card:hover .analytics-icon {
+            transform: scaleX(1);
+        }
+        .analytics-label {
+            font-size: 11px;
+            letter-spacing: .22em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        #nav-profile-pic {
+            aspect-ratio: 1;
+            overflow: hidden;
+        }
+        #nav-profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+        }
+        @media(max-width:768px) {
+            .analytics-card {
+                min-height: 120px;
+            }
+            .analytics-value {
+                font-size: 48px;
+            }
+            .analytics-label {
+                font-size: 10px;
+            }
+        }
+        .analytics-value {
+            font-size: 52px;
+            line-height: 1;
+            font-weight: 900;
+        }
+        @media(min-width:768px) {
+            .analytics-value {
+                font-size: 72px;
+            }
+        }
+        .analytics-card:hover .analytics-value {
+            color: var(--brandBlue);
+        }
+        .analytics-badge {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #ef4444;
+            background: rgba(239, 68, 68, .10);
+        }
+        .tab-btn {
+            width: 100%;
+            text-align: center;
+            padding: 12px 0;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 10px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            opacity: 0.4;
+            color: var(--text-main);
+            border: 1px solid transparent;
+        }
+        .tab-btn.active {
+            background: rgba(247, 148, 29, 0.15);
+            color: #f7941d;
+            opacity: 1;
+            border: 1px solid rgba(247, 148, 29, 0.25);
+            transform: scale(1.05);
+        }
+        /* keep all original styles for compatibility */
     </style>
 </head>
 
@@ -1277,7 +1457,7 @@
         <button class="vault-close" id="vault-close-btn">✕</button>
         <div style="display:flex; flex-direction:column; width:100%; max-width:1200px; align-items:center; gap:12px;">
             <div id="vault-wrapper">
-                <div id="anti-theft-blank">🔒 Content Locked</div>
+                <div id="anti-theft-blank"><i class="fas fa-lock"></i> Content Locked</div>
                 <div id="secure-watermark"></div>
                 <div id="player-container" style="width:100%;"></div>
             </div>
@@ -1286,7 +1466,7 @@
                 <div class="chat-messages" id="live-chat-messages"></div>
                 <div class="chat-input-row">
                     <input id="live-msg-input" placeholder="Ask a question..." onkeydown="if(event.key==='Enter') sendLiveMessage()">
-                    <button onclick="sendLiveMessage()">Send</button>
+                    <button onclick="sendLiveMessage()"><i class="fas fa-paper-plane"></i> Send</button>
                 </div>
             </div>
         </div>
@@ -1296,38 +1476,38 @@
     <div id="group-chat-window">
         <div class="gc-header">
             <div style="display:flex;align-items:center;gap:12px;">
-                <button onclick="closeGroupChat()" style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;color:var(--text-main);">←</button>
+                <button onclick="closeGroupChat()" style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;color:var(--text-main);"><i class="fas fa-arrow-left"></i></button>
                 <span class="gc-title" id="group-chat-title">Group</span>
-                <button id="group-roster-btn" style="display:none;font-size:9px;font-weight:800;text-transform:uppercase;color:var(--brandOrange);border:1px solid rgba(247,148,29,0.2);background:transparent;padding:4px 12px;border-radius:99px;cursor:pointer;">Members</button>
+                <button id="group-roster-btn" style="display:none;font-size:9px;font-weight:800;text-transform:uppercase;color:var(--brandOrange);border:1px solid rgba(247,148,29,0.2);background:transparent;padding:4px 12px;border-radius:99px;cursor:pointer;"><i class="fas fa-users"></i> Members</button>
             </div>
-            <button onclick="closeGroupChat()" style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer;color:var(--text-main);">✕</button>
+            <button onclick="closeGroupChat()" style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer;color:var(--text-main);"><i class="fas fa-times"></i></button>
         </div>
         <div class="gc-messages" id="group-chat-messages"></div>
         <div class="gc-input-row">
             <input id="group-msg-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendGroupMessage()">
-            <button onclick="sendGroupMessage()">Send</button>
+            <button onclick="sendGroupMessage()"><i class="fas fa-paper-plane"></i> Send</button>
         </div>
     </div>
 
     <!-- ─── AI FLOATING ─── -->
-    <div id="ai-floating-btn" onclick="toggleAI()">🤖</div>
+    <div id="ai-floating-btn" onclick="toggleAI()"><i class="fas fa-robot"></i></div>
     <div id="ai-chat-window">
         <div class="ai-header">
-            <div class="ai-title"><span>🤖</span> Class Assistant</div>
-            <button onclick="toggleAI()" style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:50%;width:32px;height:32px;cursor:pointer;color:var(--text-main);font-size:14px;">✕</button>
+            <div class="ai-title"><i class="fas fa-robot"></i> Class Assistant</div>
+            <button onclick="toggleAI()" style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:50%;width:32px;height:32px;cursor:pointer;color:var(--text-main);font-size:14px;"><i class="fas fa-times"></i></button>
         </div>
         <div class="ai-messages" id="ai-messages">
-            <div class="ai-msg">👋 Hello! I'm your assistant. How can I help?</div>
+            <div class="ai-msg"><i class="fas fa-hand-peace"></i> Hello! I'm your assistant. How can I help?</div>
         </div>
         <div class="ai-input-row">
             <input id="ai-input" placeholder="Ask anything..." onkeydown="if(event.key==='Enter') sendAI()">
-            <button onclick="sendAI()">Send</button>
+            <button onclick="sendAI()"><i class="fas fa-paper-plane"></i> Send</button>
         </div>
     </div>
 
     <!-- ─── AD POPUP ─── -->
     <div class="ad-popup" id="ad-popup">
-        <button class="ad-popup-close" onclick="closeAdPopup()">✕</button>
+        <button class="ad-popup-close" onclick="closeAdPopup()"><i class="fas fa-times"></i></button>
         <div id="ad-popup-content"><img src="" alt="ad" id="ad-popup-img" style="display:none;"></div>
     </div>
 
@@ -1355,7 +1535,7 @@
                     <input type="email" id="auth-email" placeholder="Email Address" class="input-field">
                     <div class="relative">
                         <input type="password" id="auth-pass" placeholder="Password" class="input-field pr-12" onkeydown="if(event.key==='Enter') handleAuth()">
-                        <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-brandOrange transition">👁️</button>
+                        <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-brandOrange transition"><i class="fas fa-eye"></i></button>
                     </div>
                     <div class="text-right mb-3"><button onclick="forgotPassword()" class="text-sm text-zinc-400 hover:text-brandOrange hover:underline transition-colors">Forgot Password?</button></div>
                     <button onclick="handleAuth()" id="primary-auth-btn" class="w-full py-4 btn-brand text-sm shadow-lg">Sign In</button>
@@ -1369,7 +1549,7 @@
                     </div>
                     <div class="flex justify-between items-center mt-6">
                         <button onclick="toggleAuth()" id="toggle-auth-btn" class="text-[10px] text-zinc-500 font-bold uppercase hover:text-brandOrange transition-colors">Create Profile</button>
-                        <button onclick="showInstituteForm()" class="text-[10px] text-brandBlue font-bold uppercase hover:text-brandOrange transition-colors">Register Institute</button>
+                        <button onclick="showInstituteForm()" class="text-[10px] text-brandBlue font-bold uppercase hover:text-brandOrange transition-colors"><i class="fas fa-university"></i> Register Institute</button>
                     </div>
                 </div>
             </div>
@@ -1378,7 +1558,7 @@
         <!-- ─── VERIFY SCREEN ─── -->
         <div id="verify-screen" class="hidden min-h-screen flex items-center justify-center p-4 fade-in">
             <div class="w-full max-w-md glass p-6 md:p-10 rounded-[2rem] md:rounded-[3.5rem] text-center border border-brandOrange/20 shadow-2xl">
-                <h2 class="text-2xl md:text-3xl font-black mb-4 italic">Verify Code</h2>
+                <h2 class="text-2xl md:text-3xl font-black mb-4 italic"><i class="fas fa-shield-alt"></i> Verify Code</h2>
                 <p id="verify-note" class="text-zinc-400 text-xs mb-6 font-bold"></p>
                 <input type="number" id="otp-input" placeholder="000000" class="input-field text-center text-3xl md:text-5xl font-black mb-6 tracking-widest">
                 <button onclick="checkOTP()" class="w-full py-4 btn-brand shadow-xl">Verify</button>
@@ -1388,7 +1568,7 @@
         <!-- ─── ONBOARDING ─── -->
         <div id="onboarding-screen" class="hidden min-h-screen flex items-center justify-center p-4 fade-in">
             <div class="w-full max-w-md glass p-6 md:p-10 rounded-[2rem] md:rounded-[3.5rem] border border-brandOrange/20 shadow-2xl text-center">
-                <h2 class="text-2xl md:text-3xl font-black mb-6 italic">Complete Profile</h2>
+                <h2 class="text-2xl md:text-3xl font-black mb-6 italic"><i class="fas fa-user-edit"></i> Complete Profile</h2>
                 <div class="space-y-4">
                     <input type="text" id="ob-name" placeholder="Full Name" class="input-field">
                     <select id="ob-role" class="input-field">
@@ -1404,38 +1584,54 @@
         <!-- ─── DASHBOARD ─── -->
         <div id="dashboard" class="hidden min-h-screen fade-in">
 
-            <!-- TOP NAVBAR (original style) -->
-            <nav class="top-navbar">
-                <div class="brand" onclick="setTab('dashboard')">
-                    <img src="https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg" alt="logo">
+            <!-- TOP NAVBAR (restored original) -->
+            <nav class="top-nav">
+                <div class="brand" onclick="navigate('home')" id="nav-branding-block">
+                    <img src="https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg" alt="logo" class="h-8 w-8 md:h-10 md:w-10 rounded-xl object-cover group-hover:scale-110 transition-transform duration-300">
                     <h2>Open<span>Clase</span></h2>
                 </div>
-                <div class="search-wrapper">
-                    <button onclick="toggleSearch()"><i class="fas fa-search"></i></button>
-                    <input type="text" id="global-search-input" placeholder="Search..." oninput="handleGlobalSearch(this.value)" onblur="collapseSearch()">
+
+                <div class="search-wrap" id="search-wrapper-node">
+                    <input type="text" id="g-search" oninput="reactiveSearch(this.value)" onblur="collapseSearchOnBlur()" placeholder="Search...">
+                    <button onclick="toggleExpandableSearch(event)"><i class="fas fa-search"></i></button>
                 </div>
-                <div class="actions">
-                    <button class="icon-btn" onclick="showNotificationsHub()">
+
+                <div class="nav-actions">
+                    <button onclick="showNotificationsHub()" class="icon-btn" id="notif-btn">
                         <i class="fas fa-bell"></i>
-                        <span class="badge" id="notify-pill" style="display:none;">0</span>
+                        <span class="badge" id="notify-pill">0</span>
                     </button>
-                    <button class="icon-btn" onclick="showCart()">
+                    <button onclick="showCart()" class="icon-btn">
                         <i class="fas fa-shopping-cart"></i>
-                        <span class="badge" id="cart-pill" style="display:none;">0</span>
+                        <span class="badge" id="cart-pill">0</span>
                     </button>
-                    <button class="icon-btn" onclick="toggleMode()">🌓</button>
+                    <button onclick="toggleMode()" class="icon-btn"><i class="fas fa-moon"></i></button>
                     <div class="profile-pic" onclick="showProfileSettings()" id="nav-profile-pic">
                         <img src="" alt="profile">
                     </div>
                 </div>
             </nav>
 
-            <!-- MAIN CONTENT (includes profile header + grid) -->
-            <main id="main-content" class="p-4 md:p-6 max-w-6xl mx-auto w-full"></main>
+            <!-- PROFILE HEADER (compact) -->
+            <div class="profile-header-compact" id="profile-header-compact">
+                <img id="nav-profile-pic-header" class="avatar" src="" alt="avatar">
+                <div class="name-id">
+                    <h2 id="nav-user-name">User</h2>
+                    <p id="nav-user-id">ID: ---</p>
+                </div>
+                <div class="quick-actions" id="quick-actions-container">
+                    <!-- populated by JS -->
+                </div>
+            </div>
 
-            <!-- FLOATING NAV ISLAND (replaces old bottom nav) -->
+            <!-- MAIN CONTENT -->
+            <main id="main-content" class="p-4 md:p-6 max-w-5xl mx-auto w-full"></main>
+
+            <!-- FLOATING NAV ISLAND (new) -->
             <div id="floating-nav-island">
-                <!-- dynamic tabs rendered by JS -->
+                <div class="nav-item active" data-tab="dashboard" onclick="setTab('dashboard')"><i class="fas fa-th-large"></i><span>Dashboard</span></div>
+                <div class="nav-item" data-tab="groups" onclick="setTab('groups')"><i class="fas fa-users"></i><span>Groups</span></div>
+                <div class="nav-item" data-tab="analytics" onclick="setTab('analytics')"><i class="fas fa-chart-line"></i><span>Analytics</span></div>
             </div>
         </div>
 
@@ -1443,46 +1639,46 @@
         <div id="admin-dashboard" class="hidden fixed inset-0 bg-[var(--bg-main)] z-[9999] fade-in flex flex-col">
             <div class="w-full h-full p-4 md:p-10 overflow-hidden flex flex-col text-[var(--text-main)]">
                 <div class="flex justify-between items-center mb-6 border-b border-[var(--border-color)] pb-6 shrink-0">
-                    <div><h1 class="text-2xl md:text-4xl font-black italic text-brandOrange">System Admin</h1><p class="text-xs opacity-50 uppercase tracking-widest font-bold mt-2">Super Admin Controls</p></div>
-                    <button onclick="closeAdminDashboard()" class="bg-[var(--input-bg)] hover:bg-red-600 hover:scale-110 text-[var(--text-main)] hover:text-white w-12 h-12 rounded-full flex items-center justify-center transition-all font-black border border-[var(--border-color)]">✕</button>
+                    <div><h1 class="text-2xl md:text-4xl font-black italic text-brandOrange"><i class="fas fa-crown"></i> System Admin</h1><p class="text-xs opacity-50 uppercase tracking-widest font-bold mt-2">Super Admin Controls</p></div>
+                    <button onclick="closeAdminDashboard()" class="bg-[var(--input-bg)] hover:bg-red-600 hover:scale-110 text-[var(--text-main)] hover:text-white w-12 h-12 rounded-full flex items-center justify-center transition-all font-black border border-[var(--border-color)]"><i class="fas fa-times"></i></button>
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-4 mb-6 shrink-0 text-center">
-                    <button onclick="showAdminSection('plans-section')" class="bg-brandBlue/20 text-brandBlue hover:bg-brandBlue hover:scale-105 hover:text-white border border-brandBlue/30 p-3 md:p-4 rounded-xl font-black uppercase tracking-widest text-[9px] md:text-[10px] transition-all">Plans</button>
-                    <button onclick="showAdminSection('institutes-section')" class="bg-purple-500/20 text-purple-400 hover:bg-purple-600 hover:scale-105 hover:text-white border border-purple-500/30 p-3 md:p-4 rounded-xl font-black uppercase tracking-widest text-[9px] md:text-[10px] transition-all">Institutes</button>
-                    <button onclick="showAdminSection('payments-section')" class="bg-brandOrange/20 text-brandOrange hover:bg-brandOrange hover:scale-105 hover:text-white border border-brandOrange/30 p-3 md:p-4 rounded-xl font-black uppercase tracking-widest text-[9px] md:text-[10px] transition-all">Payments</button>
-                    <button onclick="showAdminSection('requests-section')" class="bg-yellow-500/20 text-yellow-500 hover:bg-yellow-600 hover:scale-105 hover:text-white border border-yellow-500/30 p-3 md:p-4 rounded-xl font-black uppercase tracking-widest text-[9px] md:text-[10px] transition-all">Requests</button>
+                    <button onclick="showAdminSection('plans-section')" class="bg-brandBlue/20 text-brandBlue hover:bg-brandBlue hover:scale-105 hover:text-white border border-brandBlue/30 p-3 md:p-4 rounded-xl font-black uppercase tracking-widest text-[9px] md:text-[10px] transition-all"><i class="fas fa-cog"></i> Plans</button>
+                    <button onclick="showAdminSection('institutes-section')" class="bg-purple-500/20 text-purple-400 hover:bg-purple-600 hover:scale-105 hover:text-white border border-purple-500/30 p-3 md:p-4 rounded-xl font-black uppercase tracking-widest text-[9px] md:text-[10px] transition-all"><i class="fas fa-university"></i> Institutes</button>
+                    <button onclick="showAdminSection('payments-section')" class="bg-brandOrange/20 text-brandOrange hover:bg-brandOrange hover:scale-105 hover:text-white border border-brandOrange/30 p-3 md:p-4 rounded-xl font-black uppercase tracking-widest text-[9px] md:text-[10px] transition-all"><i class="fas fa-credit-card"></i> Payments</button>
+                    <button onclick="showAdminSection('requests-section')" class="bg-yellow-500/20 text-yellow-500 hover:bg-yellow-600 hover:scale-105 hover:text-white border border-yellow-500/30 p-3 md:p-4 rounded-xl font-black uppercase tracking-widest text-[9px] md:text-[10px] transition-all"><i class="fas fa-inbox"></i> Requests</button>
                 </div>
                 <div class="flex-grow overflow-y-auto pr-2 custom-scrollbar">
                     <div id="plans-section" class="admin-section hidden space-y-4 max-w-xl mx-auto fade-in">
-                        <h2 class="text-xl md:text-2xl font-black italic text-brandBlue mb-4">Manage Plans</h2>
+                        <h2 class="text-xl md:text-2xl font-black italic text-brandBlue mb-4"><i class="fas fa-cog"></i> Manage Plans</h2>
                         <select id="plan-type-select" class="input-field" onchange="handleAdminPlanUI(this.value)">
                             <option value="free_trial">Free Trial (15 Days)</option>
                             <option value="one_year">One Year Plan</option>
                             <option value="custom">Add Custom Plan</option>
                         </select>
                         <div id="plan-fields-container" class="space-y-4 mt-4"></div>
-                        <button onclick="processPlanSave()" class="w-full py-4 bg-brandBlue text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-blue-600 transition-all mt-4">Save Plan</button>
+                        <button onclick="processPlanSave()" class="w-full py-4 bg-brandBlue text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-blue-600 transition-all mt-4"><i class="fas fa-save"></i> Save Plan</button>
                         <div id="plans-list" class="mt-8 space-y-2"></div>
                     </div>
                     <div id="institutes-section" class="admin-section hidden space-y-4 max-w-4xl mx-auto fade-in">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-                            <h2 class="text-xl md:text-2xl font-black italic text-purple-400">Institutes</h2>
-                            <button onclick="showCreateInstituteModal()" class="btn-brand px-6 py-3 text-xs shadow-md">＋ Add Institute</button>
+                            <h2 class="text-xl md:text-2xl font-black italic text-purple-400"><i class="fas fa-university"></i> Institutes</h2>
+                            <button onclick="showCreateInstituteModal()" class="btn-brand px-6 py-3 text-xs shadow-md"><i class="fas fa-plus"></i> Add Institute</button>
                         </div>
                         <input type="text" id="admin-inst-search" oninput="filterAdminInstitutes(this.value)" placeholder="Search institutes..." class="input-field text-sm">
                         <div id="institutes-list" class="space-y-3"></div>
                     </div>
                     <div id="payments-section" class="admin-section hidden space-y-4 max-w-xl mx-auto fade-in">
-                        <h2 class="text-xl md:text-2xl font-black italic text-brandOrange mb-4">Log Payment</h2>
+                        <h2 class="text-xl md:text-2xl font-black italic text-brandOrange mb-4"><i class="fas fa-credit-card"></i> Log Payment</h2>
                         <input id="payment-institute" type="text" placeholder="Institute ID" class="input-field">
                         <input id="payment-amount" type="number" placeholder="Amount (₹)" class="input-field">
                         <input id="payment-gateway" type="text" placeholder="Gateway" class="input-field">
                         <input id="payment-transaction" type="text" placeholder="Transaction ID" class="input-field">
-                        <button onclick="addPayment()" class="w-full py-4 bg-brandOrange text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-[#e0861a] transition-all mt-4">Save Payment</button>
+                        <button onclick="addPayment()" class="w-full py-4 bg-brandOrange text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-[#e0861a] transition-all mt-4"><i class="fas fa-save"></i> Save Payment</button>
                         <div id="payments-list" class="mt-8 space-y-2"></div>
                     </div>
                     <div id="requests-section" class="admin-section hidden space-y-4 max-w-2xl mx-auto fade-in">
-                        <h2 class="text-xl md:text-2xl font-black italic text-yellow-500 mb-4">Onboarding Requests</h2>
+                        <h2 class="text-xl md:text-2xl font-black italic text-yellow-500 mb-4"><i class="fas fa-inbox"></i> Onboarding Requests</h2>
                         <div id="admin-requests-list" class="space-y-3"></div>
                     </div>
                 </div>
@@ -1520,8 +1716,8 @@
         let _currentCourseList = [];
         let groupMessageTrackers = {};
         let aiChatHistory = [];
-        let _teacherPendingGroups = 0;
-        let _lockedInstId = null;
+        let isTeacher = false;
+        let isStudent = false;
 
         // ─── DOM REFS ───
         const $ = id => document.getElementById(id);
@@ -1578,7 +1774,6 @@
         // ─── SET TAB ───
         function setTab(tab) {
             currentTab = tab;
-            // Update nav items
             document.querySelectorAll('#floating-nav-island .nav-item').forEach(el => {
                 el.classList.toggle('active', el.dataset.tab === tab);
             });
@@ -1590,86 +1785,89 @@
         // ─── RENDER DASHBOARD ───
         async function renderDashboard() {
             if (!profile) return;
-            const isTeacher = profile.role === 'teacher' || profile.role === 'super_admin';
-            const isStudent = profile.role === 'student';
+            isTeacher = profile.role === 'teacher' || profile.role === 'super_admin';
+            isStudent = profile.role === 'student';
 
-            // ── Update top navbar profile pic ──
-            const pic = $('nav-profile-pic').querySelector('img');
-            if (pic) pic.src = profile.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=004a80&color=fff&size=128`;
+            // Update header profile pic and name
+            const pic = $('nav-profile-pic');
+            const picHeader = $('nav-profile-pic-header');
+            const nameEl = $('nav-user-name');
+            const idEl = $('nav-user-id');
+            const quickActions = $('quick-actions-container');
 
-            // ── Update floating nav items ──
-            const nav = $('floating-nav-island');
-            let tabs = [];
+            const avatarUrl = profile.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=004a80&color=fff&size=128`;
+            if (pic) pic.querySelector('img').src = avatarUrl;
+            if (picHeader) picHeader.src = avatarUrl;
+            nameEl.textContent = profile.name || 'User';
+            idEl.textContent = `ID: ${profile.teacherId || 'STUDENT'}`;
+
+            // Quick actions
+            let qaHTML = '';
             if (isTeacher) {
-                tabs = [
-                    { tab: 'dashboard', icon: 'fa-th-large', label: 'Dashboard' },
-                    { tab: 'groups', icon: 'fa-users', label: 'Groups' },
-                    { tab: 'analytics', icon: 'fa-chart-line', label: 'Analytics' }
-                ];
+                qaHTML = `
+                    <button class="qa-btn" onclick="openQuickNotes()"><i class="fas fa-sticky-note"></i> Notes</button>
+                    <button class="qa-btn" onclick="openAdsManager()"><i class="fas fa-ad"></i> Ads</button>
+                    <button class="qa-btn" onclick="openRequests()"><i class="fas fa-inbox"></i> Requests</button>
+                    <button class="qa-btn" onclick="openTimetable()"><i class="fas fa-calendar-alt"></i> Schedule</button>
+                `;
+                if (profile.role === 'super_admin') {
+                    qaHTML += `<button class="qa-btn" onclick="openAdminPanel()" style="border-color:#dc2626;color:#dc2626;"><i class="fas fa-crown"></i> Admin</button>`;
+                }
             } else {
-                tabs = [
-                    { tab: 'home', icon: 'fa-home', label: 'Home' },
-                    { tab: 'courses', icon: 'fa-book', label: 'Courses' },
-                    { tab: 'groups', icon: 'fa-users', label: 'Groups' },
-                    { tab: 'content', icon: 'fa-file-alt', label: 'Content' }
-                ];
+                // Student quick actions
+                qaHTML = `
+                    <button class="qa-btn" onclick="openTimetable()"><i class="fas fa-calendar-alt"></i> Schedule</button>
+                    <button class="qa-btn" onclick="showNotificationsHub()"><i class="fas fa-bell"></i> Notifications</button>
+                `;
             }
-            nav.innerHTML = tabs.map(t => `
-                <div class="nav-item ${currentTab === t.tab ? 'active' : ''}" data-tab="${t.tab}" onclick="setTab('${t.tab}')">
-                    <i class="fas ${t.icon}"></i>
-                    <span>${t.label}</span>
-                </div>
-            `).join('');
+            quickActions.innerHTML = qaHTML;
 
-            // ── Render main content based on tab ──
-            if (isTeacher) {
-                if (currentTab === 'dashboard') await renderTeacherDashboard();
-                else if (currentTab === 'groups') await renderGroupsTab();
-                else if (currentTab === 'analytics') await renderAnalyticsTab();
-            } else {
-                if (currentTab === 'home') await renderStudentHome();
-                else if (currentTab === 'courses') await renderStudentCourses();
-                else if (currentTab === 'groups') await renderGroupsTab();
-                else if (currentTab === 'content') await renderStudentContent();
+            // ── Main content ──
+            if (currentTab === 'dashboard') {
+                if (isTeacher) {
+                    await renderTeacherDashboard();
+                } else {
+                    await renderStudentDashboard();
+                }
+            } else if (currentTab === 'groups') {
+                await renderGroupsTab();
+            } else if (currentTab === 'analytics') {
+                await renderAnalyticsTab();
             }
         }
 
         // ─── TEACHER DASHBOARD ───
         async function renderTeacherDashboard() {
-            // Build profile header with quick actions
-            const profileHeader = `
-                <div class="profile-header-compact fade-in">
-                    <img class="avatar" src="${profile.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}`}" alt="avatar">
-                    <div class="name-id">
-                        <h2>${profile.name}</h2>
-                        <p>ID: ${profile.teacherId || 'N/A'}</p>
-                    </div>
-                    <div class="quick-actions">
-                        <button class="qa-btn" onclick="openQuickNotes()"><i class="fas fa-sticky-note"></i> Notes</button>
-                        <button class="qa-btn" onclick="openAdsManager()"><i class="fas fa-ad"></i> Ads</button>
-                        <button class="qa-btn" onclick="openRequests()"><i class="fas fa-inbox"></i> Requests</button>
-                        <button class="qa-btn" onclick="openTimetable()"><i class="fas fa-calendar-alt"></i> Schedule</button>
-                        ${profile.role === 'super_admin' ? `<button class="qa-btn" onclick="openAdminPanel()" style="border-color:#dc2626;color:#dc2626;"><i class="fas fa-crown"></i> Admin</button>` : ''}
-                        <button class="qa-btn" onclick="openPlanManager()"><i class="fas fa-cog"></i> Plans</button>
+            // Skeleton first
+            mainContent.innerHTML = `
+                <div class="space-y-5">
+                    <div class="skeleton" style="height:120px;"></div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="skeleton" style="height:100px;"></div>
+                        <div class="skeleton" style="height:100px;"></div>
+                        <div class="skeleton" style="height:100px;"></div>
+                        <div class="skeleton" style="height:100px;"></div>
+                        <div class="skeleton" style="height:100px;"></div>
+                        <div class="skeleton" style="height:100px;"></div>
                     </div>
                 </div>
             `;
 
-            // 3x2 grid
+            // ── 3×2 Grid ──
             const gridHTML = `
                 <div class="dash-grid">
-                    <div class="dash-card"><div class="card-icon"><i class="fas fa-book"></i></div><div class="card-label">Courses</div><button class="card-action" onclick="openCourseManager()">Add</button></div>
-                    <div class="dash-card"><div class="card-icon"><i class="fas fa-file-alt"></i></div><div class="card-label">Content</div><button class="card-action" onclick="openContentManager()">Add</button></div>
-                    <div class="dash-card"><div class="card-icon"><i class="fas fa-broadcast-tower"></i></div><div class="card-label">Live</div><button class="card-action" onclick="openLiveManager()">Go Live</button></div>
-                    <div class="dash-card"><div class="card-icon"><i class="fas fa-users"></i></div><div class="card-label">Groups</div><button class="card-action" onclick="openGroupManager()">Add</button></div>
-                    <div class="dash-card"><div class="card-icon"><i class="fas fa-video"></i></div><div class="card-label">Demo Class</div><button class="card-action" onclick="openDemoManager()">Add</button></div>
-                    <div class="dash-card"><div class="card-icon"><i class="fas fa-bell"></i></div><div class="card-label">Notification</div><button class="card-action" onclick="openCustomNotification()">Send</button></div>
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-book-open"></i></div><div class="card-label">Courses</div><button class="card-action" onclick="openCourseManager()"><i class="fas fa-plus"></i> Add</button></div>
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-file-alt"></i></div><div class="card-label">Content</div><button class="card-action" onclick="openContentManager()"><i class="fas fa-plus"></i> Add</button></div>
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-broadcast-tower"></i></div><div class="card-label">Live</div><button class="card-action" onclick="openLiveManager()"><i class="fas fa-play"></i> Go Live</button></div>
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-users"></i></div><div class="card-label">Groups</div><button class="card-action" onclick="openGroupManager()"><i class="fas fa-plus"></i> Add</button></div>
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-video"></i></div><div class="card-label">Demo Class</div><button class="card-action" onclick="openDemoManager()"><i class="fas fa-plus"></i> Add</button></div>
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-bell"></i></div><div class="card-label">Notification</div><button class="card-action" onclick="openCustomNotification()"><i class="fas fa-paper-plane"></i> Send</button></div>
                 </div>
             `;
 
-            // Ads banner if institute owner
+            // ── Ads banner for institute owner ──
             let adsHTML = '';
-            if (profile.instituteId) {
+            if (profile.role === 'super_admin' || profile.instituteId) {
                 const ads = await fetchInstituteAds(profile.instituteId);
                 if (ads.length > 0) {
                     adsHTML = `
@@ -1679,7 +1877,7 @@
                                 ${ads.map(a => `
                                     <div class="ad-item">
                                         <img src="${a.image}" alt="ad">
-                                        <button class="ad-close" onclick="this.parentElement.remove()">✕</button>
+                                        <button class="ad-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
                                     </div>
                                 `).join('')}
                             </div>
@@ -1690,149 +1888,44 @@
 
             mainContent.innerHTML = `
                 <div class="fade-in space-y-4">
-                    ${profileHeader}
                     ${gridHTML}
                     ${adsHTML}
                 </div>
             `;
         }
 
-        // ─── STUDENT HOME ───
-        async function renderStudentHome() {
+        // ─── STUDENT DASHBOARD ───
+        async function renderStudentDashboard() {
             // Check if student has purchased access
             const hasAccess = await checkStudentAccess();
 
-            // Profile header (simplified)
-            const profileHeader = `
-                <div class="profile-header-compact fade-in">
-                    <img class="avatar" src="${profile.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}`}" alt="avatar">
-                    <div class="name-id">
-                        <h2>${profile.name}</h2>
-                        <p>Student</p>
-                    </div>
-                    <div class="quick-actions">
-                        <button class="qa-btn" onclick="openTimetable()"><i class="fas fa-calendar-alt"></i> Schedule</button>
-                        <button class="qa-btn" onclick="showNotificationsHub()"><i class="fas fa-bell"></i> Notifications</button>
-                    </div>
-                </div>
-            `;
-
-            let purchasePrompt = '';
-            if (!hasAccess) {
-                purchasePrompt = `
-                    <div class="purchase-prompt">
-                        <h3><i class="fas fa-lock"></i> Unlock Full Access</h3>
-                        <p>Purchase a plan to access all courses and live sessions.</p>
-                        <button class="btn-purchase" onclick="openPurchasePlans()">Purchase Now</button>
-                    </div>
-                `;
-            } else {
-                purchasePrompt = `
-                    <div class="glass p-4 rounded-2xl border border-green-500/20 text-center">
-                        <p class="text-sm font-bold text-green-500"><i class="fas fa-check-circle"></i> Full Access Active</p>
-                    </div>
-                `;
-            }
-
-            // Student grid (simpler)
-            const gridHTML = `
-                <div class="dash-grid">
-                    <div class="dash-card"><div class="card-icon"><i class="fas fa-book"></i></div><div class="card-label">My Courses</div><button class="card-action" onclick="setTab('courses')">View</button></div>
-                    <div class="dash-card"><div class="card-icon"><i class="fas fa-file-alt"></i></div><div class="card-label">Content</div><button class="card-action" onclick="setTab('content')">Browse</button></div>
-                    <div class="dash-card"><div class="card-icon"><i class="fas fa-broadcast-tower"></i></div><div class="card-label">Live Now</div><button class="card-action" onclick="openLiveNow()">Join</button></div>
-                    <div class="dash-card"><div class="card-icon"><i class="fas fa-users"></i></div><div class="card-label">Groups</div><button class="card-action" onclick="setTab('groups')">Open</button></div>
-                    <div class="dash-card"><div class="card-icon"><i class="fas fa-video"></i></div><div class="card-label">Demo Videos</div><button class="card-action" onclick="loadDemoContent()">Watch</button></div>
-                    <div class="dash-card"><div class="card-icon"><i class="fas fa-bell"></i></div><div class="card-label">Notifications</div><button class="card-action" onclick="showNotificationsHub()">View</button></div>
-                </div>
-            `;
-
-            // Demo content (always visible)
-            let demoSection = '';
-            const demoSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("isDemo", "==", true)));
-            if (demoSnap.size > 0) {
-                let demoHTML = `<div class="mt-6"><p class="text-[10px] font-black uppercase opacity-40 mb-3"><i class="fas fa-video"></i> Demo Videos</p><div class="grid grid-cols-2 md:grid-cols-3 gap-4">`;
-                demoSnap.forEach(d => {
-                    const data = d.data();
-                    demoHTML += `
-                        <div class="glass p-3 rounded-xl border border-[var(--border-color)] cursor-pointer hover:border-brandOrange/30 transition-all" onclick="openResource('${d.id}','${data.url}','${data.title}')">
-                            <img src="${getSmartPreview(data.url)}" class="w-full aspect-video object-cover rounded-lg mb-2">
-                            <p class="text-xs font-bold truncate">${data.title}</p>
-                            <span class="demo-badge">Demo</span>
-                        </div>
-                    `;
-                });
-                demoHTML += `</div></div>`;
-                demoSection = demoHTML;
-            }
-
             mainContent.innerHTML = `
-                <div class="fade-in space-y-4">
-                    ${profileHeader}
-                    ${purchasePrompt}
-                    ${gridHTML}
-                    ${demoSection}
+                <div class="fade-in space-y-5">
+                    ${!hasAccess ? `
+                        <div class="purchase-prompt">
+                            <h3><i class="fas fa-lock"></i> Unlock Full Access</h3>
+                            <p>Purchase a plan to access all courses and live sessions.</p>
+                            <button class="btn-purchase" onclick="openPurchasePlans()"><i class="fas fa-shopping-cart"></i> Purchase Now</button>
+                        </div>
+                    ` : `
+                        <div class="glass p-4 rounded-2xl border border-green-500/20 text-center">
+                            <p class="text-sm font-bold text-green-500"><i class="fas fa-check-circle"></i> Full Access Active</p>
+                        </div>
+                    `}
+                    <div class="dash-grid">
+                        <div class="dash-card"><div class="card-icon"><i class="fas fa-book-open"></i></div><div class="card-label">My Courses</div><button class="card-action" onclick="navigateTo('courses')"><i class="fas fa-eye"></i> View</button></div>
+                        <div class="dash-card"><div class="card-icon"><i class="fas fa-file-alt"></i></div><div class="card-label">Content</div><button class="card-action" onclick="navigateTo('content')"><i class="fas fa-eye"></i> Browse</button></div>
+                        <div class="dash-card"><div class="card-icon"><i class="fas fa-broadcast-tower"></i></div><div class="card-label">Live Now</div><button class="card-action" onclick="navigateTo('live')"><i class="fas fa-play"></i> Join</button></div>
+                        <div class="dash-card"><div class="card-icon"><i class="fas fa-users"></i></div><div class="card-label">Groups</div><button class="card-action" onclick="setTab('groups')"><i class="fas fa-arrow-right"></i> Open</button></div>
+                        <div class="dash-card"><div class="card-icon"><i class="fas fa-video"></i></div><div class="card-label">Demo Videos</div><button class="card-action" onclick="navigateTo('demo')"><i class="fas fa-eye"></i> Watch</button></div>
+                        <div class="dash-card"><div class="card-icon"><i class="fas fa-bell"></i></div><div class="card-label">Notifications</div><button class="card-action" onclick="showNotificationsHub()"><i class="fas fa-eye"></i> View</button></div>
+                    </div>
+                    ${!hasAccess ? `<p class="text-[10px] opacity-40 text-center mt-4"><i class="fas fa-info-circle"></i> You have access to demo content only. Purchase a plan for full access.</p>` : ''}
                 </div>
             `;
-        }
 
-        // ─── STUDENT COURSES ───
-        async function renderStudentCourses() {
-            const hasAccess = await checkStudentAccess();
-            mainContent.innerHTML = `<div class="fade-in"><h3 class="text-xl font-black mb-4"><i class="fas fa-book"></i> My Courses</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6"></div></div>`;
-            const container = $('courses-feed');
-            if (!hasAccess) {
-                container.innerHTML = `<div class="col-span-full glass p-8 text-center rounded-2xl"><p class="opacity-50">Purchase a plan to access courses.</p><button class="btn-brand mt-4 px-8 py-3" onclick="openPurchasePlans()">Purchase Now</button></div>`;
-                return;
-            }
-            const snap = await Core.getDocs(Core.collection(Core.db, "courses"));
-            if (snap.empty) {
-                container.innerHTML = `<p class="opacity-40 text-center col-span-full">No courses available.</p>`;
-                return;
-            }
-            container.innerHTML = snap.docs.map(d => {
-                const c = d.data();
-                return `
-                    <div class="glass p-4 rounded-2xl border border-[var(--border-color)]">
-                        <img src="${getSmartPreview(c.thumbnail)}" class="w-full aspect-video object-cover rounded-lg mb-3">
-                        <h4 class="font-bold text-lg">${c.title}</h4>
-                        <p class="text-xs opacity-60">${c.teacherName}</p>
-                        <div class="flex justify-between items-center mt-3">
-                            <span class="text-brandOrange font-black">₹${c.price}</span>
-                            <button onclick="openCourse('${d.id}')" class="btn-brand px-5 py-2 text-[10px]">View</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // ─── STUDENT CONTENT ───
-        async function renderStudentContent() {
-            const hasAccess = await checkStudentAccess();
-            mainContent.innerHTML = `<div class="fade-in"><h3 class="text-xl font-black mb-4"><i class="fas fa-file-alt"></i> Content Library</h3><div id="content-feed" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div></div>`;
-            const container = $('content-feed');
-            const snap = await Core.getDocs(Core.collection(Core.db, "content"));
-            let docs = snap.docs;
-            if (!hasAccess) {
-                docs = docs.filter(d => d.data().isDemo === true);
-            }
-            if (docs.length === 0) {
-                container.innerHTML = `<p class="opacity-40 text-center col-span-full">${!hasAccess ? 'Purchase a plan to access content.' : 'No content available.'}</p>`;
-                if (!hasAccess) {
-                    container.innerHTML += `<div class="col-span-full text-center"><button class="btn-brand mt-4 px-8 py-3" onclick="openPurchasePlans()">Purchase Now</button></div>`;
-                }
-                return;
-            }
-            container.innerHTML = docs.map(d => {
-                const data = d.data();
-                return `
-                    <div class="glass p-3 rounded-xl border border-[var(--border-color)] cursor-pointer hover:border-brandOrange/30 transition-all" onclick="openResource('${d.id}','${data.url}','${data.title}')">
-                        <img src="${getSmartPreview(data.url)}" class="w-full aspect-video object-cover rounded-lg mb-2">
-                        <p class="text-xs font-bold truncate">${data.title}</p>
-                        ${data.isDemo ? '<span class="demo-badge">Demo</span>' : ''}
-                        <p class="text-[10px] opacity-40 mt-1">${data.tName}</p>
-                    </div>
-                `;
-            }).join('');
+            // Load demo content for students (always visible)
+            loadDemoContent();
         }
 
         // ─── GROUPS TAB ───
@@ -1854,9 +1947,8 @@
 
         // ─── ANALYTICS TAB ───
         async function renderAnalyticsTab() {
-            const isTeacher = profile.role === 'teacher' || profile.role === 'super_admin';
             if (!isTeacher) {
-                mainContent.innerHTML = `<div class="glass p-10 text-center rounded-2xl"><p class="opacity-50">Analytics available for instructors only.</p></div>`;
+                mainContent.innerHTML = `<div class="glass p-10 text-center rounded-2xl"><p class="opacity-50"><i class="fas fa-chart-line"></i> Analytics available for instructors only.</p></div>`;
                 return;
             }
 
@@ -1873,13 +1965,13 @@
             mainContent.innerHTML = `
                 <div class="fade-in space-y-6">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="glass p-5 rounded-2xl text-center"><p class="text-[9px] uppercase opacity-40 font-black">Followers</p><h2 class="text-3xl font-black">${followersSnap.size}</h2></div>
-                        <div class="glass p-5 rounded-2xl text-center"><p class="text-[9px] uppercase opacity-40 font-black">Total Views</p><h2 class="text-3xl font-black">${totalViews}</h2></div>
-                        <div class="glass p-5 rounded-2xl text-center"><p class="text-[9px] uppercase opacity-40 font-black">Uploads</p><h2 class="text-3xl font-black">${contentSnap.size}</h2></div>
-                        <div class="glass p-5 rounded-2xl text-center"><p class="text-[9px] uppercase opacity-40 font-black">Courses</p><h2 class="text-3xl font-black">${courseSnap.size}</h2></div>
+                        <div class="glass p-5 rounded-2xl text-center"><p class="text-[9px] uppercase opacity-40 font-black"><i class="fas fa-users"></i> Followers</p><h2 class="text-3xl font-black">${followersSnap.size}</h2></div>
+                        <div class="glass p-5 rounded-2xl text-center"><p class="text-[9px] uppercase opacity-40 font-black"><i class="fas fa-eye"></i> Total Views</p><h2 class="text-3xl font-black">${totalViews}</h2></div>
+                        <div class="glass p-5 rounded-2xl text-center"><p class="text-[9px] uppercase opacity-40 font-black"><i class="fas fa-upload"></i> Uploads</p><h2 class="text-3xl font-black">${contentSnap.size}</h2></div>
+                        <div class="glass p-5 rounded-2xl text-center"><p class="text-[9px] uppercase opacity-40 font-black"><i class="fas fa-book-open"></i> Courses</p><h2 class="text-3xl font-black">${courseSnap.size}</h2></div>
                     </div>
                     <div class="glass p-5 rounded-2xl">
-                        <p class="text-[10px] font-black uppercase opacity-40 mb-3">Top Performing Content</p>
+                        <p class="text-[10px] font-black uppercase opacity-40 mb-3"><i class="fas fa-trophy"></i> Top Performing Content</p>
                         <div id="top-content-list" class="space-y-2"></div>
                     </div>
                 </div>
@@ -1910,7 +2002,7 @@
             });
 
             if (userGroups.length === 0) {
-                container.innerHTML = `<p class="text-xs opacity-40 text-center py-6">You are not in any groups yet. Join one above!</p>`;
+                container.innerHTML = `<p class="text-xs opacity-40 text-center py-6"><i class="fas fa-users-slash"></i> You are not in any groups yet. Join one above!</p>`;
                 return;
             }
 
@@ -1923,17 +2015,41 @@
                             <span class="text-[8px] text-brandOrange font-black uppercase">${g.type}</span>
                             <h3 class="font-black text-lg">${g.name}</h3>
                             <p class="text-[10px] opacity-40 font-mono">${g.code}</p>
-                            ${unread > 0 ? `<span class="bg-brandOrange text-white text-[9px] font-black px-2 py-0.5 rounded-lg">${unread} new</span>` : ''}
+                            ${unread > 0 ? `<span class="bg-brandOrange text-white text-[9px] font-black px-2 py-0.5 rounded-lg"><i class="fas fa-envelope"></i> ${unread} new</span>` : ''}
                         </div>
-                        <button onclick="openGroupChat('${d.id}','${g.name}')" class="btn-brand px-5 py-2.5 text-[10px]"><i class="fas fa-comments"></i> Open</button>
+                        <button onclick="openGroupChat('${d.id}','${g.name}')" class="btn-brand px-5 py-2.5 text-[10px]"><i class="fas fa-comment-dots"></i> Open</button>
                     </div>
                 `;
             }).join('');
         }
 
+        async function loadDemoContent() {
+            // Load demo videos for students
+            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("isDemo", "==", true)));
+            const container = document.querySelector('.dash-grid')?.parentElement;
+            if (!container) return;
+            // Append demo section if exists
+            if (snap.size > 0) {
+                let demoHTML = `<div class="mt-6"><p class="text-[10px] font-black uppercase opacity-40 mb-3"><i class="fas fa-video"></i> Demo Videos</p><div class="grid grid-cols-2 md:grid-cols-3 gap-4">`;
+                snap.forEach(d => {
+                    const data = d.data();
+                    demoHTML += `
+                        <div class="glass p-3 rounded-xl border border-[var(--border-color)] cursor-pointer hover:border-brandOrange/30 transition-all" onclick="openResource('${d.id}','${data.url}','${data.title}')">
+                            <img src="${getSmartPreview(data.url)}" class="w-full aspect-video object-cover rounded-lg mb-2">
+                            <p class="text-xs font-bold truncate">${data.title}</p>
+                            <span class="demo-badge"><i class="fas fa-play-circle"></i> Demo</span>
+                        </div>
+                    `;
+                });
+                demoHTML += `</div></div>`;
+                container.insertAdjacentHTML('beforeend', demoHTML);
+            }
+        }
+
         async function checkStudentAccess() {
             if (!profile) return false;
-            if (profile.role === 'teacher' || profile.role === 'super_admin') return true;
+            if (isTeacher) return true;
+            // Check if student has an active subscription
             const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "subscriptions"), Core.where("uid", "==", Core.auth.currentUser.uid), Core.where("status", "==", "active")));
             return !snap.empty;
         }
@@ -1944,20 +2060,6 @@
             const ads = [];
             snap.forEach(d => ads.push({ id: d.id, ...d.data() }));
             return ads;
-        }
-
-        function getSmartPreview(url) {
-            if (!url) return 'https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg';
-            const clean = url.toLowerCase().trim();
-            if (clean.match(/\.(jpeg|jpg|gif|png|webp|svg)/)) return url;
-            const ytId = extractYTId(url);
-            if (ytId) return `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
-            return 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop';
-        }
-
-        function extractYTId(url) {
-            const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/|live\/)([^#&?]*).*/);
-            return (match && match[2].length === 11) ? match[2] : null;
         }
 
         // ─── FEATURE: Live Sessions ───
@@ -2039,7 +2141,7 @@
             const today = new Date().toISOString().split('T')[0];
             const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "liveSessions"), Core.where("date", "==", today)));
             if (snap.empty) {
-                openModal(`<div class="text-center py-8"><p class="text-2xl mb-2">📅</p><p class="opacity-50">No live sessions scheduled for today.</p></div>`);
+                openModal(`<div class="text-center py-8"><p class="text-2xl mb-2"><i class="fas fa-calendar-day"></i></p><p class="opacity-50">No live sessions scheduled for today.</p></div>`);
                 return;
             }
             let html = `<h3 class="text-xl font-black mb-4"><i class="fas fa-calendar-alt"></i> Today's Schedule</h3><div class="space-y-3">`;
@@ -2078,13 +2180,13 @@
                 <h3 class="text-xl font-black mb-4"><i class="fas fa-ad"></i> Ad Manager</h3>
                 <div class="space-y-4">
                     <div class="glass p-4 rounded-xl border border-[var(--border-color)]">
-                        <p class="text-sm font-bold">Pop-up Ad <span class="text-[10px] opacity-50">(₹19)</span></p>
+                        <p class="text-sm font-bold"><i class="fas fa-window-popup"></i> Pop-up Ad <span class="text-[10px] opacity-50">(₹19)</span></p>
                         <p class="text-xs opacity-40 mb-2">Shows at bottom-left of student screens</p>
                         <input id="ad-popup-url" placeholder="Image URL" class="input-field text-sm mb-2">
                         <button onclick="uploadAd('popup')" class="btn-brand px-6 py-2.5 text-xs"><i class="fas fa-upload"></i> Upload Pop-up</button>
                     </div>
                     <div class="glass p-4 rounded-xl border border-[var(--border-color)]">
-                        <p class="text-sm font-bold">Banner Ad <span class="text-[10px] opacity-50">(₹49/banner)</span></p>
+                        <p class="text-sm font-bold"><i class="fas fa-image"></i> Banner Ad <span class="text-[10px] opacity-50">(₹49/banner)</span></p>
                         <p class="text-xs opacity-40 mb-2">Shows at top of student home screen</p>
                         <input id="ad-banner-url" placeholder="Image URL" class="input-field text-sm mb-2">
                         <button onclick="uploadAd('banner')" class="btn-brand px-6 py-2.5 text-xs"><i class="fas fa-upload"></i> Upload Banner</button>
@@ -2143,11 +2245,11 @@
 
         // ─── FEATURE: Plan Management (Owner) ───
         window.openPlanManager = async () => {
-            if (profile.role !== 'super_admin' && !profile.instituteId) {
+            if (profile.role !== 'super_admin') {
                 return toast("Only institute owners can manage plans", "error");
             }
             openModal(`
-                <h3 class="text-xl font-black mb-4"><i class="fas fa-cog"></i> Plan Management</h3>
+                <h3 class="text-xl font-black mb-4"><i class="fas fa-coins"></i> Plan Management</h3>
                 <div class="space-y-4">
                     <div>
                         <label class="text-[10px] font-black uppercase opacity-40">Plan Name</label>
@@ -2244,6 +2346,7 @@
             const confirmBuy = confirm(`Purchase this plan for ₹${price}? (Fake payment gateway)`);
             if (!confirmBuy) return;
 
+            // Simulate payment
             toast("Processing payment...");
             await new Promise(r => setTimeout(r, 1500));
 
@@ -2289,7 +2392,7 @@
                 }
             });
             if (pending.length === 0) {
-                openModal(`<div class="text-center py-8"><p class="opacity-50">No pending requests.</p></div>`);
+                openModal(`<div class="text-center py-8"><p class="opacity-50"><i class="fas fa-inbox"></i> No pending requests.</p></div>`);
                 return;
             }
             let html = `<h3 class="text-xl font-black mb-4"><i class="fas fa-inbox"></i> Pending Requests</h3><div class="space-y-3">`;
@@ -2336,7 +2439,7 @@
                     </select>
                     <div class="flex items-center gap-3">
                         <input type="checkbox" id="pub-demo">
-                        <label for="pub-demo" class="text-sm">Mark as Demo Video</label>
+                        <label for="pub-demo" class="text-sm"><i class="fas fa-play-circle"></i> Mark as Demo Video</label>
                     </div>
                     <button onclick="publishContentFromModal()" class="w-full py-3 btn-brand text-xs"><i class="fas fa-upload"></i> Publish</button>
                 </div>
@@ -2368,13 +2471,13 @@
         // ─── FEATURE: Course Manager ───
         window.openCourseManager = () => {
             openModal(`
-                <h3 class="text-xl font-black mb-4"><i class="fas fa-book"></i> Create Course</h3>
+                <h3 class="text-xl font-black mb-4"><i class="fas fa-book-open"></i> Create Course</h3>
                 <div class="space-y-4">
                     <input id="course-title" placeholder="Course Title" class="input-field text-sm">
                     <textarea id="course-desc" placeholder="Description" class="input-field text-sm h-20 resize-none"></textarea>
                     <input id="course-price" type="number" placeholder="Price (₹)" class="input-field text-sm">
                     <div id="course-modules">
-                        <p class="text-[10px] font-black uppercase opacity-40 mb-2">Modules</p>
+                        <p class="text-[10px] font-black uppercase opacity-40 mb-2"><i class="fas fa-list"></i> Modules</p>
                         <div class="flex gap-2 mb-2"><input placeholder="Module Title" class="input-field text-sm flex-1 cm-title"><input placeholder="URL" class="input-field text-sm flex-1 cm-url"></div>
                     </div>
                     <button onclick="addModuleField()" class="text-brandOrange text-xs font-black"><i class="fas fa-plus"></i> Add Module</button>
@@ -2542,29 +2645,18 @@
                 <div class="space-y-4">
                     <input id="demo-title" placeholder="Demo Title" class="input-field text-sm">
                     <input id="demo-url" placeholder="Video URL" class="input-field text-sm">
-                    <select id="demo-course" class="input-field text-sm">
-                        <option value="">Select Course (optional)</option>
-                    </select>
                     <button onclick="uploadDemo()" class="w-full py-3 btn-brand text-xs"><i class="fas fa-upload"></i> Add Demo</button>
                     <div id="demo-list" class="space-y-2 mt-4"></div>
                 </div>
             `);
-            // Populate courses
-            Core.getDocs(Core.query(Core.collection(Core.db, "courses"), Core.where("teacherId", "==", profile.teacherId || ""))).then(snap => {
-                const sel = $('demo-course');
-                if (sel) {
-                    sel.innerHTML = '<option value="">No course (profile level)</option>' + snap.docs.map(d => `<option value="${d.id}">${d.data().title}</option>`).join('');
-                }
-            });
             listDemos();
         };
 
         window.uploadDemo = async () => {
             const title = $('demo-title')?.value.trim();
             const url = $('demo-url')?.value.trim();
-            const courseId = $('demo-course')?.value;
             if (!title || !url) return toast("Title and URL required", "error");
-            const payload = {
+            await Core.addDoc(Core.collection(Core.db, "content"), {
                 title,
                 url,
                 type: 'video',
@@ -2573,9 +2665,7 @@
                 tName: profile.name,
                 views: 0,
                 date: Core.serverTimestamp()
-            };
-            if (courseId) payload.courseId = courseId;
-            await Core.addDoc(Core.collection(Core.db, "content"), payload);
+            });
             toast("Demo added!");
             $('demo-title').value = '';
             $('demo-url').value = '';
@@ -2594,7 +2684,7 @@
                 const data = d.data();
                 return `
                     <div class="flex justify-between items-center glass p-3 rounded-xl border border-[var(--border-color)]">
-                        <div><p class="font-bold text-sm">${data.title}</p>${data.courseId ? `<span class="text-[10px] opacity-40">Course: ${data.courseId}</span>` : ''}</div>
+                        <div><p class="font-bold text-sm">${data.title}</p></div>
                         <button onclick="removeDemo('${d.id}')" class="text-red-500 text-xs font-black"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
@@ -2607,91 +2697,45 @@
             listDemos();
         };
 
-        // ─── FEATURE: Custom Notification (course-specific) ───
+        // ─── FEATURE: Custom Notification ───
         window.openCustomNotification = () => {
             openModal(`
                 <h3 class="text-xl font-black mb-4"><i class="fas fa-bell"></i> Send Notification</h3>
                 <div class="space-y-4">
                     <textarea id="notif-message" placeholder="Your message..." class="input-field h-24 resize-none"></textarea>
-                    <select id="notif-course-select" class="input-field text-sm">
-                        <option value="all">All Students</option>
-                    </select>
-                    <button onclick="sendCustomNotificationFromModal()" class="w-full py-3 btn-brand text-xs"><i class="fas fa-paper-plane"></i> Send</button>
+                    <button onclick="sendCustomNotificationFromModal()" class="w-full py-3 btn-brand text-xs"><i class="fas fa-paper-plane"></i> Send to All Students</button>
                 </div>
             `);
-            // Populate courses
-            Core.getDocs(Core.query(Core.collection(Core.db, "courses"), Core.where("teacherId", "==", profile.teacherId || ""))).then(snap => {
-                const sel = $('notif-course-select');
-                if (sel) {
-                    snap.docs.forEach(d => {
-                        const opt = document.createElement('option');
-                        opt.value = d.id;
-                        opt.textContent = d.data().title;
-                        sel.appendChild(opt);
-                    });
-                }
-            });
         };
 
         window.sendCustomNotificationFromModal = async () => {
             const msg = $('notif-message')?.value.trim();
-            const courseId = $('notif-course-select')?.value;
             if (!msg) return toast("Message required", "error");
-
-            let targetUids = [];
-            if (courseId === 'all') {
-                const followers = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "array-contains", profile.teacherId || "")));
-                targetUids = followers.docs.map(d => d.id);
-            } else {
-                // Send to members of the course group
-                const courseDoc = await Core.getDoc(Core.doc(Core.db, "courses", courseId));
-                if (courseDoc.exists()) {
-                    const course = courseDoc.data();
-                    if (course.groupId) {
-                        const groupDoc = await Core.getDoc(Core.doc(Core.db, "groups", course.groupId));
-                        if (groupDoc.exists()) {
-                            targetUids = groupDoc.data().members || [];
-                        }
-                    }
-                }
-            }
-
-            for (let uid of targetUids) {
+            const followers = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "array-contains", profile.teacherId || "")));
+            for (let doc of followers.docs) {
                 await Core.addDoc(Core.collection(Core.db, "notifications"), {
-                    uid,
+                    uid: doc.id,
                     type: "CUSTOM",
                     text: `📢 ${profile.name}: ${msg}`,
                     createdAt: Core.serverTimestamp()
                 });
             }
-            toast(`Sent to ${targetUids.length} students!`);
+            toast(`Sent to ${followers.size} students!`);
             closeModal();
         };
 
-        // ─── FEATURE: Live Now (student) ───
-        window.openLiveNow = async () => {
-            const today = new Date().toISOString().split('T')[0];
-            const now = new Date().getHours() * 60 + new Date().getMinutes();
-            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "liveSessions"), Core.where("date", "==", today)));
-            let live = null;
-            snap.forEach(d => {
-                const s = d.data();
-                const start = parseInt(s.startTime.split(':')[0]) * 60 + parseInt(s.startTime.split(':')[1]);
-                const end = parseInt(s.endTime.split(':')[0]) * 60 + parseInt(s.endTime.split(':')[1]);
-                if (now >= start && now <= end) live = { id: d.id, ...s };
-            });
-            if (!live) {
-                toast("No live session currently active.", "error");
-                return;
+        // ─── NAVIGATION HELPERS ───
+        window.navigateTo = (section) => {
+            if (section === 'courses') {
+                openModal(`<p class="opacity-50 text-center"><i class="fas fa-book-open"></i> Course catalog coming soon.</p>`);
+            } else if (section === 'content') {
+                openModal(`<p class="opacity-50 text-center"><i class="fas fa-file-alt"></i> Content library coming soon.</p>`);
+            } else if (section === 'live') {
+                openModal(`<p class="opacity-50 text-center"><i class="fas fa-broadcast-tower"></i> Live sessions coming soon.</p>`);
+            } else if (section === 'demo') {
+                loadDemoContent();
+                toast("Demo videos loaded below");
             }
-            // Find content for this live session (if any)
-            const contentSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("liveSessionId", "==", live.id)));
-            if (contentSnap.empty) {
-                toast("No stream link available for this live session.", "error");
-                return;
-            }
-            const content = contentSnap.docs[0].data();
-            openResource(contentSnap.docs[0].id, content.url, content.title);
         };
 
         // ─── OPEN RESOURCE (video player) ───
@@ -2703,7 +2747,7 @@
                     await Core.updateDoc(Core.doc(Core.db, "content", id), { views: Core.increment(1) });
                 } catch (e) {}
             }
-            const vid = extractYTId(url);
+            const vid = extractYTId ? extractYTId(url) : null;
             mediaVault.classList.add('show');
             playerContainer.innerHTML = '';
             if (vid) {
@@ -2749,7 +2793,7 @@
             activeLiveChatListener = Core.onSnapshot(q, (snap) => {
                 liveChatMessages.innerHTML = '';
                 if (snap.empty) {
-                    liveChatMessages.innerHTML = '<p class="opacity-30 text-center text-xs">No messages yet. Be the first!</p>';
+                    liveChatMessages.innerHTML = '<p class="opacity-30 text-center text-xs"><i class="fas fa-comment-slash"></i> No messages yet. Be the first!</p>';
                     return;
                 }
                 snap.forEach(d => {
@@ -2843,7 +2887,7 @@
             const data = gDoc.data();
             let html = `<h3 class="text-xl font-black mb-4"><i class="fas fa-users"></i> ${groupName} — Members</h3><div class="space-y-2">`;
             if (data.pending?.length) {
-                html += `<p class="text-[10px] font-black uppercase text-yellow-500">Pending Requests</p>`;
+                html += `<p class="text-[10px] font-black uppercase text-yellow-500"><i class="fas fa-clock"></i> Pending Requests</p>`;
                 data.pending.forEach(p => {
                     html += `
                         <div class="flex justify-between items-center glass p-3 rounded-xl border border-[var(--border-color)]">
@@ -2856,7 +2900,7 @@
                     `;
                 });
             }
-            html += `<p class="text-[10px] font-black uppercase opacity-40 mt-3">Active Members</p>`;
+            html += `<p class="text-[10px] font-black uppercase opacity-40 mt-3"><i class="fas fa-user-check"></i> Active Members</p>`;
             const members = data.members || [];
             if (members.length === 0) {
                 html += `<p class="text-xs opacity-40">No members.</p>`;
@@ -2870,7 +2914,7 @@
                         html += `
                             <div class="flex justify-between items-center glass p-3 rounded-xl border border-[var(--border-color)]">
                                 <span>${u.name}</span>
-                                ${u.teacherId !== data.teacherId ? `<button onclick="kickMember('${groupId}','${uid}')" class="text-red-500 text-xs font-black"><i class="fas fa-user-slash"></i> Kick</button>` : '<span class="text-[10px] opacity-40">Owner</span>'}
+                                ${u.teacherId !== data.teacherId ? `<button onclick="kickMember('${groupId}','${uid}')" class="text-red-500 text-xs font-black"><i class="fas fa-user-minus"></i> Kick</button>` : '<span class="text-[10px] opacity-40">Owner</span>'}
                             </div>
                         `;
                     }
@@ -2922,7 +2966,7 @@
         window.showNotificationsHub = async () => {
             const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "notifications"), Core.where("uid", "==", Core.auth.currentUser.uid), Core.orderBy("createdAt", "desc"), Core.limit(20)));
             if (snap.empty) {
-                openModal(`<div class="text-center py-8"><p class="opacity-50">No notifications.</p></div>`);
+                openModal(`<div class="text-center py-8"><p class="opacity-50"><i class="fas fa-bell-slash"></i> No notifications.</p></div>`);
                 return;
             }
             let html = `<h3 class="text-xl font-black mb-4"><i class="fas fa-bell"></i> Notifications</h3><div class="space-y-2">`;
@@ -2976,7 +3020,7 @@
                 aiMessages.scrollTop = aiMessages.scrollHeight;
             } catch (e) {
                 loading.remove();
-                aiMessages.innerHTML += `<div class="ai-msg" style="border-color:#ef4444;">⚠️ Connection error. Try again.</div>`;
+                aiMessages.innerHTML += `<div class="ai-msg" style="border-color:#ef4444;"><i class="fas fa-exclamation-triangle"></i> Connection error. Try again.</div>`;
             }
         };
 
@@ -3085,7 +3129,7 @@
                     pendingSubs: [],
                     photo: Core.auth.currentUser.photoURL || '',
                     privacyMode: 'public',
-                    instituteId: _lockedInstId || null,
+                    instituteId: window._lockedInstId || null,
                     joined: new Date().toISOString()
                 });
                 location.reload();
@@ -3136,7 +3180,7 @@
                 <div class="glass p-4 rounded-xl flex justify-between items-center border border-[var(--border-color)]">
                     <div><p class="font-bold">${d.name || 'Unnamed'}</p><p class="text-[10px] opacity-40 font-mono">${d.uniqueId || d.id}</p></div>
                     <div class="flex gap-2">
-                        <button onclick="editInstitute('${d.id}')" class="text-brandOrange text-[10px] font-black"><i class="fas fa-edit"></i></button>
+                        <button onclick="editInstitute('${d.id}')" class="text-brandOrange text-[10px] font-black"><i class="fas fa-edit"></i> Edit</button>
                         <button onclick="deleteInstitute('${d.id}')" class="text-red-500 text-[10px] font-black"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
@@ -3160,7 +3204,7 @@
             if (!doc.exists()) return;
             const d = doc.data();
             openModal(`
-                <h3 class="text-xl font-black mb-4">Edit Institute</h3>
+                <h3 class="text-xl font-black mb-4"><i class="fas fa-edit"></i> Edit Institute</h3>
                 <div class="space-y-4">
                     <input id="edit-inst-name" value="${d.name || ''}" placeholder="Name" class="input-field text-sm">
                     <input id="edit-inst-logo" value="${d.logo || ''}" placeholder="Logo URL" class="input-field text-sm">
@@ -3183,12 +3227,12 @@
 
         window.showCreateInstituteModal = () => {
             openModal(`
-                <h3 class="text-xl font-black mb-4">Add Institute</h3>
+                <h3 class="text-xl font-black mb-4"><i class="fas fa-plus-circle"></i> Add Institute</h3>
                 <div class="space-y-4">
                     <input id="new-inst-name" placeholder="Institute Name" class="input-field text-sm">
                     <input id="new-inst-logo" placeholder="Logo URL" class="input-field text-sm">
                     <input id="new-inst-teacher" placeholder="Teacher ID (OC-XXXX)" class="input-field text-sm">
-                    <button onclick="createInstitute()" class="w-full py-3 btn-brand text-xs"><i class="fas fa-plus"></i> Create</button>
+                    <button onclick="createInstitute()" class="w-full py-3 btn-brand text-xs"><i class="fas fa-save"></i> Create</button>
                 </div>
             `);
         };
@@ -3234,7 +3278,7 @@
             const d = _currentAdminRequests.find(r => r.id === id);
             if (!d) return;
             openModal(`
-                <h3 class="text-xl font-black mb-4">Request Details</h3>
+                <h3 class="text-xl font-black mb-4"><i class="fas fa-info-circle"></i> Request Details</h3>
                 <div class="space-y-2">
                     <p><strong>Name:</strong> ${d.name}</p>
                     <p><strong>Email:</strong> ${d.email}</p>
@@ -3345,7 +3389,7 @@
         // ─── INSTITUTE FORM (public) ───
         window.showInstituteForm = () => {
             openModal(`
-                <h3 class="text-xl font-black mb-4"><i class="fas fa-building"></i> Register Institute</h3>
+                <h3 class="text-xl font-black mb-4"><i class="fas fa-university"></i> Register Institute</h3>
                 <div class="space-y-4">
                     <input id="req-inst-name" placeholder="Institute Name" class="input-field text-sm">
                     <input id="req-inst-email" placeholder="Contact Email" class="input-field text-sm">
@@ -3382,96 +3426,69 @@
             closeModal();
         };
 
-        // ─── SEARCH ───
-        window.toggleSearch = () => {
-            const input = $('global-search-input');
-            input.focus();
-        };
-
-        window.collapseSearch = () => {
-            // Optional
-        };
-
-        window.handleGlobalSearch = async (query) => {
-            // Simple search: navigate to home with search query
-            // We'll just filter content in the current view
-            if (query.length < 2) return;
-            // For now, we can show a modal with results or redirect
-            toast("Searching...", "info");
-            // You can implement full search logic here
-        };
-
-        // ─── CART ───
-        window.showCart = () => {
-            if (!cart || cart.length === 0) {
-                openModal(`<div class="text-center py-8"><p class="text-lg font-black opacity-30 uppercase tracking-widest">Your Cart is Empty</p></div>`);
-                return;
-            }
-            let total = cart.reduce((sum, i) => sum + parseFloat(i.price || 0), 0);
-            let html = `
-                <h3 class="text-xl font-black mb-4"><i class="fas fa-shopping-cart"></i> Shopping Cart</h3>
-                <div class="space-y-3 mb-4">
-                    ${cart.map(i => `
-                        <div class="flex justify-between items-center glass p-3 rounded-xl border border-[var(--border-color)]">
-                            <span>${i.title}</span>
-                            <span class="text-brandOrange font-black">₹${i.price}</span>
-                            <button onclick="removeFromCart('${i.id}')" class="text-red-500 text-xs"><i class="fas fa-times"></i></button>
-                        </div>
-                    `).join('')}
-                </div>
-                <div class="flex justify-between items-center border-t border-[var(--border-color)] pt-3">
-                    <span class="font-bold">Total</span>
-                    <span class="text-2xl font-black text-brandOrange">₹${total}</span>
-                </div>
-                <button onclick="checkoutCart()" class="w-full mt-4 py-3 btn-brand text-xs"><i class="fas fa-credit-card"></i> Checkout</button>
-            `;
-            openModal(html);
-        };
-
-        window.removeFromCart = (id) => {
-            cart = cart.filter(i => i.id !== id);
-            localStorage.setItem('oc_cart_manifest', JSON.stringify(cart));
-            updateCartPill();
-            showCart();
-        };
-
-        window.checkoutCart = async () => {
-            // Fake payment
-            toast("Processing payment...");
-            await new Promise(r => setTimeout(r, 1500));
-            for (let item of cart) {
-                const courseDoc = await Core.getDoc(Core.doc(Core.db, "courses", item.id));
-                if (courseDoc.exists()) {
-                    const course = courseDoc.data();
-                    if (course.groupId) {
-                        await Core.updateDoc(Core.doc(Core.db, "groups", course.groupId), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
-                    }
+        // ─── AUTH STATE ───
+        Core.onAuthStateChanged(Core.auth, async (user) => {
+            if (user) {
+                const docSnap = await Core.getDoc(Core.doc(Core.db, "users", user.uid));
+                if (!docSnap.exists()) {
+                    $('dashboard').classList.add('hidden');
+                    $('onboarding-screen').classList.remove('hidden');
+                    return;
                 }
+                profile = docSnap.data();
+                // Set profile pic in header
+                const pic = $('nav-profile-pic');
+                if (pic) pic.querySelector('img').src = profile.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=004a80&color=fff&size=128`;
+                $('dashboard').classList.remove('hidden');
+                $('auth-screen').classList.add('hidden');
+                $('verify-screen').classList.add('hidden');
+                $('onboarding-screen').classList.add('hidden');
+                await renderDashboard();
+                // Load notifications count
+                fetchNotificationsCount();
+                // Load ads popup
+                loadAdPopup();
+            } else {
+                $('dashboard').classList.add('hidden');
+                $('auth-screen').classList.remove('hidden');
+                $('verify-screen').classList.add('hidden');
+                $('onboarding-screen').classList.add('hidden');
             }
-            cart = [];
-            localStorage.removeItem('oc_cart_manifest');
-            updateCartPill();
-            toast("Purchase complete! Courses added.");
-            closeModal();
-            renderDashboard();
-        };
+        });
 
-        function updateCartPill() {
-            const pill = $('cart-pill');
-            if (cart.length > 0) {
-                pill.textContent = cart.length;
+        async function fetchNotificationsCount() {
+            if (!profile) return;
+            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "notifications"), Core.where("uid", "==", Core.auth.currentUser.uid), Core.where("read", "==", false)));
+            const count = snap.size;
+            const pill = $('notify-pill');
+            if (count > 0) {
+                pill.textContent = count;
                 pill.style.display = 'flex';
             } else {
                 pill.style.display = 'none';
             }
         }
 
-        // ─── THEME ───
-        window.toggleMode = () => {
-            document.documentElement.classList.toggle('light');
-            localStorage.setItem('oc_theme', document.documentElement.classList.contains('light'));
+        async function loadAdPopup() {
+            if (!profile || isTeacher) return;
+            const instId = profile.instituteId;
+            if (!instId) return;
+            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "ads"), Core.where("instituteId", "==", instId), Core.where("type", "==", "popup")));
+            if (snap.empty) return;
+            const ad = snap.docs[0].data();
+            adPopupImg.src = ad.image;
+            adPopupImg.style.display = 'block';
+            adPopup.classList.add('show');
+            // Auto-close after 10s
+            setTimeout(() => closeAdPopup(), 10000);
+        }
+
+        window.closeAdPopup = () => {
+            adPopup.classList.remove('show');
+            adPopupImg.style.display = 'none';
         };
 
+        // ─── THEME ───
         if (localStorage.getItem('oc_theme') === 'true') {
             document.documentElement.classList.add('light');
         }
@@ -3561,90 +3578,45 @@
             }
         });
 
-        // ─── AUTH STATE ───
-        Core.onAuthStateChanged(Core.auth, async (user) => {
-            if (user) {
-                const docSnap = await Core.getDoc(Core.doc(Core.db, "users", user.uid));
-                if (!docSnap.exists()) {
-                    $('dashboard').classList.add('hidden');
-                    $('onboarding-screen').classList.remove('hidden');
-                    return;
-                }
-                profile = docSnap.data();
-                // Update navbar profile pic
-                const pic = $('nav-profile-pic').querySelector('img');
-                if (pic) pic.src = profile.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=004a80&color=fff&size=128`;
-                $('dashboard').classList.remove('hidden');
-                $('auth-screen').classList.add('hidden');
-                $('verify-screen').classList.add('hidden');
-                $('onboarding-screen').classList.add('hidden');
-                await renderDashboard();
-                updateCartPill();
-                // Load notifications count
-                fetchNotificationsCount();
-                // Load ad popup
-                loadAdPopup();
-            } else {
-                $('dashboard').classList.add('hidden');
-                $('auth-screen').classList.remove('hidden');
-                $('verify-screen').classList.add('hidden');
-                $('onboarding-screen').classList.add('hidden');
-            }
-        });
-
-        async function fetchNotificationsCount() {
-            if (!profile) return;
-            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "notifications"), Core.where("uid", "==", Core.auth.currentUser.uid), Core.where("read", "==", false)));
-            const count = snap.size;
-            const pill = $('notify-pill');
-            if (count > 0) {
-                pill.textContent = count;
-                pill.style.display = 'flex';
-            } else {
-                pill.style.display = 'none';
-            }
+        // ─── GET SMART PREVIEW ───
+        function getSmartPreview(url) {
+            if (!url) return 'https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg';
+            const clean = url.toLowerCase().trim();
+            if (clean.match(/\.(jpeg|jpg|gif|png|webp|svg)/)) return url;
+            const ytId = extractYTId ? extractYTId(url) : null;
+            if (ytId) return `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
+            return 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop';
         }
 
-        async function loadAdPopup() {
-            if (!profile || profile.role === 'teacher' || profile.role === 'super_admin') return;
-            const instId = profile.instituteId;
-            if (!instId) return;
-            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "ads"), Core.where("instituteId", "==", instId), Core.where("type", "==", "popup")));
-            if (snap.empty) return;
-            const ad = snap.docs[0].data();
-            adPopupImg.src = ad.image;
-            adPopupImg.style.display = 'block';
-            adPopup.classList.add('show');
-            setTimeout(() => closeAdPopup(), 10000);
+        function extractYTId(url) {
+            const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/|live\/)([^#&?]*).*/);
+            return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        window.closeAdPopup = () => {
-            adPopup.classList.remove('show');
-            adPopupImg.style.display = 'none';
-        };
-
-        // ─── PROFILE SETTINGS ───
-        window.showProfileSettings = () => {
-            // Simplified: open modal with profile info
-            openModal(`
-                <h3 class="text-xl font-black mb-4"><i class="fas fa-user-circle"></i> Profile Settings</h3>
-                <div class="space-y-3">
-                    <p><strong>Name:</strong> ${profile.name}</p>
-                    <p><strong>Email:</strong> ${profile.email}</p>
-                    <p><strong>Role:</strong> ${profile.role}</p>
-                    <p><strong>ID:</strong> ${profile.teacherId || 'N/A'}</p>
-                    <button onclick="logout()" class="w-full py-3 bg-red-500/20 text-red-500 rounded-xl text-xs font-black"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
-                </div>
-            `);
-        };
+        // ─── EXPOSE GLOBALS ───
+        window.profile = profile;
+        window.toast = toast;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.renderDashboard = renderDashboard;
+        window.setTab = setTab;
+        window.toggleNav = toggleNav;
+        window.getSmartPreview = getSmartPreview;
+        window.extractYTId = extractYTId;
 
         // ─── INIT ───
-        console.log('🚀 OpenClase LMS loaded with all features.');
-        // Load admin sections if needed
+        console.log('🚀 OpenClase LMS loaded');
+        if (document.documentElement.classList.contains('light')) {
+            console.log('☀️ Light mode active');
+        }
+
+        // Load plans in admin
         setTimeout(() => {
             if ($('plans-list')) loadPlansList();
             if ($('payments-list')) loadPayments();
         }, 500);
+
+        console.log('✅ OpenClase ready');
     </script>
 </body>
 </html>
