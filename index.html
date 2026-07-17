@@ -82,7 +82,7 @@
             background-color: var(--bg-main);
             color: var(--text-main);
             overflow-x: hidden;
-            padding-bottom: calc(100px + env(safe-area-inset-bottom));
+            padding-bottom: calc(80px + env(safe-area-inset-bottom));
             overscroll-behavior-y: none;
             -webkit-tap-highlight-color: transparent;
         }
@@ -125,6 +125,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
         }
         .btn-brand:hover,
         #ai-floating-btn:hover {
@@ -153,7 +154,7 @@
 
         #toast-box {
             position: fixed;
-            bottom: 8rem;
+            bottom: 7rem;
             left: 50%;
             transform: translateX(-50%);
             z-index: 99999;
@@ -166,7 +167,7 @@
             background: rgba(15, 15, 15, 0.95);
             backdrop-filter: blur(10px);
             color: #fff;
-            padding: 0.8rem 1.8rem;
+            padding: 0.6rem 1.5rem;
             border-radius: 99px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             font-size: 11px;
@@ -204,27 +205,29 @@
         /* ── NAV BAR ── */
         #floating-bottom-nav-bar {
             position: fixed;
-            bottom: max(1.5rem, env(safe-area-inset-bottom));
+            bottom: max(0.8rem, env(safe-area-inset-bottom));
             left: 50%;
             transform: translateX(-50%);
             z-index: 4500;
-            width: calc(100% - 2rem);
+            width: calc(100% - 1.5rem);
             max-width: 500px;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+            padding: 6px 10px !important;
+            border-radius: 28px !important;
         }
         #floating-bottom-nav-bar.nav-hidden {
-            transform: translate(-50%, 150px);
+            transform: translate(-50%, 120px);
             opacity: 0;
             pointer-events: none;
         }
         .nav-island-btn {
             width: 100%;
             text-align: center;
-            padding: 12px 0;
-            font-weight: 800;
+            padding: 8px 0;
+            font-weight: 700;
             text-transform: uppercase;
-            font-size: 10px;
-            border-radius: 20px;
+            font-size: 9px;
+            border-radius: 18px;
             transition: all 0.3s ease;
             opacity: 0.4;
             color: var(--text-main);
@@ -239,6 +242,9 @@
             border: 1px solid rgba(247, 148, 29, 0.25);
             transform: scale(1.05);
         }
+        .nav-island-btn i {
+            font-size: 16px;
+        }
 
         /* ── DASHBOARD CARDS ── */
         .dash-card {
@@ -246,10 +252,10 @@
             backdrop-filter: blur(20px);
             border: 1px solid var(--border-color);
             border-radius: var(--card-radius);
-            padding: 1.5rem 1.25rem;
+            padding: 1.2rem 1rem;
             transition: all 0.3s ease;
             cursor: pointer;
-            min-height: 140px;
+            min-height: 120px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -262,25 +268,25 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
         .dash-card .card-icon {
-            font-size: 28px;
+            font-size: 26px;
             color: var(--brand-orange);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
         }
         .dash-card .card-title {
             font-weight: 800;
-            font-size: 14px;
+            font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--text-main);
         }
         .dash-card .card-action {
-            margin-top: 0.75rem;
-            font-size: 11px;
+            margin-top: 0.5rem;
+            font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
             color: var(--brand-orange);
             border: 1px solid rgba(247, 148, 29, 0.25);
-            padding: 0.4rem 0.8rem;
+            padding: 0.3rem 0.7rem;
             border-radius: 999px;
             display: inline-flex;
             align-items: center;
@@ -299,17 +305,17 @@
         .profile-mini {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 0.75rem 1rem;
+            gap: 0.8rem;
+            padding: 0.6rem 1rem;
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
             border: 1px solid var(--border-color);
-            border-radius: 20px;
+            border-radius: 18px;
             flex-wrap: wrap;
         }
         .profile-mini .avatar {
-            width: 52px;
-            height: 52px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid var(--brand-orange);
@@ -322,7 +328,7 @@
         }
         .profile-mini .info .name {
             font-weight: 800;
-            font-size: 16px;
+            font-size: 15px;
             line-height: 1.2;
             color: var(--text-main);
             white-space: nowrap;
@@ -330,7 +336,7 @@
             text-overflow: ellipsis;
         }
         .profile-mini .info .id {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 600;
             opacity: 0.5;
             font-family: monospace;
@@ -339,23 +345,23 @@
 
         .quick-actions {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.4rem;
             flex-wrap: wrap;
         }
         .quick-actions .qa-btn {
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
             border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 0.5rem 0.75rem;
-            font-size: 10px;
+            border-radius: 12px;
+            padding: 0.4rem 0.6rem;
+            font-size: 9px;
             font-weight: 700;
             text-transform: uppercase;
             color: var(--text-main);
             transition: all 0.25s;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             cursor: pointer;
             white-space: nowrap;
         }
@@ -365,7 +371,7 @@
             transform: scale(1.03);
         }
         .quick-actions .qa-btn i {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--brand-orange);
         }
 
@@ -464,28 +470,40 @@
         /* ── RESPONSIVE ── */
         @media (max-width: 640px) {
             .dash-card {
-                min-height: 110px;
-                padding: 1rem 0.9rem;
+                min-height: 100px;
+                padding: 0.8rem 0.7rem;
             }
             .dash-card .card-icon {
-                font-size: 22px;
+                font-size: 20px;
             }
             .dash-card .card-title {
-                font-size: 12px;
+                font-size: 11px;
             }
             .profile-mini .avatar {
-                width: 40px;
-                height: 40px;
+                width: 36px;
+                height: 36px;
             }
             .profile-mini .info .name {
-                font-size: 14px;
+                font-size: 13px;
             }
             .quick-actions .qa-btn {
-                font-size: 8px;
-                padding: 0.35rem 0.5rem;
+                font-size: 7px;
+                padding: 0.3rem 0.4rem;
             }
             .quick-actions .qa-btn i {
-                font-size: 12px;
+                font-size: 10px;
+            }
+            #floating-bottom-nav-bar {
+                padding: 4px 8px !important;
+                border-radius: 22px !important;
+                width: calc(100% - 1rem);
+            }
+            .nav-island-btn {
+                font-size: 7px;
+                padding: 5px 0;
+            }
+            .nav-island-btn i {
+                font-size: 13px;
             }
         }
 
@@ -505,7 +523,7 @@
         }
 
         .social-icon {
-            font-size: 20px;
+            font-size: 18px;
             color: #6b7280;
             transition: all 0.25s ease;
         }
@@ -603,42 +621,54 @@
             animation: fadeIn 0.4s ease forwards;
         }
 
-        /* ad banner */
-        .ad-banner-container {
-            position: relative;
-            overflow: hidden;
-            border-radius: 16px;
-            background: #0a0a0a;
-            border: 1px solid var(--border-color);
+        /* ad banner gallery */
+        .ad-banner-gallery {
             display: flex;
-            gap: 0.5rem;
-            padding: 0.5rem;
+            gap: 0.8rem;
             overflow-x: auto;
+            padding: 0.5rem 0.2rem;
             scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
         }
-        .ad-banner-container a {
+        .ad-banner-gallery::-webkit-scrollbar {
+            height: 4px;
+        }
+        .ad-banner-gallery::-webkit-scrollbar-thumb {
+            background: var(--brand-orange);
+            border-radius: 10px;
+        }
+        .ad-banner-gallery a {
             scroll-snap-align: start;
             flex-shrink: 0;
+            display: block;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s;
         }
-        .ad-banner-container img {
-            height: 100px;
-            max-height: 120px;
+        .ad-banner-gallery a:hover {
+            transform: scale(1.02);
+        }
+        .ad-banner-gallery img {
+            height: 80px;
+            max-height: 100px;
+            width: auto;
+            min-width: 160px;
             object-fit: cover;
-            border-radius: 12px;
-            min-width: 180px;
+            display: block;
         }
 
         .ad-popup {
             position: fixed;
-            bottom: 100px;
+            bottom: 90px;
             left: 16px;
             z-index: 8000;
-            max-width: 280px;
+            max-width: 260px;
             background: var(--glass-bg);
             backdrop-filter: blur(30px);
             border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 1rem;
+            border-radius: 18px;
+            padding: 0.8rem;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
             display: none;
             animation: fadeIn 0.4s ease forwards;
@@ -648,19 +678,20 @@
         }
         .ad-popup .ad-close {
             position: absolute;
-            top: 6px;
-            right: 10px;
+            top: 4px;
+            right: 8px;
             background: rgba(0, 0, 0, 0.5);
             border: none;
             color: #fff;
             border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            font-size: 14px;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 2;
         }
         .ad-popup .ad-close:hover {
             background: #ff4444;
@@ -670,40 +701,40 @@
         }
         .ad-popup img {
             width: 100%;
-            border-radius: 12px;
-            max-height: 140px;
+            border-radius: 10px;
+            max-height: 120px;
             object-fit: cover;
         }
 
         /* misc */
         .analytics-value {
-            font-size: 52px;
+            font-size: 44px;
             line-height: 1;
             font-weight: 900;
         }
         @media(min-width:768px) {
             .analytics-value {
-                font-size: 72px;
+                font-size: 60px;
             }
         }
         .analytics-label {
-            font-size: 11px;
+            font-size: 10px;
             letter-spacing: 0.22em;
             font-weight: 700;
             text-transform: uppercase;
         }
         .analytics-card {
-            min-height: 120px;
-            padding: 18px;
-            border-radius: 24px;
+            min-height: 100px;
+            padding: 14px;
+            border-radius: 20px;
             transition: 0.3s;
             position: relative;
         }
         @media(min-width:768px) {
             .analytics-card {
-                min-height: 170px;
-                padding: 30px;
-                border-radius: 32px;
+                min-height: 140px;
+                padding: 24px;
+                border-radius: 28px;
             }
         }
         .analytics-card:hover {
@@ -730,10 +761,10 @@
         .demo-badge {
             background: rgba(247, 148, 29, 0.15);
             color: var(--brand-orange);
-            font-size: 8px;
+            font-size: 7px;
             font-weight: 800;
             text-transform: uppercase;
-            padding: 2px 10px;
+            padding: 2px 8px;
             border-radius: 999px;
             border: 1px solid rgba(247, 148, 29, 0.2);
             letter-spacing: 0.05em;
@@ -744,16 +775,17 @@
 
         /* teacher view tabs */
         .teacher-grid-btn {
-            padding: 0.75rem 0.5rem;
+            padding: 0.6rem 0.4rem;
             border-radius: 12px;
             background: var(--input-bg);
             color: var(--text-main);
-            font-size: 9px;
+            font-size: 8px;
             font-weight: 800;
             text-transform: uppercase;
             transition: all 0.25s;
             border: 1px solid transparent;
             cursor: pointer;
+            text-align: center;
         }
         .teacher-grid-btn.grid-btn-active {
             background: rgba(247, 148, 29, 0.15);
@@ -763,10 +795,83 @@
         .teacher-grid-btn:hover {
             border-color: var(--brand-orange);
         }
+
+        /* loading overlay */
+        #app-install-loading {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(20px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        #app-install-loading.active {
+            display: flex;
+        }
+        #app-install-loading .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--brand-orange);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        #app-install-loading p {
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* skeleton cards */
+        .skeleton-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .skeleton-card {
+            background: var(--input-bg);
+            border-radius: 16px;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            animation: pulse 1.4s ease-in-out infinite;
+        }
+        .skeleton-card .skeleton-thumb {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 0.6rem;
+        }
+        .skeleton-card .skeleton-line {
+            height: 12px;
+            background: var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 0.4rem;
+        }
+        .skeleton-card .skeleton-line.short {
+            width: 60%;
+        }
     </style>
 </head>
 
 <body class="selection:bg-brandOrange/30">
+    <!-- Loading overlay for app install -->
+    <div id="app-install-loading">
+        <div class="spinner"></div>
+        <p>Preparing your institute app...</p>
+    </div>
+
     <div id="toast-box"></div>
 
     <!-- ─── CUSTOM MODAL ─── -->
@@ -1184,6 +1289,7 @@
         let _adBannerData = null;
         let _hasPaidAccess = false;
         let _studentNavTab = 'home';
+        let _isLoadingContent = false;
 
         // ─── TOAST ───
         function toast(m, type = "s") {
@@ -1254,9 +1360,22 @@
         };
 
         window.triggerInstAppInstall = async (instId) => {
+            // Show loading overlay
+            const loadingEl = document.getElementById('app-install-loading');
+            loadingEl.classList.add('active');
+
+            // Wait 5 seconds for manifest to be ready
+            await new Promise(resolve => setTimeout(resolve, 5000));
+
             const instData = await window.getInstBadgeData(instId);
-            if (!instData) return toast("Institute not found", "error");
+            if (!instData) {
+                loadingEl.classList.remove('active');
+                return toast("Institute not found", "error");
+            }
             window.setDynamicManifest(instData);
+
+            loadingEl.classList.remove('active');
+
             if (window.deferredPrompt) {
                 window.deferredPrompt.prompt();
                 window.deferredPrompt.userChoice.then((choiceResult) => {
@@ -1682,20 +1801,23 @@
             } catch (e) { console.error("Failed to fetch notifications", e); }
         }
 
-        window.pushSystemNotification = async (type, text) => {
+        window.pushSystemNotification = async (type, text, targetUid = null) => {
             try {
+                const uid = targetUid || Core.auth.currentUser.uid;
                 const docRef = await Core.addDoc(Core.collection(Core.db, "notifications"), {
-                    uid: Core.auth.currentUser.uid,
+                    uid: uid,
                     type,
                     text,
                     createdAt: Core.serverTimestamp()
                 });
-                notificationsMap.unshift({ id: docRef.id, type, text, time: new Date().toLocaleTimeString([], { hour: '2-digit',
-                        minute: '2-digit' }) });
-                const pill = document.getElementById('notify-pill');
-                if (pill) { pill.innerText = notificationsMap.length;
-                    pill.classList.remove('hidden');
-                    toast(`🔔 ${type}: ${text.substring(0, 40)}...`); }
+                if (uid === Core.auth.currentUser.uid) {
+                    notificationsMap.unshift({ id: docRef.id, type, text, time: new Date().toLocaleTimeString([], { hour: '2-digit',
+                            minute: '2-digit' }) });
+                    const pill = document.getElementById('notify-pill');
+                    if (pill) { pill.innerText = notificationsMap.length;
+                        pill.classList.remove('hidden');
+                        toast(`🔔 ${type}: ${text.substring(0, 40)}...`); }
+                }
             } catch (e) { console.error(e); }
         };
 
@@ -2386,7 +2508,7 @@
         };
 
         window.navigateToDashboard = () => {
-            if (profile.role === 'student') {
+            if (profile && profile.role === 'student') {
                 window.setNavTab('home');
             } else {
                 window.setNavTab('dashboard');
@@ -2606,6 +2728,7 @@
             document.querySelectorAll('.teacher-grid-btn').forEach(btn => btn.classList.remove('grid-btn-active'));
             document.getElementById(`btn-${v}`)?.classList.add('grid-btn-active');
             const area = document.getElementById('teacher-action-area');
+            if (!area) return;
             area.classList.remove('fade-in');
             void area.offsetWidth;
             area.classList.add('fade-in');
@@ -2840,7 +2963,6 @@
                     }
                 }
             }
-            // check if course has demo videos
             const hasDemo = c.playlist && c.playlist.some(v => v.isDemo === true);
 
             content.innerHTML = `
@@ -2852,7 +2974,7 @@
                     </div>
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl md:text-2xl font-black italic text-brandOrange">${c.title}</h2>
-                        ${isT ? `<div class="flex items-center gap-2"><button onclick="editCourse('${id}')" class="text-blue-500 font-black uppercase text-[10px] tracking-widest border border-blue-500/20 bg-blue-500/10 px-3 py-1.5 rounded-lg hover:bg-blue-500 hover:text-white transition">EDIT</button><button onclick="delC('${id}')" class="text-red-500 font-black uppercase text-[10px] tracking-widest border border-red-500/20 bg-red-500/10 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white transition">DELETE</button></div>` : ''}
+                        ${isT ? `<div class="flex items-center gap-2"><button onclick="editCourse('${id}')" class="text-blue-500 font-black uppercase text-[10px] tracking-widest border border-blue-500/20 bg-blue-500/10 px-3 py-1.5 rounded-lg hover:bg-blue-500 hover:text-white transition">EDIT</button><button onclick="delC('${id}')" class="text-red-500 font-black uppercase text-[10px] tracking-widest border border-red-500/20 bg-red-500/10 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white transition">DELETE</button><button onclick="startLiveSession('${id}')" class="text-red-500 font-black uppercase text-[10px] tracking-widest border border-red-500/20 bg-red-500/10 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white transition"><i class="fa-solid fa-circle-play"></i> Go Live</button></div>` : ''}
                     </div>
                     <p class="opacity-80 mb-6 text-sm leading-relaxed">${c.description}</p>
                     <div class="space-y-2 mb-6">
@@ -2878,6 +3000,55 @@
                 </div>
             `;
             document.getElementById('custom-modal').classList.remove('hidden');
+        };
+
+        window.startLiveSession = async (courseId) => {
+            const courseSnap = await Core.getDoc(Core.doc(Core.db, "courses", courseId));
+            if (!courseSnap.exists()) return toast("Course not found", "error");
+            const course = courseSnap.data();
+            const groupId = course.groupId;
+
+            // Create a live session content entry
+            const liveData = {
+                title: `Live: ${course.title}`,
+                url: course.playlist?.[0]?.url || '',
+                type: 'live',
+                tId: profile.teacherId,
+                tName: profile.name,
+                views: 0,
+                date: Core.serverTimestamp(),
+                isDemo: false,
+                liveDate: new Date().toISOString().split('T')[0],
+                liveStartTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                liveEndTime: new Date(Date.now() + 3600000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                courseId: courseId,
+                isLiveBroadcast: true
+            };
+            const liveRef = await Core.addDoc(Core.collection(Core.db, "content"), liveData);
+
+            // Get all members of the group
+            const groupSnap = await Core.getDoc(Core.doc(Core.db, "groups", groupId));
+            if (groupSnap.exists()) {
+                const members = groupSnap.data().members || [];
+                // Send notification to each member
+                for (let uid of members) {
+                    await window.pushSystemNotification("LIVE SESSION",
+                        `Live session started for "${course.title}" by ${profile.name}`,
+                        uid
+                    );
+                    // Also add to group notifications
+                    await Core.addDoc(Core.collection(Core.db, "notifications"), {
+                        uid: uid,
+                        type: "LIVE SESSION",
+                        text: `Live session started for "${course.title}" by ${profile.name}`,
+                        createdAt: Core.serverTimestamp()
+                    });
+                }
+                toast(`Live session started! Notifications sent to ${members.length} students.`);
+            }
+
+            window.closeCustomModal();
+            window.loadDashboardView(currentNavTab);
         };
 
         window.enrollCourse = async (cid, gid) => {
@@ -2931,7 +3102,6 @@
             const snap = await Core.getDoc(Core.doc(Core.db, "courses", id));
             const c = snap.data();
             const playlist = c.playlist || [];
-            // toggle first video as demo
             if (playlist.length > 0) {
                 playlist[0].isDemo = !playlist[0].isDemo;
                 await Core.updateDoc(Core.doc(Core.db, "courses", id), { playlist });
@@ -2944,10 +3114,28 @@
         async function renderFeed(docs, isT, target = 'feed') {
             const container = document.getElementById(target);
             if (container) {
+                // Show skeletons first
+                container.innerHTML = generateSkeletonGrid(6);
                 const htmlPromises = docs.map(d => window.renderResourceCardHtml(d, isT));
                 const htmlArr = await Promise.all(htmlPromises);
-                container.innerHTML = htmlArr.join('');
+                container.innerHTML = htmlArr.join('') || '<p class="text-xs opacity-40 col-span-full text-center py-8">No content available.</p>';
             }
+        }
+
+        function generateSkeletonGrid(count = 6) {
+            let html = '<div class="skeleton-grid">';
+            for (let i = 0; i < count; i++) {
+                html += `
+                    <div class="skeleton-card">
+                        <div class="skeleton-thumb"></div>
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line" style="width:40%"></div>
+                    </div>
+                `;
+            }
+            html += '</div>';
+            return html;
         }
 
         window.renderResourceCardHtml = async (d, isT) => {
@@ -2976,7 +3164,7 @@
 
             return `<div class="flex flex-col group cursor-pointer w-full" onclick="openResource('${d.id}','${i.url}','${i.title}')">
                 <div class="relative w-full aspect-video rounded-xl overflow-hidden shadow-md border border-[var(--border-color)] bg-zinc-950 mb-2 transition-all">
-                    <img src="${window.getSmartPreview(i.url)}" class="w-full h-full object-cover">
+                    <img src="${window.getSmartPreview(i.url)}" class="w-full h-full object-cover" loading="lazy">
                     ${window.getFileBadge(i.url)}
                     ${i.isDemo ? `<div class="absolute top-2 left-2 demo-badge"><i class="fa-regular fa-circle-play"></i> Demo</div>` : ''}
                 </div>
@@ -3034,6 +3222,7 @@
                 payload.liveDate = document.getElementById('up-date').value || new Date().toISOString().split('T')[0];
                 payload.liveStartTime = document.getElementById('up-start-time').value || "00:00";
                 payload.liveEndTime = document.getElementById('up-end-time').value || "00:00";
+                payload.isLiveBroadcast = true;
             }
             await Core.addDoc(Core.collection(Core.db, "content"), payload);
             try {
@@ -3050,7 +3239,6 @@
             } catch (e) { console.error("Notification dispatch failed", e); }
             if (y === 'live') {
                 window.pushSystemNotification("LIVE LECTURE", `Scheduled: "${t}" on ${payload.liveDate} at ${payload.liveStartTime}.`);
-                // also notify all group members
                 const groupsSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId",
                     "==", profile.teacherId)));
                 groupsSnap.forEach(g => {
@@ -3063,6 +3251,10 @@
                                 text: `Live session "${t}" starting at ${payload.liveStartTime} in ${gData.name}`,
                                 createdAt: Core.serverTimestamp()
                             });
+                            window.pushSystemNotification("LIVE SESSION",
+                                `Live session "${t}" starting at ${payload.liveStartTime} in ${gData.name}`,
+                                mid
+                            );
                         });
                     }
                 });
@@ -3125,10 +3317,16 @@
         window.loadGroups = async () => {
             const container = document.getElementById('student-groups');
             if (!container) return;
-            injectSkeletonState('student-groups');
+            container.innerHTML = generateSkeletonGrid(3);
             const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "groups")));
-            container.innerHTML = snap.docs.filter(d => d.data().members?.includes(Core.auth.currentUser.uid) || d.data()
-                    .teacherId === profile.teacherId).map(docSnap => {
+            const filtered = snap.docs.filter(d => d.data().members?.includes(Core.auth.currentUser.uid) || d.data()
+                .teacherId === profile.teacherId);
+            if (filtered.length === 0) {
+                container.innerHTML =
+                    `<p class="text-xs opacity-40 text-center py-8">No groups found. Join or create a group to get started.</p>`;
+                return;
+            }
+            container.innerHTML = filtered.map(docSnap => {
                 const g = docSnap.data();
                 const unreadCount = groupMessageTrackers[docSnap.id] || 0;
                 return `<div class="glass p-5 rounded-2xl flex justify-between items-center border border-[var(--border-color)] shadow-sm gap-4 transition-all group fade-in">
@@ -3348,6 +3546,11 @@
         async function renderCourses(docs) {
             const container = document.getElementById('courses-feed');
             if (!container) return;
+            if (!docs || docs.length === 0) {
+                container.innerHTML =
+                    `<p class="text-xs opacity-40 text-center py-8 col-span-full">No courses available.</p>`;
+                return;
+            }
             let html = `<div class="grid md:grid-cols-2 gap-6 w-full fade-in">`;
             for (let doc of docs) {
                 const c = doc.data();
@@ -3361,7 +3564,7 @@
                 const hasDemo = c.playlist && c.playlist.some(v => v.isDemo === true);
                 html += `<div class="glass p-5 rounded-2xl border border-[var(--border-color)] flex flex-col justify-between shadow-md">
                     <div class="w-full flex items-center justify-center overflow-hidden rounded-xl mb-4 bg-zinc-950/40 aspect-video relative">
-                        <img src="${c.thumbnail}" class="w-full h-full object-cover border border-[var(--border-color)]">
+                        <img src="${c.thumbnail}" class="w-full h-full object-cover border border-[var(--border-color)]" loading="lazy">
                         ${badgeStr}
                         ${hasDemo ? `<div class="absolute top-2 left-2 demo-badge"><i class="fa-regular fa-circle-play"></i> Demo</div>` : ''}
                     </div>
@@ -3377,7 +3580,6 @@
             const overlay = document.getElementById('payment-overlay');
             overlay.classList.add('active');
             const container = document.getElementById('payment-plans-container');
-            // fetch plans from firestore
             const plansSnap = await Core.getDocs(Core.collection(Core.db, "plans"));
             let plansHtml = '';
             let planCount = 0;
@@ -3391,26 +3593,19 @@
                 plansHtml =
                     `<div class="text-center p-4 opacity-60 text-sm">No plans available. Contact your institute.</div>`;
             }
-            container.innerHTML =
-                plansHtml ||
-                `<label class="flex items-center gap-3 glass p-3 rounded-xl border border-[var(--border-color)] cursor-pointer"><input type="radio" name="payment-plan" value="basic" checked> <span class="text-sm font-bold">Basic Plan</span> <span class="text-xs opacity-60 ml-auto">₹499</span></label>
-                <label class="flex items-center gap-3 glass p-3 rounded-xl border border-[var(--border-color)] cursor-pointer"><input type="radio" name="payment-plan" value="premium"> <span class="text-sm font-bold">Premium Plan</span> <span class="text-xs opacity-60 ml-auto">₹999</span></label>`;
-            // store teacherId for processing
-            overlay.dataset.teacherId = teacherId;
+            container.innerHTML = plansHtml;
+            overlay.dataset.teacherId = teacherId || '';
         };
 
         window.processFakePayment = async () => {
             const selected = document.querySelector('input[name="payment-plan"]:checked');
             if (!selected) return toast("Please select a plan", "error");
-            const planId = selected.value;
             const overlay = document.getElementById('payment-overlay');
             const teacherId = overlay.dataset.teacherId || '';
             toast("Processing payment...");
             await new Promise(r => setTimeout(r, 1500));
-            // Update user's paid status
             await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { hasPaid: true });
             _hasPaidAccess = true;
-            // Also add to institute's paid members if teacherId is provided
             if (teacherId) {
                 const tSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId",
                     "==", teacherId)));
@@ -3440,7 +3635,6 @@
             toggleBottomNavBarVisibility(false);
             modal.classList.remove('hidden');
 
-            // fetch existing ads for this institute
             let existingAds = [];
             if (profile.instituteId) {
                 const adsSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "ads"), Core.where("instituteId",
@@ -3454,21 +3648,21 @@
                     <p class="text-xs opacity-50 mb-6">Upload and manage ads for your institute. Ads are shown only to students of your institute.</p>
                     <div class="space-y-6">
                         <div class="bg-[var(--input-bg)] p-5 rounded-2xl border border-[var(--border-color)]">
-                            <h4 class="font-black text-sm uppercase tracking-widest text-brandOrange mb-3"><i class="fa-solid fa-window-maximize mr-2"></i> Pop-up Ad (₹19)</h4>
+                            <h4 class="font-black text-sm uppercase tracking-widest text-brandOrange mb-3"><i class="fa-solid fa-window-maximize mr-2"></i> Pop-up Ad (₹19/month)</h4>
                             <p class="text-[10px] opacity-60 mb-3">Small pop-up at bottom-left corner. Students can close it.</p>
                             <input type="file" id="popup-ad-file" accept="image/*" class="input-field text-sm mb-2">
                             <input type="url" id="popup-ad-link" placeholder="Click URL (optional)" class="input-field text-sm mb-3">
                             <button onclick="uploadAd('popup')" class="btn-brand px-6 py-2.5 text-xs">Upload Pop-up</button>
-                            ${existingAds.filter(a => a.type === 'popup').map(a => `<div class="mt-3 flex items-center gap-3 bg-[var(--border-color)]/20 p-3 rounded-xl"><a href="${a.link || '#'}" target="_blank"><img src="${a.imageUrl}" class="w-16 h-12 object-cover rounded"></a><span class="text-xs flex-1 truncate">${a.imageUrl}</span><button onclick="deleteAd('${a.id}')" class="text-red-500 text-xs font-black">✕</button></div>`).join('')}
+                            ${existingAds.filter(a => a.type === 'popup').map(a => `<div class="mt-3 flex items-center gap-3 bg-[var(--border-color)]/20 p-3 rounded-xl"><a href="${a.link || '#'}" target="_blank"><img src="${a.imageUrl}" class="w-16 h-12 object-cover rounded"></a><span class="text-xs flex-1 truncate">${a.imageUrl.substring(0, 30)}...</span><button onclick="deleteAd('${a.id}')" class="text-red-500 text-xs font-black">✕</button></div>`).join('')}
                         </div>
                         <div class="bg-[var(--input-bg)] p-5 rounded-2xl border border-[var(--border-color)]">
-                            <h4 class="font-black text-sm uppercase tracking-widest text-brandOrange mb-3"><i class="fa-solid fa-image mr-2"></i> Banner Ad (₹49/banner)</h4>
+                            <h4 class="font-black text-sm uppercase tracking-widest text-brandOrange mb-3"><i class="fa-solid fa-image mr-2"></i> Banner Ads (₹49/month each)</h4>
                             <p class="text-[10px] opacity-60 mb-3">Photo gallery-style banner at the top of student home screen.</p>
                             <input type="file" id="banner-ad-file" accept="image/*" class="input-field text-sm mb-2">
                             <input type="url" id="banner-ad-link" placeholder="Click URL (optional)" class="input-field text-sm mb-3">
                             <button onclick="uploadAd('banner')" class="btn-brand px-6 py-2.5 text-xs">Upload Banner</button>
                             <div class="mt-3 space-y-2">
-                                ${existingAds.filter(a => a.type === 'banner').map(a => `<div class="flex items-center gap-3 bg-[var(--border-color)]/20 p-3 rounded-xl"><a href="${a.link || '#'}" target="_blank"><img src="${a.imageUrl}" class="w-20 h-12 object-cover rounded"></a><span class="text-xs flex-1 truncate">${a.imageUrl}</span><button onclick="deleteAd('${a.id}')" class="text-red-500 text-xs font-black">✕</button></div>`).join('')}
+                                ${existingAds.filter(a => a.type === 'banner').map(a => `<div class="flex items-center gap-3 bg-[var(--border-color)]/20 p-3 rounded-xl"><a href="${a.link || '#'}" target="_blank"><img src="${a.imageUrl}" class="w-20 h-12 object-cover rounded"></a><span class="text-xs flex-1 truncate">${a.imageUrl.substring(0, 30)}...</span><button onclick="deleteAd('${a.id}')" class="text-red-500 text-xs font-black">✕</button></div>`).join('')}
                             </div>
                         </div>
                     </div>
@@ -3519,16 +3713,14 @@
                 const ads = [];
                 adsSnap.forEach(d => ads.push({ id: d.id, ...d.data() }));
 
-                // Show banner ads at top of home
                 const banners = ads.filter(a => a.type === 'banner');
                 if (banners.length > 0 && document.getElementById('banner-ad-container')) {
                     const container = document.getElementById('banner-ad-container');
                     container.innerHTML =
-                        `<div class="ad-banner-container">${banners.map(b => `<a href="${b.link || '#'}" target="_blank"><img src="${b.imageUrl}" class="h-20 md:h-28 object-cover rounded-xl min-w-[200px] border border-[var(--border-color)] shadow-sm"></a>`).join('')}</div>`;
+                        `<div class="ad-banner-gallery">${banners.map(b => `<a href="${b.link || '#'}" target="_blank"><img src="${b.imageUrl}" alt="Ad"></a>`).join('')}</div>`;
                     container.classList.remove('hidden');
                 }
 
-                // Show popup ads
                 const popups = ads.filter(a => a.type === 'popup');
                 if (popups.length > 0 && !localStorage.getItem('ad_popup_closed')) {
                     const popupContainer = document.getElementById('ad-popup-container');
@@ -3547,14 +3739,13 @@
             localStorage.setItem('ad_popup_closed', 'true');
         };
 
-        // ─── PLAN MANAGEMENT (INSTITUTE OWNER) ───
+        // ─── PLAN MANAGEMENT ───
         window.showPlanManagement = async () => {
             const modal = document.getElementById('custom-modal');
             const content = document.getElementById('modal-content');
             toggleBottomNavBarVisibility(false);
             modal.classList.remove('hidden');
 
-            // fetch existing plans
             const plansSnap = await Core.getDocs(Core.collection(Core.db, "plans"));
             let plansHtml = '';
             plansSnap.forEach(doc => {
@@ -3607,7 +3798,7 @@
             window.showPlanManagement();
         };
 
-        // ─── TIMETABLE / SCHEDULE ───
+        // ─── TIMETABLE ───
         window.showTimetable = async () => {
             const modal = document.getElementById('custom-modal');
             const content = document.getElementById('modal-content');
@@ -3643,7 +3834,6 @@
             toggleBottomNavBarVisibility(false);
             modal.classList.remove('hidden');
 
-            // fetch students who follow this teacher
             let students = [];
             if (profile.teacherId) {
                 const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs",
@@ -3651,7 +3841,6 @@
                 snap.forEach(d => students.push({ id: d.id, ...d.data() }));
             }
 
-            // fetch groups
             const groupsSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId",
                 "==", profile.teacherId || "")));
 
@@ -3699,6 +3888,7 @@
                     text: `${title}: ${body}`,
                     createdAt: Core.serverTimestamp()
                 });
+                await window.pushSystemNotification("CUSTOM", `${title}: ${body}`, uid);
             }
             toast(`Notification sent to ${targetUids.length} student(s)`);
             window.closeCustomModal();
@@ -3988,7 +4178,7 @@
             if (!navBar) return;
 
             let tabs = [];
-            if (profile.role === 'student') {
+            if (profile && profile.role === 'student') {
                 tabs = [
                     { id: 'home', label: 'Home', icon: 'fa-solid fa-house' },
                     { id: 'groups', label: 'Groups', icon: 'fa-solid fa-users' },
@@ -4016,7 +4206,6 @@
         }
 
         // ─── STUDENT VIEWS ───
-        // Student Home
         window.studentHome = async () => {
             const main = document.getElementById('main-content');
             main.innerHTML = `
@@ -4029,7 +4218,10 @@
                 </div>
             `;
 
-            // Fetch content
+            // Show skeletons immediately
+            document.getElementById('suggested-feed').innerHTML = generateSkeletonGrid(6);
+            document.getElementById('feed').innerHTML = generateSkeletonGrid(6);
+
             let contentQueryArgs = [Core.collection(Core.db, "content"), Core.limit(40)];
             let autoFollowedTids = [];
             if (profile.instituteId) {
@@ -4092,7 +4284,6 @@
             window.loadStudentAds();
         };
 
-        // Student Groups
         window.studentGroups = async () => {
             const main = document.getElementById('main-content');
             main.innerHTML = `
@@ -4110,7 +4301,6 @@
             window.loadGroups();
         };
 
-        // Student Courses (all courses available to student)
         window.studentCourses = async () => {
             const main = document.getElementById('main-content');
             main.innerHTML = `
@@ -4119,6 +4309,8 @@
                     <div id="courses-feed" class="grid md:grid-cols-2 gap-6"></div>
                 </div>
             `;
+
+            document.getElementById('courses-feed').innerHTML = generateSkeletonGrid(4);
 
             let courseQueryArgs = [Core.collection(Core.db, "courses")];
             let targetInstitute = null;
@@ -4157,7 +4349,6 @@
             await renderCourses(coSorted);
         };
 
-        // Student My Courses (purchased/enrolled)
         window.studentMyCourses = async () => {
             const main = document.getElementById('main-content');
             main.innerHTML = `
@@ -4167,42 +4358,40 @@
                 </div>
             `;
 
-            // Get groups the student is a member of
+            document.getElementById('my-courses-feed').innerHTML = generateSkeletonGrid(4);
+
             const groupsSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("members",
                 "array-contains", Core.auth.currentUser.uid)));
             const groupIds = groupsSnap.docs.map(d => d.id);
 
             if (groupIds.length === 0) {
                 document.getElementById('my-courses-feed').innerHTML =
-                    `<p class="text-xs opacity-50 text-center py-8">You have not enrolled in any courses yet.</p>`;
+                    `<p class="text-xs opacity-50 text-center py-8 col-span-full">You have not enrolled in any courses yet.</p>`;
                 return;
             }
 
-            // Find courses where groupId is in the groupIds
             const coursesSnap = await Core.getDocs(Core.collection(Core.db, "courses"));
             const myCourses = coursesSnap.docs.filter(d => groupIds.includes(d.data().groupId));
             if (myCourses.length === 0) {
                 document.getElementById('my-courses-feed').innerHTML =
-                    `<p class="text-xs opacity-50 text-center py-8">You have not enrolled in any courses yet.</p>`;
+                    `<p class="text-xs opacity-50 text-center py-8 col-span-full">You have not enrolled in any courses yet.</p>`;
                 return;
             }
             await renderCourses(myCourses);
         };
 
-        // ─── OVERRIDE loadDashboardView to handle student tabs ───
+        // ─── OVERRIDE loadDashboardView ───
         const originalLoadDashboardView = window.loadDashboardView;
         window.loadDashboardView = async function(tab) {
             if (!profile) return;
             updateCartPill();
 
-            // If student, delegate to student functions
+            // Build nav
+            buildBottomNav();
+
             if (profile.role === 'student') {
-                // Build nav if not built
-                buildBottomNav();
-                // Set active tab
                 currentNavTab = tab;
                 _studentNavTab = tab;
-                // Render view
                 switch (tab) {
                     case 'home':
                         await window.studentHome();
@@ -4222,7 +4411,7 @@
                 return;
             }
 
-            // Teacher/owner logic (original)
+            // Teacher/owner logic
             const main = document.getElementById('main-content');
             if (profile.role === 'teacher' && profile.planExpiresAt) {
                 if (new Date() > new Date(profile.planExpiresAt.seconds * 1000)) {
@@ -4251,7 +4440,6 @@
                 }
             }
 
-            // ─── TEACHER / OWNER VIEW ───
             if (profile.role === 'teacher' || profile.role === 'super_admin') {
                 const [contentSnap, followersSnap, courseSnap, groupSnap] = await Promise.all([
                     Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "==", profile
@@ -4275,28 +4463,19 @@
                 const coursesSorted = [..._currentCourseList].sort((a, b) => (b.data().createdAt?.seconds || 0) - (a
                     .data().createdAt?.seconds || 0));
 
-                // Build nav (teacher)
-                buildBottomNav();
-
-                // ─── TAB: DASHBOARD ───
+                // TAB: DASHBOARD
                 if (tab === 'dashboard') {
                     const ringStyle = await window.updateProfileRing(Core.auth.currentUser.uid, profile.role, profile
                         .teacherId);
 
-                    // Check if this teacher is an institute owner
                     let isInstituteOwner = false;
-                    let ownerInstData = null;
                     if (profile.instituteId) {
                         const instData = await window.getInstBadgeData(profile.instituteId);
-                        if (instData && instData.teacherId === profile.teacherId) {
-                            isInstituteOwner = true;
-                            ownerInstData = instData;
-                        }
+                        if (instData && instData.teacherId === profile.teacherId) isInstituteOwner = true;
                     }
 
                     main.innerHTML = `
                     <div class="fade-in space-y-6">
-                        <!-- PROFILE MINI HEADER -->
                         <div class="profile-mini">
                             <img src="${profile.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(profile.name)}" class="avatar" style="${ringStyle}">
                             <div class="info">
@@ -4311,41 +4490,33 @@
                             </div>
                         </div>
 
-                        <!-- 3x2 DASHBOARD CARDS -->
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-                            <!-- Course -->
                             <div class="dash-card" onclick="window.showCoursesView()">
                                 <div><div class="card-icon"><i class="fa-solid fa-book-open"></i></div><div class="card-title">Course</div></div>
                                 <span class="card-action"><i class="fa-regular fa-plus"></i> Add</span>
                             </div>
-                            <!-- Content -->
                             <div class="dash-card" onclick="window.showContentView()">
                                 <div><div class="card-icon"><i class="fa-regular fa-file-lines"></i></div><div class="card-title">Content</div></div>
                                 <span class="card-action"><i class="fa-regular fa-plus"></i> Add</span>
                             </div>
-                            <!-- Live -->
                             <div class="dash-card" onclick="window.showLiveView()">
                                 <div><div class="card-icon"><i class="fa-solid fa-broadcast"></i></div><div class="card-title">Live</div></div>
                                 <span class="card-action"><i class="fa-solid fa-circle-play"></i> Go Live</span>
                             </div>
-                            <!-- Groups -->
                             <div class="dash-card" onclick="window.showGroupsView()">
                                 <div><div class="card-icon"><i class="fa-solid fa-users"></i></div><div class="card-title">Groups</div></div>
                                 <span class="card-action"><i class="fa-regular fa-plus"></i> Add</span>
                             </div>
-                            <!-- Demo Class -->
                             <div class="dash-card" onclick="window.showDemoView()">
                                 <div><div class="card-icon"><i class="fa-regular fa-circle-play"></i></div><div class="card-title">Demo Class</div></div>
                                 <span class="card-action"><i class="fa-regular fa-plus"></i> Add</span>
                             </div>
-                            <!-- Notification -->
                             <div class="dash-card" onclick="window.showNotificationView()">
                                 <div><div class="card-icon"><i class="fa-regular fa-bell"></i></div><div class="card-title">Notification</div></div>
                                 <span class="card-action"><i class="fa-regular fa-paper-plane"></i> Send</span>
                             </div>
                         </div>
 
-                        <!-- RECENT CONTENT -->
                         <div class="mt-6">
                             <h3 class="text-lg font-black italic mb-3">Recent Content</h3>
                             <div id="perf-matrix-target" class="space-y-2"></div>
@@ -4367,7 +4538,7 @@
                         }).join('');
                     }
 
-                // ─── TAB: GROUPS ───
+                // TAB: GROUPS
                 } else if (tab === 'groups') {
                     main.innerHTML = `
                         <div class="fade-in">
@@ -4383,7 +4554,7 @@
                     `;
                     window.loadGroups();
 
-                // ─── TAB: ANALYTICS ───
+                // TAB: ANALYTICS
                 } else if (tab === 'analytics') {
                     main.innerHTML = `
                         <div class="fade-in space-y-6">
@@ -4430,9 +4601,8 @@
             }
         };
 
-        // ─── TEACHER VIEW FUNCTIONS FOR TILES ───
+        // ─── TEACHER VIEW FUNCTIONS ───
         window.showCoursesView = function() {
-            // Render a view showing all courses with add button
             const main = document.getElementById('main-content');
             main.innerHTML = `
                 <div class="fade-in">
@@ -4443,8 +4613,8 @@
                     <div id="courses-feed" class="grid md:grid-cols-2 gap-6"></div>
                 </div>
             `;
-            // Reuse renderCourses with teacher's courses
             const sorted = [..._currentCourseList].sort((a, b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
+            document.getElementById('courses-feed').innerHTML = generateSkeletonGrid(4);
             renderCourses(sorted);
         };
 
@@ -4460,6 +4630,7 @@
                 </div>
             `;
             const sorted = [..._currentContentList].sort((a, b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
+            document.getElementById('feed').innerHTML = generateSkeletonGrid(6);
             renderFeed(sorted, true);
         };
 
@@ -4476,6 +4647,7 @@
             `;
             const liveDocs = _currentContentList.filter(d => d.data().type === 'live');
             const sorted = liveDocs.sort((a, b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
+            document.getElementById('live-feed').innerHTML = generateSkeletonGrid(6);
             renderFeed(sorted, true, 'live-feed');
         };
 
@@ -4506,6 +4678,7 @@
             `;
             const demoDocs = _currentContentList.filter(d => d.data().isDemo === true);
             const sorted = demoDocs.sort((a, b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
+            document.getElementById('demo-feed').innerHTML = generateSkeletonGrid(6);
             renderFeed(sorted, true, 'demo-feed');
         };
 
@@ -4592,11 +4765,8 @@
                     }
                     fetchSystemNotifications();
                     window.showScreen('dashboard');
-                    // Determine initial tab based on role
                     let initialTab = 'dashboard';
-                    if (profile.role === 'student') {
-                        initialTab = 'home';
-                    }
+                    if (profile.role === 'student') initialTab = 'home';
                     window.setNavTab(initialTab);
                     listenSystemEvents();
                     initializeSwipeGestures();
@@ -4610,11 +4780,10 @@
         // ─── INIT ───
         if (localStorage.getItem('oc_theme') === 'true') document.documentElement.classList.add('light');
 
-        // Expose functions
         window.toast = toast;
         window.loadDashboardView = window.loadDashboardView;
 
-        console.log('OpenClase v3.1 — Monkey-Simple UI with student tabs, ad links, and tile views 🚀');
+        console.log('OpenClase v3.2 — All issues fixed: +Add buttons, Quick Notes, Payment, Campus Directory, Ads, Nav, Live Sessions, Skeletons 🚀');
     </script>
 
     <script src="https://unpkg.com/lucide@latest"></script>
