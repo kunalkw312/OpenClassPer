@@ -165,144 +165,150 @@
             }
         }
 
-        /* ─── HEADER / NAVBAR (restored) ─── */
+        /* ─── TOP NAVBAR (original) ─── */
         .top-navbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 20px;
+            padding: 0.75rem 1.25rem;
             background: var(--glass-bg);
-            backdrop-filter: blur(30px);
             border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
             z-index: 1000;
-            gap: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
             flex-wrap: wrap;
+            padding-top: max(1rem, env(safe-area-inset-top));
         }
         .top-navbar .brand {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 20px;
-            font-weight: 800;
-            font-style: italic;
+            gap: 0.5rem;
             cursor: pointer;
+            flex-shrink: 0;
         }
         .top-navbar .brand img {
-            height: 36px;
-            width: 36px;
-            border-radius: 10px;
+            height: 2rem;
+            width: 2rem;
+            border-radius: 0.75rem;
             object-fit: cover;
         }
-        .top-navbar .brand span {
+        .top-navbar .brand h2 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            font-style: italic;
+            letter-spacing: -0.02em;
+            white-space: nowrap;
+        }
+        .top-navbar .brand h2 span {
             color: var(--brandOrange);
         }
-        .top-navbar .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .top-navbar .nav-actions .search-wrap {
+        .top-navbar .search-wrapper {
             display: flex;
             align-items: center;
             background: var(--input-bg);
             border: 1px solid var(--border-color);
             border-radius: 99px;
-            padding: 4px 12px;
-            transition: width 0.3s;
-            width: 160px;
+            padding: 0 0.75rem;
+            flex: 1 1 180px;
+            max-width: 300px;
+            transition: all 0.3s;
         }
-        .top-navbar .nav-actions .search-wrap:focus-within {
-            width: 220px;
-            border-color: var(--brandOrange);
-        }
-        .top-navbar .nav-actions .search-wrap input {
+        .top-navbar .search-wrapper input {
             background: transparent;
             border: none;
             outline: none;
             color: var(--text-main);
-            font-size: 13px;
-            padding: 6px 4px;
+            padding: 0.5rem 0.4rem;
+            font-size: 0.85rem;
             width: 100%;
         }
-        .top-navbar .nav-actions .search-wrap input::placeholder {
+        .top-navbar .search-wrapper input::placeholder {
             color: rgba(128, 128, 128, 0.5);
         }
-        .top-navbar .nav-actions .icon-btn {
+        .top-navbar .search-wrapper button {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            opacity: 0.5;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+        .top-navbar .actions {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-shrink: 0;
+        }
+        .top-navbar .actions .icon-btn {
+            width: 2.25rem;
+            height: 2.25rem;
             background: var(--input-bg);
             border: 1px solid var(--border-color);
-            border-radius: 50%;
-            width: 38px;
-            height: 38px;
+            border-radius: 0.75rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 1.1rem;
             color: var(--text-main);
             cursor: pointer;
             transition: all 0.25s;
             position: relative;
         }
-        .top-navbar .nav-actions .icon-btn:hover {
+        .top-navbar .actions .icon-btn:hover {
             transform: scale(1.08);
             border-color: var(--brandOrange);
         }
-        .top-navbar .nav-actions .icon-btn .badge {
+        .top-navbar .actions .icon-btn .badge {
             position: absolute;
             top: -4px;
             right: -4px;
             background: #ef4444;
             color: #fff;
-            font-size: 8px;
+            font-size: 0.55rem;
             font-weight: 800;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
+            min-width: 1rem;
+            height: 1rem;
+            border-radius: 99px;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 0 0.25rem;
+            border: 1px solid var(--bg-main);
         }
-        .top-navbar .nav-actions .profile-pic {
-            width: 38px;
-            height: 38px;
+        .top-navbar .actions .profile-pic {
+            width: 2.25rem;
+            height: 2.25rem;
             border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--brandOrange);
+            overflow: hidden;
             cursor: pointer;
-            background: #111;
+            border: 2px solid var(--brandOrange);
             flex-shrink: 0;
         }
+        .top-navbar .actions .profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
         @media (max-width: 640px) {
-            .top-navbar {
-                padding: 8px 12px;
-                gap: 8px;
+            .top-navbar .brand h2 {
+                font-size: 1rem;
             }
-            .top-navbar .brand {
-                font-size: 16px;
+            .top-navbar .search-wrapper {
+                max-width: 120px;
             }
-            .top-navbar .brand img {
-                height: 28px;
-                width: 28px;
+            .top-navbar .actions .icon-btn {
+                width: 2rem;
+                height: 2rem;
+                font-size: 0.9rem;
             }
-            .top-navbar .nav-actions .search-wrap {
-                width: 120px;
-            }
-            .top-navbar .nav-actions .search-wrap:focus-within {
-                width: 160px;
-            }
-            .top-navbar .nav-actions .icon-btn {
-                width: 32px;
-                height: 32px;
-                font-size: 14px;
-            }
-            .top-navbar .nav-actions .profile-pic {
-                width: 32px;
-                height: 32px;
+            .top-navbar .actions .profile-pic {
+                width: 2rem;
+                height: 2rem;
             }
         }
 
-        /* ─── PROFILE HEADER COMPACT (quick actions) ─── */
+        /* ─── PROFILE HEADER (compact) ─── */
         .profile-header-compact {
             display: flex;
             align-items: center;
@@ -313,7 +319,7 @@
             border: 1px solid var(--border-color);
             backdrop-filter: blur(20px);
             flex-wrap: wrap;
-            margin: 12px 16px;
+            margin-bottom: 1.5rem;
         }
         .profile-header-compact .avatar {
             width: 56px;
@@ -377,7 +383,6 @@
                 flex-direction: column;
                 align-items: stretch;
                 gap: 12px;
-                margin: 8px 12px;
             }
             .profile-header-compact .name-id {
                 text-align: center;
@@ -409,7 +414,7 @@
             justify-content: center;
             text-align: center;
             transition: all 0.3s;
-            cursor: pointer;
+            cursor: default;
             min-height: 120px;
             position: relative;
         }
@@ -1251,41 +1256,6 @@
                 padding: 18px 16px;
             }
         }
-
-        /* ─── PAGE CONTAINER ─── */
-        #page-container {
-            padding-top: 0;
-        }
-
-        /* ─── SUB-TAB NAVIGATION ─── */
-        .sub-tabs {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin: 12px 0 20px;
-        }
-        .sub-tabs .sub-tab {
-            padding: 6px 16px;
-            border-radius: 99px;
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            color: var(--text-main);
-            opacity: 0.5;
-            cursor: pointer;
-            transition: all 0.25s;
-        }
-        .sub-tabs .sub-tab.active {
-            opacity: 1;
-            background: rgba(247, 148, 29, 0.12);
-            border-color: rgba(247, 148, 29, 0.3);
-            color: var(--brandOrange);
-        }
-        .sub-tabs .sub-tab:hover {
-            opacity: 0.8;
-        }
     </style>
 </head>
 
@@ -1307,7 +1277,7 @@
         <button class="vault-close" id="vault-close-btn">✕</button>
         <div style="display:flex; flex-direction:column; width:100%; max-width:1200px; align-items:center; gap:12px;">
             <div id="vault-wrapper">
-                <div id="anti-theft-blank"><i class="fas fa-lock"></i> Content Locked</div>
+                <div id="anti-theft-blank">🔒 Content Locked</div>
                 <div id="secure-watermark"></div>
                 <div id="player-container" style="width:100%;"></div>
             </div>
@@ -1316,7 +1286,7 @@
                 <div class="chat-messages" id="live-chat-messages"></div>
                 <div class="chat-input-row">
                     <input id="live-msg-input" placeholder="Ask a question..." onkeydown="if(event.key==='Enter') sendLiveMessage()">
-                    <button onclick="sendLiveMessage()"><i class="fas fa-paper-plane"></i></button>
+                    <button onclick="sendLiveMessage()">Send</button>
                 </div>
             </div>
         </div>
@@ -1326,38 +1296,38 @@
     <div id="group-chat-window">
         <div class="gc-header">
             <div style="display:flex;align-items:center;gap:12px;">
-                <button onclick="closeGroupChat()" style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;color:var(--text-main);"><i class="fas fa-arrow-left"></i></button>
+                <button onclick="closeGroupChat()" style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;color:var(--text-main);">←</button>
                 <span class="gc-title" id="group-chat-title">Group</span>
-                <button id="group-roster-btn" style="display:none;font-size:9px;font-weight:800;text-transform:uppercase;color:var(--brandOrange);border:1px solid rgba(247,148,29,0.2);background:transparent;padding:4px 12px;border-radius:99px;cursor:pointer;"><i class="fas fa-users"></i> Members</button>
+                <button id="group-roster-btn" style="display:none;font-size:9px;font-weight:800;text-transform:uppercase;color:var(--brandOrange);border:1px solid rgba(247,148,29,0.2);background:transparent;padding:4px 12px;border-radius:99px;cursor:pointer;">Members</button>
             </div>
-            <button onclick="closeGroupChat()" style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer;color:var(--text-main);"><i class="fas fa-times"></i></button>
+            <button onclick="closeGroupChat()" style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer;color:var(--text-main);">✕</button>
         </div>
         <div class="gc-messages" id="group-chat-messages"></div>
         <div class="gc-input-row">
             <input id="group-msg-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendGroupMessage()">
-            <button onclick="sendGroupMessage()"><i class="fas fa-paper-plane"></i></button>
+            <button onclick="sendGroupMessage()">Send</button>
         </div>
     </div>
 
     <!-- ─── AI FLOATING ─── -->
-    <div id="ai-floating-btn" onclick="toggleAI()"><i class="fas fa-robot"></i></div>
+    <div id="ai-floating-btn" onclick="toggleAI()">🤖</div>
     <div id="ai-chat-window">
         <div class="ai-header">
-            <div class="ai-title"><i class="fas fa-robot"></i> Class Assistant</div>
-            <button onclick="toggleAI()" style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:50%;width:32px;height:32px;cursor:pointer;color:var(--text-main);font-size:14px;"><i class="fas fa-times"></i></button>
+            <div class="ai-title"><span>🤖</span> Class Assistant</div>
+            <button onclick="toggleAI()" style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:50%;width:32px;height:32px;cursor:pointer;color:var(--text-main);font-size:14px;">✕</button>
         </div>
         <div class="ai-messages" id="ai-messages">
-            <div class="ai-msg"><i class="fas fa-hand-peace"></i> Hello! I'm your assistant. How can I help?</div>
+            <div class="ai-msg">👋 Hello! I'm your assistant. How can I help?</div>
         </div>
         <div class="ai-input-row">
             <input id="ai-input" placeholder="Ask anything..." onkeydown="if(event.key==='Enter') sendAI()">
-            <button onclick="sendAI()"><i class="fas fa-paper-plane"></i></button>
+            <button onclick="sendAI()">Send</button>
         </div>
     </div>
 
     <!-- ─── AD POPUP ─── -->
     <div class="ad-popup" id="ad-popup">
-        <button class="ad-popup-close" onclick="closeAdPopup()"><i class="fas fa-times"></i></button>
+        <button class="ad-popup-close" onclick="closeAdPopup()">✕</button>
         <div id="ad-popup-content"><img src="" alt="ad" id="ad-popup-img" style="display:none;"></div>
     </div>
 
@@ -1385,7 +1355,7 @@
                     <input type="email" id="auth-email" placeholder="Email Address" class="input-field">
                     <div class="relative">
                         <input type="password" id="auth-pass" placeholder="Password" class="input-field pr-12" onkeydown="if(event.key==='Enter') handleAuth()">
-                        <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-brandOrange transition"><i class="fas fa-eye"></i></button>
+                        <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-brandOrange transition">👁️</button>
                     </div>
                     <div class="text-right mb-3"><button onclick="forgotPassword()" class="text-sm text-zinc-400 hover:text-brandOrange hover:underline transition-colors">Forgot Password?</button></div>
                     <button onclick="handleAuth()" id="primary-auth-btn" class="w-full py-4 btn-brand text-sm shadow-lg">Sign In</button>
@@ -1434,52 +1404,38 @@
         <!-- ─── DASHBOARD ─── -->
         <div id="dashboard" class="hidden min-h-screen fade-in">
 
-            <!-- ─── TOP NAVBAR (restored) ─── -->
-            <div class="top-navbar" id="top-navbar">
+            <!-- TOP NAVBAR (original style) -->
+            <nav class="top-navbar">
                 <div class="brand" onclick="setTab('dashboard')">
                     <img src="https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg" alt="logo">
-                    Open<span>Clase</span>
+                    <h2>Open<span>Clase</span></h2>
                 </div>
-                <div class="nav-actions">
-                    <div class="search-wrap">
-                        <input id="global-search" placeholder="Search..." oninput="globalSearch(this.value)">
-                        <i class="fas fa-search" style="opacity:0.4;font-size:14px;"></i>
-                    </div>
+                <div class="search-wrapper">
+                    <button onclick="toggleSearch()"><i class="fas fa-search"></i></button>
+                    <input type="text" id="global-search-input" placeholder="Search..." oninput="handleGlobalSearch(this.value)" onblur="collapseSearch()">
+                </div>
+                <div class="actions">
                     <button class="icon-btn" onclick="showNotificationsHub()">
                         <i class="fas fa-bell"></i>
-                        <span class="badge" id="notif-badge" style="display:none;">0</span>
+                        <span class="badge" id="notify-pill" style="display:none;">0</span>
                     </button>
                     <button class="icon-btn" onclick="showCart()">
                         <i class="fas fa-shopping-cart"></i>
-                        <span class="badge" id="cart-badge" style="display:none;">0</span>
+                        <span class="badge" id="cart-pill" style="display:none;">0</span>
                     </button>
-                    <button class="icon-btn" onclick="toggleMode()">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                    <img id="nav-profile-pic-top" class="profile-pic" src="" alt="profile" onclick="showProfileSettings()">
+                    <button class="icon-btn" onclick="toggleMode()">🌓</button>
+                    <div class="profile-pic" onclick="showProfileSettings()" id="nav-profile-pic">
+                        <img src="" alt="profile">
+                    </div>
                 </div>
-            </div>
+            </nav>
 
-            <!-- ─── PROFILE HEADER (quick actions) ─── -->
-            <div class="profile-header-compact" id="profile-header-compact">
-                <img id="nav-profile-pic" class="avatar" src="" alt="avatar">
-                <div class="name-id">
-                    <h2 id="nav-user-name">User</h2>
-                    <p id="nav-user-id">ID: ---</p>
-                </div>
-                <div class="quick-actions" id="quick-actions-container">
-                    <!-- populated by JS -->
-                </div>
-            </div>
+            <!-- MAIN CONTENT (includes profile header + grid) -->
+            <main id="main-content" class="p-4 md:p-6 max-w-6xl mx-auto w-full"></main>
 
-            <!-- ─── MAIN CONTENT ─── -->
-            <main id="main-content" class="p-4 md:p-6 max-w-5xl mx-auto w-full"></main>
-
-            <!-- ─── FLOATING NAV ISLAND ─── -->
+            <!-- FLOATING NAV ISLAND (replaces old bottom nav) -->
             <div id="floating-nav-island">
-                <div class="nav-item active" data-tab="dashboard" onclick="setTab('dashboard')"><i class="fas fa-th-large"></i><span>Dashboard</span></div>
-                <div class="nav-item" data-tab="groups" onclick="setTab('groups')"><i class="fas fa-users"></i><span>Groups</span></div>
-                <div class="nav-item" data-tab="analytics" onclick="setTab('analytics')"><i class="fas fa-chart-line"></i><span>Analytics</span></div>
+                <!-- dynamic tabs rendered by JS -->
             </div>
         </div>
 
@@ -1488,7 +1444,7 @@
             <div class="w-full h-full p-4 md:p-10 overflow-hidden flex flex-col text-[var(--text-main)]">
                 <div class="flex justify-between items-center mb-6 border-b border-[var(--border-color)] pb-6 shrink-0">
                     <div><h1 class="text-2xl md:text-4xl font-black italic text-brandOrange">System Admin</h1><p class="text-xs opacity-50 uppercase tracking-widest font-bold mt-2">Super Admin Controls</p></div>
-                    <button onclick="closeAdminDashboard()" class="bg-[var(--input-bg)] hover:bg-red-600 hover:scale-110 text-[var(--text-main)] hover:text-white w-12 h-12 rounded-full flex items-center justify-center transition-all font-black border border-[var(--border-color)]"><i class="fas fa-times"></i></button>
+                    <button onclick="closeAdminDashboard()" class="bg-[var(--input-bg)] hover:bg-red-600 hover:scale-110 text-[var(--text-main)] hover:text-white w-12 h-12 rounded-full flex items-center justify-center transition-all font-black border border-[var(--border-color)]">✕</button>
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-4 mb-6 shrink-0 text-center">
                     <button onclick="showAdminSection('plans-section')" class="bg-brandBlue/20 text-brandBlue hover:bg-brandBlue hover:scale-105 hover:text-white border border-brandBlue/30 p-3 md:p-4 rounded-xl font-black uppercase tracking-widest text-[9px] md:text-[10px] transition-all">Plans</button>
@@ -1511,7 +1467,7 @@
                     <div id="institutes-section" class="admin-section hidden space-y-4 max-w-4xl mx-auto fade-in">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                             <h2 class="text-xl md:text-2xl font-black italic text-purple-400">Institutes</h2>
-                            <button onclick="showCreateInstituteModal()" class="btn-brand px-6 py-3 text-xs shadow-md"><i class="fas fa-plus"></i> Add Institute</button>
+                            <button onclick="showCreateInstituteModal()" class="btn-brand px-6 py-3 text-xs shadow-md">＋ Add Institute</button>
                         </div>
                         <input type="text" id="admin-inst-search" oninput="filterAdminInstitutes(this.value)" placeholder="Search institutes..." class="input-field text-sm">
                         <div id="institutes-list" class="space-y-3"></div>
@@ -1547,7 +1503,6 @@
         let tempUser = null;
         let activeGroupId = null;
         let currentTab = 'dashboard';
-        let currentSubTab = 'courses'; // for teacher views
         let videoPlayer = null;
         let currentVideoContext = null;
         let watermarkInterval = null;
@@ -1565,8 +1520,8 @@
         let _currentCourseList = [];
         let groupMessageTrackers = {};
         let aiChatHistory = [];
-        let isTeacher = false;
-        let isStudent = false;
+        let _teacherPendingGroups = 0;
+        let _lockedInstId = null;
 
         // ─── DOM REFS ───
         const $ = id => document.getElementById(id);
@@ -1589,10 +1544,6 @@
         const aiInput = $('ai-input');
         const adPopup = $('ad-popup');
         const adPopupImg = $('ad-popup-img');
-        const notifBadge = $('notif-badge');
-        const cartBadge = $('cart-badge');
-        const navProfilePic = $('nav-profile-pic');
-        const navProfilePicTop = $('nav-profile-pic-top');
 
         // ─── TOAST ───
         function toast(msg, type = 'info') {
@@ -1627,6 +1578,7 @@
         // ─── SET TAB ───
         function setTab(tab) {
             currentTab = tab;
+            // Update nav items
             document.querySelectorAll('#floating-nav-island .nav-item').forEach(el => {
                 el.classList.toggle('active', el.dataset.tab === tab);
             });
@@ -1638,442 +1590,249 @@
         // ─── RENDER DASHBOARD ───
         async function renderDashboard() {
             if (!profile) return;
-            isTeacher = profile.role === 'teacher' || profile.role === 'super_admin';
-            isStudent = profile.role === 'student';
+            const isTeacher = profile.role === 'teacher' || profile.role === 'super_admin';
+            const isStudent = profile.role === 'student';
 
-            // Update navbar
-            navProfilePic.src = profile.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=004a80&color=fff&size=128`;
-            navProfilePicTop.src = profile.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=004a80&color=fff&size=128`;
-            $('nav-user-name').textContent = profile.name || 'User';
-            $('nav-user-id').textContent = `ID: ${profile.teacherId || 'STUDENT'}`;
+            // ── Update top navbar profile pic ──
+            const pic = $('nav-profile-pic').querySelector('img');
+            if (pic) pic.src = profile.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=004a80&color=fff&size=128`;
 
-            // Quick actions
-            const qaContainer = $('quick-actions-container');
-            let qaHTML = '';
+            // ── Update floating nav items ──
+            const nav = $('floating-nav-island');
+            let tabs = [];
             if (isTeacher) {
-                qaHTML = `
-                    <button class="qa-btn" onclick="openQuickNotes()"><i class="fas fa-sticky-note"></i> Notes</button>
-                    <button class="qa-btn" onclick="openAdsManager()"><i class="fas fa-ad"></i> Ads</button>
-                    <button class="qa-btn" onclick="openRequests()"><i class="fas fa-inbox"></i> Requests</button>
-                    <button class="qa-btn" onclick="openTimetable()"><i class="fas fa-calendar-alt"></i> Schedule</button>
-                `;
-                if (profile.role === 'super_admin') {
-                    qaHTML += `<button class="qa-btn" onclick="openAdminPanel()" style="border-color:#dc2626;color:#dc2626;"><i class="fas fa-crown"></i> Admin</button>`;
-                }
+                tabs = [
+                    { tab: 'dashboard', icon: 'fa-th-large', label: 'Dashboard' },
+                    { tab: 'groups', icon: 'fa-users', label: 'Groups' },
+                    { tab: 'analytics', icon: 'fa-chart-line', label: 'Analytics' }
+                ];
             } else {
-                qaHTML = `
-                    <button class="qa-btn" onclick="openTimetable()"><i class="fas fa-calendar-alt"></i> Schedule</button>
-                    <button class="qa-btn" onclick="showNotificationsHub()"><i class="fas fa-bell"></i> Notifications</button>
-                `;
+                tabs = [
+                    { tab: 'home', icon: 'fa-home', label: 'Home' },
+                    { tab: 'courses', icon: 'fa-book', label: 'Courses' },
+                    { tab: 'groups', icon: 'fa-users', label: 'Groups' },
+                    { tab: 'content', icon: 'fa-file-alt', label: 'Content' }
+                ];
             }
-            qaContainer.innerHTML = qaHTML;
+            nav.innerHTML = tabs.map(t => `
+                <div class="nav-item ${currentTab === t.tab ? 'active' : ''}" data-tab="${t.tab}" onclick="setTab('${t.tab}')">
+                    <i class="fas ${t.icon}"></i>
+                    <span>${t.label}</span>
+                </div>
+            `).join('');
 
-            // Update cart badge
-            updateCartBadge();
-
-            // Main content
-            if (currentTab === 'dashboard') {
-                if (isTeacher) {
-                    await renderTeacherDashboard();
-                } else {
-                    await renderStudentDashboard();
-                }
-            } else if (currentTab === 'groups') {
-                await renderGroupsTab();
-            } else if (currentTab === 'analytics') {
-                await renderAnalyticsTab();
+            // ── Render main content based on tab ──
+            if (isTeacher) {
+                if (currentTab === 'dashboard') await renderTeacherDashboard();
+                else if (currentTab === 'groups') await renderGroupsTab();
+                else if (currentTab === 'analytics') await renderAnalyticsTab();
+            } else {
+                if (currentTab === 'home') await renderStudentHome();
+                else if (currentTab === 'courses') await renderStudentCourses();
+                else if (currentTab === 'groups') await renderGroupsTab();
+                else if (currentTab === 'content') await renderStudentContent();
             }
         }
 
         // ─── TEACHER DASHBOARD ───
         async function renderTeacherDashboard() {
-            // Show sub-tabs for Courses, Content, Live, Groups, Demo Class, Notification
-            const subTabsHTML = `
-                <div class="sub-tabs">
-                    <span class="sub-tab active" data-sub="courses" onclick="switchTeacherSubTab('courses')"><i class="fas fa-book"></i> Courses</span>
-                    <span class="sub-tab" data-sub="content" onclick="switchTeacherSubTab('content')"><i class="fas fa-file-alt"></i> Content</span>
-                    <span class="sub-tab" data-sub="live" onclick="switchTeacherSubTab('live')"><i class="fas fa-broadcast-tower"></i> Live</span>
-                    <span class="sub-tab" data-sub="groups" onclick="switchTeacherSubTab('groups')"><i class="fas fa-users"></i> Groups</span>
-                    <span class="sub-tab" data-sub="demo" onclick="switchTeacherSubTab('demo')"><i class="fas fa-video"></i> Demo Class</span>
-                    <span class="sub-tab" data-sub="notification" onclick="switchTeacherSubTab('notification')"><i class="fas fa-bell"></i> Notification</span>
-                </div>
-                <div id="teacher-sub-content" class="fade-in"></div>
-            `;
-            mainContent.innerHTML = subTabsHTML;
-            // Load default sub-tab
-            switchTeacherSubTab('courses');
-        }
-
-        // ─── SWITCH TEACHER SUB-TAB ───
-        async function switchTeacherSubTab(sub) {
-            currentSubTab = sub;
-            document.querySelectorAll('.sub-tab').forEach(el => {
-                el.classList.toggle('active', el.dataset.sub === sub);
-            });
-            const container = $('teacher-sub-content');
-            container.innerHTML = '<div class="skeleton" style="height:200px;"></div>';
-
-            switch (sub) {
-                case 'courses':
-                    await renderTeacherCourses(container);
-                    break;
-                case 'content':
-                    await renderTeacherContent(container);
-                    break;
-                case 'live':
-                    await renderTeacherLive(container);
-                    break;
-                case 'groups':
-                    await renderTeacherGroups(container);
-                    break;
-                case 'demo':
-                    await renderTeacherDemo(container);
-                    break;
-                case 'notification':
-                    await renderTeacherNotification(container);
-                    break;
-            }
-        }
-
-        // ─── TEACHER COURSES ───
-        async function renderTeacherCourses(container) {
-            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "courses"), Core.where("teacherId", "==", profile.teacherId || "")));
-            _currentCourseList = snap.docs;
-            let html = `
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-black"><i class="fas fa-book"></i> My Courses</h3>
-                    <button onclick="openCourseManager()" class="btn-brand px-4 py-2 text-xs"><i class="fas fa-plus"></i> New Course</button>
-                </div>
-                <div class="space-y-4">
-            `;
-            if (snap.empty) {
-                html += `<p class="opacity-40 text-center">No courses yet. Create one!</p>`;
-            } else {
-                for (let doc of snap.docs) {
-                    const c = doc.data();
-                    const groupDoc = c.groupId ? await Core.getDoc(Core.doc(Core.db, "groups", c.groupId)) : null;
-                    const groupName = groupDoc?.exists() ? groupDoc.data().name : 'No group';
-                    html += `
-                        <div class="glass p-4 rounded-xl border border-[var(--border-color)] hover:border-brandOrange/30 transition-all">
-                            <div class="flex flex-wrap justify-between items-center gap-2">
-                                <div>
-                                    <h4 class="font-bold text-lg">${c.title}</h4>
-                                    <p class="text-xs opacity-50">${c.playlist?.length || 0} modules • ₹${c.price || 0}</p>
-                                    <p class="text-xs opacity-40"><i class="fas fa-users"></i> Group: ${groupName}</p>
-                                </div>
-                                <div class="flex gap-2 flex-wrap">
-                                    <button onclick="editCourse('${doc.id}')" class="text-xs font-black text-brandBlue border border-brandBlue/20 px-3 py-1.5 rounded-lg hover:bg-brandBlue hover:text-white transition"><i class="fas fa-edit"></i> Edit</button>
-                                    <button onclick="openCourseChat('${doc.id}')" class="text-xs font-black text-brandOrange border border-brandOrange/20 px-3 py-1.5 rounded-lg hover:bg-brandOrange hover:text-white transition"><i class="fas fa-comment"></i> Chat</button>
-                                    <button onclick="startLiveForCourse('${doc.id}')" class="text-xs font-black text-red-500 border border-red-500/20 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white transition"><i class="fas fa-broadcast-tower"></i> Go Live</button>
-                                    <button onclick="deleteCourse('${doc.id}')" class="text-xs font-black text-red-500 border border-red-500/20 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-            html += `</div>`;
-            container.innerHTML = html;
-        }
-
-        // ─── TEACHER CONTENT ───
-        async function renderTeacherContent(container) {
-            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "==", profile.teacherId || "")));
-            _currentContentList = snap.docs;
-            let html = `
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-black"><i class="fas fa-file-alt"></i> My Content</h3>
-                    <button onclick="openContentManager()" class="btn-brand px-4 py-2 text-xs"><i class="fas fa-plus"></i> Add Content</button>
-                </div>
-                <div class="space-y-4">
-            `;
-            if (snap.empty) {
-                html += `<p class="opacity-40 text-center">No content uploaded yet.</p>`;
-            } else {
-                for (let doc of snap.docs) {
-                    const c = doc.data();
-                    const isDemo = c.isDemo ? '<span class="demo-badge"><i class="fas fa-star"></i> Demo</span>' : '';
-                    html += `
-                        <div class="glass p-4 rounded-xl border border-[var(--border-color)] hover:border-brandOrange/30 transition-all">
-                            <div class="flex flex-wrap justify-between items-center gap-2">
-                                <div>
-                                    <h4 class="font-bold">${c.title}</h4>
-                                    <p class="text-xs opacity-50">${c.type || 'video'} • ${c.views || 0} views ${isDemo}</p>
-                                </div>
-                                <div class="flex gap-2 flex-wrap">
-                                    <button onclick="editContent('${doc.id}')" class="text-xs font-black text-brandBlue border border-brandBlue/20 px-3 py-1.5 rounded-lg hover:bg-brandBlue hover:text-white transition"><i class="fas fa-edit"></i> Edit</button>
-                                    <button onclick="toggleDemoVideo('${doc.id}')" class="text-xs font-black text-purple-500 border border-purple-500/20 px-3 py-1.5 rounded-lg hover:bg-purple-500 hover:text-white transition"><i class="fas fa-star"></i> ${c.isDemo ? 'Undemo' : 'Demo'}</button>
-                                    <button onclick="deleteContent('${doc.id}')" class="text-xs font-black text-red-500 border border-red-500/20 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-            html += `</div>`;
-            container.innerHTML = html;
-        }
-
-        // ─── TEACHER LIVE ───
-        async function renderTeacherLive(container) {
-            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "liveSessions"), Core.where("teacherId", "==", profile.teacherId || "")));
-            let html = `
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-black"><i class="fas fa-broadcast-tower"></i> Live Sessions</h3>
-                    <button onclick="openLiveManager()" class="btn-brand px-4 py-2 text-xs"><i class="fas fa-plus"></i> Schedule Live</button>
-                </div>
-                <div class="space-y-4">
-            `;
-            if (snap.empty) {
-                html += `<p class="opacity-40 text-center">No live sessions scheduled.</p>`;
-            } else {
-                for (let doc of snap.docs) {
-                    const l = doc.data();
-                    const status = (l.date && l.startTime) ? window.checkLiveStatus ? window.checkLiveStatus(l.date, l.startTime, l.endTime) : 'recorded' : 'recorded';
-                    const statusLabel = status === 'live' ? '<span class="text-red-500 font-black"><i class="fas fa-circle"></i> LIVE</span>' : status === 'scheduled' ? '<span class="text-blue-500"><i class="fas fa-clock"></i> Scheduled</span>' : '<span class="opacity-50">Recorded</span>';
-                    html += `
-                        <div class="glass p-4 rounded-xl border border-[var(--border-color)] hover:border-brandOrange/30 transition-all">
-                            <div class="flex flex-wrap justify-between items-center gap-2">
-                                <div>
-                                    <h4 class="font-bold">${l.title}</h4>
-                                    <p class="text-xs opacity-50">${l.date || ''} ${l.startTime || ''} - ${l.endTime || ''}</p>
-                                    <p class="text-xs">${statusLabel}</p>
-                                </div>
-                                <div class="flex gap-2">
-                                    <button onclick="deleteLiveSession('${doc.id}')" class="text-xs font-black text-red-500 border border-red-500/20 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-            html += `</div>`;
-            container.innerHTML = html;
-        }
-
-        // ─── TEACHER GROUPS ───
-        async function renderTeacherGroups(container) {
-            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("teacherId", "==", profile.teacherId || "")));
-            let html = `
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-black"><i class="fas fa-users"></i> My Groups</h3>
-                    <button onclick="openGroupManager()" class="btn-brand px-4 py-2 text-xs"><i class="fas fa-plus"></i> New Group</button>
-                </div>
-                <div class="space-y-4">
-            `;
-            if (snap.empty) {
-                html += `<p class="opacity-40 text-center">No groups created.</p>`;
-            } else {
-                for (let doc of snap.docs) {
-                    const g = doc.data();
-                    const unread = groupMessageTrackers[doc.id] || 0;
-                    html += `
-                        <div class="glass p-4 rounded-xl border border-[var(--border-color)] hover:border-brandOrange/30 transition-all">
-                            <div class="flex flex-wrap justify-between items-center gap-2">
-                                <div>
-                                    <h4 class="font-bold">${g.name}</h4>
-                                    <p class="text-xs opacity-50">${g.code} • ${g.members?.length || 0} members</p>
-                                    ${unread > 0 ? `<span class="bg-brandOrange text-white text-[9px] font-black px-2 py-0.5 rounded-lg"><i class="fas fa-comment"></i> ${unread} new</span>` : ''}
-                                </div>
-                                <div class="flex gap-2">
-                                    <button onclick="openGroupChat('${doc.id}','${g.name}')" class="text-xs font-black text-brandOrange border border-brandOrange/20 px-3 py-1.5 rounded-lg hover:bg-brandOrange hover:text-white transition"><i class="fas fa-comment"></i> Chat</button>
-                                    <button onclick="manageGroupRoster('${doc.id}','${g.name}')" class="text-xs font-black text-brandBlue border border-brandBlue/20 px-3 py-1.5 rounded-lg hover:bg-brandBlue hover:text-white transition"><i class="fas fa-users-cog"></i> Roster</button>
-                                    <button onclick="deleteGroup('${doc.id}')" class="text-xs font-black text-red-500 border border-red-500/20 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-            html += `</div>`;
-            container.innerHTML = html;
-        }
-
-        // ─── TEACHER DEMO ───
-        async function renderTeacherDemo(container) {
-            // Show courses to add demo content to, or upload as standalone demo
-            const coursesSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "courses"), Core.where("teacherId", "==", profile.teacherId || "")));
-            let html = `
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-black"><i class="fas fa-video"></i> Demo Class Manager</h3>
-                </div>
-                <div class="space-y-4">
-                    <div class="glass p-4 rounded-xl border border-[var(--border-color)]">
-                        <p class="font-bold"><i class="fas fa-upload"></i> Upload Demo Video</p>
-                        <div class="flex gap-2 mt-2 flex-wrap">
-                            <input id="demo-title-input" placeholder="Demo Title" class="input-field flex-1 min-w-[180px] text-sm">
-                            <input id="demo-url-input" placeholder="Video URL" class="input-field flex-1 min-w-[180px] text-sm">
-                            <select id="demo-course-select" class="input-field flex-1 min-w-[150px] text-sm">
-                                <option value="">-- As standalone --</option>
-                                ${coursesSnap.docs.map(d => `<option value="${d.id}">${d.data().title}</option>`).join('')}
-                            </select>
-                            <button onclick="uploadDemoVideo()" class="btn-brand px-4 py-2 text-xs"><i class="fas fa-upload"></i> Upload</button>
-                        </div>
+            // Build profile header with quick actions
+            const profileHeader = `
+                <div class="profile-header-compact fade-in">
+                    <img class="avatar" src="${profile.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}`}" alt="avatar">
+                    <div class="name-id">
+                        <h2>${profile.name}</h2>
+                        <p>ID: ${profile.teacherId || 'N/A'}</p>
                     </div>
-                    <div id="demo-list-container" class="space-y-2"></div>
+                    <div class="quick-actions">
+                        <button class="qa-btn" onclick="openQuickNotes()"><i class="fas fa-sticky-note"></i> Notes</button>
+                        <button class="qa-btn" onclick="openAdsManager()"><i class="fas fa-ad"></i> Ads</button>
+                        <button class="qa-btn" onclick="openRequests()"><i class="fas fa-inbox"></i> Requests</button>
+                        <button class="qa-btn" onclick="openTimetable()"><i class="fas fa-calendar-alt"></i> Schedule</button>
+                        ${profile.role === 'super_admin' ? `<button class="qa-btn" onclick="openAdminPanel()" style="border-color:#dc2626;color:#dc2626;"><i class="fas fa-crown"></i> Admin</button>` : ''}
+                        <button class="qa-btn" onclick="openPlanManager()"><i class="fas fa-cog"></i> Plans</button>
+                    </div>
                 </div>
             `;
-            container.innerHTML = html;
-            // Load existing demo content
-            await loadDemoList();
+
+            // 3x2 grid
+            const gridHTML = `
+                <div class="dash-grid">
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-book"></i></div><div class="card-label">Courses</div><button class="card-action" onclick="openCourseManager()">Add</button></div>
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-file-alt"></i></div><div class="card-label">Content</div><button class="card-action" onclick="openContentManager()">Add</button></div>
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-broadcast-tower"></i></div><div class="card-label">Live</div><button class="card-action" onclick="openLiveManager()">Go Live</button></div>
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-users"></i></div><div class="card-label">Groups</div><button class="card-action" onclick="openGroupManager()">Add</button></div>
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-video"></i></div><div class="card-label">Demo Class</div><button class="card-action" onclick="openDemoManager()">Add</button></div>
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-bell"></i></div><div class="card-label">Notification</div><button class="card-action" onclick="openCustomNotification()">Send</button></div>
+                </div>
+            `;
+
+            // Ads banner if institute owner
+            let adsHTML = '';
+            if (profile.instituteId) {
+                const ads = await fetchInstituteAds(profile.instituteId);
+                if (ads.length > 0) {
+                    adsHTML = `
+                        <div class="mt-6">
+                            <p class="text-[10px] font-black uppercase opacity-40 mb-2 tracking-widest"><i class="fas fa-bullhorn"></i> Institute Banners</p>
+                            <div class="ad-banner-strip">
+                                ${ads.map(a => `
+                                    <div class="ad-item">
+                                        <img src="${a.image}" alt="ad">
+                                        <button class="ad-close" onclick="this.parentElement.remove()">✕</button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            mainContent.innerHTML = `
+                <div class="fade-in space-y-4">
+                    ${profileHeader}
+                    ${gridHTML}
+                    ${adsHTML}
+                </div>
+            `;
         }
 
-        async function loadDemoList() {
-            const container = $('demo-list-container');
-            if (!container) return;
-            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("isDemo", "==", true), Core.where("tId", "==", profile.teacherId || "")));
+        // ─── STUDENT HOME ───
+        async function renderStudentHome() {
+            // Check if student has purchased access
+            const hasAccess = await checkStudentAccess();
+
+            // Profile header (simplified)
+            const profileHeader = `
+                <div class="profile-header-compact fade-in">
+                    <img class="avatar" src="${profile.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}`}" alt="avatar">
+                    <div class="name-id">
+                        <h2>${profile.name}</h2>
+                        <p>Student</p>
+                    </div>
+                    <div class="quick-actions">
+                        <button class="qa-btn" onclick="openTimetable()"><i class="fas fa-calendar-alt"></i> Schedule</button>
+                        <button class="qa-btn" onclick="showNotificationsHub()"><i class="fas fa-bell"></i> Notifications</button>
+                    </div>
+                </div>
+            `;
+
+            let purchasePrompt = '';
+            if (!hasAccess) {
+                purchasePrompt = `
+                    <div class="purchase-prompt">
+                        <h3><i class="fas fa-lock"></i> Unlock Full Access</h3>
+                        <p>Purchase a plan to access all courses and live sessions.</p>
+                        <button class="btn-purchase" onclick="openPurchasePlans()">Purchase Now</button>
+                    </div>
+                `;
+            } else {
+                purchasePrompt = `
+                    <div class="glass p-4 rounded-2xl border border-green-500/20 text-center">
+                        <p class="text-sm font-bold text-green-500"><i class="fas fa-check-circle"></i> Full Access Active</p>
+                    </div>
+                `;
+            }
+
+            // Student grid (simpler)
+            const gridHTML = `
+                <div class="dash-grid">
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-book"></i></div><div class="card-label">My Courses</div><button class="card-action" onclick="setTab('courses')">View</button></div>
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-file-alt"></i></div><div class="card-label">Content</div><button class="card-action" onclick="setTab('content')">Browse</button></div>
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-broadcast-tower"></i></div><div class="card-label">Live Now</div><button class="card-action" onclick="openLiveNow()">Join</button></div>
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-users"></i></div><div class="card-label">Groups</div><button class="card-action" onclick="setTab('groups')">Open</button></div>
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-video"></i></div><div class="card-label">Demo Videos</div><button class="card-action" onclick="loadDemoContent()">Watch</button></div>
+                    <div class="dash-card"><div class="card-icon"><i class="fas fa-bell"></i></div><div class="card-label">Notifications</div><button class="card-action" onclick="showNotificationsHub()">View</button></div>
+                </div>
+            `;
+
+            // Demo content (always visible)
+            let demoSection = '';
+            const demoSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("isDemo", "==", true)));
+            if (demoSnap.size > 0) {
+                let demoHTML = `<div class="mt-6"><p class="text-[10px] font-black uppercase opacity-40 mb-3"><i class="fas fa-video"></i> Demo Videos</p><div class="grid grid-cols-2 md:grid-cols-3 gap-4">`;
+                demoSnap.forEach(d => {
+                    const data = d.data();
+                    demoHTML += `
+                        <div class="glass p-3 rounded-xl border border-[var(--border-color)] cursor-pointer hover:border-brandOrange/30 transition-all" onclick="openResource('${d.id}','${data.url}','${data.title}')">
+                            <img src="${getSmartPreview(data.url)}" class="w-full aspect-video object-cover rounded-lg mb-2">
+                            <p class="text-xs font-bold truncate">${data.title}</p>
+                            <span class="demo-badge">Demo</span>
+                        </div>
+                    `;
+                });
+                demoHTML += `</div></div>`;
+                demoSection = demoHTML;
+            }
+
+            mainContent.innerHTML = `
+                <div class="fade-in space-y-4">
+                    ${profileHeader}
+                    ${purchasePrompt}
+                    ${gridHTML}
+                    ${demoSection}
+                </div>
+            `;
+        }
+
+        // ─── STUDENT COURSES ───
+        async function renderStudentCourses() {
+            const hasAccess = await checkStudentAccess();
+            mainContent.innerHTML = `<div class="fade-in"><h3 class="text-xl font-black mb-4"><i class="fas fa-book"></i> My Courses</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6"></div></div>`;
+            const container = $('courses-feed');
+            if (!hasAccess) {
+                container.innerHTML = `<div class="col-span-full glass p-8 text-center rounded-2xl"><p class="opacity-50">Purchase a plan to access courses.</p><button class="btn-brand mt-4 px-8 py-3" onclick="openPurchasePlans()">Purchase Now</button></div>`;
+                return;
+            }
+            const snap = await Core.getDocs(Core.collection(Core.db, "courses"));
             if (snap.empty) {
-                container.innerHTML = `<p class="opacity-40 text-center">No demo videos uploaded.</p>`;
+                container.innerHTML = `<p class="opacity-40 text-center col-span-full">No courses available.</p>`;
                 return;
             }
             container.innerHTML = snap.docs.map(d => {
                 const c = d.data();
-                const courseName = c.courseId ? ' (in course)' : '';
                 return `
-                    <div class="glass p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center">
-                        <div><p class="font-bold">${c.title} <span class="demo-badge"><i class="fas fa-star"></i> Demo</span>${courseName}</p></div>
-                        <button onclick="deleteContent('${d.id}')" class="text-red-500 text-xs font-black"><i class="fas fa-trash"></i></button>
+                    <div class="glass p-4 rounded-2xl border border-[var(--border-color)]">
+                        <img src="${getSmartPreview(c.thumbnail)}" class="w-full aspect-video object-cover rounded-lg mb-3">
+                        <h4 class="font-bold text-lg">${c.title}</h4>
+                        <p class="text-xs opacity-60">${c.teacherName}</p>
+                        <div class="flex justify-between items-center mt-3">
+                            <span class="text-brandOrange font-black">₹${c.price}</span>
+                            <button onclick="openCourse('${d.id}')" class="btn-brand px-5 py-2 text-[10px]">View</button>
+                        </div>
                     </div>
                 `;
             }).join('');
         }
 
-        window.uploadDemoVideo = async () => {
-            const title = $('demo-title-input')?.value.trim();
-            const url = $('demo-url-input')?.value.trim();
-            const courseId = $('demo-course-select')?.value;
-            if (!title || !url) return toast("Title and URL required", "error");
-            await Core.addDoc(Core.collection(Core.db, "content"), {
-                title,
-                url,
-                type: 'video',
-                isDemo: true,
-                courseId: courseId || null,
-                tId: profile.teacherId,
-                tName: profile.name,
-                views: 0,
-                date: Core.serverTimestamp()
-            });
-            toast("Demo video uploaded!");
-            $('demo-title-input').value = '';
-            $('demo-url-input').value = '';
-            await loadDemoList();
-        };
-
-        // ─── TEACHER NOTIFICATION ───
-        async function renderTeacherNotification(container) {
-            const coursesSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "courses"), Core.where("teacherId", "==", profile.teacherId || "")));
-            let html = `
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-black"><i class="fas fa-bell"></i> Send Notification</h3>
-                </div>
-                <div class="space-y-4">
-                    <div class="glass p-4 rounded-xl border border-[var(--border-color)]">
-                        <p class="font-bold"><i class="fas fa-pen"></i> Custom Notification</p>
-                        <textarea id="notif-message-text" placeholder="Your message..." class="input-field h-24 resize-none mt-2"></textarea>
-                        <div class="flex gap-2 mt-2 flex-wrap">
-                            <select id="notif-course-select" class="input-field flex-1 min-w-[180px] text-sm">
-                                <option value="all">All Students (all courses)</option>
-                                ${coursesSnap.docs.map(d => `<option value="${d.id}">${d.data().title}</option>`).join('')}
-                            </select>
-                            <button onclick="sendCustomNotificationFromTeacher()" class="btn-brand px-4 py-2 text-xs"><i class="fas fa-paper-plane"></i> Send</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            container.innerHTML = html;
-        }
-
-        window.sendCustomNotificationFromTeacher = async () => {
-            const msg = $('notif-message-text')?.value.trim();
-            const courseId = $('notif-course-select')?.value;
-            if (!msg) return toast("Message required", "error");
-            let targetUids = [];
-            if (courseId === 'all') {
-                // Send to all followers
-                const followers = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "array-contains", profile.teacherId || "")));
-                targetUids = followers.docs.map(d => d.id);
-            } else {
-                // Send to course group members
-                const courseDoc = await Core.getDoc(Core.doc(Core.db, "courses", courseId));
-                if (courseDoc.exists()) {
-                    const course = courseDoc.data();
-                    if (course.groupId) {
-                        const groupDoc = await Core.getDoc(Core.doc(Core.db, "groups", course.groupId));
-                        if (groupDoc.exists()) {
-                            targetUids = groupDoc.data().members || [];
-                        }
-                    }
-                }
-            }
-            if (targetUids.length === 0) return toast("No recipients found", "error");
-            for (let uid of targetUids) {
-                await Core.addDoc(Core.collection(Core.db, "notifications"), {
-                    uid,
-                    type: "CUSTOM",
-                    text: `📢 ${profile.name}: ${msg}`,
-                    createdAt: Core.serverTimestamp()
-                });
-            }
-            toast(`Notification sent to ${targetUids.length} students!`);
-            $('notif-message-text').value = '';
-        };
-
-        // ─── STUDENT DASHBOARD ───
-        async function renderStudentDashboard() {
+        // ─── STUDENT CONTENT ───
+        async function renderStudentContent() {
             const hasAccess = await checkStudentAccess();
-            let html = `
-                <div class="fade-in space-y-5">
-                    ${!hasAccess ? `
-                        <div class="purchase-prompt">
-                            <h3><i class="fas fa-lock"></i> Unlock Full Access</h3>
-                            <p>Purchase a plan to access all courses and live sessions.</p>
-                            <button class="btn-purchase" onclick="openPurchasePlans()"><i class="fas fa-shopping-cart"></i> Purchase Now</button>
-                        </div>
-                    ` : `
-                        <div class="glass p-4 rounded-2xl border border-green-500/20 text-center">
-                            <p class="text-sm font-bold text-green-500"><i class="fas fa-check-circle"></i> Full Access Active</p>
-                        </div>
-                    `}
-                    <div class="dash-grid">
-                        <div class="dash-card" onclick="navigateTo('courses')"><div class="card-icon"><i class="fas fa-book"></i></div><div class="card-label">My Courses</div><button class="card-action" onclick="event.stopPropagation();navigateTo('courses')">View</button></div>
-                        <div class="dash-card" onclick="navigateTo('content')"><div class="card-icon"><i class="fas fa-file-alt"></i></div><div class="card-label">Content</div><button class="card-action" onclick="event.stopPropagation();navigateTo('content')">Browse</button></div>
-                        <div class="dash-card" onclick="navigateTo('live')"><div class="card-icon"><i class="fas fa-broadcast-tower"></i></div><div class="card-label">Live Now</div><button class="card-action" onclick="event.stopPropagation();navigateTo('live')">Join</button></div>
-                        <div class="dash-card" onclick="setTab('groups')"><div class="card-icon"><i class="fas fa-users"></i></div><div class="card-label">Groups</div><button class="card-action" onclick="event.stopPropagation();setTab('groups')">Open</button></div>
-                        <div class="dash-card" onclick="navigateTo('demo')"><div class="card-icon"><i class="fas fa-video"></i></div><div class="card-label">Demo Videos</div><button class="card-action" onclick="event.stopPropagation();navigateTo('demo')">Watch</button></div>
-                        <div class="dash-card" onclick="showNotificationsHub()"><div class="card-icon"><i class="fas fa-bell"></i></div><div class="card-label">Notifications</div><button class="card-action" onclick="event.stopPropagation();showNotificationsHub()">View</button></div>
-                    </div>
-                    ${!hasAccess ? `<p class="text-[10px] opacity-40 text-center mt-4"><i class="fas fa-info-circle"></i> You have access to demo content only. Purchase a plan for full access.</p>` : ''}
-                    <!-- Demo content section -->
-                    <div id="student-demo-section" class="mt-6"></div>
-                </div>
-            `;
-            mainContent.innerHTML = html;
-            // Load demo content for students
-            await loadStudentDemoContent();
-        }
-
-        async function loadStudentDemoContent() {
-            const container = $('student-demo-section');
-            if (!container) return;
-            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("isDemo", "==", true)));
-            if (snap.empty) {
-                container.innerHTML = '';
+            mainContent.innerHTML = `<div class="fade-in"><h3 class="text-xl font-black mb-4"><i class="fas fa-file-alt"></i> Content Library</h3><div id="content-feed" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div></div>`;
+            const container = $('content-feed');
+            const snap = await Core.getDocs(Core.collection(Core.db, "content"));
+            let docs = snap.docs;
+            if (!hasAccess) {
+                docs = docs.filter(d => d.data().isDemo === true);
+            }
+            if (docs.length === 0) {
+                container.innerHTML = `<p class="opacity-40 text-center col-span-full">${!hasAccess ? 'Purchase a plan to access content.' : 'No content available.'}</p>`;
+                if (!hasAccess) {
+                    container.innerHTML += `<div class="col-span-full text-center"><button class="btn-brand mt-4 px-8 py-3" onclick="openPurchasePlans()">Purchase Now</button></div>`;
+                }
                 return;
             }
-            let html = `<p class="text-[10px] font-black uppercase opacity-40 mb-3"><i class="fas fa-video"></i> Demo Videos</p><div class="grid grid-cols-2 md:grid-cols-3 gap-4">`;
-            snap.forEach(d => {
+            container.innerHTML = docs.map(d => {
                 const data = d.data();
-                html += `
+                return `
                     <div class="glass p-3 rounded-xl border border-[var(--border-color)] cursor-pointer hover:border-brandOrange/30 transition-all" onclick="openResource('${d.id}','${data.url}','${data.title}')">
-                        <img src="${window.getSmartPreview(data.url)}" class="w-full aspect-video object-cover rounded-lg mb-2">
+                        <img src="${getSmartPreview(data.url)}" class="w-full aspect-video object-cover rounded-lg mb-2">
                         <p class="text-xs font-bold truncate">${data.title}</p>
-                        <span class="demo-badge"><i class="fas fa-star"></i> Demo</span>
+                        ${data.isDemo ? '<span class="demo-badge">Demo</span>' : ''}
+                        <p class="text-[10px] opacity-40 mt-1">${data.tName}</p>
                     </div>
                 `;
-            });
-            html += `</div>`;
-            container.innerHTML = html;
+            }).join('');
         }
 
         // ─── GROUPS TAB ───
@@ -2095,8 +1854,9 @@
 
         // ─── ANALYTICS TAB ───
         async function renderAnalyticsTab() {
+            const isTeacher = profile.role === 'teacher' || profile.role === 'super_admin';
             if (!isTeacher) {
-                mainContent.innerHTML = `<div class="glass p-10 text-center rounded-2xl"><p class="opacity-50"><i class="fas fa-chart-line"></i> Analytics available for instructors only.</p></div>`;
+                mainContent.innerHTML = `<div class="glass p-10 text-center rounded-2xl"><p class="opacity-50">Analytics available for instructors only.</p></div>`;
                 return;
             }
 
@@ -2113,13 +1873,13 @@
             mainContent.innerHTML = `
                 <div class="fade-in space-y-6">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="glass p-5 rounded-2xl text-center"><p class="text-[9px] uppercase opacity-40 font-black"><i class="fas fa-users"></i> Followers</p><h2 class="text-3xl font-black">${followersSnap.size}</h2></div>
-                        <div class="glass p-5 rounded-2xl text-center"><p class="text-[9px] uppercase opacity-40 font-black"><i class="fas fa-eye"></i> Total Views</p><h2 class="text-3xl font-black">${totalViews}</h2></div>
-                        <div class="glass p-5 rounded-2xl text-center"><p class="text-[9px] uppercase opacity-40 font-black"><i class="fas fa-upload"></i> Uploads</p><h2 class="text-3xl font-black">${contentSnap.size}</h2></div>
-                        <div class="glass p-5 rounded-2xl text-center"><p class="text-[9px] uppercase opacity-40 font-black"><i class="fas fa-book"></i> Courses</p><h2 class="text-3xl font-black">${courseSnap.size}</h2></div>
+                        <div class="glass p-5 rounded-2xl text-center"><p class="text-[9px] uppercase opacity-40 font-black">Followers</p><h2 class="text-3xl font-black">${followersSnap.size}</h2></div>
+                        <div class="glass p-5 rounded-2xl text-center"><p class="text-[9px] uppercase opacity-40 font-black">Total Views</p><h2 class="text-3xl font-black">${totalViews}</h2></div>
+                        <div class="glass p-5 rounded-2xl text-center"><p class="text-[9px] uppercase opacity-40 font-black">Uploads</p><h2 class="text-3xl font-black">${contentSnap.size}</h2></div>
+                        <div class="glass p-5 rounded-2xl text-center"><p class="text-[9px] uppercase opacity-40 font-black">Courses</p><h2 class="text-3xl font-black">${courseSnap.size}</h2></div>
                     </div>
                     <div class="glass p-5 rounded-2xl">
-                        <p class="text-[10px] font-black uppercase opacity-40 mb-3"><i class="fas fa-trophy"></i> Top Performing Content</p>
+                        <p class="text-[10px] font-black uppercase opacity-40 mb-3">Top Performing Content</p>
                         <div id="top-content-list" class="space-y-2"></div>
                     </div>
                 </div>
@@ -2150,7 +1910,7 @@
             });
 
             if (userGroups.length === 0) {
-                container.innerHTML = `<p class="text-xs opacity-40 text-center py-6"><i class="fas fa-info-circle"></i> You are not in any groups yet. Join one above!</p>`;
+                container.innerHTML = `<p class="text-xs opacity-40 text-center py-6">You are not in any groups yet. Join one above!</p>`;
                 return;
             }
 
@@ -2163,9 +1923,9 @@
                             <span class="text-[8px] text-brandOrange font-black uppercase">${g.type}</span>
                             <h3 class="font-black text-lg">${g.name}</h3>
                             <p class="text-[10px] opacity-40 font-mono">${g.code}</p>
-                            ${unread > 0 ? `<span class="bg-brandOrange text-white text-[9px] font-black px-2 py-0.5 rounded-lg"><i class="fas fa-comment"></i> ${unread} new</span>` : ''}
+                            ${unread > 0 ? `<span class="bg-brandOrange text-white text-[9px] font-black px-2 py-0.5 rounded-lg">${unread} new</span>` : ''}
                         </div>
-                        <button onclick="openGroupChat('${d.id}','${g.name}')" class="btn-brand px-5 py-2.5 text-[10px]"><i class="fas fa-comment"></i> Open</button>
+                        <button onclick="openGroupChat('${d.id}','${g.name}')" class="btn-brand px-5 py-2.5 text-[10px]"><i class="fas fa-comments"></i> Open</button>
                     </div>
                 `;
             }).join('');
@@ -2173,8 +1933,7 @@
 
         async function checkStudentAccess() {
             if (!profile) return false;
-            if (isTeacher) return true;
-            // Check if student has an active subscription
+            if (profile.role === 'teacher' || profile.role === 'super_admin') return true;
             const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "subscriptions"), Core.where("uid", "==", Core.auth.currentUser.uid), Core.where("status", "==", "active")));
             return !snap.empty;
         }
@@ -2187,8 +1946,22 @@
             return ads;
         }
 
+        function getSmartPreview(url) {
+            if (!url) return 'https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg';
+            const clean = url.toLowerCase().trim();
+            if (clean.match(/\.(jpeg|jpg|gif|png|webp|svg)/)) return url;
+            const ytId = extractYTId(url);
+            if (ytId) return `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
+            return 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop';
+        }
+
+        function extractYTId(url) {
+            const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/|live\/)([^#&?]*).*/);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
         // ─── FEATURE: Live Sessions ───
-        window.startLiveForCourse = async (courseId) => {
+        window.startLiveSession = async (courseId) => {
             const title = prompt("Live Session Title:");
             if (!title) return;
             const date = prompt("Date (YYYY-MM-DD):");
@@ -2231,7 +2004,7 @@
             renderDashboard();
         };
 
-        // ─── FEATURE: Custom Notifications (teacher) ───
+        // ─── FEATURE: Custom Notifications ───
         window.sendCustomNotification = async () => {
             const message = prompt("Enter notification message for students:");
             if (!message) return;
@@ -2266,7 +2039,7 @@
             const today = new Date().toISOString().split('T')[0];
             const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "liveSessions"), Core.where("date", "==", today)));
             if (snap.empty) {
-                openModal(`<div class="text-center py-8"><p class="text-2xl mb-2"><i class="fas fa-calendar-day"></i></p><p class="opacity-50">No live sessions scheduled for today.</p></div>`);
+                openModal(`<div class="text-center py-8"><p class="text-2xl mb-2">📅</p><p class="opacity-50">No live sessions scheduled for today.</p></div>`);
                 return;
             }
             let html = `<h3 class="text-xl font-black mb-4"><i class="fas fa-calendar-alt"></i> Today's Schedule</h3><div class="space-y-3">`;
@@ -2292,11 +2065,7 @@
                 const groupDoc = await Core.getDoc(Core.doc(Core.db, "groups", course.groupId));
                 if (groupDoc.exists()) {
                     openGroupChat(course.groupId, course.title + " Chat");
-                } else {
-                    toast("Group not found for this course");
                 }
-            } else {
-                toast("No group associated with this course");
             }
         };
 
@@ -2309,13 +2078,13 @@
                 <h3 class="text-xl font-black mb-4"><i class="fas fa-ad"></i> Ad Manager</h3>
                 <div class="space-y-4">
                     <div class="glass p-4 rounded-xl border border-[var(--border-color)]">
-                        <p class="text-sm font-bold"><i class="fas fa-window-popup"></i> Pop-up Ad <span class="text-[10px] opacity-50">(₹19)</span></p>
+                        <p class="text-sm font-bold">Pop-up Ad <span class="text-[10px] opacity-50">(₹19)</span></p>
                         <p class="text-xs opacity-40 mb-2">Shows at bottom-left of student screens</p>
                         <input id="ad-popup-url" placeholder="Image URL" class="input-field text-sm mb-2">
                         <button onclick="uploadAd('popup')" class="btn-brand px-6 py-2.5 text-xs"><i class="fas fa-upload"></i> Upload Pop-up</button>
                     </div>
                     <div class="glass p-4 rounded-xl border border-[var(--border-color)]">
-                        <p class="text-sm font-bold"><i class="fas fa-images"></i> Banner Ad <span class="text-[10px] opacity-50">(₹49/banner)</span></p>
+                        <p class="text-sm font-bold">Banner Ad <span class="text-[10px] opacity-50">(₹49/banner)</span></p>
                         <p class="text-xs opacity-40 mb-2">Shows at top of student home screen</p>
                         <input id="ad-banner-url" placeholder="Image URL" class="input-field text-sm mb-2">
                         <button onclick="uploadAd('banner')" class="btn-brand px-6 py-2.5 text-xs"><i class="fas fa-upload"></i> Upload Banner</button>
@@ -2374,11 +2143,11 @@
 
         // ─── FEATURE: Plan Management (Owner) ───
         window.openPlanManager = async () => {
-            if (profile.role !== 'super_admin') {
+            if (profile.role !== 'super_admin' && !profile.instituteId) {
                 return toast("Only institute owners can manage plans", "error");
             }
             openModal(`
-                <h3 class="text-xl font-black mb-4"><i class="fas fa-coins"></i> Plan Management</h3>
+                <h3 class="text-xl font-black mb-4"><i class="fas fa-cog"></i> Plan Management</h3>
                 <div class="space-y-4">
                     <div>
                         <label class="text-[10px] font-black uppercase opacity-40">Plan Name</label>
@@ -2567,7 +2336,7 @@
                     </select>
                     <div class="flex items-center gap-3">
                         <input type="checkbox" id="pub-demo">
-                        <label for="pub-demo" class="text-sm"><i class="fas fa-star"></i> Mark as Demo Video</label>
+                        <label for="pub-demo" class="text-sm">Mark as Demo Video</label>
                     </div>
                     <button onclick="publishContentFromModal()" class="w-full py-3 btn-brand text-xs"><i class="fas fa-upload"></i> Publish</button>
                 </div>
@@ -2649,7 +2418,7 @@
             await Core.addDoc(Core.collection(Core.db, "courses"), {
                 title,
                 description: desc,
-                thumbnail: window.getSmartPreview(urls[0]),
+                thumbnail: getSmartPreview(urls[0]),
                 playlist,
                 price,
                 teacherId: profile.teacherId,
@@ -2675,7 +2444,7 @@
                         <input id="live-end" type="time" class="input-field text-sm">
                     </div>
                     <select id="live-course-select" class="input-field text-sm"></select>
-                    <button onclick="startLiveSessionFromModal()" class="w-full py-3 btn-brand text-xs"><i class="fas fa-play"></i> Schedule Live</button>
+                    <button onclick="startLiveSessionFromModal()" class="w-full py-3 btn-brand text-xs"><i class="fas fa-play"></i> Start Live</button>
                 </div>
             `);
             // Populate courses
@@ -2767,45 +2536,162 @@
         };
 
         // ─── FEATURE: Demo Manager ───
-        // Already handled via renderTeacherDemo
+        window.openDemoManager = () => {
+            openModal(`
+                <h3 class="text-xl font-black mb-4"><i class="fas fa-video"></i> Demo Videos</h3>
+                <div class="space-y-4">
+                    <input id="demo-title" placeholder="Demo Title" class="input-field text-sm">
+                    <input id="demo-url" placeholder="Video URL" class="input-field text-sm">
+                    <select id="demo-course" class="input-field text-sm">
+                        <option value="">Select Course (optional)</option>
+                    </select>
+                    <button onclick="uploadDemo()" class="w-full py-3 btn-brand text-xs"><i class="fas fa-upload"></i> Add Demo</button>
+                    <div id="demo-list" class="space-y-2 mt-4"></div>
+                </div>
+            `);
+            // Populate courses
+            Core.getDocs(Core.query(Core.collection(Core.db, "courses"), Core.where("teacherId", "==", profile.teacherId || ""))).then(snap => {
+                const sel = $('demo-course');
+                if (sel) {
+                    sel.innerHTML = '<option value="">No course (profile level)</option>' + snap.docs.map(d => `<option value="${d.id}">${d.data().title}</option>`).join('');
+                }
+            });
+            listDemos();
+        };
 
-        // ─── FEATURE: Custom Notification ───
-        // Already handled via renderTeacherNotification
+        window.uploadDemo = async () => {
+            const title = $('demo-title')?.value.trim();
+            const url = $('demo-url')?.value.trim();
+            const courseId = $('demo-course')?.value;
+            if (!title || !url) return toast("Title and URL required", "error");
+            const payload = {
+                title,
+                url,
+                type: 'video',
+                isDemo: true,
+                tId: profile.teacherId,
+                tName: profile.name,
+                views: 0,
+                date: Core.serverTimestamp()
+            };
+            if (courseId) payload.courseId = courseId;
+            await Core.addDoc(Core.collection(Core.db, "content"), payload);
+            toast("Demo added!");
+            $('demo-title').value = '';
+            $('demo-url').value = '';
+            listDemos();
+        };
 
-        // ─── NAVIGATION HELPERS ───
-        window.navigateTo = (section) => {
-            if (section === 'courses') {
-                if (isTeacher) {
-                    switchTeacherSubTab('courses');
-                } else {
-                    openModal(`<p class="opacity-50 text-center"><i class="fas fa-book"></i> Course catalog coming soon.</p>`);
+        async function listDemos() {
+            const container = document.querySelector('#demo-list');
+            if (!container) return;
+            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("isDemo", "==", true), Core.where("tId", "==", profile.teacherId || "")));
+            if (snap.empty) {
+                container.innerHTML = '<p class="text-xs opacity-40">No demo videos yet.</p>';
+                return;
+            }
+            container.innerHTML = snap.docs.map(d => {
+                const data = d.data();
+                return `
+                    <div class="flex justify-between items-center glass p-3 rounded-xl border border-[var(--border-color)]">
+                        <div><p class="font-bold text-sm">${data.title}</p>${data.courseId ? `<span class="text-[10px] opacity-40">Course: ${data.courseId}</span>` : ''}</div>
+                        <button onclick="removeDemo('${d.id}')" class="text-red-500 text-xs font-black"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.removeDemo = async (id) => {
+            if (!confirm("Remove this demo?")) return;
+            await Core.deleteDoc(Core.doc(Core.db, "content", id));
+            listDemos();
+        };
+
+        // ─── FEATURE: Custom Notification (course-specific) ───
+        window.openCustomNotification = () => {
+            openModal(`
+                <h3 class="text-xl font-black mb-4"><i class="fas fa-bell"></i> Send Notification</h3>
+                <div class="space-y-4">
+                    <textarea id="notif-message" placeholder="Your message..." class="input-field h-24 resize-none"></textarea>
+                    <select id="notif-course-select" class="input-field text-sm">
+                        <option value="all">All Students</option>
+                    </select>
+                    <button onclick="sendCustomNotificationFromModal()" class="w-full py-3 btn-brand text-xs"><i class="fas fa-paper-plane"></i> Send</button>
+                </div>
+            `);
+            // Populate courses
+            Core.getDocs(Core.query(Core.collection(Core.db, "courses"), Core.where("teacherId", "==", profile.teacherId || ""))).then(snap => {
+                const sel = $('notif-course-select');
+                if (sel) {
+                    snap.docs.forEach(d => {
+                        const opt = document.createElement('option');
+                        opt.value = d.id;
+                        opt.textContent = d.data().title;
+                        sel.appendChild(opt);
+                    });
                 }
-            } else if (section === 'content') {
-                if (isTeacher) {
-                    switchTeacherSubTab('content');
-                } else {
-                    openModal(`<p class="opacity-50 text-center"><i class="fas fa-file-alt"></i> Content library coming soon.</p>`);
-                }
-            } else if (section === 'live') {
-                if (isTeacher) {
-                    switchTeacherSubTab('live');
-                } else {
-                    openModal(`<p class="opacity-50 text-center"><i class="fas fa-broadcast-tower"></i> Live sessions coming soon.</p>`);
-                }
-            } else if (section === 'demo') {
-                if (isTeacher) {
-                    switchTeacherSubTab('demo');
-                } else {
-                    // Load demo content in student dashboard
-                    renderDashboard();
-                }
-            } else if (section === 'notification') {
-                if (isTeacher) {
-                    switchTeacherSubTab('notification');
-                } else {
-                    showNotificationsHub();
+            });
+        };
+
+        window.sendCustomNotificationFromModal = async () => {
+            const msg = $('notif-message')?.value.trim();
+            const courseId = $('notif-course-select')?.value;
+            if (!msg) return toast("Message required", "error");
+
+            let targetUids = [];
+            if (courseId === 'all') {
+                const followers = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("subs", "array-contains", profile.teacherId || "")));
+                targetUids = followers.docs.map(d => d.id);
+            } else {
+                // Send to members of the course group
+                const courseDoc = await Core.getDoc(Core.doc(Core.db, "courses", courseId));
+                if (courseDoc.exists()) {
+                    const course = courseDoc.data();
+                    if (course.groupId) {
+                        const groupDoc = await Core.getDoc(Core.doc(Core.db, "groups", course.groupId));
+                        if (groupDoc.exists()) {
+                            targetUids = groupDoc.data().members || [];
+                        }
+                    }
                 }
             }
+
+            for (let uid of targetUids) {
+                await Core.addDoc(Core.collection(Core.db, "notifications"), {
+                    uid,
+                    type: "CUSTOM",
+                    text: `📢 ${profile.name}: ${msg}`,
+                    createdAt: Core.serverTimestamp()
+                });
+            }
+            toast(`Sent to ${targetUids.length} students!`);
+            closeModal();
+        };
+
+        // ─── FEATURE: Live Now (student) ───
+        window.openLiveNow = async () => {
+            const today = new Date().toISOString().split('T')[0];
+            const now = new Date().getHours() * 60 + new Date().getMinutes();
+            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "liveSessions"), Core.where("date", "==", today)));
+            let live = null;
+            snap.forEach(d => {
+                const s = d.data();
+                const start = parseInt(s.startTime.split(':')[0]) * 60 + parseInt(s.startTime.split(':')[1]);
+                const end = parseInt(s.endTime.split(':')[0]) * 60 + parseInt(s.endTime.split(':')[1]);
+                if (now >= start && now <= end) live = { id: d.id, ...s };
+            });
+            if (!live) {
+                toast("No live session currently active.", "error");
+                return;
+            }
+            // Find content for this live session (if any)
+            const contentSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("liveSessionId", "==", live.id)));
+            if (contentSnap.empty) {
+                toast("No stream link available for this live session.", "error");
+                return;
+            }
+            const content = contentSnap.docs[0].data();
+            openResource(contentSnap.docs[0].id, content.url, content.title);
         };
 
         // ─── OPEN RESOURCE (video player) ───
@@ -2817,7 +2703,7 @@
                     await Core.updateDoc(Core.doc(Core.db, "content", id), { views: Core.increment(1) });
                 } catch (e) {}
             }
-            const vid = window.extractYTId ? window.extractYTId(url) : null;
+            const vid = extractYTId(url);
             mediaVault.classList.add('show');
             playerContainer.innerHTML = '';
             if (vid) {
@@ -2957,7 +2843,7 @@
             const data = gDoc.data();
             let html = `<h3 class="text-xl font-black mb-4"><i class="fas fa-users"></i> ${groupName} — Members</h3><div class="space-y-2">`;
             if (data.pending?.length) {
-                html += `<p class="text-[10px] font-black uppercase text-yellow-500"><i class="fas fa-clock"></i> Pending Requests</p>`;
+                html += `<p class="text-[10px] font-black uppercase text-yellow-500">Pending Requests</p>`;
                 data.pending.forEach(p => {
                     html += `
                         <div class="flex justify-between items-center glass p-3 rounded-xl border border-[var(--border-color)]">
@@ -2970,7 +2856,7 @@
                     `;
                 });
             }
-            html += `<p class="text-[10px] font-black uppercase opacity-40 mt-3"><i class="fas fa-user-check"></i> Active Members</p>`;
+            html += `<p class="text-[10px] font-black uppercase opacity-40 mt-3">Active Members</p>`;
             const members = data.members || [];
             if (members.length === 0) {
                 html += `<p class="text-xs opacity-40">No members.</p>`;
@@ -3036,7 +2922,7 @@
         window.showNotificationsHub = async () => {
             const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "notifications"), Core.where("uid", "==", Core.auth.currentUser.uid), Core.orderBy("createdAt", "desc"), Core.limit(20)));
             if (snap.empty) {
-                openModal(`<div class="text-center py-8"><p class="opacity-50"><i class="fas fa-bell-slash"></i> No notifications.</p></div>`);
+                openModal(`<div class="text-center py-8"><p class="opacity-50">No notifications.</p></div>`);
                 return;
             }
             let html = `<h3 class="text-xl font-black mb-4"><i class="fas fa-bell"></i> Notifications</h3><div class="space-y-2">`;
@@ -3199,7 +3085,7 @@
                     pendingSubs: [],
                     photo: Core.auth.currentUser.photoURL || '',
                     privacyMode: 'public',
-                    instituteId: window._lockedInstId || null,
+                    instituteId: _lockedInstId || null,
                     joined: new Date().toISOString()
                 });
                 location.reload();
@@ -3250,7 +3136,7 @@
                 <div class="glass p-4 rounded-xl flex justify-between items-center border border-[var(--border-color)]">
                     <div><p class="font-bold">${d.name || 'Unnamed'}</p><p class="text-[10px] opacity-40 font-mono">${d.uniqueId || d.id}</p></div>
                     <div class="flex gap-2">
-                        <button onclick="editInstitute('${d.id}')" class="text-brandOrange text-[10px] font-black"><i class="fas fa-edit"></i> Edit</button>
+                        <button onclick="editInstitute('${d.id}')" class="text-brandOrange text-[10px] font-black"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteInstitute('${d.id}')" class="text-red-500 text-[10px] font-black"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
@@ -3297,12 +3183,12 @@
 
         window.showCreateInstituteModal = () => {
             openModal(`
-                <h3 class="text-xl font-black mb-4"><i class="fas fa-plus-circle"></i> Add Institute</h3>
+                <h3 class="text-xl font-black mb-4">Add Institute</h3>
                 <div class="space-y-4">
                     <input id="new-inst-name" placeholder="Institute Name" class="input-field text-sm">
                     <input id="new-inst-logo" placeholder="Logo URL" class="input-field text-sm">
                     <input id="new-inst-teacher" placeholder="Teacher ID (OC-XXXX)" class="input-field text-sm">
-                    <button onclick="createInstitute()" class="w-full py-3 btn-brand text-xs"><i class="fas fa-save"></i> Create</button>
+                    <button onclick="createInstitute()" class="w-full py-3 btn-brand text-xs"><i class="fas fa-plus"></i> Create</button>
                 </div>
             `);
         };
@@ -3459,7 +3345,7 @@
         // ─── INSTITUTE FORM (public) ───
         window.showInstituteForm = () => {
             openModal(`
-                <h3 class="text-xl font-black mb-4"><i class="fas fa-school"></i> Register Institute</h3>
+                <h3 class="text-xl font-black mb-4"><i class="fas fa-building"></i> Register Institute</h3>
                 <div class="space-y-4">
                     <input id="req-inst-name" placeholder="Institute Name" class="input-field text-sm">
                     <input id="req-inst-email" placeholder="Contact Email" class="input-field text-sm">
@@ -3496,125 +3382,89 @@
             closeModal();
         };
 
-        // ─── PROFILE SETTINGS ───
-        window.showProfileSettings = async () => {
-            const ringStyle = await window.updateProfileRing ? await window.updateProfileRing(Core.auth.currentUser.uid, profile.role, profile.teacherId) : '';
-            openModal(`
-                <h3 class="text-xl font-black mb-4"><i class="fas fa-user-cog"></i> Profile Settings</h3>
-                <div class="space-y-4">
-                    <div class="flex items-center gap-4">
-                        <img src="${profile.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(profile.name)}" class="w-20 h-20 rounded-full object-cover" style="${ringStyle}">
-                        <div>
-                            <p class="font-bold">${profile.name}</p>
-                            <p class="text-xs opacity-40">${profile.teacherId || 'Student'}</p>
-                        </div>
-                    </div>
-                    <input id="profile-name-edit" value="${profile.name}" placeholder="Full Name" class="input-field text-sm">
-                    <textarea id="profile-bio-edit" placeholder="Bio" class="input-field text-sm h-20 resize-none">${profile.bio || ''}</textarea>
-                    <select id="profile-privacy-edit" class="input-field text-sm">
-                        <option value="public" ${profile.privacyMode === 'public' ? 'selected' : ''}>Public</option>
-                        <option value="private" ${profile.privacyMode === 'private' ? 'selected' : ''}>Private</option>
-                    </select>
-                    <button onclick="saveProfile()" class="w-full py-3 btn-brand text-xs"><i class="fas fa-save"></i> Save</button>
-                    <button onclick="logout()" class="w-full py-3 bg-red-500/20 text-red-500 rounded-xl text-xs font-black"><i class="fas fa-sign-out-alt"></i> Logout</button>
-                </div>
-            `);
+        // ─── SEARCH ───
+        window.toggleSearch = () => {
+            const input = $('global-search-input');
+            input.focus();
         };
 
-        window.saveProfile = async () => {
-            const name = $('profile-name-edit')?.value.trim();
-            const bio = $('profile-bio-edit')?.value.trim();
-            const privacy = $('profile-privacy-edit')?.value;
-            if (!name) return toast("Name required", "error");
-            await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { name, bio, privacyMode: privacy });
-            toast("Profile updated!");
-            closeModal();
-            renderDashboard();
+        window.collapseSearch = () => {
+            // Optional
+        };
+
+        window.handleGlobalSearch = async (query) => {
+            // Simple search: navigate to home with search query
+            // We'll just filter content in the current view
+            if (query.length < 2) return;
+            // For now, we can show a modal with results or redirect
+            toast("Searching...", "info");
+            // You can implement full search logic here
         };
 
         // ─── CART ───
-        function updateCartBadge() {
-            const badge = $('cart-badge');
-            if (cart.length > 0) {
-                badge.textContent = cart.length;
-                badge.style.display = 'flex';
-            } else {
-                badge.style.display = 'none';
-            }
-        }
-
         window.showCart = () => {
-            if (cart.length === 0) {
-                openModal(`<div class="text-center py-8"><p class="opacity-50"><i class="fas fa-shopping-cart"></i> Cart is empty</p></div>`);
+            if (!cart || cart.length === 0) {
+                openModal(`<div class="text-center py-8"><p class="text-lg font-black opacity-30 uppercase tracking-widest">Your Cart is Empty</p></div>`);
                 return;
             }
-            let html = `<h3 class="text-xl font-black mb-4"><i class="fas fa-shopping-cart"></i> Your Cart</h3><div class="space-y-2">`;
-            let total = 0;
-            cart.forEach((item, index) => {
-                total += parseFloat(item.price) || 0;
-                html += `
-                    <div class="glass p-3 rounded-xl flex justify-between items-center">
-                        <span>${item.title}</span>
-                        <span>₹${item.price || 0}</span>
-                        <button onclick="removeFromCart(${index})" class="text-red-500"><i class="fas fa-times"></i></button>
-                    </div>
-                `;
-            });
-            html += `<div class="text-right font-black text-lg">Total: ₹${total}</div>`;
-            html += `<button onclick="checkoutCart()" class="w-full mt-4 py-3 btn-brand text-xs"><i class="fas fa-credit-card"></i> Checkout (Fake)</button>`;
-            html += `</div>`;
+            let total = cart.reduce((sum, i) => sum + parseFloat(i.price || 0), 0);
+            let html = `
+                <h3 class="text-xl font-black mb-4"><i class="fas fa-shopping-cart"></i> Shopping Cart</h3>
+                <div class="space-y-3 mb-4">
+                    ${cart.map(i => `
+                        <div class="flex justify-between items-center glass p-3 rounded-xl border border-[var(--border-color)]">
+                            <span>${i.title}</span>
+                            <span class="text-brandOrange font-black">₹${i.price}</span>
+                            <button onclick="removeFromCart('${i.id}')" class="text-red-500 text-xs"><i class="fas fa-times"></i></button>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="flex justify-between items-center border-t border-[var(--border-color)] pt-3">
+                    <span class="font-bold">Total</span>
+                    <span class="text-2xl font-black text-brandOrange">₹${total}</span>
+                </div>
+                <button onclick="checkoutCart()" class="w-full mt-4 py-3 btn-brand text-xs"><i class="fas fa-credit-card"></i> Checkout</button>
+            `;
             openModal(html);
         };
 
-        window.removeFromCart = (index) => {
-            cart.splice(index, 1);
+        window.removeFromCart = (id) => {
+            cart = cart.filter(i => i.id !== id);
             localStorage.setItem('oc_cart_manifest', JSON.stringify(cart));
-            updateCartBadge();
+            updateCartPill();
             showCart();
         };
 
         window.checkoutCart = async () => {
-            toast("Processing fake payment...");
+            // Fake payment
+            toast("Processing payment...");
             await new Promise(r => setTimeout(r, 1500));
-            // In real app, we would process payment
-            // For now, just clear cart and grant access to courses? Not implemented fully.
+            for (let item of cart) {
+                const courseDoc = await Core.getDoc(Core.doc(Core.db, "courses", item.id));
+                if (courseDoc.exists()) {
+                    const course = courseDoc.data();
+                    if (course.groupId) {
+                        await Core.updateDoc(Core.doc(Core.db, "groups", course.groupId), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
+                    }
+                }
+            }
             cart = [];
             localStorage.removeItem('oc_cart_manifest');
-            updateCartBadge();
-            toast("Purchase complete! (Fake)");
+            updateCartPill();
+            toast("Purchase complete! Courses added.");
             closeModal();
             renderDashboard();
         };
 
-        // ─── SEARCH ───
-        window.globalSearch = async (query) => {
-            if (!query || query.length < 2) return;
-            // Simple search: filter content and courses
-            const contentSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("tId", "==", profile.teacherId || "")));
-            const coursesSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "courses"), Core.where("teacherId", "==", profile.teacherId || "")));
-            const results = [];
-            contentSnap.docs.forEach(d => {
-                if (d.data().title.toLowerCase().includes(query.toLowerCase())) results.push({ type: 'content', ...d.data(), id: d.id });
-            });
-            coursesSnap.docs.forEach(d => {
-                if (d.data().title.toLowerCase().includes(query.toLowerCase())) results.push({ type: 'course', ...d.data(), id: d.id });
-            });
-            if (results.length === 0) {
-                toast("No results found", "info");
-                return;
+        function updateCartPill() {
+            const pill = $('cart-pill');
+            if (cart.length > 0) {
+                pill.textContent = cart.length;
+                pill.style.display = 'flex';
+            } else {
+                pill.style.display = 'none';
             }
-            let html = `<h3 class="text-xl font-black mb-4"><i class="fas fa-search"></i> Search Results</h3><div class="space-y-2">`;
-            results.forEach(r => {
-                html += `
-                    <div class="glass p-3 rounded-xl flex justify-between items-center">
-                        <span><strong>${r.title}</strong> <span class="text-[10px] opacity-40">(${r.type})</span></span>
-                        <button onclick="openResource('${r.id}','${r.url}','${r.title}')" class="text-brandOrange"><i class="fas fa-eye"></i></button>
-                    </div>
-                `;
-            });
-            html += `</div>`;
-            openModal(html);
-        };
+        }
 
         // ─── THEME ───
         window.toggleMode = () => {
@@ -3622,88 +3472,6 @@
             localStorage.setItem('oc_theme', document.documentElement.classList.contains('light'));
         };
 
-        // ─── AUTH STATE ───
-        Core.onAuthStateChanged(Core.auth, async (user) => {
-            if (user) {
-                const docSnap = await Core.getDoc(Core.doc(Core.db, "users", user.uid));
-                if (!docSnap.exists()) {
-                    $('dashboard').classList.add('hidden');
-                    $('onboarding-screen').classList.remove('hidden');
-                    return;
-                }
-                profile = docSnap.data();
-                $('dashboard').classList.remove('hidden');
-                $('auth-screen').classList.add('hidden');
-                $('verify-screen').classList.add('hidden');
-                $('onboarding-screen').classList.add('hidden');
-                await renderDashboard();
-                // Load notifications count
-                fetchNotificationsCount();
-                // Load ads popup
-                loadAdPopup();
-                // Listen for group messages
-                listenGroupMessages();
-            } else {
-                $('dashboard').classList.add('hidden');
-                $('auth-screen').classList.remove('hidden');
-                $('verify-screen').classList.add('hidden');
-                $('onboarding-screen').classList.add('hidden');
-            }
-        });
-
-        async function fetchNotificationsCount() {
-            if (!profile) return;
-            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "notifications"), Core.where("uid", "==", Core.auth.currentUser.uid), Core.where("read", "==", false)));
-            const count = snap.size;
-            const badge = $('notif-badge');
-            if (count > 0) {
-                badge.textContent = count;
-                badge.style.display = 'flex';
-            } else {
-                badge.style.display = 'none';
-            }
-        }
-
-        async function loadAdPopup() {
-            if (!profile || isTeacher) return;
-            const instId = profile.instituteId;
-            if (!instId) return;
-            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "ads"), Core.where("instituteId", "==", instId), Core.where("type", "==", "popup")));
-            if (snap.empty) return;
-            const ad = snap.docs[0].data();
-            adPopupImg.src = ad.image;
-            adPopupImg.style.display = 'block';
-            adPopup.classList.add('show');
-            setTimeout(() => closeAdPopup(), 10000);
-        }
-
-        window.closeAdPopup = () => {
-            adPopup.classList.remove('show');
-            adPopupImg.style.display = 'none';
-        };
-
-        function listenGroupMessages() {
-            Core.onSnapshot(Core.collection(Core.db, "groupMessages"), (snap) => {
-                snap.docChanges().forEach(change => {
-                    if (change.type === "added") {
-                        const msg = change.doc.data();
-                        if (msg.groupId && msg.groupId !== activeGroupId && msg.senderId !== Core.auth.currentUser.uid) {
-                            groupMessageTrackers[msg.groupId] = (groupMessageTrackers[msg.groupId] || 0) + 1;
-                            // Update UI if group tab is active
-                            if (currentTab === 'groups') {
-                                loadGroupsList();
-                            }
-                            // Also update teacher groups sub-tab if active
-                            if (isTeacher && currentSubTab === 'groups') {
-                                renderTeacherGroups($('teacher-sub-content'));
-                            }
-                        }
-                    }
-                });
-            });
-        }
-
-        // ─── INIT ───
         if (localStorage.getItem('oc_theme') === 'true') {
             document.documentElement.classList.add('light');
         }
@@ -3793,152 +3561,90 @@
             }
         });
 
-        // ─── EXPOSE ───
-        window.toast = toast;
-        window.openModal = openModal;
-        window.closeModal = closeModal;
-        window.renderDashboard = renderDashboard;
-        window.setTab = setTab;
-        window.toggleNav = toggleNav;
-        window.getSmartPreview = (url) => {
-            if (!url) return 'https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg';
-            const clean = url.toLowerCase().trim();
-            if (clean.match(/\.(jpeg|jpg|gif|png|webp|svg)/)) return url;
-            const ytId = window.extractYTId ? window.extractYTId(url) : null;
-            if (ytId) return `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
-            return 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop';
-        };
-        window.extractYTId = (url) => {
-            const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/|live\/)([^#&?]*).*/);
-            return (match && match[2].length === 11) ? match[2] : null;
-        };
-
-        // Edit Course function
-        window.editCourse = async (id) => {
-            const doc = await Core.getDoc(Core.doc(Core.db, "courses", id));
-            if (!doc.exists()) return;
-            const c = doc.data();
-            openModal(`
-                <h3 class="text-xl font-black mb-4"><i class="fas fa-edit"></i> Edit Course</h3>
-                <div class="space-y-4">
-                    <input id="edit-course-title" value="${c.title}" placeholder="Title" class="input-field text-sm">
-                    <textarea id="edit-course-desc" placeholder="Description" class="input-field text-sm h-20 resize-none">${c.description || ''}</textarea>
-                    <input id="edit-course-price" value="${c.price || 0}" type="number" placeholder="Price" class="input-field text-sm">
-                    <div id="edit-course-modules">
-                        <p class="text-[10px] font-black uppercase opacity-40 mb-2">Modules</p>
-                        ${c.playlist?.map((m, i) => `
-                            <div class="flex gap-2 mb-2">
-                                <input value="${m.title}" placeholder="Title" class="input-field text-sm flex-1 edit-mod-title">
-                                <input value="${m.url}" placeholder="URL" class="input-field text-sm flex-1 edit-mod-url">
-                                <button onclick="this.parentElement.remove()" class="text-red-500"><i class="fas fa-times"></i></button>
-                            </div>
-                        `).join('') || ''}
-                        <button onclick="addEditModuleField()" class="text-brandOrange text-xs font-black"><i class="fas fa-plus"></i> Add Module</button>
-                    </div>
-                    <button onclick="saveCourseEdit('${id}')" class="w-full py-3 btn-brand text-xs"><i class="fas fa-save"></i> Save</button>
-                </div>
-            `);
-        };
-
-        window.addEditModuleField = () => {
-            const container = $('edit-course-modules');
-            const div = document.createElement('div');
-            div.className = 'flex gap-2 mb-2';
-            div.innerHTML = `<input placeholder="Title" class="input-field text-sm flex-1 edit-mod-title"><input placeholder="URL" class="input-field text-sm flex-1 edit-mod-url"><button onclick="this.parentElement.remove()" class="text-red-500"><i class="fas fa-times"></i></button>`;
-            container.appendChild(div);
-        };
-
-        window.saveCourseEdit = async (id) => {
-            const title = $('edit-course-title')?.value.trim();
-            const desc = $('edit-course-desc')?.value.trim();
-            const price = $('edit-course-price')?.value || '0';
-            const titles = [...document.querySelectorAll('.edit-mod-title')].map(el => el.value.trim());
-            const urls = [...document.querySelectorAll('.edit-mod-url')].map(el => el.value.trim());
-            const playlist = titles.map((t, i) => ({ title: t, url: urls[i] })).filter(m => m.title && m.url);
-            if (!title) return toast("Title required", "error");
-            if (playlist.length === 0) return toast("Add at least one module", "error");
-            await Core.updateDoc(Core.doc(Core.db, "courses", id), { title, description: desc, price, playlist });
-            toast("Course updated!");
-            closeModal();
-            renderDashboard();
-        };
-
-        // Delete course
-        window.deleteCourse = async (id) => {
-            if (!confirm("Delete this course?")) return;
-            const doc = await Core.getDoc(Core.doc(Core.db, "courses", id));
-            if (doc.exists()) {
-                const c = doc.data();
-                if (c.groupId) {
-                    await Core.deleteDoc(Core.doc(Core.db, "groups", c.groupId));
+        // ─── AUTH STATE ───
+        Core.onAuthStateChanged(Core.auth, async (user) => {
+            if (user) {
+                const docSnap = await Core.getDoc(Core.doc(Core.db, "users", user.uid));
+                if (!docSnap.exists()) {
+                    $('dashboard').classList.add('hidden');
+                    $('onboarding-screen').classList.remove('hidden');
+                    return;
                 }
+                profile = docSnap.data();
+                // Update navbar profile pic
+                const pic = $('nav-profile-pic').querySelector('img');
+                if (pic) pic.src = profile.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=004a80&color=fff&size=128`;
+                $('dashboard').classList.remove('hidden');
+                $('auth-screen').classList.add('hidden');
+                $('verify-screen').classList.add('hidden');
+                $('onboarding-screen').classList.add('hidden');
+                await renderDashboard();
+                updateCartPill();
+                // Load notifications count
+                fetchNotificationsCount();
+                // Load ad popup
+                loadAdPopup();
+            } else {
+                $('dashboard').classList.add('hidden');
+                $('auth-screen').classList.remove('hidden');
+                $('verify-screen').classList.add('hidden');
+                $('onboarding-screen').classList.add('hidden');
             }
-            await Core.deleteDoc(Core.doc(Core.db, "courses", id));
-            toast("Course deleted!");
-            renderDashboard();
+        });
+
+        async function fetchNotificationsCount() {
+            if (!profile) return;
+            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "notifications"), Core.where("uid", "==", Core.auth.currentUser.uid), Core.where("read", "==", false)));
+            const count = snap.size;
+            const pill = $('notify-pill');
+            if (count > 0) {
+                pill.textContent = count;
+                pill.style.display = 'flex';
+            } else {
+                pill.style.display = 'none';
+            }
+        }
+
+        async function loadAdPopup() {
+            if (!profile || profile.role === 'teacher' || profile.role === 'super_admin') return;
+            const instId = profile.instituteId;
+            if (!instId) return;
+            const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "ads"), Core.where("instituteId", "==", instId), Core.where("type", "==", "popup")));
+            if (snap.empty) return;
+            const ad = snap.docs[0].data();
+            adPopupImg.src = ad.image;
+            adPopupImg.style.display = 'block';
+            adPopup.classList.add('show');
+            setTimeout(() => closeAdPopup(), 10000);
+        }
+
+        window.closeAdPopup = () => {
+            adPopup.classList.remove('show');
+            adPopupImg.style.display = 'none';
         };
 
-        // Delete content
-        window.deleteContent = async (id) => {
-            if (!confirm("Delete this content?")) return;
-            await Core.deleteDoc(Core.doc(Core.db, "content", id));
-            toast("Content deleted!");
-            renderDashboard();
-        };
-
-        // Delete group
-        window.deleteGroup = async (id) => {
-            if (!confirm("Delete this group?")) return;
-            await Core.deleteDoc(Core.doc(Core.db, "groups", id));
-            toast("Group deleted!");
-            renderDashboard();
-        };
-
-        // Delete live session
-        window.deleteLiveSession = async (id) => {
-            if (!confirm("Delete this live session?")) return;
-            await Core.deleteDoc(Core.doc(Core.db, "liveSessions", id));
-            toast("Live session deleted!");
-            renderDashboard();
-        };
-
-        // Edit content
-        window.editContent = async (id) => {
-            const doc = await Core.getDoc(Core.doc(Core.db, "content", id));
-            if (!doc.exists()) return;
-            const c = doc.data();
+        // ─── PROFILE SETTINGS ───
+        window.showProfileSettings = () => {
+            // Simplified: open modal with profile info
             openModal(`
-                <h3 class="text-xl font-black mb-4"><i class="fas fa-edit"></i> Edit Content</h3>
-                <div class="space-y-4">
-                    <input id="edit-content-title" value="${c.title}" placeholder="Title" class="input-field text-sm">
-                    <input id="edit-content-url" value="${c.url}" placeholder="URL" class="input-field text-sm">
-                    <select id="edit-content-type" class="input-field text-sm">
-                        <option value="video" ${c.type === 'video' ? 'selected' : ''}>Video</option>
-                        <option value="live" ${c.type === 'live' ? 'selected' : ''}>Live</option>
-                        <option value="file" ${c.type === 'file' ? 'selected' : ''}>File</option>
-                    </select>
-                    <div class="flex items-center gap-3">
-                        <input type="checkbox" id="edit-content-demo" ${c.isDemo ? 'checked' : ''}>
-                        <label for="edit-content-demo">Demo Video</label>
-                    </div>
-                    <button onclick="saveContentEdit('${id}')" class="w-full py-3 btn-brand text-xs"><i class="fas fa-save"></i> Save</button>
+                <h3 class="text-xl font-black mb-4"><i class="fas fa-user-circle"></i> Profile Settings</h3>
+                <div class="space-y-3">
+                    <p><strong>Name:</strong> ${profile.name}</p>
+                    <p><strong>Email:</strong> ${profile.email}</p>
+                    <p><strong>Role:</strong> ${profile.role}</p>
+                    <p><strong>ID:</strong> ${profile.teacherId || 'N/A'}</p>
+                    <button onclick="logout()" class="w-full py-3 bg-red-500/20 text-red-500 rounded-xl text-xs font-black"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
                 </div>
             `);
         };
 
-        window.saveContentEdit = async (id) => {
-            const title = $('edit-content-title')?.value.trim();
-            const url = $('edit-content-url')?.value.trim();
-            const type = $('edit-content-type')?.value;
-            const isDemo = $('edit-content-demo')?.checked || false;
-            if (!title || !url) return toast("Title and URL required", "error");
-            await Core.updateDoc(Core.doc(Core.db, "content", id), { title, url, type, isDemo });
-            toast("Content updated!");
-            closeModal();
-            renderDashboard();
-        };
-
-        console.log('🚀 OpenClase LMS loaded with full features');
+        // ─── INIT ───
+        console.log('🚀 OpenClase LMS loaded with all features.');
+        // Load admin sections if needed
+        setTimeout(() => {
+            if ($('plans-list')) loadPlansList();
+            if ($('payments-list')) loadPayments();
+        }, 500);
     </script>
 </body>
 </html>
