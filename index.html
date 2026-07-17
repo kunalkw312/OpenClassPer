@@ -230,6 +230,7 @@
             color: var(--text-main);
             border: 1px solid transparent;
             background: transparent;
+            cursor: pointer;
         }
         .nav-island-btn.active {
             background: rgba(247, 148, 29, 0.15);
@@ -304,6 +305,7 @@
             backdrop-filter: blur(20px);
             border: 1px solid var(--border-color);
             border-radius: 20px;
+            flex-wrap: wrap;
         }
         .profile-mini .avatar {
             width: 52px;
@@ -608,12 +610,22 @@
             border-radius: 16px;
             background: #0a0a0a;
             border: 1px solid var(--border-color);
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+        }
+        .ad-banner-container a {
+            scroll-snap-align: start;
+            flex-shrink: 0;
         }
         .ad-banner-container img {
-            width: 100%;
-            height: auto;
+            height: 100px;
             max-height: 120px;
             object-fit: cover;
+            border-radius: 12px;
+            min-width: 180px;
         }
 
         .ad-popup {
@@ -652,6 +664,9 @@
         }
         .ad-popup .ad-close:hover {
             background: #ff4444;
+        }
+        .ad-popup a {
+            display: block;
         }
         .ad-popup img {
             width: 100%;
@@ -725,6 +740,28 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
+        }
+
+        /* teacher view tabs */
+        .teacher-grid-btn {
+            padding: 0.75rem 0.5rem;
+            border-radius: 12px;
+            background: var(--input-bg);
+            color: var(--text-main);
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            transition: all 0.25s;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+        .teacher-grid-btn.grid-btn-active {
+            background: rgba(247, 148, 29, 0.15);
+            border-color: rgba(247, 148, 29, 0.3);
+            color: var(--brand-orange);
+        }
+        .teacher-grid-btn:hover {
+            border-color: var(--brand-orange);
         }
     </style>
 </head>
@@ -822,7 +859,9 @@
     <!-- ─── AD POPUP ─── -->
     <div id="ad-popup-container" class="ad-popup">
         <button class="ad-close" onclick="closeAdPopup()">✕</button>
-        <img id="ad-popup-img" src="" alt="Ad">
+        <a id="ad-popup-link" href="#" target="_blank">
+            <img id="ad-popup-img" src="" alt="Ad">
+        </a>
     </div>
 
     <!-- ─── PAGE CONTAINER ─── -->
@@ -976,23 +1015,10 @@
             <!-- MAIN CONTENT -->
             <main id="main-content" class="p-4 md:p-6 max-w-7xl mx-auto w-full"></main>
 
-            <!-- BOTTOM NAV ISLAND -->
+            <!-- BOTTOM NAV ISLAND (dynamically rendered) -->
             <div id="floating-bottom-nav-bar"
                 class="glass p-2 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl border border-[var(--border-color)]">
-                <div class="grid grid-cols-3 w-full gap-1 justify-items-center items-center">
-                    <button id="tab-dashboard" onclick="window.setNavTab('dashboard')"
-                        class="nav-island-btn active transition-transform hover:scale-105">
-                        <i class="fa-solid fa-gauge-high block text-lg mb-0.5"></i> Dashboard
-                    </button>
-                    <button id="tab-groups" onclick="window.setNavTab('groups')"
-                        class="nav-island-btn transition-transform hover:scale-105">
-                        <i class="fa-solid fa-users block text-lg mb-0.5"></i> Groups
-                    </button>
-                    <button id="tab-analytics" onclick="window.setNavTab('analytics')"
-                        class="nav-island-btn transition-transform hover:scale-105">
-                        <i class="fa-solid fa-chart-simple block text-lg mb-0.5"></i> Analytics
-                    </button>
-                </div>
+                <!-- Will be filled by JS -->
             </div>
         </div>
     </div>
@@ -1157,6 +1183,7 @@
         let _adPopupData = null;
         let _adBannerData = null;
         let _hasPaidAccess = false;
+        let _studentNavTab = 'home';
 
         // ─── TOAST ───
         function toast(m, type = "s") {
@@ -1493,7 +1520,7 @@
         // ─── SWIPE GESTURES ───
         let touchStartX = 0,
             touchStartY = 0;
-        const tabsOrderIndex = ['dashboard', 'groups', 'analytics'];
+        let navTabsOrder = [];
 
         function initializeSwipeGestures() {
             document.addEventListener('touchstart', (e) => {
@@ -1509,9 +1536,9 @@
                 const deltaY = touchEndY - touchStartY;
                 if (Math.abs(deltaY) > Math.abs(deltaX) || Math.abs(deltaY) > maxVerticalWander) return;
                 if (Math.abs(deltaX) >= thresholdX) {
-                    const currentPos = tabsOrderIndex.indexOf(currentNavTab);
-                    if (deltaX > 0) { if (currentPos > 0) window.setNavTab(tabsOrderIndex[currentPos - 1]); } else { if (
-                            currentPos < tabsOrderIndex.length - 1) window.setNavTab(tabsOrderIndex[currentPos + 1]); }
+                    const currentPos = navTabsOrder.indexOf(currentNavTab);
+                    if (deltaX > 0) { if (currentPos > 0) window.setNavTab(navTabsOrder[currentPos - 1]); } else { if (
+                            currentPos < navTabsOrder.length - 1) window.setNavTab(navTabsOrder[currentPos + 1]); }
                 }
             }, { passive: true });
         }
@@ -2350,14 +2377,20 @@
         // ─── NAVIGATION ───
         window.setNavTab = (tab) => {
             currentNavTab = tab;
+            // Update nav buttons
             document.querySelectorAll('.nav-island-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`tab-${tab}`)?.classList.add('active');
+            const btn = document.querySelector(`.nav-island-btn[data-tab="${tab}"]`);
+            if (btn) btn.classList.add('active');
             window.scrollTo({ top: 0, behavior: 'instant' });
             window.loadDashboardView(tab);
         };
 
         window.navigateToDashboard = () => {
-            window.setNavTab('dashboard');
+            if (profile.role === 'student') {
+                window.setNavTab('home');
+            } else {
+                window.setNavTab('dashboard');
+            }
         };
 
         window.reactiveSearch = (val) => { if (val.length < 2) return;
@@ -3423,17 +3456,19 @@
                         <div class="bg-[var(--input-bg)] p-5 rounded-2xl border border-[var(--border-color)]">
                             <h4 class="font-black text-sm uppercase tracking-widest text-brandOrange mb-3"><i class="fa-solid fa-window-maximize mr-2"></i> Pop-up Ad (₹19)</h4>
                             <p class="text-[10px] opacity-60 mb-3">Small pop-up at bottom-left corner. Students can close it.</p>
-                            <input type="file" id="popup-ad-file" accept="image/*" class="input-field text-sm mb-3">
+                            <input type="file" id="popup-ad-file" accept="image/*" class="input-field text-sm mb-2">
+                            <input type="url" id="popup-ad-link" placeholder="Click URL (optional)" class="input-field text-sm mb-3">
                             <button onclick="uploadAd('popup')" class="btn-brand px-6 py-2.5 text-xs">Upload Pop-up</button>
-                            ${existingAds.filter(a => a.type === 'popup').map(a => `<div class="mt-3 flex items-center gap-3 bg-[var(--border-color)]/20 p-3 rounded-xl"><img src="${a.imageUrl}" class="w-16 h-12 object-cover rounded"><span class="text-xs flex-1 truncate">${a.imageUrl}</span><button onclick="deleteAd('${a.id}')" class="text-red-500 text-xs font-black">✕</button></div>`).join('')}
+                            ${existingAds.filter(a => a.type === 'popup').map(a => `<div class="mt-3 flex items-center gap-3 bg-[var(--border-color)]/20 p-3 rounded-xl"><a href="${a.link || '#'}" target="_blank"><img src="${a.imageUrl}" class="w-16 h-12 object-cover rounded"></a><span class="text-xs flex-1 truncate">${a.imageUrl}</span><button onclick="deleteAd('${a.id}')" class="text-red-500 text-xs font-black">✕</button></div>`).join('')}
                         </div>
                         <div class="bg-[var(--input-bg)] p-5 rounded-2xl border border-[var(--border-color)]">
                             <h4 class="font-black text-sm uppercase tracking-widest text-brandOrange mb-3"><i class="fa-solid fa-image mr-2"></i> Banner Ad (₹49/banner)</h4>
                             <p class="text-[10px] opacity-60 mb-3">Photo gallery-style banner at the top of student home screen.</p>
-                            <input type="file" id="banner-ad-file" accept="image/*" class="input-field text-sm mb-3">
+                            <input type="file" id="banner-ad-file" accept="image/*" class="input-field text-sm mb-2">
+                            <input type="url" id="banner-ad-link" placeholder="Click URL (optional)" class="input-field text-sm mb-3">
                             <button onclick="uploadAd('banner')" class="btn-brand px-6 py-2.5 text-xs">Upload Banner</button>
                             <div class="mt-3 space-y-2">
-                                ${existingAds.filter(a => a.type === 'banner').map(a => `<div class="flex items-center gap-3 bg-[var(--border-color)]/20 p-3 rounded-xl"><img src="${a.imageUrl}" class="w-20 h-12 object-cover rounded"><span class="text-xs flex-1 truncate">${a.imageUrl}</span><button onclick="deleteAd('${a.id}')" class="text-red-500 text-xs font-black">✕</button></div>`).join('')}
+                                ${existingAds.filter(a => a.type === 'banner').map(a => `<div class="flex items-center gap-3 bg-[var(--border-color)]/20 p-3 rounded-xl"><a href="${a.link || '#'}" target="_blank"><img src="${a.imageUrl}" class="w-20 h-12 object-cover rounded"></a><span class="text-xs flex-1 truncate">${a.imageUrl}</span><button onclick="deleteAd('${a.id}')" class="text-red-500 text-xs font-black">✕</button></div>`).join('')}
                             </div>
                         </div>
                     </div>
@@ -3443,19 +3478,21 @@
 
         window.uploadAd = async (type) => {
             const fileInput = document.getElementById(type === 'popup' ? 'popup-ad-file' : 'banner-ad-file');
+            const linkInput = document.getElementById(type === 'popup' ? 'popup-ad-link' : 'banner-ad-link');
             const file = fileInput.files[0];
             if (!file) return toast("Select an image file", "error");
             if (!file.type.startsWith('image/')) return toast("Only images allowed", "error");
             if (file.size > 5 * 1024 * 1024) return toast("Image size should be below 5MB", "error");
+            const link = linkInput.value.trim() || '';
 
             toast("Uploading ad...");
-            // Convert to base64 for demo (in production use Firebase Storage)
             const reader = new FileReader();
             reader.onload = async (e) => {
                 const imageUrl = e.target.result;
                 await Core.addDoc(Core.collection(Core.db, "ads"), {
                     type: type,
                     imageUrl: imageUrl,
+                    link: link,
                     instituteId: profile.instituteId,
                     uploadedBy: Core.auth.currentUser.uid,
                     createdAt: Core.serverTimestamp()
@@ -3487,7 +3524,7 @@
                 if (banners.length > 0 && document.getElementById('banner-ad-container')) {
                     const container = document.getElementById('banner-ad-container');
                     container.innerHTML =
-                        `<div class="ad-banner-container flex gap-2 overflow-x-auto p-2 scroll-smooth">${banners.map(b => `<img src="${b.imageUrl}" class="h-20 md:h-28 object-cover rounded-xl min-w-[200px] border border-[var(--border-color)] shadow-sm">`).join('')}</div>`;
+                        `<div class="ad-banner-container">${banners.map(b => `<a href="${b.link || '#'}" target="_blank"><img src="${b.imageUrl}" class="h-20 md:h-28 object-cover rounded-xl min-w-[200px] border border-[var(--border-color)] shadow-sm"></a>`).join('')}</div>`;
                     container.classList.remove('hidden');
                 }
 
@@ -3496,7 +3533,9 @@
                 if (popups.length > 0 && !localStorage.getItem('ad_popup_closed')) {
                     const popupContainer = document.getElementById('ad-popup-container');
                     const img = document.getElementById('ad-popup-img');
+                    const link = document.getElementById('ad-popup-link');
                     img.src = popups[0].imageUrl;
+                    link.href = popups[0].link || '#';
                     popupContainer.classList.add('active');
                     _adPopupData = popups[0];
                 }
@@ -3943,12 +3982,248 @@
             }
         };
 
-        // ─── MAIN DASHBOARD VIEW ───
-        window.loadDashboardView = async (tab) => {
+        // ─── BOTTOM NAV BUILD ───
+        function buildBottomNav() {
+            const navBar = document.getElementById('floating-bottom-nav-bar');
+            if (!navBar) return;
+
+            let tabs = [];
+            if (profile.role === 'student') {
+                tabs = [
+                    { id: 'home', label: 'Home', icon: 'fa-solid fa-house' },
+                    { id: 'groups', label: 'Groups', icon: 'fa-solid fa-users' },
+                    { id: 'courses', label: 'Courses', icon: 'fa-solid fa-book' },
+                    { id: 'mycourses', label: 'My Courses', icon: 'fa-solid fa-graduation-cap' }
+                ];
+                _studentNavTab = currentNavTab;
+                navTabsOrder = ['home', 'groups', 'courses', 'mycourses'];
+            } else {
+                tabs = [
+                    { id: 'dashboard', label: 'Dashboard', icon: 'fa-solid fa-gauge-high' },
+                    { id: 'groups', label: 'Groups', icon: 'fa-solid fa-users' },
+                    { id: 'analytics', label: 'Analytics', icon: 'fa-solid fa-chart-simple' }
+                ];
+                navTabsOrder = ['dashboard', 'groups', 'analytics'];
+            }
+
+            navBar.innerHTML = `<div class="grid grid-cols-${tabs.length} w-full gap-1 justify-items-center items-center">` +
+                tabs.map(t => `
+                    <button class="nav-island-btn ${currentNavTab === t.id ? 'active' : ''}" data-tab="${t.id}" onclick="window.setNavTab('${t.id}')">
+                        <i class="${t.icon} block text-lg mb-0.5"></i> ${t.label}
+                    </button>
+                `).join('') +
+                `</div>`;
+        }
+
+        // ─── STUDENT VIEWS ───
+        // Student Home
+        window.studentHome = async () => {
             const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div class="fade-in">
+                    <div id="banner-ad-container" class="hidden mb-4"></div>
+                    <h3 class="text-xl font-black italic mb-4">Suggested Syllabus</h3>
+                    <div id="suggested-feed" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
+                    <h3 class="text-xl font-black italic mb-4 border-t border-[var(--border-color)] pt-6">Subscribed Streams</h3>
+                    <div id="feed" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+            `;
+
+            // Fetch content
+            let contentQueryArgs = [Core.collection(Core.db, "content"), Core.limit(40)];
+            let autoFollowedTids = [];
+            if (profile.instituteId) {
+                const tInstQuery = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where(
+                    "instituteId", "==", profile.instituteId), Core.where("role", "==", "teacher")));
+                autoFollowedTids = tInstQuery.docs.map(d => d.data().teacherId);
+            }
+
+            let targetInstitute = null;
+            if (profile.instituteId) {
+                const iSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"), Core.where("uniqueId",
+                    "==", profile.instituteId)));
+                if (!iSnap.empty) targetInstitute = iSnap.docs[0].data();
+            }
+
+            if (targetInstitute && targetInstitute.privacyMode === 'private') {
+                const validTeachersSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"),
+                    Core.where("uniqueId", "==", targetInstitute.uniqueId)));
+                const validTeacherIds = validTeachersSnap.docs.map(d => d.data().teacherId);
+                if (validTeacherIds.length > 0) {
+                    contentQueryArgs = [Core.collection(Core.db, "content"), Core.where("tId", "in", validTeacherIds),
+                        Core.limit(40)
+                    ];
+                } else { contentQueryArgs = [Core.collection(Core.db, "content"), Core.where("tId", "==", "BLOCK_ALL")]; }
+            }
+
+            const allContent = await Core.getDocs(Core.query(...contentQueryArgs));
+            let allContentDocs = allContent.docs;
+
+            const validPublicDocs = [];
+            for (let d of allContentDocs) {
+                const cData = d.data();
+                let allow = true;
+                const tSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId",
+                    "==", cData.tId || "")));
+                if (!tSnap.empty) {
+                    const tData = tSnap.docs[0].data();
+                    const isSameInst = profile.instituteId && tData.instituteId === profile.instituteId;
+                    if (tData.privacyMode === 'private' && !isSameInst) {
+                        if (!profile.subs || !profile.subs.includes(cData.tId)) allow = false;
+                    }
+                }
+                if (allow) validPublicDocs.push(d);
+            }
+
+            const allContentSorted = validPublicDocs.sort((a, b) => (b.data().date?.seconds || 0) - (a.data().date
+            ?.seconds || 0));
+
+            await renderFeed(allContentSorted.slice(0, 6), false, 'suggested-feed');
+
+            const combinedSubs = [...new Set([...(profile.subs || []), ...autoFollowedTids])];
+            if (combinedSubs.length > 0) {
+                const subContent = allContentSorted.filter(doc => combinedSubs.includes(doc.data().tId));
+                await renderFeed(subContent, false, 'feed');
+            } else {
+                document.getElementById('feed').innerHTML =
+                    `<div class="glass p-8 col-span-full rounded-2xl text-center border border-[var(--border-color)]"><p class="text-xs opacity-40 py-4 leading-relaxed">Follow instructors in your campus network to customize your feed parameters.</p></div>`;
+            }
+
+            window.loadStudentAds();
+        };
+
+        // Student Groups
+        window.studentGroups = async () => {
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div class="fade-in">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                        <h3 class="text-2xl font-black italic">Your Groups</h3>
+                        <div class="flex gap-2 w-full md:w-auto">
+                            <input id="hub-code" placeholder="OC-XXXXXX" class="input-field font-mono text-sm uppercase tracking-wider flex-1 md:flex-none">
+                            <button onclick="joinGroup()" class="btn-brand px-6 py-3 shadow-md text-xs font-black uppercase shrink-0">Join</button>
+                        </div>
+                    </div>
+                    <div id="student-groups" class="space-y-4"></div>
+                </div>
+            `;
+            window.loadGroups();
+        };
+
+        // Student Courses (all courses available to student)
+        window.studentCourses = async () => {
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div class="fade-in">
+                    <h3 class="text-2xl font-black italic mb-4">All Courses</h3>
+                    <div id="courses-feed" class="grid md:grid-cols-2 gap-6"></div>
+                </div>
+            `;
+
+            let courseQueryArgs = [Core.collection(Core.db, "courses")];
+            let targetInstitute = null;
+            if (profile.instituteId) {
+                const iSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"), Core.where("uniqueId",
+                    "==", profile.instituteId)));
+                if (!iSnap.empty) targetInstitute = iSnap.docs[0].data();
+            }
+
+            if (targetInstitute && targetInstitute.privacyMode === 'private') {
+                const validTeachersSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"),
+                    Core.where("uniqueId", "==", targetInstitute.uniqueId)));
+                const validTeacherIds = validTeachersSnap.docs.map(d => d.data().teacherId);
+                if (validTeacherIds.length > 0) courseQueryArgs = [Core.collection(Core.db, "courses"), Core.where(
+                    "teacherId", "in", validTeacherIds)];
+                else courseQueryArgs = [Core.collection(Core.db, "courses"), Core.where("teacherId", "==", "BLOCK_ALL")];
+            }
+
+            const coSnap = await Core.getDocs(Core.query(...courseQueryArgs));
+            const validPublicCourses = [];
+            for (let d of coSnap.docs) {
+                const cData = d.data();
+                let allow = true;
+                const tSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId",
+                    "==", cData.teacherId || "")));
+                if (!tSnap.empty) {
+                    const tData = tSnap.docs[0].data();
+                    const isSameInst = profile.instituteId && tData.instituteId === profile.instituteId;
+                    if (tData.privacyMode === 'private' && (!profile.subs || !profile.subs.includes(cData
+                            .teacherId)) && !isSameInst) allow = false;
+                }
+                if (allow) validPublicCourses.push(d);
+            }
+            const coSorted = validPublicCourses.sort((a, b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt
+            ?.seconds || 0));
+            await renderCourses(coSorted);
+        };
+
+        // Student My Courses (purchased/enrolled)
+        window.studentMyCourses = async () => {
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div class="fade-in">
+                    <h3 class="text-2xl font-black italic mb-4">My Courses</h3>
+                    <div id="my-courses-feed" class="grid md:grid-cols-2 gap-6"></div>
+                </div>
+            `;
+
+            // Get groups the student is a member of
+            const groupsSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("members",
+                "array-contains", Core.auth.currentUser.uid)));
+            const groupIds = groupsSnap.docs.map(d => d.id);
+
+            if (groupIds.length === 0) {
+                document.getElementById('my-courses-feed').innerHTML =
+                    `<p class="text-xs opacity-50 text-center py-8">You have not enrolled in any courses yet.</p>`;
+                return;
+            }
+
+            // Find courses where groupId is in the groupIds
+            const coursesSnap = await Core.getDocs(Core.collection(Core.db, "courses"));
+            const myCourses = coursesSnap.docs.filter(d => groupIds.includes(d.data().groupId));
+            if (myCourses.length === 0) {
+                document.getElementById('my-courses-feed').innerHTML =
+                    `<p class="text-xs opacity-50 text-center py-8">You have not enrolled in any courses yet.</p>`;
+                return;
+            }
+            await renderCourses(myCourses);
+        };
+
+        // ─── OVERRIDE loadDashboardView to handle student tabs ───
+        const originalLoadDashboardView = window.loadDashboardView;
+        window.loadDashboardView = async function(tab) {
             if (!profile) return;
             updateCartPill();
 
+            // If student, delegate to student functions
+            if (profile.role === 'student') {
+                // Build nav if not built
+                buildBottomNav();
+                // Set active tab
+                currentNavTab = tab;
+                _studentNavTab = tab;
+                // Render view
+                switch (tab) {
+                    case 'home':
+                        await window.studentHome();
+                        break;
+                    case 'groups':
+                        await window.studentGroups();
+                        break;
+                    case 'courses':
+                        await window.studentCourses();
+                        break;
+                    case 'mycourses':
+                        await window.studentMyCourses();
+                        break;
+                    default:
+                        await window.studentHome();
+                }
+                return;
+            }
+
+            // Teacher/owner logic (original)
+            const main = document.getElementById('main-content');
             if (profile.role === 'teacher' && profile.planExpiresAt) {
                 if (new Date() > new Date(profile.planExpiresAt.seconds * 1000)) {
                     main.innerHTML =
@@ -4000,12 +4275,15 @@
                 const coursesSorted = [..._currentCourseList].sort((a, b) => (b.data().createdAt?.seconds || 0) - (a
                     .data().createdAt?.seconds || 0));
 
+                // Build nav (teacher)
+                buildBottomNav();
+
                 // ─── TAB: DASHBOARD ───
                 if (tab === 'dashboard') {
                     const ringStyle = await window.updateProfileRing(Core.auth.currentUser.uid, profile.role, profile
                         .teacherId);
 
-                    // Check if this teacher is an institute owner (has a matching institute)
+                    // Check if this teacher is an institute owner
                     let isInstituteOwner = false;
                     let ownerInstData = null;
                     if (profile.instituteId) {
@@ -4028,52 +4306,46 @@
                             <div class="quick-actions">
                                 <button class="qa-btn" onclick="window.showQuickNotes()"><i class="fa-regular fa-pen-to-square"></i> Quick Notes</button>
                                 ${isInstituteOwner ? `<button class="qa-btn" onclick="window.showAdManagement()"><i class="fa-regular fa-rectangle-ad"></i> Add Ads</button>` : ''}
+                                ${isInstituteOwner ? `<button class="qa-btn" onclick="window.showPlanManagement()"><i class="fa-solid fa-coins"></i> Plan Mgt</button>` : ''}
                                 <button class="qa-btn" onclick="window.showTimetable()"><i class="fa-regular fa-calendar"></i> Time Table</button>
                             </div>
-                        </div>
-
-                        <!-- QUICK ACTION BUTTONS (extra row for teacher) -->
-                        <div class="flex flex-wrap gap-2">
-                            ${isInstituteOwner ? `<button class="qa-btn" onclick="window.showPlanManagement()"><i class="fa-solid fa-coins"></i> Plan Mgt</button>` : ''}
-                            <button class="qa-btn" onclick="window.showCustomNotificationModal()"><i class="fa-regular fa-bell"></i> Send Notif</button>
-                            <button class="qa-btn" onclick="window.switchTeacherView('create')"><i class="fa-solid fa-layer-group"></i> New Group</button>
                         </div>
 
                         <!-- 3x2 DASHBOARD CARDS -->
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
                             <!-- Course -->
-                            <div class="dash-card" onclick="window.switchTeacherView('course')">
+                            <div class="dash-card" onclick="window.showCoursesView()">
                                 <div><div class="card-icon"><i class="fa-solid fa-book-open"></i></div><div class="card-title">Course</div></div>
                                 <span class="card-action"><i class="fa-regular fa-plus"></i> Add</span>
                             </div>
                             <!-- Content -->
-                            <div class="dash-card" onclick="window.switchTeacherView('publish')">
+                            <div class="dash-card" onclick="window.showContentView()">
                                 <div><div class="card-icon"><i class="fa-regular fa-file-lines"></i></div><div class="card-title">Content</div></div>
                                 <span class="card-action"><i class="fa-regular fa-plus"></i> Add</span>
                             </div>
                             <!-- Live -->
-                            <div class="dash-card" onclick="window.switchTeacherView('publish')">
+                            <div class="dash-card" onclick="window.showLiveView()">
                                 <div><div class="card-icon"><i class="fa-solid fa-broadcast"></i></div><div class="card-title">Live</div></div>
                                 <span class="card-action"><i class="fa-solid fa-circle-play"></i> Go Live</span>
                             </div>
                             <!-- Groups -->
-                            <div class="dash-card" onclick="window.setNavTab('groups')">
+                            <div class="dash-card" onclick="window.showGroupsView()">
                                 <div><div class="card-icon"><i class="fa-solid fa-users"></i></div><div class="card-title">Groups</div></div>
                                 <span class="card-action"><i class="fa-regular fa-plus"></i> Add</span>
                             </div>
                             <!-- Demo Class -->
-                            <div class="dash-card" onclick="window.switchTeacherView('publish')">
+                            <div class="dash-card" onclick="window.showDemoView()">
                                 <div><div class="card-icon"><i class="fa-regular fa-circle-play"></i></div><div class="card-title">Demo Class</div></div>
                                 <span class="card-action"><i class="fa-regular fa-plus"></i> Add</span>
                             </div>
                             <!-- Notification -->
-                            <div class="dash-card" onclick="window.showCustomNotificationModal()">
+                            <div class="dash-card" onclick="window.showNotificationView()">
                                 <div><div class="card-icon"><i class="fa-regular fa-bell"></i></div><div class="card-title">Notification</div></div>
                                 <span class="card-action"><i class="fa-regular fa-paper-plane"></i> Send</span>
                             </div>
                         </div>
 
-                        <!-- RECENT CONTENT (optional) -->
+                        <!-- RECENT CONTENT -->
                         <div class="mt-6">
                             <h3 class="text-lg font-black italic mb-3">Recent Content</h3>
                             <div id="perf-matrix-target" class="space-y-2"></div>
@@ -4094,9 +4366,6 @@
                             </div>`;
                         }).join('');
                     }
-
-                    // load student ads if any (for teachers viewing student view, but we're in teacher view)
-                    // load student ads if any (but we're in teacher view, so skip)
 
                 // ─── TAB: GROUPS ───
                 } else if (tab === 'groups') {
@@ -4158,133 +4427,90 @@
                     `;
                     window.sortPerformanceMatrix('newest');
                 }
-
-            // ─── STUDENT VIEW ───
-            } else {
-                // Check if student has paid access
-                if (profile.hasPaid === undefined) {
-                    // check from DB
-                    const userRef = Core.doc(Core.db, "users", Core.auth.currentUser.uid);
-                    const userSnap = await Core.getDoc(userRef);
-                    if (userSnap.exists()) {
-                        _hasPaidAccess = userSnap.data().hasPaid || false;
-                        profile.hasPaid = _hasPaidAccess;
-                    }
-                } else {
-                    _hasPaidAccess = profile.hasPaid || false;
-                }
-
-                // If student hasn't paid and institute requires payment, show paywall
-                let showPaywall = false;
-                if (profile.instituteId && !_hasPaidAccess) {
-                    // check if institute has paid plans
-                    const instData = await window.getInstBadgeData(profile.instituteId);
-                    if (instData && instData.requiresPayment !== false) {
-                        showPaywall = true;
-                    }
-                }
-
-                if (showPaywall) {
-                    main.innerHTML = `
-                        <div class="fade-in text-center py-12">
-                            <div class="text-6xl mb-4">🔒</div>
-                            <h2 class="text-3xl font-black italic mb-4">Access Restricted</h2>
-                            <p class="opacity-70 max-w-md mx-auto mb-8">Purchase a plan to unlock all courses and content for your institute.</p>
-                            <button onclick="openPaymentOverlay('')" class="btn-brand px-10 py-4 text-sm shadow-xl">Purchase Plan</button>
-                            <div class="mt-6 text-xs opacity-40">Demo content is available for preview.</div>
-                        </div>
-                    `;
-                    // Also show demo content
-                    main.innerHTML += `
-                        <div class="mt-8">
-                            <h3 class="text-xl font-black italic mb-4">Demo Content</h3>
-                            <div id="demo-feed" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-                        </div>
-                    `;
-                    // fetch demo content
-                    const demoSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where(
-                        "isDemo", "==", true), Core.limit(6)));
-                    const demoDocs = demoSnap.docs;
-                    const container = document.getElementById('demo-feed');
-                    if (demoDocs.length > 0) {
-                        const htmlPromises = demoDocs.map(d => window.renderResourceCardHtml(d, false));
-                        const htmlArr = await Promise.all(htmlPromises);
-                        container.innerHTML = htmlArr.join('');
-                    } else {
-                        container.innerHTML =
-                            `<p class="text-xs opacity-40 col-span-full text-center py-8">No demo content available yet.</p>`;
-                    }
-                    return;
-                }
-
-                // Normal student view
-                main.innerHTML = `
-                    <div class="fade-in">
-                        ${_hasPaidAccess ? `<div class="bg-green-500/10 border border-green-500/20 rounded-xl p-3 mb-4 text-xs font-bold text-green-500 flex items-center gap-2"><i class="fa-solid fa-check-circle"></i> Full access unlocked</div>` : ''}
-                        <div id="banner-ad-container" class="hidden mb-4"></div>
-                        <h3 class="text-xl font-black italic mb-4">Suggested Syllabus</h3>
-                        <div id="suggested-feed" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
-                        <h3 class="text-xl font-black italic mb-4 border-t border-[var(--border-color)] pt-6">Subscribed Streams</h3>
-                        <div id="feed" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-                    </div>
-                `;
-
-                let contentQueryArgs = [Core.collection(Core.db, "content"), Core.limit(40)];
-
-                let autoFollowedTids = [];
-                if (profile.instituteId) {
-                    const tInstQuery = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where(
-                        "instituteId", "==", profile.instituteId), Core.where("role", "==", "teacher")));
-                    autoFollowedTids = tInstQuery.docs.map(d => d.data().teacherId);
-                }
-
-                if (targetInstitute && targetInstitute.privacyMode === 'private') {
-                    const validTeachersSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"),
-                        Core.where("uniqueId", "==", targetInstitute.uniqueId)));
-                    const validTeacherIds = validTeachersSnap.docs.map(d => d.data().teacherId);
-                    if (validTeacherIds.length > 0) {
-                        contentQueryArgs = [Core.collection(Core.db, "content"), Core.where("tId", "in",
-                            validTeacherIds), Core.limit(40)];
-                    } else { contentQueryArgs = [Core.collection(Core.db, "content"), Core.where("tId", "==",
-                            "BLOCK_ALL")]; }
-                }
-
-                const allContent = await Core.getDocs(Core.query(...contentQueryArgs));
-                let allContentDocs = allContent.docs;
-
-                const validPublicDocs = [];
-                for (let d of allContentDocs) {
-                    const cData = d.data();
-                    let allow = true;
-                    const tSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where(
-                        "teacherId", "==", cData.tId || "")));
-                    if (!tSnap.empty) {
-                        const tData = tSnap.docs[0].data();
-                        const isSameInst = profile.instituteId && tData.instituteId === profile.instituteId;
-                        if (tData.privacyMode === 'private' && !isSameInst) {
-                            if (!profile.subs || !profile.subs.includes(cData.tId)) allow = false;
-                        }
-                    }
-                    if (allow) validPublicDocs.push(d);
-                }
-
-                const allContentSorted = validPublicDocs.sort((a, b) => (b.data().date?.seconds || 0) - (a.data().date
-                    ?.seconds || 0));
-
-                await renderFeed(allContentSorted.slice(0, 6), false, 'suggested-feed');
-
-                const combinedSubs = [...new Set([...(profile.subs || []), ...autoFollowedTids])];
-                if (combinedSubs.length > 0) {
-                    const subContent = allContentSorted.filter(doc => combinedSubs.includes(doc.data().tId));
-                    await renderFeed(subContent, false, 'feed');
-                } else {
-                    document.getElementById('feed').innerHTML =
-                        `<div class="glass p-8 col-span-full rounded-2xl text-center border border-[var(--border-color)]"><p class="text-xs opacity-40 py-4 leading-relaxed">Follow instructors in your campus network to customize your feed parameters.</p></div>`;
-                }
-
-                // Load ads for student
-                window.loadStudentAds();
             }
+        };
+
+        // ─── TEACHER VIEW FUNCTIONS FOR TILES ───
+        window.showCoursesView = function() {
+            // Render a view showing all courses with add button
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div class="fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-black italic">My Courses</h3>
+                        <button onclick="window.switchTeacherView('course')" class="btn-brand px-6 py-2.5 text-xs"><i class="fa-regular fa-plus"></i> Add Course</button>
+                    </div>
+                    <div id="courses-feed" class="grid md:grid-cols-2 gap-6"></div>
+                </div>
+            `;
+            // Reuse renderCourses with teacher's courses
+            const sorted = [..._currentCourseList].sort((a, b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
+            renderCourses(sorted);
+        };
+
+        window.showContentView = function() {
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div class="fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-black italic">My Content</h3>
+                        <button onclick="window.switchTeacherView('publish')" class="btn-brand px-6 py-2.5 text-xs"><i class="fa-regular fa-plus"></i> Add Content</button>
+                    </div>
+                    <div id="feed" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+            `;
+            const sorted = [..._currentContentList].sort((a, b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
+            renderFeed(sorted, true);
+        };
+
+        window.showLiveView = function() {
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div class="fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-black italic">Live Sessions</h3>
+                        <button onclick="window.switchTeacherView('publish')" class="btn-brand px-6 py-2.5 text-xs"><i class="fa-solid fa-circle-play"></i> Go Live</button>
+                    </div>
+                    <div id="live-feed" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+            `;
+            const liveDocs = _currentContentList.filter(d => d.data().type === 'live');
+            const sorted = liveDocs.sort((a, b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
+            renderFeed(sorted, true, 'live-feed');
+        };
+
+        window.showGroupsView = function() {
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div class="fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-black italic">My Groups</h3>
+                        <button onclick="window.switchTeacherView('create')" class="btn-brand px-6 py-2.5 text-xs"><i class="fa-regular fa-plus"></i> Add Group</button>
+                    </div>
+                    <div id="student-groups" class="space-y-4"></div>
+                </div>
+            `;
+            window.loadGroups();
+        };
+
+        window.showDemoView = function() {
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div class="fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-black italic">Demo Content</h3>
+                        <button onclick="window.switchTeacherView('publish')" class="btn-brand px-6 py-2.5 text-xs"><i class="fa-regular fa-plus"></i> Add Demo</button>
+                    </div>
+                    <div id="demo-feed" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+            `;
+            const demoDocs = _currentContentList.filter(d => d.data().isDemo === true);
+            const sorted = demoDocs.sort((a, b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
+            renderFeed(sorted, true, 'demo-feed');
+        };
+
+        window.showNotificationView = function() {
+            window.showCustomNotificationModal();
         };
 
         // ─── QUICK NOTES ───
@@ -4294,7 +4520,6 @@
             toggleBottomNavBarVisibility(false);
             modal.classList.remove('hidden');
 
-            // load saved notes from firestore
             const notesRef = Core.collection(Core.db, "quickNotes");
             const q = Core.query(notesRef, Core.where("uid", "==", Core.auth.currentUser.uid), Core.orderBy("createdAt",
                 "desc"));
@@ -4367,7 +4592,12 @@
                     }
                     fetchSystemNotifications();
                     window.showScreen('dashboard');
-                    window.setNavTab('dashboard');
+                    // Determine initial tab based on role
+                    let initialTab = 'dashboard';
+                    if (profile.role === 'student') {
+                        initialTab = 'home';
+                    }
+                    window.setNavTab(initialTab);
                     listenSystemEvents();
                     initializeSwipeGestures();
                 }
@@ -4377,19 +4607,14 @@
             }
         });
 
-        // ─── LOAD PLANS (from app.js) ───
-        // These functions are already in app.js, but we need to expose them if needed
-        // They are already attached to window in app.js
-
         // ─── INIT ───
         if (localStorage.getItem('oc_theme') === 'true') document.documentElement.classList.add('light');
 
-        // expose functions to window
+        // Expose functions
         window.toast = toast;
         window.loadDashboardView = window.loadDashboardView;
 
-        console.log('OpenClase v3.0 — Monkey-Simple UI Loaded 🚀');
-        console.log('🔥 New Features: Live Sessions, Custom Notifications, Demo Videos, Timetable, Ads, Plan Management, Paywall');
+        console.log('OpenClase v3.1 — Monkey-Simple UI with student tabs, ad links, and tile views 🚀');
     </script>
 
     <script src="https://unpkg.com/lucide@latest"></script>
