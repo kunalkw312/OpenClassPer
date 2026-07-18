@@ -203,25 +203,21 @@
         }
 
         /* ─── BOTTOM NAV — STATIC FIXED ─── */
-        #floating-bottom-nav-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 4500;
-            width: 100%;
-            max-width: 100%;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            padding: 6px 8px max(6px, env(safe-area-inset-bottom)) 8px;
-            border-radius: 0;
-            border-top: 1px solid var(--border-color);
-            border-left: none;
-            border-right: none;
-            border-bottom: none;
-            background: var(--glass-bg);
-            backdrop-filter: blur(30px);
-            box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.4);
-        }
+       #floating-bottom-nav-bar {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0;
+    right: 0;
+    z-index: 9999 !important; /* Forces it above all scrolling content */
+    width: 100%;
+    max-width: 100%;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    padding: 6px 8px max(12px, env(safe-area-inset-bottom)) 8px; /* Increased bottom padding for mobile */
+    background: var(--glass-bg);
+    backdrop-filter: blur(30px);
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.4);
+    border-top: 1px solid var(--border-color);
+}
         #floating-bottom-nav-bar.nav-hidden {
             transform: translateY(100%);
             opacity: 0;
@@ -868,20 +864,22 @@
         }
 
         /* courses tile — same size as videos */
-        .course-tile {
-            aspect-ratio: 16 / 9;
-            width: 100%;
-            object-fit: cover;
-            border-radius: 16px;
-        }
-        .course-card .course-thumb {
-            aspect-ratio: 16 / 9;
-            width: 100%;
-            overflow: hidden;
-            border-radius: 16px;
-            background: var(--input-bg);
-            position: relative;
-        }
+        /* Update these classes in your <style> tag */
+.course-tile {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 16 / 9; /* Keep the image ratio */
+    object-fit: cover;
+    border-radius: 16px;
+}
+.course-card .course-thumb {
+    width: 100%;
+    min-height: 180px; /* Forces a taller minimum size on PC */
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--input-bg);
+    position: relative;
+}
         .course-card .course-thumb img {
             width: 100%;
             height: 100%;
@@ -2932,7 +2930,7 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
     window.renderCourses = async (docs, targetId = 'courses-feed') => {
         const container = document.getElementById(targetId);
         if (!container) return;
-        let html = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full fade-in">`;
+        let html = `<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full fade-in">`;
         for (let doc of docs) {
             const c = doc.data();
             let badgeStr = "";
