@@ -201,7 +201,7 @@
             animation: fadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* ── YOUTUBE-STYLE BOTTOM NAV ── */
+        /* ── NAV BAR (YouTube-style) ── */
         #floating-bottom-nav-bar {
             position: fixed;
             bottom: 0;
@@ -211,83 +211,56 @@
             background: var(--glass-bg);
             backdrop-filter: blur(30px);
             border-top: 1px solid var(--border-color);
-            padding: 4px 0 env(safe-area-inset-bottom) 0;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+            padding: 0.25rem 0.5rem;
+            padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            transform: translateY(0);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
         }
         #floating-bottom-nav-bar.nav-hidden {
-            transform: translateY(100%);
+            transform: translateY(100px);
             opacity: 0;
             pointer-events: none;
         }
         .nav-island-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 4px 0;
-            font-weight: 600;
-            font-size: 9px;
+            flex: 1;
+            text-align: center;
+            padding: 6px 0;
+            font-weight: 700;
             text-transform: uppercase;
-            color: var(--text-main);
+            font-size: 9px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
             opacity: 0.5;
+            color: var(--text-main);
             border: none;
             background: transparent;
             cursor: pointer;
-            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             gap: 1px;
-            width: 100%;
-            border-radius: 0;
-            position: relative;
+        }
+        .nav-island-btn.active {
+            color: var(--brand-orange);
+            opacity: 1;
         }
         .nav-island-btn i {
             font-size: 20px;
-            transition: all 0.25s ease;
+            line-height: 1.2;
         }
-        .nav-island-btn.active {
-            opacity: 1;
-            color: var(--brand-orange);
-        }
-        .nav-island-btn.active i {
-            transform: scale(1.05);
-        }
-        .nav-island-btn .nav-label {
+        .nav-island-btn span {
             font-size: 8px;
-            font-weight: 700;
-            letter-spacing: 0.03em;
-            margin-top: 1px;
+            letter-spacing: 0.02em;
         }
-        .nav-island-btn .nav-badge {
-            position: absolute;
-            top: 2px;
-            right: 50%;
-            transform: translateX(calc(50% + 12px));
-            background: #ff4444;
-            color: #fff;
-            font-size: 8px;
-            font-weight: 800;
-            min-width: 16px;
-            height: 16px;
-            border-radius: 99px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 4px;
-            border: 2px solid var(--bg-main);
-        }
-        .nav-island-btn .nav-badge.hidden {
-            display: none;
-        }
-
         @media (max-width: 480px) {
             .nav-island-btn i {
                 font-size: 18px;
             }
-            .nav-island-btn .nav-label {
+            .nav-island-btn span {
                 font-size: 7px;
-            }
-            #floating-bottom-nav-bar {
-                padding: 2px 0 env(safe-area-inset-bottom) 0;
             }
         }
 
@@ -828,12 +801,12 @@
 
         /* group chat bubble */
         .group-chat-bubble {
-            padding: 0.75rem 1.2rem !important;
+            padding: 0.9rem 1.2rem !important;
             font-size: 0.95rem !important;
             line-height: 1.6 !important;
-            max-width: 92% !important;
+            border-radius: 1.2rem !important;
+            max-width: 85% !important;
             word-wrap: break-word;
-            border-radius: 16px !important;
         }
 
         /* loading overlay for app install */
@@ -880,29 +853,13 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .back-btn-top {
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
+        /* Admin panel institute logo */
+        .institute-logo-thumb {
             width: 40px;
             height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: var(--text-main);
-            cursor: pointer;
-            transition: all 0.3s;
-            flex-shrink: 0;
-        }
-        .back-btn-top:hover {
-            background: var(--brand-orange);
-            color: #fff;
-            transform: scale(1.05);
-        }
-
-        #admin-panel-btn {
-            cursor: pointer;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
         }
     </style>
 </head>
@@ -913,11 +870,8 @@
     <!-- ─── CUSTOM MODAL ─── -->
     <div id="custom-modal"
         class="hidden fixed inset-0 z-[10000] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 md:p-6 transition-opacity duration-300">
-        <div class="absolute top-4 left-4 z-10">
-            <button onclick="closeCustomModal()" class="back-btn-top">
-                <i class="fa-solid fa-arrow-left"></i>
-            </button>
-        </div>
+        <div class="absolute top-6 left-6 text-white/50 cursor-pointer hover:text-white font-bold flex items-center gap-2 select-none transition-transform hover:-translate-x-1"
+            onclick="closeCustomModal()"> ← BACK</div>
         <div id="modal-content"
             class="w-full max-w-2xl glass p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-brandOrange/20 shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar">
         </div>
@@ -1158,7 +1112,7 @@
                             <span id="cart-pill"
                                 class="hidden absolute -top-1 -right-1 bg-brandOrange text-white text-[8px] font-black min-w-[16px] h-4 rounded-full flex items-center justify-center px-1">0</span>
                         </button>
-                        <button onclick="toggleMode()" id="theme-toggle-btn"
+                        <button onclick="toggleMode()"
                             class="w-9 h-9 md:w-10 md:h-10 glass rounded-xl flex items-center justify-center text-base md:text-lg hover:scale-110 transition-transform">🌓</button>
                         <div id="nav-profile-pic" onclick="showProfileSettings()"
                             class="w-9 h-9 md:w-10 md:h-10 min-w-[36px] min-h-[36px] md:min-w-[40px] md:min-h-[40px] overflow-hidden rounded-full flex items-center justify-center shrink-0 cursor-pointer select-none transition-all duration-300 shadow-lg profile-ring-stacked relative">
@@ -1170,9 +1124,8 @@
             <!-- MAIN CONTENT -->
             <main id="main-content" class="p-4 md:p-6 max-w-7xl mx-auto w-full"></main>
 
-            <!-- BOTTOM NAV - YOUTUBE STYLE -->
-            <div id="floating-bottom-nav-bar"
-                class="nav-hidden">
+            <!-- BOTTOM NAV ISLAND (YouTube-style) -->
+            <div id="floating-bottom-nav-bar">
                 <!-- Will be filled by JS -->
             </div>
         </div>
@@ -1351,6 +1304,7 @@
             b.appendChild(d);
             setTimeout(() => d.remove(), 2500);
         }
+        window.toast = toast;
 
         // ─── HELPERS ───
         window._profileCropper = null;
@@ -1368,23 +1322,6 @@
             e.preventDefault();
             window.deferredPrompt = e;
         });
-
-        // ─── APP INSTALL WITH LOADING ───
-        window.triggerAppInstall = async () => {
-            const loading = document.getElementById('app-install-loading');
-            loading.classList.add('active');
-            await new Promise(r => setTimeout(r, 5000));
-            if (window.deferredPrompt) {
-                window.deferredPrompt.prompt();
-                window.deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') toast("App installed successfully!");
-                    window.deferredPrompt = null;
-                });
-            } else {
-                toast("Click browser menu → 'Add to Home Screen' or 'Install'");
-            }
-            loading.classList.remove('active');
-        };
 
         window.addEventListener('offline', () => {
             toast("You are currently working offline. Some features may be restricted.", "error");
@@ -1427,10 +1364,24 @@
         };
 
         window.triggerInstAppInstall = async (instId) => {
+            const loading = document.getElementById('app-install-loading');
+            loading.classList.add('active');
+            await new Promise(r => setTimeout(r, 5000));
             const instData = await window.getInstBadgeData(instId);
-            if (!instData) return toast("Institute not found", "error");
+            if (!instData) { loading.classList.remove('active'); return toast("Institute not found", "error"); }
             window.setDynamicManifest(instData);
-            await window.triggerAppInstall();
+            if (window.deferredPrompt) {
+                try {
+                    window.deferredPrompt.prompt();
+                    window.deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') toast("Installing Institute App...");
+                        window.deferredPrompt = null;
+                    });
+                } catch (e) { toast("Install prompt failed", "error"); }
+            } else {
+                toast("App setup generated! Click your browser's menu and select 'Install' or 'Add to Home Screen'.");
+            }
+            loading.classList.remove('active');
         };
 
         window.applyLockedInstituteBranding = async () => {
@@ -2030,7 +1981,7 @@
                         </div>
                         <div class="mt-6 border-t border-[var(--border-color)] pt-6"><h4 class="text-xs font-black uppercase tracking-widest opacity-50 mb-3">Campus Connections</h4>${joinHubSectionHtml}</div>
                         <div class="pt-6 border-t border-red-500/10 mt-6">
-                            ${profile.role === 'super_admin' ? `<div class="mb-6"><button id="admin-panel-btn" onclick="window.openAdminPanel()" class="w-full py-4 bg-red-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-md">Access Management Panel</button></div>` : ''}
+                            ${profile.role === 'super_admin' ? `<div class="mb-6"><button onclick="window.openAdminPanel()" class="w-full py-4 bg-red-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-md">Access Management Panel</button></div>` : ''}
                             <div class="flex flex-col sm:flex-row gap-3">
                                 <button onclick="triggerAccountPurgePipeline()" class="flex-1 py-3.5 bg-red-600/10 text-red-500 border border-red-600/20 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-sm">Delete Account</button>
                                 <button onclick="logout()" class="flex-1 py-3.5 bg-[var(--input-bg)] text-[var(--text-main)] border border-[var(--border-color)] rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-70 transition-all shadow-sm">Sign Out</button>
@@ -2071,7 +2022,7 @@
         window.openAdminPanel = () => {
             window.closeCustomModal();
             document.getElementById('admin-dashboard').classList.remove('hidden');
-            window.showSection('plans-section');
+            window.showSection('institutes-section');
         };
 
         // ─── ADMIN INSTITUTES ───
@@ -2101,13 +2052,13 @@
             container.innerHTML = list.map(d => `
                 <div class="glass p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-[var(--border-color)] shadow-sm hover:border-brandBlue/30 transition-all">
                     <div class="flex items-center gap-3 min-w-0 flex-1">
-                        <img src="${d.logo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(d.name)}" class="w-10 h-10 rounded-xl object-cover bg-black border border-[var(--border-color)] shrink-0">
-                        <div class="min-w-0 flex-1"><p class="font-bold text-sm truncate text-[var(--text-main)]">${d.name}</p><p class="text-[9px] opacity-50 font-mono mt-0.5 truncate">ID: ${d.uniqueId} | Manager Code: ${d.teacherId}</p></div>
+                        <img src="${d.logo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(d.name)}" class="institute-logo-thumb">
+                        <div class="min-w-0 flex-1"><p class="font-bold text-sm truncate text-[var(--text-main)]">${d.name}</p><p class="text-[9px] opacity-50 font-mono mt-0.5 truncate">ID: ${d.uniqueId} | Manager: ${d.teacherId}</p></div>
                     </div>
                     <div class="flex gap-2 w-full sm:w-auto shrink-0 justify-end">
                         <button onclick="window.showEditInstituteModal('${d.id}')" class="px-3 py-2 bg-brandOrange/10 border border-brandOrange/20 text-brandOrange text-[10px] font-black uppercase rounded-lg hover:bg-brandOrange hover:text-white transition-all shadow-sm">Edit</button>
+                        <button onclick="window.deleteInstitute('${d.id}')" class="px-3 py-2 bg-red-500/10 text-red-500 border border-red-500/20 text-[10px] font-black uppercase rounded-lg hover:bg-red-500 hover:text-white transition-all shadow-sm">Delete</button>
                         <button onclick="window.triggerInstAppInstall('${d.uniqueId}')" class="bg-green-500/10 text-green-500 border border-green-500/20 px-3 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-green-500 hover:text-white transition-all shadow-sm">Get App</button>
-                        <button onclick="window.deleteInstitute('${d.id}')" class="bg-red-500/10 text-red-500 border border-red-500/20 px-3 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-red-500 hover:text-white transition-all shadow-sm">Revoke</button>
                     </div>
                 </div>
             `).join('');
@@ -2780,8 +2731,7 @@
             setTimeout(() => { const target = document.getElementById('hub-code'); if (target) target.value = code;
                 joinGroup(); }, 500); };
 
-        // ─── TEACHER VIEW SWITCHER ───
-        // This is now used for modals when clicking "+ Add" from tile views
+        // ─── TEACHER VIEW SWITCHER (now using modals) ───
         window.openAddCourseModal = () => {
             const modal = document.getElementById('custom-modal');
             const content = document.getElementById('modal-content');
@@ -2871,7 +2821,6 @@
             `;
         };
 
-        // Modal-based creation functions
         window.launchCourseFromModal = async () => {
             const t = document.getElementById('c-title').value.trim();
             const d = document.getElementById('c-desc').value.trim();
@@ -2974,7 +2923,6 @@
             document.getElementById('course-vids').appendChild(div);
         };
 
-        // ─── MODAL FORM HELPERS ───
         window.togglePublishScheduleField = (val) => {
             const el = document.getElementById('live-schedule-fields');
             if (el) { if (val === 'live') el.classList.remove('hidden'); else el.classList.add('hidden'); }
@@ -3291,6 +3239,7 @@
                         url: urls[i] }); } }
             await Core.updateDoc(Core.doc(Core.db, "courses", id), { playlist });
 
+            // Send notification to enrolled students
             const courseSnap = await Core.getDoc(Core.doc(Core.db, "courses", id));
             if (courseSnap.exists()) {
                 const course = courseSnap.data();
@@ -3431,7 +3380,7 @@
                 .orderBy("createdAt", "asc"));
             Core.onSnapshot(q, (snap) => {
                 document.getElementById('group-chat-messages').innerHTML = snap.docs.map(m => { const d = m.data();
-                    const isM = d.senderId === Core.auth.currentUser.uid; return `<div class="flex ${isM ? 'flex-row-reverse' : 'flex-row'} items-end gap-2.5 fade-in"><img src="${d.senderPhoto || 'https://ui-avatars.com/api/?name=' + d.sender}" class="w-7 h-7 rounded-full border border-[var(--border-color)] object-cover shrink-0"><div class="flex flex-col ${isM ? 'items-end' : 'items-start'}"><p class="text-[9px] opacity-40 px-1 mb-0.5 tracking-widest uppercase font-bold">${d.sender}</p><div class="inline-block p-4 rounded-xl ${isM ? 'bg-brandOrange text-white' : 'bg-[var(--input-bg)] border border-[var(--border-color)] text-[var(--text-main)]'} text-sm max-w-[92%] break-words group-chat-bubble">${d.text}</div></div></div>`; })
+                    const isM = d.senderId === Core.auth.currentUser.uid; return `<div class="flex ${isM ? 'flex-row-reverse' : 'flex-row'} items-end gap-2.5 fade-in"><img src="${d.senderPhoto || 'https://ui-avatars.com/api/?name=' + d.sender}" class="w-7 h-7 rounded-full border border-[var(--border-color)] object-cover shrink-0"><div class="flex flex-col ${isM ? 'items-end' : 'items-start'}"><p class="text-[9px] opacity-40 px-1 mb-0.5 tracking-widest uppercase font-bold">${d.sender}</p><div class="inline-block p-4 rounded-xl ${isM ? 'bg-brandOrange text-white' : 'bg-[var(--input-bg)] border border-[var(--border-color)] text-[var(--text-main)]'} text-sm max-w-[85%] break-words group-chat-bubble">${d.text}</div></div></div>`; })
                     .join('');
                 document.getElementById('group-chat-messages').scrollTop = 99999;
             });
@@ -4057,16 +4006,12 @@
                 navTabsOrder = ['dashboard', 'groups', 'analytics'];
             }
 
-            navBar.innerHTML = `<div class="grid grid-cols-${tabs.length} w-full gap-0">` +
-                tabs.map(t => `
+            navBar.innerHTML = tabs.map(t => `
                     <button class="nav-island-btn ${currentNavTab === t.id ? 'active' : ''}" data-tab="${t.id}" onclick="window.setNavTab('${t.id}')">
                         <i class="${t.icon}"></i>
-                        <span class="nav-label">${t.label}</span>
+                        <span>${t.label}</span>
                     </button>
-                `).join('') +
-                `</div>`;
-            // Show nav
-            navBar.classList.remove('nav-hidden');
+                `).join('');
         }
 
         // ─── STUDENT VIEWS ───
@@ -4599,25 +4544,87 @@
         };
 
         // ─── THEME TOGGLE ───
-        window.toggleMode = function() {
+        window.toggleMode = () => {
             document.documentElement.classList.toggle('light');
-            localStorage.setItem('oc_theme', document.documentElement.classList.contains('light'));
+            localStorage.setItem('oc_theme', document.documentElement.classList.contains('light') ? 'true' : 'false');
         };
 
-        // ─── CLOSE MODAL ───
-        window.closeCustomModal = function() {
-            document.getElementById('custom-modal').classList.add('hidden');
-            toggleBottomNavBarVisibility(true);
+        // ─── AI CHAT ───
+        window.toggleAIChat = () => {
+            const chatWindow = document.getElementById('ai-chat-window');
+            if (chatWindow.classList.contains('ai-drawer-hidden')) {
+                chatWindow.classList.remove('ai-drawer-hidden');
+                toggleBottomNavBarVisibility(false);
+                setTimeout(() => document.getElementById('ai-input').focus(), 300);
+            } else {
+                chatWindow.classList.add('ai-drawer-hidden');
+                toggleBottomNavBarVisibility(true);
+            }
         };
 
-        window.closeVault = function() {
-            document.getElementById('media-vault').classList.add('hidden');
-            currentVideoContext = null;
-            toggleBottomNavBarVisibility(true);
-            if (activeLiveChatListenerUnsub) { activeLiveChatListenerUnsub();
-                activeLiveChatListenerUnsub = null; }
-            if (window._disengageShields) window._disengageShields();
-            if (videoPlayer) { try { videoPlayer.destroy(); } catch (e) {} videoPlayer = null; }
+        window.sendAIMessage = async () => {
+            const promptInput = document.getElementById('ai-input');
+            const fileInput = document.getElementById('ai-media-file');
+            const filePreview = document.getElementById('ai-file-preview');
+            const m = promptInput.value.trim();
+            const file = fileInput.files[0];
+            if (!m && !file) return;
+            const activeBackendUrl = customAiConfig.backendApiUrl || customAiConfig.backendUrl;
+            if (!activeBackendUrl) { toast("AI service endpoint configuration unavailable.", "error"); return; }
+            const chat = document.getElementById('ai-messages');
+            let userMsgHtml = `<div class="ml-auto bg-brandOrange text-white p-3.5 rounded-xl max-w-[85%] text-xs shadow-sm fade-in">`;
+            if (file) userMsgHtml += `<div class="text-[9px] opacity-70 mb-1 font-bold">📎 ${file.name}</div>`;
+            if (m) userMsgHtml += `<div class="break-words">${m}</div>`;
+            userMsgHtml += `</div>`;
+            chat.innerHTML += userMsgHtml;
+            promptInput.value = '';
+            fileInput.value = '';
+            filePreview.innerText = '';
+            filePreview.classList.add('hidden');
+            chat.scrollTop = chat.scrollHeight;
+            window.aiChatHistory.push({ role: 'User', content: m || `[File Upload: ${file.name}]` });
+            const historyContext = window.aiChatHistory.map(msg => `${msg.role}: ${msg.content}`).join('\n');
+            const formData = new FormData();
+            const systemDirective =
+                `System Directive: You are an ultra-concise AI assistant. You MUST respond in 1 to 2 short sentences maximum. Give only the direct answer. No filler, no greetings, and absolutely no conversational fluff.`;
+            const finalPrompt =
+                `User: ${profile?.name}. Permission Tier: ${profile?.role}.\n${systemDirective}\n\n--- Recent History ---\n${historyContext}\n-----------------------\n\nQuery: ${m}`;
+            formData.append("prompt", finalPrompt);
+            if (currentVideoContext && currentVideoContext.link) formData.append("url", currentVideoContext.link);
+            if (file) formData.append("file", file);
+            const loadingId = 'ai-loading-' + Date.now();
+            chat.innerHTML +=
+                `<div id="${loadingId}" class="flex items-center gap-1.5 bg-[var(--input-bg)] border border-[var(--border-color)] p-3 rounded-xl w-fit text-xs fade-in"><span class="flex gap-1"><span class="w-1.5 h-1.5 bg-brandOrange rounded-full animate-bounce" style="animation-delay:0s;"></span><span class="w-1.5 h-1.5 bg-brandOrange rounded-full animate-bounce" style="animation-delay:0.2s;"></span><span class="w-1.5 h-1.5 bg-brandOrange rounded-full animate-bounce" style="animation-delay:0.4s;"></span></span></div>`;
+            chat.scrollTop = chat.scrollHeight;
+            try {
+                const baseUrl = activeBackendUrl.replace(/\/$/, "");
+                const response = await fetch(`${baseUrl}/v1/chat/process`, {
+                    method: "POST",
+                    headers: { "X-Project-Key": customAiConfig.projectKey, "X-Groq-Key": customAiConfig.groqKey },
+                    body: formData
+                });
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") === -1) throw new Error(
+                    "Invalid server data delivery protocol.");
+                const data = await response.json();
+                document.getElementById(loadingId).remove();
+                if (response.ok) {
+                    const textReply = data.response || "Task complete.";
+                    window.aiChatHistory.push({ role: 'AI', content: textReply });
+                    if (window.aiChatHistory.length > 10) window.aiChatHistory = window.aiChatHistory.slice(-10);
+                    chat.innerHTML +=
+                        `<div class="bg-[var(--input-bg)] border border-[var(--border-color)] text-[var(--text-main)] p-3.5 rounded-xl max-w-[85%] text-xs shadow-sm fade-in">${textReply}</div>`;
+                } else {
+                    chat.innerHTML +=
+                        `<div class="bg-red-500/10 border border-red-500/30 p-3.5 rounded-xl max-w-[85%] text-xs text-red-500 font-bold fade-in">System Error: ${data.detail || 'Data processing error.'}</div>`;
+                }
+                chat.scrollTop = chat.scrollHeight;
+            } catch (e) {
+                document.getElementById(loadingId)?.remove();
+                chat.innerHTML +=
+                    `<div class="bg-red-500/10 border border-red-500/30 p-3.5 rounded-xl max-w-[85%] text-xs text-red-500 font-bold fade-in">Connection Interruption: ${e.message}</div>`;
+                toast("AI Assistant connection failure.", "error");
+            }
         };
 
         // ─── AUTH STATE ───
@@ -4662,10 +4669,139 @@
         // ─── INIT ───
         if (localStorage.getItem('oc_theme') === 'true') document.documentElement.classList.add('light');
 
-        window.toast = toast;
-        window.loadDashboardView = window.loadDashboardView;
+        // Expose functions to global
+        window.closeCustomModal = () => {
+            document.getElementById('custom-modal').classList.add('hidden');
+            toggleBottomNavBarVisibility(true);
+        };
 
-        console.log('OpenClase v3.3 — Fixed: nav, back, quick notes, admin, campus directory, theme, AI, chat bubble');
+        window.closeVault = () => {
+            document.getElementById('media-vault').classList.add('hidden');
+            currentVideoContext = null;
+            toggleBottomNavBarVisibility(true);
+            if (activeLiveChatListenerUnsub) { activeLiveChatListenerUnsub();
+                activeLiveChatListenerUnsub = null; }
+            if (window._disengageShields) window._disengageShields();
+            if (videoPlayer) { try { videoPlayer.destroy(); } catch (e) {} videoPlayer = null; }
+        };
+
+        window.onclick = (e) => { if (e.target === document.getElementById('custom-modal')) window.closeCustomModal(); };
+
+        // ─── VAULT DRAG ───
+        window._isDraggingCloseBtn = false;
+        setTimeout(() => {
+            const btn = document.getElementById('vault-close-btn');
+            if (!btn) return;
+            let startX, startY, initialLeft, initialTop;
+            let dragThreshold = false;
+            const onDragStart = (e) => {
+                if (e.target !== btn) return;
+                dragThreshold = false;
+                if (e.type === 'touchstart') { startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY; } else { startX = e.clientX;
+                    startY = e.clientY; }
+                const rect = btn.getBoundingClientRect();
+                btn.classList.remove('bottom-8', 'left-1/2', '-translate-x-1/2');
+                btn.style.left = rect.left + 'px';
+                btn.style.top = rect.top + 'px';
+                btn.style.bottom = 'auto';
+                btn.style.right = 'auto';
+                initialLeft = rect.left;
+                initialTop = rect.top;
+                document.addEventListener('mousemove', onDragMove, { passive: false });
+                document.addEventListener('mouseup', onDragEnd);
+                document.addEventListener('touchmove', onDragMove, { passive: false });
+                document.addEventListener('touchend', onDragEnd);
+            };
+            const onDragMove = (e) => {
+                let currentX, currentY;
+                if (e.type === 'touchmove') { currentX = e.touches[0].clientX;
+                    currentY = e.touches[0].clientY; } else { currentX = e.clientX;
+                    currentY = e.clientY; }
+                const dx = currentX - startX;
+                const dy = currentY - startY;
+                if (Math.abs(dx) > 5 || Math.abs(dy) > 5) { dragThreshold = true;
+                    window._isDraggingCloseBtn = true;
+                    e.preventDefault(); }
+                if (dragThreshold) {
+                    let newLeft = Math.max(0, Math.min(initialLeft + dx, window.innerWidth - btn.offsetWidth));
+                    let newTop = Math.max(0, Math.min(initialTop + dy, window.innerHeight - btn.offsetHeight));
+                    btn.style.left = newLeft + 'px';
+                    btn.style.top = newTop + 'px';
+                }
+            };
+            const onDragEnd = () => {
+                document.removeEventListener('mousemove', onDragMove);
+                document.removeEventListener('mouseup', onDragEnd);
+                document.removeEventListener('touchmove', onDragMove);
+                document.removeEventListener('touchend', onDragEnd);
+                setTimeout(() => { window._isDraggingCloseBtn = false; }, 100);
+            };
+            btn.addEventListener('mousedown', onDragStart);
+            btn.addEventListener('touchstart', onDragStart, { passive: false });
+            btn.addEventListener('click', (e) => { if (dragThreshold) { e.preventDefault();
+                    e.stopPropagation();
+                    dragThreshold = false; return; }
+                window.closeVault(); });
+        }, 1000);
+
+        // ─── INSTITUTE FORM ───
+        window.showInstituteForm = () => {
+            const modal = document.getElementById('custom-modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('hidden');
+            content.innerHTML = `
+                <div class="fade-in">
+                    <h3 class="text-2xl font-black italic mb-2">Register Institute</h3>
+                    <p class="text-xs opacity-50 mb-6">Submit a request to onboard your campus.</p>
+                    <div class="space-y-4">
+                        <input id="req-inst-name" placeholder="Institute Name" class="input-field text-sm">
+                        <input id="req-inst-email" placeholder="Contact Email" type="email" class="input-field text-sm">
+                        <input id="req-inst-phone" placeholder="Contact Number" class="input-field text-sm">
+                        <div class="grid grid-cols-2 gap-4">
+                            <input id="req-inst-teachers" placeholder="# of Teachers" type="number" class="input-field text-sm">
+                            <input id="req-inst-students" placeholder="# of Students" type="number" class="input-field text-sm">
+                        </div>
+                        <textarea id="req-inst-address" placeholder="Physical Address" class="input-field text-sm h-24 resize-none"></textarea>
+                        <button id="req-inst-btn" onclick="window.submitInstituteRequest()" class="w-full py-4 btn-brand mt-2 text-xs hover:scale-[1.02] transition-transform">Submit Request</button>
+                    </div>
+                </div>
+            `;
+        };
+
+        window.submitInstituteRequest = async () => {
+            const btn = document.getElementById('req-inst-btn');
+            if (btn) { btn.innerText = "Submitting...";
+                btn.disabled = true; }
+            try {
+                const name = document.getElementById('req-inst-name')?.value.trim() || "";
+                const email = document.getElementById('req-inst-email')?.value.trim() || "";
+                const phone = document.getElementById('req-inst-phone')?.value.trim() || "";
+                const teachers = document.getElementById('req-inst-teachers')?.value || "0";
+                const students = document.getElementById('req-inst-students')?.value || "0";
+                const address = document.getElementById('req-inst-address')?.value.trim() || "";
+                if (!name || !email) { toast("Name and Email are required", "error"); if (btn) { btn.innerText =
+                        "Submit Request";
+                        btn.disabled = false; } return; }
+                const data = { name, email, phone, teachers, students, address, status: 'pending' };
+                if (typeof Core.serverTimestamp === 'function') { data.createdAt = Core.serverTimestamp(); } else { data
+                        .createdAt = new Date(); }
+                await Core.addDoc(Core.collection(Core.db, "instituteRequests"), data);
+                toast("Request submitted successfully. Our team will contact you.");
+                window.closeCustomModal();
+            } catch (error) {
+                console.error("Submission Error: ", error);
+                if (error.code === 'permission-denied') { toast("Database blocked request: Please update Firebase Rules.",
+                        "error"); } else { toast("Failed to submit request.", "error"); }
+                if (btn) { btn.innerText = "Submit Request";
+                    btn.disabled = false; }
+            }
+        };
+
+        // ─── VAULT AI BUTTON ───
+        // Already calling toggleAIChat()
+
+        console.log('OpenClase v3.3 — All fixes applied: nav, back, quick notes, install, admin, campus directory, theme, AI, chat bubbles, edit/delete institutes, logos.');
     </script>
 
     <script src="https://unpkg.com/lucide@latest"></script>
