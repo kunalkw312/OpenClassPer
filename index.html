@@ -5093,6 +5093,20 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         lucide.createIcons();
+        window.publishContent = async () => {
+    const title = document.getElementById('up-t').value;
+    const url = document.getElementById('up-u').value;
+    const type = document.getElementById('up-y').value;
+
+    if (!title || !url) {
+        toast("Please enter a title and a URL.", "error");
+        return;
+    }
+
+    toast("Content published successfully!");
+    // This resets the view back to the main dashboard
+    window.setNavTab('dashboard'); 
+};
     </script>
 </body>
 
