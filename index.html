@@ -2201,12 +2201,10 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
         window.loadSearch(val); };
 
     // ─── TOGGLE BOTTOM NAV ───
-    function toggleBottomNavBarVisibility(visible) {
-        const navBar = document.getElementById('floating-bottom-nav-bar');
-        if (!navBar) return;
-        if (visible) navBar.classList.remove('nav-hidden');
-        else navBar.classList.add('nav-hidden');
-    }
+function toggleBottomNavBarVisibility(visible) {
+    // Disabled so the nav bar stays permanently at the bottom!
+    return; 
+}
 
     // ─── NOTIFICATIONS ───
     async function fetchSystemNotifications() {
@@ -2930,7 +2928,7 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
     window.renderCourses = async (docs, targetId = 'courses-feed') => {
         const container = document.getElementById(targetId);
         if (!container) return;
-        let html = `<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full fade-in">`;
+        let html = `<div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full fade-in">`;
         for (let doc of docs) {
             const c = doc.data();
             let badgeStr = "";
