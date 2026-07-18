@@ -203,51 +203,86 @@
         }
 
         /* ─── BOTTOM NAV — STATIC FIXED ─── */
-       #floating-bottom-nav-bar {
-            position: fixed !important;
-            bottom: 0 !important;
-            left: 0;
-            right: 0;
-            z-index: 5000;
-    width: 100%;
-    max-width: 100%;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-    padding: 6px 8px max(12px, env(safe-area-inset-bottom)) 8px; /* Increased bottom padding for mobile */
-    background: var(--glass-bg);
-    backdrop-filter: blur(30px);
-    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.4);
-    border-top: 1px solid var(--border-color);
+      /* ===========================
+   Bottom Navigation
+=========================== */
+body{
+    padding-bottom:90px;
 }
+.main-content{
+    padding-bottom:90px;
+}
+
+#floating-bottom-nav-bar{
+    position:fixed;
+    left:0;
+    bottom:0;
+    width:100%;
+    height:72px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+
+    background:rgba(18,18,18,.95);
+    backdrop-filter:blur(20px);
+
+    border-top:1px solid rgba(255,255,255,.08);
+
+    z-index:9999;
+
+    padding-bottom:env(safe-area-inset-bottom);
+
+    box-shadow:0 -8px 30px rgba(0,0,0,.4);
+}
+
+
         #floating-bottom-nav-bar.nav-hidden {
             transform: translateY(100%);
             opacity: 0;
             pointer-events: none;
         }
-        .nav-island-btn {
-            width: 100%;
-            text-align: center;
-            padding: 6px 0 4px 0;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 8px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            opacity: 0.4;
-            color: var(--text-main);
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-        }
-        .nav-island-btn.active {
-            background: rgba(247, 148, 29, 0.12);
-            color: #f7941d;
-            opacity: 1;
-            transform: scale(1.02);
-        }
+       .nav-island-btn{
+
+    flex:1;
+
+    height:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:5px;
+
+    color:#8b8b8b;
+
+    background:none;
+
+    border:none;
+
+    cursor:pointer;
+
+    transition:.25s;
+}
+       .nav-island-btn.active{
+
+    color:#ffffff;
+}
+
+.nav-island-btn.active .icon-box{
+
+    background:#f59e0b;
+
+    color:black;
+
+    transform:translateY(-2px);
+
+    box-shadow:0 8px 18px rgba(245,158,11,.35);
+}
         .nav-island-btn i {
             font-size: 20px;
         }
@@ -864,27 +899,138 @@
         }
 
         /* courses tile — same size as videos */
-        /* Update these classes in your <style> tag */
-.course-tile {
-    width: 100%;
-    height: 100%;
-    aspect-ratio: 16 / 9; /* Keep the image ratio */
-    object-fit: cover;
-    border-radius: 16px;
-}
-.course-card .course-thumb {
-    width: 100%;
-    min-height: 180px; /* Forces a taller minimum size on PC */
-    overflow: hidden;
-    border-radius: 16px;
-    background: var(--input-bg);
-    position: relative;
-}
+        /* .course-tile {
+            aspect-ratio: 16 / 9;
+            width: 100%;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+        .course-card .course-thumb {
+            aspect-ratio: 16 / 9;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 16px;
+            background: var(--input-bg);
+            position: relative;
+        }
         .course-card .course-thumb img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
+        } */
+
+.course-card{
+    width:320px;
+    background:#181818;
+    border-radius:20px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    transition:.35s;
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.course-thumb{
+    width:100%;
+    height:190px;
+    overflow:hidden;
+}
+
+.course-tile{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+.course-content{
+    padding:18px;
+}
+
+.course-title{
+    color:#fff;
+    font-size:22px;
+    font-weight:700;
+    margin-bottom:15px;
+}
+
+.course-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.course-price{
+    color:#f59e0b;
+    font-size:28px;
+    font-weight:700;
+}
+
+.explore-btn{
+    padding:10px 20px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(90deg,#0ea5e9,#2563eb);
+    color:#fff;
+    font-weight:600;
+    cursor:pointer;
+}
+     
+/* ===========================
+   Course Grid
+=========================== */
+
+.course-grid{
+    display: grid;
+    grid-template-columns: 1fr; /* Mobile */
+    gap: 30px;
+    width: 100%;
+    padding: 20px 0;
+}
+
+/* 📱 Mobile (default) - 1 Card */
+
+/* 💻 Tablet - 2 Cards */
+@media (min-width: 768px){
+    .course-grid{
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 🖥️ Laptop - 3 Cards */
+@media (min-width: 1024px){
+    .course-grid{
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* 🖥️ Large Desktop - 4 Cards */
+@media (min-width: 1280px){
+    .course-grid{
+        grid-template-columns: repeat(4, 1fr);
+    }
+}  
+
+
+.icon-box{
+    width:46px;
+    height:46px;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:0.3s ease;
+}
+
+.icon-box i{
+    font-size:22px;
+}
+
+.nav-island-btn.active .icon-box{
+    background:#f59e0b;
+    color:#111;
+    box-shadow:0 8px 18px rgba(245,158,11,.35);
+}
 
         /* admin institute list */
         .admin-inst-item {
@@ -1189,8 +1335,32 @@ class="w-9 h-9 md:w-10 md:h-10 min-w-[36px] min-h-[36px] md:min-w-[40px] md:min-
 <main id="main-content" class="p-4 md:p-6 max-w-7xl mx-auto w-full"></main>
 
 <!-- BOTTOM NAV ISLAND — STATIC FIXED -->
-<div id="floating-bottom-nav-bar"
-class="glass shadow-2xl border-t border-[var(--border-color)]">
+<!-- <div id="floating-bottom-nav-bar"
+class="glass shadow-2xl border-t border-[var(--border-color)]"> -->
+<div id="floating-bottom-nav-bar">
+
+    <button class="nav-island-btn active" data-tab="dashboard">
+        <div class="icon-box">
+            <i class="fa-solid fa-gauge"></i>
+        </div>
+        <span>DASHBOARD</span>
+    </button>
+
+    <button class="nav-island-btn" data-tab="groups">
+        <div class="icon-box">
+            <i class="fa-solid fa-users"></i>
+        </div>
+        <span>GROUPS</span>
+    </button>
+
+    <button class="nav-island-btn" data-tab="analytics">
+        <div class="icon-box">
+            <i class="fa-solid fa-chart-column"></i>
+        </div>
+        <span>ANALYTICS</span>
+    </button>
+
+</div>
 <!-- Will be filled by JS -->
 </div>
 </div>
@@ -2201,10 +2371,12 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
         window.loadSearch(val); };
 
     // ─── TOGGLE BOTTOM NAV ───
-function toggleBottomNavBarVisibility(visible) {
-    // Disabled so the nav bar stays permanently at the bottom!
-    return; 
-}
+    function toggleBottomNavBarVisibility(visible) {
+        const navBar = document.getElementById('floating-bottom-nav-bar');
+        if (!navBar) return;
+        if (visible) navBar.classList.remove('nav-hidden');
+        else navBar.classList.add('nav-hidden');
+    }
 
     // ─── NOTIFICATIONS ───
     async function fetchSystemNotifications() {
@@ -2827,7 +2999,7 @@ function toggleBottomNavBarVisibility(visible) {
                 </div>
                 ${profile.teacherId !== tD.teacherId ? `<button onclick="window.handleSub('${tId}', ${isF}, '${tD.privacyMode}', ${isPendingF})" class="w-full md:w-auto px-8 py-3.5 ${buttonClasses} rounded-xl font-black text-xs uppercase tracking-widest shrink-0 transition-all" ${disableBtn ? 'disabled' : ''}>${buttonText}</button>` : ''}
             </div>
-            ${canViewContent ? `<h3 class="text-xl font-black mb-4 italic">Courses</h3><div id="courses-feed" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-8"></div><h3 class="text-xl font-black mb-4 italic">Library</h3><div id="feed" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>` : `<div class="glass p-10 text-center rounded-2xl border border-[var(--border-color)]"><div class="text-3xl mb-2">🔒</div><h3 class="text-lg font-black italic text-red-500 mb-1">Private Channel</h3><p class="opacity-60 text-xs">Request access to view materials.</p></div>`}
+            ${canViewContent ? `<h3 class="text-xl font-black mb-4 italic">Courses</h3><div id="courses-feed" class="grid md:grid-cols-2 gap-6 mb-8"></div><h3 class="text-xl font-black mb-4 italic">Library</h3><div id="feed" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>` : `<div class="glass p-10 text-center rounded-2xl border border-[var(--border-color)]"><div class="text-3xl mb-2">🔒</div><h3 class="text-lg font-black italic text-red-500 mb-1">Private Channel</h3><p class="opacity-60 text-xs">Request access to view materials.</p></div>`}
         </div>`;
         if (canViewContent) { await window.renderFeed(contentSorted, false);
             await window.renderCourses(coursesSorted); }
@@ -2928,7 +3100,10 @@ function toggleBottomNavBarVisibility(visible) {
     window.renderCourses = async (docs, targetId = 'courses-feed') => {
         const container = document.getElementById(targetId);
         if (!container) return;
-        let html = `<div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full fade-in">`;
+//       let html = `
+// <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 p-4 fade-in">
+// `;
+let html = `<div class="course-grid fade-in">`;
         for (let doc of docs) {
             const c = doc.data();
             let badgeStr = "";
@@ -2939,13 +3114,13 @@ function toggleBottomNavBarVisibility(visible) {
                 if (instData) badgeStr = window.renderInstBadgeHtml(instData, 'w-8 h-8 border-2 right-2 bottom-2');
             }
             const hasDemo = c.playlist && c.playlist.some(v => v.isDemo === true);
-            html += `<div class="course-card glass p-5 rounded-2xl border border-[var(--border-color)] flex flex-col justify-between shadow-md hover:border-brandOrange/30 transition-all">
+            html += `<div class="course-card glass">
                 <div class="course-thumb relative">
                     <img src="${c.thumbnail}" class="course-tile border border-[var(--border-color)]">
                     ${badgeStr}
                     ${hasDemo ? `<div class="absolute top-2 left-2 demo-badge"><i class="fa-regular fa-circle-play"></i> Demo</div>` : ''}
                 </div>
-                <div class="mt-3"><h2 class="text-lg font-black italic mb-2 truncate text-[var(--text-main)]">${c.title}</h2><div class="flex justify-between items-center mt-3"><h3 class="text-base font-black text-brandOrange">${c.price === '0' ? 'FREE' : '₹' + c.price}</h3><button onclick="window.openCourse('${doc.id}')" class="btn-brand px-5 py-2.5 text-[10px]">Explore</button></div></div>
+                <div class="course-content"><h2 class="course-title">${c.title}</h2><div class="course-footer"><h3 class="course-price">${c.price === '0' ? 'FREE' : '₹' + c.price}</h3><button onclick="window.openCourse('${doc.id}')" class="btn-brand px-5 py-2.5 text-[10px]">Explore</button></div></div>
             </div>`;
         }
         html += `</div>`;
