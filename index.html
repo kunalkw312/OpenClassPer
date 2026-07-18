@@ -82,7 +82,7 @@
             background-color: var(--bg-main);
             color: var(--text-main);
             overflow-x: hidden;
-            padding-bottom: calc(100px + env(safe-area-inset-bottom));
+            padding-bottom: calc(80px + env(safe-area-inset-bottom));
             overscroll-behavior-y: none;
             -webkit-tap-highlight-color: transparent;
         }
@@ -201,48 +201,94 @@
             animation: fadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* ── NAV BAR ── */
+        /* ── YOUTUBE-STYLE BOTTOM NAV ── */
         #floating-bottom-nav-bar {
             position: fixed;
-            bottom: max(0.75rem, env(safe-area-inset-bottom));
-            left: 50%;
-            transform: translateX(-50%);
+            bottom: 0;
+            left: 0;
+            right: 0;
             z-index: 4500;
-            width: calc(100% - 2rem);
-            max-width: 500px;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
-            padding: 0.4rem 0.6rem;
-            border-radius: 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            border-top: 1px solid var(--border-color);
+            padding: 4px 0 env(safe-area-inset-bottom) 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
         }
         #floating-bottom-nav-bar.nav-hidden {
-            transform: translate(-50%, 150px);
+            transform: translateY(100%);
             opacity: 0;
             pointer-events: none;
         }
         .nav-island-btn {
-            width: 100%;
-            text-align: center;
-            padding: 8px 0;
-            font-weight: 700;
-            text-transform: uppercase;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 0;
+            font-weight: 600;
             font-size: 9px;
-            border-radius: 16px;
-            transition: all 0.3s ease;
-            opacity: 0.4;
+            text-transform: uppercase;
             color: var(--text-main);
-            border: 1px solid transparent;
+            opacity: 0.5;
+            border: none;
             background: transparent;
             cursor: pointer;
-        }
-        .nav-island-btn.active {
-            background: rgba(247, 148, 29, 0.15);
-            color: #f7941d;
-            opacity: 1;
-            border: 1px solid rgba(247, 148, 29, 0.25);
-            transform: scale(1.05);
+            transition: all 0.25s ease;
+            gap: 1px;
+            width: 100%;
+            border-radius: 0;
+            position: relative;
         }
         .nav-island-btn i {
-            font-size: 16px;
+            font-size: 20px;
+            transition: all 0.25s ease;
+        }
+        .nav-island-btn.active {
+            opacity: 1;
+            color: var(--brand-orange);
+        }
+        .nav-island-btn.active i {
+            transform: scale(1.05);
+        }
+        .nav-island-btn .nav-label {
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            margin-top: 1px;
+        }
+        .nav-island-btn .nav-badge {
+            position: absolute;
+            top: 2px;
+            right: 50%;
+            transform: translateX(calc(50% + 12px));
+            background: #ff4444;
+            color: #fff;
+            font-size: 8px;
+            font-weight: 800;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 99px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            border: 2px solid var(--bg-main);
+        }
+        .nav-island-btn .nav-badge.hidden {
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .nav-island-btn i {
+                font-size: 18px;
+            }
+            .nav-island-btn .nav-label {
+                font-size: 7px;
+            }
+            #floating-bottom-nav-bar {
+                padding: 2px 0 env(safe-area-inset-bottom) 0;
+            }
         }
 
         /* ── DASHBOARD CARDS ── */
@@ -491,13 +537,6 @@
             }
             .quick-actions .qa-btn i {
                 font-size: 12px;
-            }
-            .nav-island-btn {
-                font-size: 8px;
-                padding: 6px 0;
-            }
-            .nav-island-btn i {
-                font-size: 14px;
             }
         }
 
@@ -789,9 +828,12 @@
 
         /* group chat bubble */
         .group-chat-bubble {
-            padding: 0.75rem 1rem !important;
-            font-size: 0.9rem !important;
-            line-height: 1.5 !important;
+            padding: 0.75rem 1.2rem !important;
+            font-size: 0.95rem !important;
+            line-height: 1.6 !important;
+            max-width: 92% !important;
+            word-wrap: break-word;
+            border-radius: 16px !important;
         }
 
         /* loading overlay for app install */
@@ -837,6 +879,31 @@
             color: var(--text-main);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
+
+        .back-btn-top {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        .back-btn-top:hover {
+            background: var(--brand-orange);
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        #admin-panel-btn {
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -846,8 +913,11 @@
     <!-- ─── CUSTOM MODAL ─── -->
     <div id="custom-modal"
         class="hidden fixed inset-0 z-[10000] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 md:p-6 transition-opacity duration-300">
-        <div class="absolute top-6 left-6 text-white/50 cursor-pointer hover:text-white font-bold flex items-center gap-2 select-none transition-transform hover:-translate-x-1"
-            onclick="closeCustomModal()"> ← BACK</div>
+        <div class="absolute top-4 left-4 z-10">
+            <button onclick="closeCustomModal()" class="back-btn-top">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+        </div>
         <div id="modal-content"
             class="w-full max-w-2xl glass p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-brandOrange/20 shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar">
         </div>
@@ -1088,7 +1158,7 @@
                             <span id="cart-pill"
                                 class="hidden absolute -top-1 -right-1 bg-brandOrange text-white text-[8px] font-black min-w-[16px] h-4 rounded-full flex items-center justify-center px-1">0</span>
                         </button>
-                        <button onclick="toggleMode()"
+                        <button onclick="toggleMode()" id="theme-toggle-btn"
                             class="w-9 h-9 md:w-10 md:h-10 glass rounded-xl flex items-center justify-center text-base md:text-lg hover:scale-110 transition-transform">🌓</button>
                         <div id="nav-profile-pic" onclick="showProfileSettings()"
                             class="w-9 h-9 md:w-10 md:h-10 min-w-[36px] min-h-[36px] md:min-w-[40px] md:min-h-[40px] overflow-hidden rounded-full flex items-center justify-center shrink-0 cursor-pointer select-none transition-all duration-300 shadow-lg profile-ring-stacked relative">
@@ -1100,9 +1170,9 @@
             <!-- MAIN CONTENT -->
             <main id="main-content" class="p-4 md:p-6 max-w-7xl mx-auto w-full"></main>
 
-            <!-- BOTTOM NAV ISLAND (dynamically rendered) -->
+            <!-- BOTTOM NAV - YOUTUBE STYLE -->
             <div id="floating-bottom-nav-bar"
-                class="glass shadow-2xl border border-[var(--border-color)]">
+                class="nav-hidden">
                 <!-- Will be filled by JS -->
             </div>
         </div>
@@ -1269,7 +1339,7 @@
         let _adBannerData = null;
         let _hasPaidAccess = false;
         let _studentNavTab = 'home';
-        let _teacherViewMode = 'dashboard'; // which tile view is active
+        let _teacherViewMode = 'dashboard';
 
         // ─── TOAST ───
         function toast(m, type = "s") {
@@ -1298,6 +1368,23 @@
             e.preventDefault();
             window.deferredPrompt = e;
         });
+
+        // ─── APP INSTALL WITH LOADING ───
+        window.triggerAppInstall = async () => {
+            const loading = document.getElementById('app-install-loading');
+            loading.classList.add('active');
+            await new Promise(r => setTimeout(r, 5000));
+            if (window.deferredPrompt) {
+                window.deferredPrompt.prompt();
+                window.deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') toast("App installed successfully!");
+                    window.deferredPrompt = null;
+                });
+            } else {
+                toast("Click browser menu → 'Add to Home Screen' or 'Install'");
+            }
+            loading.classList.remove('active');
+        };
 
         window.addEventListener('offline', () => {
             toast("You are currently working offline. Some features may be restricted.", "error");
@@ -1340,22 +1427,10 @@
         };
 
         window.triggerInstAppInstall = async (instId) => {
-            const loading = document.getElementById('app-install-loading');
-            loading.classList.add('active');
-            await new Promise(r => setTimeout(r, 5000)); // 5 sec delay
             const instData = await window.getInstBadgeData(instId);
-            if (!instData) { loading.classList.remove('active'); return toast("Institute not found", "error"); }
+            if (!instData) return toast("Institute not found", "error");
             window.setDynamicManifest(instData);
-            if (window.deferredPrompt) {
-                window.deferredPrompt.prompt();
-                window.deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') toast("Installing Institute App...");
-                    window.deferredPrompt = null;
-                });
-            } else {
-                toast("App setup generated! Click your browser's menu and select 'Install' or 'Add to Home Screen'.");
-            }
-            loading.classList.remove('active');
+            await window.triggerAppInstall();
         };
 
         window.applyLockedInstituteBranding = async () => {
@@ -1955,7 +2030,7 @@
                         </div>
                         <div class="mt-6 border-t border-[var(--border-color)] pt-6"><h4 class="text-xs font-black uppercase tracking-widest opacity-50 mb-3">Campus Connections</h4>${joinHubSectionHtml}</div>
                         <div class="pt-6 border-t border-red-500/10 mt-6">
-                            ${profile.role === 'super_admin' ? `<div class="mb-6"><button onclick="window.openAdminPanel()" class="w-full py-4 bg-red-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-md">Access Management Panel</button></div>` : ''}
+                            ${profile.role === 'super_admin' ? `<div class="mb-6"><button id="admin-panel-btn" onclick="window.openAdminPanel()" class="w-full py-4 bg-red-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-md">Access Management Panel</button></div>` : ''}
                             <div class="flex flex-col sm:flex-row gap-3">
                                 <button onclick="triggerAccountPurgePipeline()" class="flex-1 py-3.5 bg-red-600/10 text-red-500 border border-red-600/20 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-sm">Delete Account</button>
                                 <button onclick="logout()" class="flex-1 py-3.5 bg-[var(--input-bg)] text-[var(--text-main)] border border-[var(--border-color)] rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-70 transition-all shadow-sm">Sign Out</button>
@@ -2777,7 +2852,6 @@
         };
 
         window.openAddDemoModal = () => {
-            // Same as add content but with demo flag
             const modal = document.getElementById('custom-modal');
             const content = document.getElementById('modal-content');
             toggleBottomNavBarVisibility(false);
@@ -3041,7 +3115,6 @@
             const url = document.getElementById('live-url').value.trim();
             if (!title || !date || !start || !url) return toast("All fields required", "error");
 
-            // Create content entry with type live and associate with course
             const payload = {
                 title: title,
                 url: url,
@@ -3059,7 +3132,6 @@
             };
             await Core.addDoc(Core.collection(Core.db, "content"), payload);
 
-            // Get course details to find group members
             const courseSnap = await Core.getDoc(Core.doc(Core.db, "courses", courseId));
             if (courseSnap.exists()) {
                 const course = courseSnap.data();
@@ -3068,7 +3140,6 @@
                     const groupSnap = await Core.getDoc(Core.doc(Core.db, "groups", groupId));
                     if (groupSnap.exists()) {
                         const members = groupSnap.data().members || [];
-                        // Send notification to all members
                         for (let uid of members) {
                             await Core.addDoc(Core.collection(Core.db, "notifications"), {
                                 uid: uid,
@@ -3220,7 +3291,6 @@
                         url: urls[i] }); } }
             await Core.updateDoc(Core.doc(Core.db, "courses", id), { playlist });
 
-            // Send notification to enrolled students
             const courseSnap = await Core.getDoc(Core.doc(Core.db, "courses", id));
             if (courseSnap.exists()) {
                 const course = courseSnap.data();
@@ -3361,7 +3431,7 @@
                 .orderBy("createdAt", "asc"));
             Core.onSnapshot(q, (snap) => {
                 document.getElementById('group-chat-messages').innerHTML = snap.docs.map(m => { const d = m.data();
-                    const isM = d.senderId === Core.auth.currentUser.uid; return `<div class="flex ${isM ? 'flex-row-reverse' : 'flex-row'} items-end gap-2.5 fade-in"><img src="${d.senderPhoto || 'https://ui-avatars.com/api/?name=' + d.sender}" class="w-7 h-7 rounded-full border border-[var(--border-color)] object-cover shrink-0"><div class="flex flex-col ${isM ? 'items-end' : 'items-start'}"><p class="text-[9px] opacity-40 px-1 mb-0.5 tracking-widest uppercase font-bold">${d.sender}</p><div class="inline-block p-4 rounded-xl ${isM ? 'bg-brandOrange text-white' : 'bg-[var(--input-bg)] border border-[var(--border-color)] text-[var(--text-main)]'} text-sm max-w-[85%] break-words group-chat-bubble">${d.text}</div></div></div>`; })
+                    const isM = d.senderId === Core.auth.currentUser.uid; return `<div class="flex ${isM ? 'flex-row-reverse' : 'flex-row'} items-end gap-2.5 fade-in"><img src="${d.senderPhoto || 'https://ui-avatars.com/api/?name=' + d.sender}" class="w-7 h-7 rounded-full border border-[var(--border-color)] object-cover shrink-0"><div class="flex flex-col ${isM ? 'items-end' : 'items-start'}"><p class="text-[9px] opacity-40 px-1 mb-0.5 tracking-widest uppercase font-bold">${d.sender}</p><div class="inline-block p-4 rounded-xl ${isM ? 'bg-brandOrange text-white' : 'bg-[var(--input-bg)] border border-[var(--border-color)] text-[var(--text-main)]'} text-sm max-w-[92%] break-words group-chat-bubble">${d.text}</div></div></div>`; })
                     .join('');
                 document.getElementById('group-chat-messages').scrollTop = 99999;
             });
@@ -3987,19 +4057,21 @@
                 navTabsOrder = ['dashboard', 'groups', 'analytics'];
             }
 
-            navBar.innerHTML = `<div class="grid grid-cols-${tabs.length} w-full gap-1 justify-items-center items-center">` +
+            navBar.innerHTML = `<div class="grid grid-cols-${tabs.length} w-full gap-0">` +
                 tabs.map(t => `
                     <button class="nav-island-btn ${currentNavTab === t.id ? 'active' : ''}" data-tab="${t.id}" onclick="window.setNavTab('${t.id}')">
-                        <i class="${t.icon} block text-lg mb-0.5"></i> ${t.label}
+                        <i class="${t.icon}"></i>
+                        <span class="nav-label">${t.label}</span>
                     </button>
                 `).join('') +
                 `</div>`;
+            // Show nav
+            navBar.classList.remove('nav-hidden');
         }
 
         // ─── STUDENT VIEWS ───
         window.studentHome = async () => {
             const main = document.getElementById('main-content');
-            // Show skeleton first
             main.innerHTML = `
                 <div class="fade-in">
                     <div id="banner-ad-container" class="hidden mb-4"></div>
@@ -4009,7 +4081,6 @@
                     <div id="feed" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                 </div>
             `;
-            // Load skeleton immediately
             const feedSkel = document.getElementById('suggested-feed');
             if (feedSkel) {
                 feedSkel.innerHTML = `
@@ -4027,7 +4098,6 @@
                 `;
             }
 
-            // Fetch content
             let contentQueryArgs = [Core.collection(Core.db, "content"), Core.limit(40)];
             let autoFollowedTids = [];
             if (profile.instituteId) {
@@ -4162,7 +4232,6 @@
                 </div>
             `;
 
-            // Get groups the student is a member of
             const groupsSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("members",
                 "array-contains", Core.auth.currentUser.uid)));
             const groupIds = groupsSnap.docs.map(d => d.id);
@@ -4173,7 +4242,6 @@
                 return;
             }
 
-            // Find courses where groupId is in the groupIds
             const coursesSnap = await Core.getDocs(Core.collection(Core.db, "courses"));
             const myCourses = coursesSnap.docs.filter(d => groupIds.includes(d.data().groupId));
             if (myCourses.length === 0) {
@@ -4530,6 +4598,28 @@
             window.showQuickNotes();
         };
 
+        // ─── THEME TOGGLE ───
+        window.toggleMode = function() {
+            document.documentElement.classList.toggle('light');
+            localStorage.setItem('oc_theme', document.documentElement.classList.contains('light'));
+        };
+
+        // ─── CLOSE MODAL ───
+        window.closeCustomModal = function() {
+            document.getElementById('custom-modal').classList.add('hidden');
+            toggleBottomNavBarVisibility(true);
+        };
+
+        window.closeVault = function() {
+            document.getElementById('media-vault').classList.add('hidden');
+            currentVideoContext = null;
+            toggleBottomNavBarVisibility(true);
+            if (activeLiveChatListenerUnsub) { activeLiveChatListenerUnsub();
+                activeLiveChatListenerUnsub = null; }
+            if (window._disengageShields) window._disengageShields();
+            if (videoPlayer) { try { videoPlayer.destroy(); } catch (e) {} videoPlayer = null; }
+        };
+
         // ─── AUTH STATE ───
         Core.onAuthStateChanged(Core.auth, async (user) => {
             if (user) {
@@ -4575,7 +4665,7 @@
         window.toast = toast;
         window.loadDashboardView = window.loadDashboardView;
 
-        console.log('OpenClase v3.2 — All features implemented: tiles, live in course, notifications, ad gallery, skeleton, etc.');
+        console.log('OpenClase v3.3 — Fixed: nav, back, quick notes, admin, campus directory, theme, AI, chat bubble');
     </script>
 
     <script src="https://unpkg.com/lucide@latest"></script>
