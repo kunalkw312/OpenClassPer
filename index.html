@@ -272,9 +272,12 @@
             min-height: 140px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
             position: relative;
             overflow: hidden;
+            gap: 0.5rem;
         }
         .dash-card:hover {
             transform: translateY(-6px);
@@ -282,9 +285,12 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
         .dash-card .card-icon {
-            font-size: 28px;
+            font-size: 32px;
             color: var(--brand-orange);
-            margin-bottom: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+        .dash-card:hover .card-icon {
+            transform: scale(1.15) rotate(-6deg);
         }
         .dash-card .card-title {
             font-weight: 800;
@@ -294,7 +300,7 @@
             color: var(--text-main);
         }
         .dash-card .card-action {
-            margin-top: 0.75rem;
+            margin-top: 0.25rem;
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
@@ -488,7 +494,7 @@
                 padding: 1rem 0.9rem;
             }
             .dash-card .card-icon {
-                font-size: 22px;
+                font-size: 26px;
             }
             .dash-card .card-title {
                 font-size: 12px;
@@ -607,7 +613,7 @@
             border-radius: 10px;
         }
 
-        /* payment overlay */
+        /* payment overlay (now used for fake confirmation) */
         #payment-overlay {
             position: fixed;
             inset: 0;
@@ -899,6 +905,32 @@
             transform: translateX(-6px);
             color: var(--brand-orange);
         }
+
+        /* purchase confirmation modal */
+        #purchase-confirm-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(30px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        #purchase-confirm-overlay.active {
+            display: flex;
+        }
+        #purchase-confirm-overlay .confirm-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 2.5rem;
+            padding: 2.5rem 2rem;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.4s ease forwards;
+        }
     </style>
 </head>
 
@@ -982,17 +1014,14 @@ onkeydown="if(event.key==='Enter') window.sendGroupMessage()">
 </div>
 </div>
 
-<!-- ─── PAYMENT OVERLAY ─── -->
+<!-- ─── PAYMENT OVERLAY (now used for fake confirmation) ─── -->
 <div id="payment-overlay">
 <div class="payment-card">
     <div class="text-4xl mb-4">💳</div>
-    <h2 class="text-2xl md:text-3xl font-black italic mb-2">Unlock Full Access</h2>
-    <p class="text-xs opacity-60 mb-6">Choose a plan to access all courses and content</p>
-    <div id="payment-plans-container" class="space-y-3 mb-6 text-left"></div>
-    <button onclick="window.processFakePayment()"
-    class="w-full py-4 btn-brand text-sm font-black uppercase tracking-widest shadow-xl">Purchase Plan</button>
-    <button onclick="window.closePaymentOverlay()"
-    class="mt-4 text-[10px] opacity-40 hover:opacity-100 transition uppercase font-bold">Cancel</button>
+    <h2 class="text-2xl md:text-3xl font-black italic mb-2">Confirm Purchase</h2>
+    <p id="purchase-details" class="text-sm mb-6">You are about to purchase <span id="purchase-item" class="font-bold text-brandOrange"></span> for <span id="purchase-amount" class="font-bold text-brandOrange"></span>.</p>
+    <button onclick="window.confirmPurchase()" class="w-full py-4 btn-brand text-sm font-black uppercase tracking-widest shadow-xl">Confirm</button>
+    <button onclick="window.closePaymentOverlay()" class="mt-4 text-[10px] opacity-40 hover:opacity-100 transition uppercase font-bold">Cancel</button>
 </div>
 </div>
 
@@ -1332,6 +1361,7 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
     let _studentNavTab = 'home';
     let _teacherViewMode = 'dashboard';
     let _aiChatOpen = false;
+    let _pendingPurchase = null; // for fake payment confirmation
 
     // ─── TOAST ───
     function toast(m, type = "s") {
@@ -1463,7 +1493,6 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
         input.value = '';
         container.scrollTop = container.scrollHeight;
 
-        // Simulate AI response
         setTimeout(() => {
             const aiDiv = document.createElement('div');
             aiDiv.className = 'flex justify-start fade-in';
@@ -2646,57 +2675,6 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
         }).join('');
     };
 
-    window.joinGroup = async () => {
-        const c = (document.getElementById('hub-code')?.value || document.getElementById('g-search').value).trim()
-            .toUpperCase();
-        const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "groups"), Core.where("code", "==", c)));
-        if (snap.empty) return toast("Group code not found.", "error");
-        const g = snap.docs[0],
-            d = g.data();
-        if (d.members && d.members.includes(Core.auth.currentUser.uid)) return toast("Already in this group.");
-        if (d.type === 'public') {
-            await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { members: Core.arrayUnion(Core.auth.currentUser
-                    .uid) });
-            window.pushSystemNotification("GROUP JOINED", `Joined ${d.name}`);
-        } else {
-            await Core.updateDoc(Core.doc(Core.db, "groups", g.id), { pending: Core.arrayUnion({ uid: Core.auth
-                        .currentUser.uid, name: profile.name }) });
-            window.pushSystemNotification("PENDING", `Request sent to ${d.name}`);
-            try {
-                const tSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId",
-                    "==", d.teacherId || "")));
-                if (!tSnap.empty) {
-                    Core.addDoc(Core.collection(Core.db, "notifications"), {
-                        uid: tSnap.docs[0].id,
-                        type: "GROUP REQUEST",
-                        text: `${profile.name} requested to join ${d.name}`,
-                        createdAt: Core.serverTimestamp()
-                    });
-                }
-            } catch (e) { console.error(e); }
-        }
-        toast("Request sent.");
-        window.loadDashboardView(currentNavTab);
-    };
-
-    window.createGroup = async () => {
-        const n = document.getElementById('group-name').value;
-        if (!n) return toast("Group name required.");
-        const c = "OC-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-        await Core.addDoc(Core.collection(Core.db, "groups"), {
-            name: n,
-            type: document.getElementById('group-type').value,
-            code: c,
-            teacherId: profile.teacherId,
-            teacherName: profile.name,
-            members: [Core.auth.currentUser.uid],
-            pending: [],
-            createdAt: Core.serverTimestamp()
-        });
-        toast("Group created.");
-        window.loadDashboardView(currentNavTab);
-    };
-
     // ─── GROUP CHAT ───
     window.openGroupChat = async (id, name) => {
         activeGroupId = id;
@@ -3236,6 +3214,21 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
         }
         const hasDemo = c.playlist && c.playlist.some(v => v.isDemo === true);
 
+        // Also fetch live sessions associated with this course (content with courseId)
+        const liveSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("courseId", "==",
+            id), Core.where("type", "==", "live")));
+        const liveItems = [];
+        liveSnap.forEach(d => liveItems.push({ id: d.id, ...d.data() }));
+
+        // Combine playlist and live sessions
+        let allModules = [...c.playlist];
+        liveItems.forEach(l => {
+            // Avoid duplicates by checking URL or title
+            if (!allModules.some(m => m.url === l.url)) {
+                allModules.push({ title: l.title, url: l.url, isLive: true, isDemo: l.isDemo || false });
+            }
+        });
+
         content.innerHTML = `
             <div class="fade-in">
                 <div class="relative w-full h-48 md:h-64 rounded-2xl mb-4 shadow-2xl border border-[var(--border-color)] overflow-hidden">
@@ -3249,10 +3242,10 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
                 </div>
                 <p class="opacity-80 mb-6 text-sm leading-relaxed">${c.description}</p>
                 <div class="space-y-2 mb-6">
-                    <p class="text-[9px] font-black uppercase opacity-40 tracking-widest mb-1 border-b border-[var(--border-color)] pb-2">Units</p>
-                    ${c.playlist.map((v, i) => `
+                    <p class="text-[9px] font-black uppercase opacity-40 tracking-widest mb-1 border-b border-[var(--border-color)] pb-2">Modules</p>
+                    ${allModules.map((v, i) => `
                         <div onclick="window.openResource('null','${v.url}','${v.title}')" class="bg-[var(--input-bg)] p-3.5 rounded-xl flex items-center justify-between cursor-pointer border border-[var(--border-color)] shadow-sm hover:border-brandOrange/30 transition-all">
-                            <p class="text-xs font-bold truncate flex-1 pr-4">${i + 1}. ${v.title} ${v.isDemo ? '<span class="demo-badge ml-2 text-[8px]"><i class="fa-regular fa-circle-play"></i> Demo</span>' : ''}</p>
+                            <p class="text-xs font-bold truncate flex-1 pr-4">${i + 1}. ${v.title} ${v.isLive ? '<span class="ml-2 text-[8px] bg-red-500/20 text-red-500 px-2 py-0.5 rounded-full font-black uppercase">LIVE</span>' : ''} ${v.isDemo ? '<span class="demo-badge ml-2 text-[8px]"><i class="fa-regular fa-circle-play"></i> Demo</span>' : ''}</p>
                             <span class="text-[9px] text-brandOrange font-black uppercase shrink-0">Access</span>
                         </div>
                     `).join('')}
@@ -3265,7 +3258,7 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
                 ` : ''}
                 <div class="flex gap-3 flex-wrap">
                     <button onclick="window.toggleCartAction('${id}','${c.title}','${c.price}')" class="flex-1 py-4 glass text-[10px] font-black uppercase rounded-xl border border-[var(--border-color)]">${inCart ? 'Drop from Cart' : 'Add to Cart'}</button>
-                    <button onclick="window.enrollCourse('${id}','${c.groupId}')" class="flex-1 py-4 btn-brand text-[10px]">${parseFloat(c.price) === 0 ? 'Instant Access' : `Acquire (₹${c.price})`}</button>
+                    <button onclick="window.showPurchaseConfirmation('${id}','${c.title}','${c.price}','${c.groupId}')" class="flex-1 py-4 btn-brand text-[10px]">${parseFloat(c.price) === 0 ? 'Instant Access' : `Acquire (₹${c.price})`}</button>
                     <button onclick="window.openGroupChat('${c.groupId}','${c.title} Chat')" class="py-4 px-4 glass text-[10px] font-black uppercase rounded-xl border border-brandOrange/30 hover:bg-brandOrange/10 transition"><i class="fa-regular fa-comment"></i> Chat</button>
                 </div>
             </div>
@@ -3273,6 +3266,33 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
         document.getElementById('custom-modal').classList.remove('hidden');
     };
 
+    // ─── FAKE PAYMENT CONFIRMATION ───
+    window.showPurchaseConfirmation = (courseId, title, price, groupId) => {
+        const overlay = document.getElementById('payment-overlay');
+        document.getElementById('purchase-item').innerText = title;
+        document.getElementById('purchase-amount').innerText = price === '0' ? 'FREE' : `₹${price}`;
+        _pendingPurchase = { courseId, groupId };
+        overlay.classList.add('active');
+    };
+
+    window.confirmPurchase = async () => {
+        if (!_pendingPurchase) return;
+        const { courseId, groupId } = _pendingPurchase;
+        if (groupId) {
+            await Core.updateDoc(Core.doc(Core.db, "groups", groupId), { members: Core.arrayUnion(Core.auth
+                    .currentUser.uid) });
+            toast("Purchase successful! You are now enrolled.");
+            window.pushSystemNotification("ENROLLMENT", `Enrolled in course.`);
+        } else {
+            toast("Error: Group ID missing.", "error");
+        }
+        _pendingPurchase = null;
+        document.getElementById('payment-overlay').classList.remove('active');
+        document.getElementById('custom-modal').classList.add('hidden');
+        window.loadDashboardView(currentNavTab);
+    };
+
+    // ─── ENROLL COURSE (for free) ───
     window.enrollCourse = async (cid, gid) => {
         await Core.updateDoc(Core.doc(Core.db, "groups", gid), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
         toast("Enrollment successful!");
@@ -3354,7 +3374,7 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
         }
     };
 
-    // ─── SCHEDULE LIVE FOR COURSE ───
+    // ─── SCHEDULE LIVE FOR COURSE (now adds to playlist) ───
     window.scheduleLiveForCourse = async (courseId) => {
         const modal = document.getElementById('custom-modal');
         const content = document.getElementById('modal-content');
@@ -3383,6 +3403,7 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
         const url = document.getElementById('live-url').value.trim();
         if (!title || !date || !start || !url) return toast("All fields required", "error");
 
+        // 1. Create content entry
         const payload = {
             title,
             url,
@@ -3400,9 +3421,17 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
         };
         await Core.addDoc(Core.collection(Core.db, "content"), payload);
 
+        // 2. Add to course playlist
         const courseSnap = await Core.getDoc(Core.doc(Core.db, "courses", courseId));
         if (courseSnap.exists()) {
             const course = courseSnap.data();
+            const playlist = course.playlist || [];
+            // Avoid duplicates by URL
+            if (!playlist.some(item => item.url === url)) {
+                playlist.push({ title: title, url: url, isLive: true, isDemo: false });
+                await Core.updateDoc(Core.doc(Core.db, "courses", courseId), { playlist });
+            }
+            // Notify group members
             const groupId = course.groupId;
             if (groupId) {
                 const groupSnap = await Core.getDoc(Core.doc(Core.db, "groups", groupId));
@@ -3451,7 +3480,7 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
         window.loadDashboardView(currentNavTab);
     };
 
-    // ─── PAYMENT OVERLAY ───
+    // ─── PAYMENT OVERLAY (original) ───
     window.openPaymentOverlay = async (teacherId) => {
         const overlay = document.getElementById('payment-overlay');
         overlay.classList.add('active');
@@ -3769,57 +3798,8 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
         window.closeCustomModal();
     };
 
-    // ─── QUICK NOTES ───
-    window.showQuickNotes = () => {
-        const modal = document.getElementById('custom-modal');
-        const content = document.getElementById('modal-content');
-        toggleBottomNavBarVisibility(false);
-        modal.classList.remove('hidden');
-
-        const notesRef = Core.collection(Core.db, "quickNotes");
-        const q = Core.query(notesRef, Core.where("uid", "==", Core.auth.currentUser.uid), Core.orderBy("createdAt",
-            "desc"));
-        Core.getDocs(q).then(snap => {
-            let notesHtml = '';
-            snap.forEach(d => {
-                const n = d.data();
-                notesHtml += `<div class="bg-[var(--input-bg)] p-3 rounded-xl border border-[var(--border-color)] mb-2 flex justify-between items-start gap-3">
-                    <p class="text-sm flex-1">${n.text}</p>
-                    <button onclick="window.deleteQuickNote('${d.id}')" class="text-red-500 text-xs font-black shrink-0">✕</button>
-                </div>`;
-            });
-            content.innerHTML = `
-                <div class="fade-in">
-                    <h3 class="text-2xl font-black italic mb-2">Quick Notes</h3>
-                    <p class="text-xs opacity-50 mb-4">Jot down quick thoughts and ideas.</p>
-                    <div class="flex gap-2 mb-4">
-                        <input id="quick-note-input" placeholder="Write a note..." class="input-field text-sm flex-1" onkeydown="if(event.key==='Enter') window.saveQuickNote()">
-                        <button onclick="window.saveQuickNote()" class="btn-brand px-4 py-3 text-xs shrink-0">Save</button>
-                    </div>
-                    <div id="quick-notes-list">${notesHtml || '<p class="text-xs opacity-40 text-center py-4">No notes saved yet.</p>'}</div>
-                </div>
-            `;
-        });
-    };
-
-    window.saveQuickNote = async () => {
-        const input = document.getElementById('quick-note-input');
-        const text = input.value.trim();
-        if (!text) return toast("Please write something", "error");
-        await Core.addDoc(Core.collection(Core.db, "quickNotes"), {
-            uid: Core.auth.currentUser.uid,
-            text: text,
-            createdAt: Core.serverTimestamp()
-        });
-        input.value = '';
-        toast("Note saved");
-        window.showQuickNotes();
-    };
-
-    window.deleteQuickNote = async (id) => {
-        await Core.deleteDoc(Core.doc(Core.db, "quickNotes", id));
-        window.showQuickNotes();
-    };
+    // ─── REMOVED QUICK NOTES ───
+    // The quick notes button and functions are removed.
 
     // ─── SWIPE GESTURES ───
     let touchStartX = 0,
@@ -3970,12 +3950,8 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
         const main = document.getElementById('main-content');
         main.innerHTML = `
             <div class="fade-in">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                <div class="flex justify-between items-center mb-6">
                     <h3 class="text-2xl font-black italic">Your Groups</h3>
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <input id="hub-code" placeholder="OC-XXXXXX" class="input-field font-mono text-sm uppercase tracking-wider flex-1 md:flex-none">
-                        <button onclick="window.joinGroup()" class="btn-brand px-6 py-3 shadow-md text-xs font-black uppercase shrink-0">Join</button>
-                    </div>
                 </div>
                 <div id="student-groups" class="space-y-4"></div>
             </div>
@@ -4660,7 +4636,6 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
                                 <div class="id">${profile.teacherId || 'ID: N/A'}</div>
                             </div>
                             <div class="quick-actions">
-                                <button class="qa-btn" onclick="window.showQuickNotes()"><i class="fa-regular fa-pen-to-square"></i> Quick Notes</button>
                                 ${isInstituteOwner ? `<button class="qa-btn" onclick="window.showAdManagement()"><i class="fa-regular fa-rectangle-ad"></i> Add Ads</button>` : ''}
                                 ${isInstituteOwner ? `<button class="qa-btn" onclick="window.showPlanManagement()"><i class="fa-solid fa-coins"></i> Plan Mgt</button>` : ''}
                                 <button class="qa-btn" onclick="window.showTimetable()"><i class="fa-regular fa-calendar"></i> Timetable</button>
@@ -4669,27 +4644,33 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
 
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
                             <div class="dash-card" onclick="window.showCoursesView()">
-                                <div><div class="card-icon"><i class="fa-solid fa-book-open"></i></div><div class="card-title">Course</div></div>
+                                <div class="card-icon"><i class="fa-solid fa-book-open"></i></div>
+                                <div class="card-title">Course</div>
                                 <span class="card-action" onclick="event.stopPropagation(); window.openAddCourseModal()"><i class="fa-regular fa-plus"></i> Add</span>
                             </div>
                             <div class="dash-card" onclick="window.showContentView()">
-                                <div><div class="card-icon"><i class="fa-regular fa-file-lines"></i></div><div class="card-title">Content</div></div>
+                                <div class="card-icon"><i class="fa-regular fa-file-lines"></i></div>
+                                <div class="card-title">Content</div>
                                 <span class="card-action" onclick="event.stopPropagation(); window.openAddContentModal()"><i class="fa-regular fa-plus"></i> Add</span>
                             </div>
                             <div class="dash-card" onclick="window.showLiveView()">
-                                <div><div class="card-icon"><i class="fa-solid fa-broadcast"></i></div><div class="card-title">Live</div></div>
+                                <div class="card-icon"><i class="fa-solid fa-broadcast"></i></div>
+                                <div class="card-title">Live</div>
                                 <span class="card-action" onclick="event.stopPropagation(); window.openAddContentModal()"><i class="fa-solid fa-circle-play"></i> Go Live</span>
                             </div>
                             <div class="dash-card" onclick="window.showGroupsView()">
-                                <div><div class="card-icon"><i class="fa-solid fa-users"></i></div><div class="card-title">Groups</div></div>
+                                <div class="card-icon"><i class="fa-solid fa-users"></i></div>
+                                <div class="card-title">Groups</div>
                                 <span class="card-action" onclick="event.stopPropagation(); window.openAddGroupModal()"><i class="fa-regular fa-plus"></i> Add</span>
                             </div>
                             <div class="dash-card" onclick="window.showDemoView()">
-                                <div><div class="card-icon"><i class="fa-regular fa-circle-play"></i></div><div class="card-title">Demo Class</div></div>
+                                <div class="card-icon"><i class="fa-regular fa-circle-play"></i></div>
+                                <div class="card-title">Demo Class</div>
                                 <span class="card-action" onclick="event.stopPropagation(); window.openAddDemoModal()"><i class="fa-regular fa-plus"></i> Add</span>
                             </div>
                             <div class="dash-card" onclick="window.showNotificationView()">
-                                <div><div class="card-icon"><i class="fa-regular fa-bell"></i></div><div class="card-title">Notify</div></div>
+                                <div class="card-icon"><i class="fa-regular fa-bell"></i></div>
+                                <div class="card-title">Notify</div>
                                 <span class="card-action" onclick="event.stopPropagation(); window.showCustomNotificationModal()"><i class="fa-regular fa-paper-plane"></i> Send</span>
                             </div>
                         </div>
@@ -4718,12 +4699,8 @@ class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs upper
             } else if (tab === 'groups') {
                 main.innerHTML = `
                     <div class="fade-in">
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                        <div class="flex justify-between items-center mb-6">
                             <h3 class="text-2xl font-black italic">Your Hubs</h3>
-                            <div class="flex gap-2 w-full md:w-auto">
-                                <input id="hub-code" placeholder="OC-XXXXXX" class="input-field font-mono text-sm uppercase tracking-wider flex-1 md:flex-none">
-                                <button onclick="window.joinGroup()" class="btn-brand px-6 py-3 shadow-md text-xs font-black uppercase shrink-0">Join</button>
-                            </div>
                         </div>
                         <div id="student-groups" class="space-y-4"></div>
                     </div>
