@@ -202,7 +202,7 @@
             animation: fadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* ─── BOTTOM NAV — YOUTUBE STYLE ─── */
+        /* ─── BOTTOM NAV — YOUTUBE STYLE, FIXED AT VIEWPORT BOTTOM ─── */
         #floating-bottom-nav-bar {
             position: fixed;
             left: 0;
@@ -235,7 +235,7 @@
             pointer-events: none;
         }
 
-        /* ─── NAV BUTTONS — YOUTUBE STYLE ─── */
+        /* ─── NAV BUTTONS ─── */
         .nav-island-btn {
             flex: 1;
             height: 100%;
@@ -650,8 +650,9 @@
             .search-container.expanded {
                 width: 120px;
             }
-            #nav-branding-block h2 {
-                font-size: 14px;
+            #nav-branding-block .inst-brand-name {
+                font-size: 13px;
+                max-width: 100px;
             }
         }
 
@@ -927,7 +928,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
-        /* ─── UNIFIED CARD GRID ─── */
+        /* ─── UNIFIED GRID ─── */
         .unified-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -1162,13 +1163,42 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 120px;
+            max-width: 160px;
         }
         @media (max-width: 480px) {
             #nav-branding-block .inst-brand-name {
                 font-size: 13px;
-                max-width: 80px;
+                max-width: 100px;
             }
+        }
+        @media (min-width: 768px) {
+            #nav-branding-block .inst-brand-name {
+                max-width: 240px;
+            }
+        }
+
+        /* ─── REQUEST BUTTON WITH DOT ─── */
+        .qa-btn.request-btn {
+            position: relative;
+        }
+        .qa-btn.request-btn .dot {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 10px;
+            height: 10px;
+            background: #ef4444;
+            border-radius: 50%;
+            border: 2px solid var(--bg-main);
+            display: none;
+        }
+        .qa-btn.request-btn .dot.active {
+            display: block;
+            animation: pulse-dot 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
         }
     </style>
 </head>
@@ -1434,7 +1464,7 @@
             <!-- MAIN CONTENT -->
             <main id="main-content" class="p-4 md:p-6 max-w-7xl mx-auto w-full"></main>
 
-            <!-- ─── BOTTOM NAV — YOUTUBE STYLE ─── -->
+            <!-- ─── BOTTOM NAV — YOUTUBE STYLE, FIXED AT VIEWPORT BOTTOM ─── -->
             <div id="floating-bottom-nav-bar"></div>
         </div>
     </div>
@@ -1612,6 +1642,7 @@
         let _teacherViewMode = 'dashboard';
         let _aiChatOpen = false;
         let _pendingPurchase = null;
+        let _pendingTeacherRequests = 0;
 
         // ─── CHUNK LOADING STATE ───
         let _chunkState = {
@@ -1694,11 +1725,11 @@
             if (link) link.href = base64Manifest;
         };
 
-        // ─── APP INSTALL ───
+        // ─── APP INSTALL (3 seconds) ───
         window.triggerInstAppInstall = async (instId) => {
             const loading = document.getElementById('app-install-loading');
             loading.classList.add('active');
-            await new Promise(r => setTimeout(r, 5000));
+            await new Promise(r => setTimeout(r, 3000)); // Changed from 5000 to 3000
             const instData = await window.getInstBadgeData(instId);
             if (!instData) { loading.classList.remove('active'); return toast("Institute not found", "error"); }
             window.setDynamicManifest(instData);
@@ -2182,19 +2213,17 @@
                     `;
         };
 
-        // ─── TEACHER APPROVALS ───
+        // ─── TEACHER APPROVALS (for admin panel) ───
         window.loadTeacherApprovals = async function () {
             const container = document.getElementById('teacher-approvals-list');
             if (!container) return;
 
-            // Only institute owner (teacher with institute) can see this
             if (!profile || !profile.instituteId) {
                 container.innerHTML =
                     '<p class="text-xs opacity-40 py-4 text-center">You need to be affiliated with an institute to manage teacher approvals.</p>';
                 return;
             }
 
-            // Check if this user is the institute owner
             const instData = await window.getInstBadgeData(profile.instituteId);
             if (!instData || instData.teacherId !== profile.teacherId) {
                 container.innerHTML =
@@ -2205,7 +2234,6 @@
             container.innerHTML = '<p class="text-xs opacity-50 py-4 text-center">Loading teacher requests...</p>';
 
             try {
-                // Find all users in this institute with role 'teacher' and teacherStatus 'pending'
                 const usersSnap = await Core.getDocs(Core.query(
                     Core.collection(Core.db, "users"),
                     Core.where("instituteId", "==", profile.instituteId),
@@ -2260,13 +2288,14 @@
                 });
                 toast(`${name} has been approved as a teacher.`);
                 window.loadTeacherApprovals();
-                // Send notification
                 await Core.addDoc(Core.collection(Core.db, "notifications"), {
                     uid: uid,
                     type: "TEACHER APPROVED",
                     text: `Your teacher account has been approved by the institute owner.`,
                     createdAt: Core.serverTimestamp()
                 });
+                // Update pending count
+                await updateTeacherRequestCount();
             } catch (e) {
                 toast("Failed to approve teacher.", "error");
                 console.error(e);
@@ -2278,7 +2307,6 @@
             try {
                 await Core.updateDoc(Core.doc(Core.db, "users", uid), {
                     teacherStatus: 'rejected',
-                    // Optionally remove from institute or keep as student
                     role: 'student'
                 });
                 toast(`${name} has been rejected as a teacher.`);
@@ -2289,10 +2317,151 @@
                     text: `Your teacher application was not approved by the institute owner.`,
                     createdAt: Core.serverTimestamp()
                 });
+                await updateTeacherRequestCount();
             } catch (e) {
                 toast("Failed to reject teacher.", "error");
                 console.error(e);
             }
+        };
+
+        // ─── UPDATE TEACHER REQUEST COUNT (for dot) ───
+        async function updateTeacherRequestCount() {
+            if (!profile || !profile.instituteId) return;
+            const instData = await window.getInstBadgeData(profile.instituteId);
+            if (!instData || instData.teacherId !== profile.teacherId) return;
+
+            try {
+                const usersSnap = await Core.getDocs(Core.query(
+                    Core.collection(Core.db, "users"),
+                    Core.where("instituteId", "==", profile.instituteId),
+                    Core.where("role", "==", "teacher")
+                ));
+                let count = 0;
+                usersSnap.forEach(d => {
+                    const u = d.data();
+                    if (u.teacherStatus === 'pending' || !u.teacherStatus) count++;
+                });
+                _pendingTeacherRequests = count;
+                const dot = document.getElementById('teacher-request-dot');
+                if (dot) {
+                    if (count > 0) dot.classList.add('active');
+                    else dot.classList.remove('active');
+                }
+            } catch (e) { console.error("Failed to count teacher requests", e); }
+        }
+
+        // ─── SHOW TEACHER REQUEST MODAL (for institute owner) ───
+        window.showTeacherRequestModal = async function () {
+            const modal = document.getElementById('custom-modal');
+            const content = document.getElementById('modal-content');
+            toggleBottomNavBarVisibility(false);
+            modal.classList.remove('hidden');
+
+            if (!profile || !profile.instituteId) {
+                content.innerHTML =
+                    '<p class="text-xs opacity-40 py-4 text-center">You need to be affiliated with an institute to manage teacher approvals.</p>';
+                return;
+            }
+
+            const instData = await window.getInstBadgeData(profile.instituteId);
+            if (!instData || instData.teacherId !== profile.teacherId) {
+                content.innerHTML =
+                    '<p class="text-xs opacity-40 py-4 text-center">Only the institute owner can approve teachers.</p>';
+                return;
+            }
+
+            content.innerHTML = `
+                        <div class="fade-in">
+                            <h3 class="text-2xl font-black italic mb-4">Teacher Approval Requests</h3>
+                            <p class="text-xs opacity-50 mb-6">Review and manage teacher requests for your institute.</p>
+                            <div id="teacher-request-modal-list" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                                <p class="text-xs opacity-50 text-center py-4">Loading...</p>
+                            </div>
+                        </div>
+                    `;
+
+            try {
+                const usersSnap = await Core.getDocs(Core.query(
+                    Core.collection(Core.db, "users"),
+                    Core.where("instituteId", "==", profile.instituteId),
+                    Core.where("role", "==", "teacher")
+                ));
+
+                const pendingTeachers = [];
+                usersSnap.forEach(d => {
+                    const u = d.data();
+                    if (u.teacherStatus === 'pending' || !u.teacherStatus) {
+                        pendingTeachers.push({ id: d.id, ...u });
+                    }
+                });
+
+                const listContainer = document.getElementById('teacher-request-modal-list');
+                if (pendingTeachers.length === 0) {
+                    listContainer.innerHTML =
+                        '<p class="text-xs opacity-40 text-center py-4">No pending teacher approval requests.</p>';
+                    return;
+                }
+
+                let html = '';
+                pendingTeachers.forEach(t => {
+                    html += `
+                            <div class="glass p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border border-[var(--border-color)] shadow-sm hover:border-emerald-500/30 transition-all">
+                                <div class="flex items-center gap-3 min-w-0 flex-1 w-full sm:w-auto">
+                                    <img src="${t.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(t.name)}" class="w-10 h-10 rounded-full object-cover bg-black border border-[var(--border-color)] shrink-0">
+                                    <div class="min-w-0 flex-1">
+                                        <p class="font-bold text-sm truncate">${t.name}</p>
+                                        <p class="text-[10px] opacity-50 font-mono truncate">${t.email || 'No email'}</p>
+                                        <p class="text-[8px] font-bold text-yellow-500 mt-0.5"><span class="status-badge-pending">Pending</span></p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2 w-full sm:w-auto shrink-0 justify-end flex-wrap">
+                                    <button onclick="window.approveTeacherFromModal('${t.id}','${t.name}')" class="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase rounded-lg hover:bg-emerald-500 hover:text-white transition-all shadow-sm">Approve</button>
+                                    <button onclick="window.rejectTeacherFromModal('${t.id}','${t.name}')" class="px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase rounded-lg hover:bg-red-500 hover:text-white transition-all shadow-sm">Reject</button>
+                                </div>
+                            </div>
+                        `;
+                });
+                listContainer.innerHTML = html;
+            } catch (e) {
+                document.getElementById('teacher-request-modal-list').innerHTML =
+                    '<p class="text-red-500 text-xs py-2 text-center">Failed to load requests.</p>';
+                console.error(e);
+            }
+        };
+
+        window.approveTeacherFromModal = async (uid, name) => {
+            if (!confirm(`Approve ${name} as a teacher?`)) return;
+            try {
+                await Core.updateDoc(Core.doc(Core.db, "users", uid), { teacherStatus: 'approved' });
+                toast(`${name} approved.`);
+                await Core.addDoc(Core.collection(Core.db, "notifications"), {
+                    uid: uid,
+                    type: "TEACHER APPROVED",
+                    text: `Your teacher account has been approved by the institute owner.`,
+                    createdAt: Core.serverTimestamp()
+                });
+                await updateTeacherRequestCount();
+                window.showTeacherRequestModal();
+            } catch (e) { toast("Failed to approve.", "error"); }
+        };
+
+        window.rejectTeacherFromModal = async (uid, name) => {
+            if (!confirm(`Reject ${name}'s teacher application?`)) return;
+            try {
+                await Core.updateDoc(Core.doc(Core.db, "users", uid), {
+                    teacherStatus: 'rejected',
+                    role: 'student'
+                });
+                toast(`${name} rejected.`);
+                await Core.addDoc(Core.collection(Core.db, "notifications"), {
+                    uid: uid,
+                    type: "TEACHER REJECTED",
+                    text: `Your teacher application was rejected by the institute owner.`,
+                    createdAt: Core.serverTimestamp()
+                });
+                await updateTeacherRequestCount();
+                window.showTeacherRequestModal();
+            } catch (e) { toast("Failed to reject.", "error"); }
         };
 
         // ─── APPLY LOCKED INSTITUTE BRANDING ───
@@ -2496,7 +2665,6 @@
                         instituteId: instId,
                         privacyMode: privacy,
                         hasPaid: false,
-                        // TEACHER APPROVAL: if teacher, set status to 'pending' unless they are the owner
                         teacherStatus: (r === 'teacher' && instId) ? 'pending' : (r === 'teacher' ? 'pending' : null)
                     };
                     if (r === 'teacher') {
@@ -2507,13 +2675,11 @@
                         userData.plan = 'free_trial';
                         userData.planExpiresAt = expiry;
 
-                        // If this is the first teacher in the institute, auto-approve
                         if (instId) {
                             const instSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"),
                                 Core.where("uniqueId", "==", instId)));
                             if (!instSnap.empty) {
                                 const instData = instSnap.docs[0].data();
-                                // If no teacher is set as manager, this teacher becomes the owner
                                 if (!instData.teacherId) {
                                     await Core.updateDoc(Core.doc(Core.db, "institutes", instSnap.docs[0].id), {
                                         teacherId: userData.teacherId
@@ -2540,7 +2706,6 @@
             if (role === 'super_admin') colors.push('#dc2626');
             if (role === 'teacher') {
                 colors.push('#004a80');
-                // Check if this teacher is approved
                 const uSnap = await Core.getDoc(Core.doc(Core.db, "users", uid));
                 if (uSnap.exists()) {
                     const uData = uSnap.data();
@@ -3351,7 +3516,6 @@
 
         // ─── CHUNKED RENDER ───
         function setupChunkObserver(containerId, chunkType) {
-            // Disconnect old observer
             if (_chunkObserver) {
                 _chunkObserver.disconnect();
                 _chunkObserver = null;
@@ -3360,11 +3524,9 @@
             const container = document.getElementById(containerId);
             if (!container) return;
 
-            // Remove old sentinel
             const oldSentinel = document.getElementById('scroll-sentinel');
             if (oldSentinel) oldSentinel.remove();
 
-            // Create sentinel
             const sentinel = document.createElement('div');
             sentinel.id = 'scroll-sentinel';
             sentinel.innerHTML = `<span class="spinner-sm"></span><span>Loading more...</span>`;
@@ -3415,7 +3577,6 @@
                 return;
             }
 
-            // Render the chunk
             const renderPromises = chunk.map(async (doc) => {
                 if (chunkType === 'courses' || chunkType === 'myCourses') {
                     return await window.renderUnifiedCourseCard(doc);
@@ -3441,7 +3602,6 @@
                     }
                 }
 
-                // Trigger fade-in for new items
                 container.querySelectorAll('.unified-card:not(.fade-in)').forEach(el => {
                     el.classList.add('fade-in');
                 });
@@ -3459,7 +3619,6 @@
                 sentinel.style.display = 'flex';
             }
 
-            // Use requestAnimationFrame to avoid blocking
             requestAnimationFrame(() => {
                 window.renderChunkedContent(containerId, chunkType);
                 state.loading = false;
@@ -3882,13 +4041,11 @@
             }
             const hasDemo = c.playlist && c.playlist.some(v => v.isDemo === true);
 
-            // Fetch live sessions associated with this course
             const liveSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("courseId", "==",
                 id), Core.where("type", "==", "live")));
             const liveItems = [];
             liveSnap.forEach(d => liveItems.push({ id: d.id, ...d.data() }));
 
-            // Combine playlist and live sessions
             let allModules = [...c.playlist];
             liveItems.forEach(l => {
                 if (!allModules.some(m => m.url === l.url)) {
@@ -4509,7 +4666,7 @@
             }, { passive: true });
         }
 
-        // ─── BOTTOM NAV BUILD (YouTube style) ───
+        // ─── BOTTOM NAV BUILD ───
         function buildBottomNav() {
             const navBar = document.getElementById('floating-bottom-nav-bar');
             if (!navBar) return;
@@ -4525,10 +4682,8 @@
                 _studentNavTab = currentNavTab;
                 navTabsOrder = ['home', 'groups', 'courses', 'mycourses'];
             } else {
-                // Check if teacher is approved
                 const isApproved = profile.teacherStatus === 'approved' || profile.role === 'super_admin';
                 if (profile.role === 'teacher' && profile.teacherStatus === 'pending') {
-                    // Teacher with pending approval gets limited view
                     tabs = [
                         { id: 'pending', label: 'Pending', icon: 'fa-solid fa-clock' }
                     ];
@@ -4749,7 +4904,6 @@
 
         // ─── NAVIGATION ───
         window.setNavTab = (tab) => {
-            // Handle pending/rejected states for teachers
             if (profile && profile.role === 'teacher') {
                 if (profile.teacherStatus === 'pending' && tab !== 'pending') {
                     tab = 'pending';
@@ -5299,7 +5453,6 @@
                     teacherStatus: (r === 'teacher' && window._lockedInstId) ? 'pending' : (r === 'teacher' ?
                         'pending' : null)
                 };
-                // If teacher and has institute, check if they are the first/owner
                 if (r === 'teacher' && window._lockedInstId) {
                     const instSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"),
                         Core.where("uniqueId", "==", window._lockedInstId)));
@@ -5337,14 +5490,11 @@
                     const nameEl = document.getElementById('nav-brand-name');
                     if (logoEl) logoEl.src = instData.logo || logoEl.src;
                     if (nameEl) {
-                        // Keep the OpenClase brand but show institute name prominently
                         nameEl.innerHTML = `${instData.name}`;
-                        // Style it with brand color
                         nameEl.style.color = 'var(--text-main)';
                     }
                 }
             } else {
-                // Reset to default
                 const logoEl = document.getElementById('nav-brand-logo');
                 const nameEl = document.getElementById('nav-brand-name');
                 if (logoEl) logoEl.src = 'https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg';
@@ -5423,7 +5573,6 @@
                 if (!iSnap.empty) {
                     targetInstitute = iSnap.docs[0].data();
                     currentInstituteMap[targetInstitute.uniqueId] = targetInstitute;
-                    // Update nav branding with institute logo
                     const logoEl = document.getElementById('nav-brand-logo');
                     const nameEl = document.getElementById('nav-brand-name');
                     if (logoEl && targetInstitute.logo) logoEl.src = targetInstitute.logo;
@@ -5459,6 +5608,14 @@
 
                 buildBottomNav();
 
+                // Update teacher request count for institute owner
+                if (profile.instituteId) {
+                    const instData = await window.getInstBadgeData(profile.instituteId);
+                    if (instData && instData.teacherId === profile.teacherId) {
+                        await updateTeacherRequestCount();
+                    }
+                }
+
                 if (tab === 'dashboard') {
                     const ringStyle = await window.updateProfileRing(Core.auth.currentUser.uid, profile.role, profile
                         .teacherId);
@@ -5473,12 +5630,26 @@
                         }
                     }
 
-                    // Show teacher status badge
                     let statusBadge = '';
                     if (profile.teacherStatus === 'approved') {
                         statusBadge = `<span class="status-badge-approved ml-2">✓ Approved</span>`;
                     } else if (profile.teacherStatus === 'pending') {
                         statusBadge = `<span class="status-badge-pending ml-2">⏳ Pending</span>`;
+                    }
+
+                    // Quick actions: Add Requests button for institute owner
+                    let quickActionsHtml = `
+                                <button class="qa-btn" onclick="window.showTimetable()"><i class="fa-regular fa-calendar"></i> Timetable</button>
+                            `;
+                    if (isInstituteOwner) {
+                        quickActionsHtml += `
+                                <button class="qa-btn request-btn" onclick="window.showTeacherRequestModal()" id="teacher-request-btn">
+                                    <i class="fa-solid fa-users-gear"></i> Requests
+                                    <span class="dot" id="teacher-request-dot"></span>
+                                </button>
+                                <button class="qa-btn" onclick="window.showAdManagement()"><i class="fa-regular fa-rectangle-ad"></i> Add Ads</button>
+                                <button class="qa-btn" onclick="window.showPlanManagement()"><i class="fa-solid fa-coins"></i> Plan Mgt</button>
+                            `;
                     }
 
                     main.innerHTML = `
@@ -5490,9 +5661,7 @@
                                         <div class="id">${profile.teacherId || 'ID: N/A'}</div>
                                     </div>
                                     <div class="quick-actions">
-                                        ${isInstituteOwner ? `<button class="qa-btn" onclick="window.showAdManagement()"><i class="fa-regular fa-rectangle-ad"></i> Add Ads</button>` : ''}
-                                        ${isInstituteOwner ? `<button class="qa-btn" onclick="window.showPlanManagement()"><i class="fa-solid fa-coins"></i> Plan Mgt</button>` : ''}
-                                        <button class="qa-btn" onclick="window.showTimetable()"><i class="fa-regular fa-calendar"></i> Timetable</button>
+                                        ${quickActionsHtml}
                                     </div>
                                 </div>
 
@@ -5770,7 +5939,6 @@
                     window.showScreen('dashboard');
                     let initialTab = 'dashboard';
                     if (profile.role === 'student') initialTab = 'home';
-                    // For teachers, check approval status
                     if (profile.role === 'teacher') {
                         if (profile.teacherStatus === 'pending') initialTab = 'pending';
                         else if (profile.teacherStatus === 'rejected') initialTab = 'rejected';
@@ -5778,6 +5946,13 @@
                     }
                     window.setNavTab(initialTab);
                     initializeSwipeGestures();
+                    // Update teacher request count if owner
+                    if (profile.instituteId) {
+                        const instData = await window.getInstBadgeData(profile.instituteId);
+                        if (instData && instData.teacherId === profile.teacherId) {
+                            await updateTeacherRequestCount();
+                        }
+                    }
                 }
             } else {
                 window.applyLockedInstituteBranding();
@@ -5791,7 +5966,7 @@
         window.toast = toast;
         window.loadDashboardView = window.loadDashboardView;
 
-        console.log('OpenClase v3.4 — Institute branding, YouTube-style nav, teacher approval, chunk loading, unified tiles.');
+        console.log('OpenClase v3.5 — All requested fixes applied.');
     </script>
 
     <script src="https://unpkg.com/lucide@latest"></script>
