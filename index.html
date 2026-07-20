@@ -47,7 +47,7 @@
             --brand-blue: #004a80;
             --brand-orange: #f7941d;
             --nav-height: 72px;
-            --bottom-nav-height: 62px;
+            --bottom-nav-height: 64px;
         }
 
         .light {
@@ -84,7 +84,7 @@
             background-color: var(--bg-main);
             color: var(--text-main);
             overflow-x: hidden;
-            padding-bottom: calc(var(--bottom-nav-height) + 12px + env(safe-area-inset-bottom));
+            padding-bottom: calc(var(--bottom-nav-height) + 24px + env(safe-area-inset-bottom));
             overscroll-behavior-y: none;
             -webkit-tap-highlight-color: transparent;
             min-height: 100vh;
@@ -214,25 +214,28 @@
             align-items: center;
             justify-content: space-around;
             background: rgba(18, 18, 18, 0.96);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255, 255, 255, 0.06);
             z-index: 9999;
-            padding: 4px 0;
-            box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.5);
+            padding: 4px 0 env(safe-area-inset-bottom, 0) 0;
             transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.35s ease;
+            box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.5);
         }
+
         .light #floating-bottom-nav-bar {
             background: rgba(255, 255, 255, 0.96);
             border-top: 1px solid rgba(0, 0, 0, 0.06);
             box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.06);
         }
+
         #floating-bottom-nav-bar.nav-hidden {
             transform: translateY(100%);
             opacity: 0;
             pointer-events: none;
         }
 
+        /* ─── NAV BUTTONS — YOUTUBE STYLE ─── */
         .nav-island-btn {
             flex: 1;
             height: 100%;
@@ -245,12 +248,12 @@
             background: none;
             border: none;
             cursor: pointer;
-            transition: 0.25s ease;
+            transition: 0.2s ease;
             font-family: inherit;
             padding: 4px 0;
             position: relative;
             border-radius: 0;
-            min-width: 0;
+            min-height: 52px;
         }
         .nav-island-btn.active {
             color: #ffffff;
@@ -258,37 +261,36 @@
         .light .nav-island-btn.active {
             color: #1a1a1a;
         }
+
         .nav-island-btn .icon-box {
             width: 32px;
             height: 32px;
-            border-radius: 10px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: 0.3s ease;
+            transition: 0.25s ease;
+            font-size: 20px;
         }
         .nav-island-btn.active .icon-box {
-            background: #f59e0b;
-            color: #111;
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+            color: #f59e0b;
         }
         .light .nav-island-btn.active .icon-box {
-            background: #004a80;
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(0, 74, 128, 0.25);
+            color: #004a80;
         }
+
         .nav-island-btn i {
-            font-size: 18px;
+            font-size: 22px;
             transition: 0.2s;
         }
         .nav-island-btn span {
-            font-size: 8px;
-            letter-spacing: 0.04em;
-            font-weight: 700;
-            text-transform: uppercase;
+            font-size: 9px;
+            letter-spacing: 0.02em;
+            font-weight: 600;
+            text-transform: none;
             opacity: 0.6;
             transition: opacity 0.2s;
-            line-height: 1.2;
+            margin-top: 1px;
         }
         .nav-island-btn.active span {
             opacity: 1;
@@ -296,6 +298,44 @@
         }
         .light .nav-island-btn.active span {
             color: #004a80;
+        }
+
+        @media (max-width: 480px) {
+            #floating-bottom-nav-bar {
+                height: 56px;
+                padding: 2px 0 env(safe-area-inset-bottom, 0) 0;
+            }
+            .nav-island-btn {
+                min-height: 44px;
+                gap: 0px;
+            }
+            .nav-island-btn .icon-box {
+                width: 28px;
+                height: 28px;
+                font-size: 18px;
+            }
+            .nav-island-btn i {
+                font-size: 18px;
+            }
+            .nav-island-btn span {
+                font-size: 8px;
+            }
+        }
+        @media (min-width: 768px) {
+            #floating-bottom-nav-bar {
+                height: 68px;
+            }
+            .nav-island-btn .icon-box {
+                width: 36px;
+                height: 36px;
+                font-size: 24px;
+            }
+            .nav-island-btn i {
+                font-size: 24px;
+            }
+            .nav-island-btn span {
+                font-size: 10px;
+            }
         }
 
         /* ─── DASHBOARD CARDS ─── */
@@ -549,37 +589,6 @@
             .quick-actions .qa-btn i {
                 font-size: 12px;
             }
-            #floating-bottom-nav-bar {
-                height: 56px;
-            }
-            .nav-island-btn .icon-box {
-                width: 28px;
-                height: 28px;
-                border-radius: 8px;
-            }
-            .nav-island-btn i {
-                font-size: 16px;
-            }
-            .nav-island-btn span {
-                font-size: 7px;
-            }
-        }
-
-        @media (min-width: 768px) {
-            #floating-bottom-nav-bar {
-                height: 66px;
-            }
-            .nav-island-btn .icon-box {
-                width: 38px;
-                height: 38px;
-                border-radius: 12px;
-            }
-            .nav-island-btn i {
-                font-size: 20px;
-            }
-            .nav-island-btn span {
-                font-size: 9px;
-            }
         }
 
         .profile-ring-stacked {
@@ -595,6 +604,7 @@
             filter: none !important;
             pointer-events: auto !important;
         }
+
         .social-icon {
             font-size: 20px;
             color: #6b7280;
@@ -615,6 +625,7 @@
         .fa-youtube:hover {
             color: #FF0000;
         }
+
         #nav-profile-pic {
             aspect-ratio: 1;
             overflow: hidden;
@@ -626,6 +637,7 @@
             border-radius: 50%;
             display: block;
         }
+
         .search-container {
             width: 40px;
             transition: width 0.3s ease;
@@ -637,6 +649,9 @@
         @media (max-width: 480px) {
             .search-container.expanded {
                 width: 120px;
+            }
+            #nav-branding-block h2 {
+                font-size: 14px;
             }
         }
 
@@ -663,7 +678,6 @@
             border-radius: 10px;
         }
 
-        /* payment overlay */
         #payment-overlay {
             position: fixed;
             inset: 0;
@@ -913,117 +927,170 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
-        /* ─── COURSE & CONTENT TILES — 3 PER ROW, SAME SIZE ─── */
-        .course-grid,
-        .content-grid {
+        /* ─── UNIFIED CARD GRID ─── */
+        .unified-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: 1fr;
             gap: 20px;
             width: 100%;
+            padding: 4px 0;
         }
-
-        @media (max-width: 1024px) {
-            .course-grid,
-            .content-grid {
+        @media (min-width: 640px) {
+            .unified-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
-        @media (max-width: 640px) {
-            .course-grid,
-            .content-grid {
-                grid-template-columns: 1fr;
+        @media (min-width: 1024px) {
+            .unified-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 
-        .course-card,
-        .content-card {
-            width: 100%;
+        .unified-card {
             background: var(--glass-bg);
-            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
             overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
             display: flex;
             flex-direction: column;
-            transition: 0.35s;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(20px);
+            height: 100%;
+            min-height: 220px;
         }
-        .course-card:hover,
-        .content-card:hover {
+        .unified-card:hover {
             transform: translateY(-4px);
             border-color: rgba(247, 148, 29, 0.3);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
         }
-
-        .course-thumb,
-        .content-thumb {
+        .unified-card .thumb-wrap {
+            position: relative;
             width: 100%;
             aspect-ratio: 16/9;
             overflow: hidden;
-            position: relative;
             background: #0a0a0a;
+            flex-shrink: 0;
         }
-        .course-tile,
-        .content-tile {
+        .unified-card .thumb-wrap img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block;
+            transition: transform 0.4s ease;
         }
-
-        .course-content,
-        .content-body {
+        .unified-card:hover .thumb-wrap img {
+            transform: scale(1.03);
+        }
+        .unified-card .card-body {
             padding: 14px 16px 16px;
             flex: 1;
             display: flex;
             flex-direction: column;
+            gap: 4px;
         }
-        .course-title,
-        .content-title {
-            color: var(--text-main);
-            font-size: 16px;
+        .unified-card .card-body .title {
             font-weight: 700;
-            margin-bottom: 6px;
+            font-size: 15px;
             line-height: 1.3;
+            color: var(--text-main);
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        .course-meta,
-        .content-meta {
+        .unified-card .card-body .meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             font-size: 11px;
-            opacity: 0.6;
+            color: rgba(128, 128, 128, 0.7);
             margin-top: 2px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
             flex-wrap: wrap;
         }
-        .course-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .course-price {
-            color: var(--brand-orange);
-            font-size: 20px;
-            font-weight: 700;
-        }
-        .explore-btn {
-            padding: 8px 18px;
-            border: none;
-            border-radius: 12px;
-            background: linear-gradient(90deg, #0ea5e9, #2563eb);
-            color: #fff;
+        .unified-card .card-body .meta .teacher {
             font-weight: 600;
-            cursor: pointer;
-            font-size: 11px;
+            color: var(--text-main);
+            opacity: 0.7;
         }
-        .explore-btn:hover {
-            transform: scale(1.04);
+        .unified-card .card-body .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        /* ─── LOADING SENTINEL ─── */
+        #scroll-sentinel {
+            height: 20px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 0;
+            color: rgba(128, 128, 128, 0.4);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+        #scroll-sentinel .spinner-sm {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.06);
+            border-top-color: var(--brand-orange);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+            margin-right: 10px;
+        }
+        .light #scroll-sentinel .spinner-sm {
+            border-color: rgba(0, 0, 0, 0.06);
+            border-top-color: var(--brand-orange);
+        }
+
+        /* ─── ADMIN INSTITUTE APPROVAL BADGE ─── */
+        .status-badge-pending {
+            background: rgba(234, 179, 8, 0.15);
+            color: #eab308;
+            border: 1px solid rgba(234, 179, 8, 0.2);
+            padding: 2px 12px;
+            border-radius: 999px;
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .status-badge-approved {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            padding: 2px 12px;
+            border-radius: 999px;
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .status-badge-rejected {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 2px 12px;
+            border-radius: 999px;
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .status-badge-none {
+            background: rgba(128, 128, 128, 0.1);
+            color: #8b8b8b;
+            border: 1px solid rgba(128, 128, 128, 0.1);
+            padding: 2px 12px;
+            border-radius: 999px;
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .icon-box {
@@ -1037,11 +1104,6 @@
         }
         .icon-box i {
             font-size: 22px;
-        }
-        .nav-island-btn.active .icon-box {
-            background: #f59e0b;
-            color: #111;
-            box-shadow: 0 8px 18px rgba(245, 158, 11, .35);
         }
 
         .admin-inst-item {
@@ -1085,106 +1147,28 @@
             animation: fadeIn 0.4s ease forwards;
         }
 
-        /* ─── LOAD MORE TRIGGER ─── */
-        #load-more-trigger {
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            opacity: 0.5;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-main);
-        }
-        #load-more-trigger.loading {
-            opacity: 1;
-        }
-        #load-more-trigger .spinner-sm {
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.08);
-            border-top-color: var(--brand-orange);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            display: inline-block;
-            margin-right: 10px;
-        }
-
-        /* ─── TOP NAV BRANDING ─── */
-        #nav-branding-block .inst-logo-sm {
-            width: 32px;
-            height: 32px;
+        /* nav branding with institute logo */
+        #nav-branding-block .inst-brand-logo {
             border-radius: 10px;
             object-fit: cover;
             background: #111;
             border: 1px solid var(--border-color);
-            flex-shrink: 0;
         }
-        #nav-branding-block .inst-name-sm {
-            font-size: 16px;
+        #nav-branding-block .inst-brand-name {
             font-weight: 800;
+            font-style: italic;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 140px;
-            color: var(--text-main);
+            max-width: 120px;
         }
         @media (max-width: 480px) {
-            #nav-branding-block .inst-name-sm {
+            #nav-branding-block .inst-brand-name {
                 font-size: 13px;
                 max-width: 80px;
             }
-            #nav-branding-block .inst-logo-sm {
-                width: 26px;
-                height: 26px;
-            }
-        }
-        @media (min-width: 768px) {
-            #nav-branding-block .inst-name-sm {
-                font-size: 20px;
-                max-width: 220px;
-            }
-            #nav-branding-block .inst-logo-sm {
-                width: 40px;
-                height: 40px;
-            }
-        }
-
-        /* ─── APPROVAL BADGE ─── */
-        .pending-badge {
-            background: rgba(245, 158, 11, 0.15);
-            color: #f59e0b;
-            border: 1px solid rgba(245, 158, 11, 0.25);
-            font-size: 8px;
-            font-weight: 800;
-            text-transform: uppercase;
-            padding: 2px 10px;
-            border-radius: 999px;
-            letter-spacing: 0.05em;
-        }
-        .approved-badge {
-            background: rgba(34, 197, 94, 0.12);
-            color: #22c55e;
-            border: 1px solid rgba(34, 197, 94, 0.2);
-            font-size: 8px;
-            font-weight: 800;
-            text-transform: uppercase;
-            padding: 2px 10px;
-            border-radius: 999px;
-            letter-spacing: 0.05em;
-        }
-        .rejected-badge {
-            background: rgba(239, 68, 68, 0.12);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            font-size: 8px;
-            font-weight: 800;
-            text-transform: uppercase;
-            padding: 2px 10px;
-            border-radius: 999px;
-            letter-spacing: 0.05em;
         }
     </style>
 </head>
@@ -1405,11 +1389,11 @@
                 class="p-3 md:p-5 glass border-b border-[var(--border-color)] sticky top-0 z-[1000] w-full flex items-center justify-between gap-2 md:gap-4 px-4 md:px-10 pt-[max(1rem,env(safe-area-inset-top))]">
                 <div class="flex items-center gap-2 md:gap-3 cursor-pointer select-none group shrink-0 min-w-0"
                     onclick="window.navigateToDashboard()" id="nav-branding-block">
-                    <!-- Will be populated dynamically with institute branding -->
                     <img src="https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg"
-                        class="h-8 w-8 md:h-10 md:w-10 rounded-xl object-cover group-hover:scale-110 transition-transform duration-300 inst-logo-sm">
-                    <h2 class="text-base md:text-2xl font-black italic tracking-tight whitespace-nowrap inst-name-sm">Open<span
-                            class="text-brandOrange">Clase</span></h2>
+                        class="h-8 w-8 md:h-10 md:w-10 rounded-xl object-cover group-hover:scale-110 transition-transform duration-300 inst-brand-logo"
+                        id="nav-brand-logo">
+                    <h2 class="text-base md:text-2xl font-black italic tracking-tight whitespace-nowrap inst-brand-name"
+                        id="nav-brand-name">Open<span class="text-brandOrange">Clase</span></h2>
                 </div>
                 <div class="flex items-center gap-2 md:gap-4 ml-auto shrink-0">
                     <div id="search-wrapper-node"
@@ -1451,9 +1435,7 @@
             <main id="main-content" class="p-4 md:p-6 max-w-7xl mx-auto w-full"></main>
 
             <!-- ─── BOTTOM NAV — YOUTUBE STYLE ─── -->
-            <div id="floating-bottom-nav-bar">
-                <!-- Will be filled by JS -->
-            </div>
+            <div id="floating-bottom-nav-bar"></div>
         </div>
     </div>
 
@@ -1532,7 +1514,7 @@
                 <button onclick="window.showSection('requests-section')"
                     class="bg-yellow-500/20 text-yellow-500 hover:bg-yellow-600 hover:scale-105 hover:text-white border border-yellow-500/30 p-3 md:p-4 rounded-xl font-black uppercase tracking-widest text-[9px] md:text-[10px] transition-all">Requests</button>
                 <button onclick="window.showSection('teacher-approvals-section')"
-                    class="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-600 hover:scale-105 hover:text-white border border-emerald-500/30 p-3 md:p-4 rounded-xl font-black uppercase tracking-widest text-[9px] md:text-[10px] transition-all">Approvals</button>
+                    class="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-600 hover:scale-105 hover:text-white border border-emerald-500/30 p-3 md:p-4 rounded-xl font-black uppercase tracking-widest text-[9px] md:text-[10px] transition-all">Teacher Approvals</button>
             </div>
             <div class="flex-grow overflow-y-auto pr-2 custom-scrollbar">
                 <div id="plans-section" class="admin-section hidden space-y-4 max-w-xl mx-auto fade-in">
@@ -1576,9 +1558,11 @@
                     </h2>
                     <div id="admin-requests-list" class="space-y-3"></div>
                 </div>
-                <div id="teacher-approvals-section" class="admin-section hidden space-y-4 max-w-2xl mx-auto fade-in">
-                    <h2 class="text-xl md:text-2xl font-black italic text-emerald-400 mb-4">Teacher Approvals</h2>
-                    <p class="text-xs opacity-50 mb-4">Review and approve teacher account requests for your institute.</p>
+                <!-- TEACHER APPROVALS SECTION -->
+                <div id="teacher-approvals-section" class="admin-section hidden space-y-4 max-w-3xl mx-auto fade-in">
+                    <h2 class="text-xl md:text-2xl font-black italic text-emerald-400 mb-4">Teacher Approval Requests</h2>
+                    <p class="text-xs opacity-50 mb-4">Teachers who have requested to join your institute need your
+                        approval before they can access teacher features.</p>
                     <div id="teacher-approvals-list" class="space-y-3"></div>
                 </div>
             </div>
@@ -1629,14 +1613,18 @@
         let _aiChatOpen = false;
         let _pendingPurchase = null;
 
-        // ─── LAZY LOADING STATE ───
-        let _lazyState = {
-            content: { loaded: 0, total: 0, docs: [], chunkSize: 3 },
-            courses: { loaded: 0, total: 0, docs: [], chunkSize: 3 },
-            live: { loaded: 0, total: 0, docs: [], chunkSize: 3 },
-            demo: { loaded: 0, total: 0, docs: [], chunkSize: 3 }
+        // ─── CHUNK LOADING STATE ───
+        let _chunkState = {
+            content: { items: [], loaded: 0, perPage: 3, allLoaded: false, loading: false },
+            courses: { items: [], loaded: 0, perPage: 3, allLoaded: false, loading: false },
+            live: { items: [], loaded: 0, perPage: 3, allLoaded: false, loading: false },
+            demo: { items: [], loaded: 0, perPage: 3, allLoaded: false, loading: false },
+            search: { items: [], loaded: 0, perPage: 3, allLoaded: false, loading: false },
+            myCourses: { items: [], loaded: 0, perPage: 3, allLoaded: false, loading: false }
         };
-        let _lazyObserver = null;
+        let _currentChunkType = 'content';
+        let _chunkObserver = null;
+        let _chunkTargets = {};
 
         // ─── TOAST ───
         function toast(m, type = "s") {
@@ -1743,7 +1731,7 @@
             toast(isLight ? "Light mode activated" : "Dark mode activated");
         };
 
-        // ─── AI CHAT ───
+        // ─── AI CHAT TOGGLE ───
         window.toggleAIChat = function () {
             const win = document.getElementById('ai-chat-window');
             _aiChatOpen = !_aiChatOpen;
@@ -1754,6 +1742,7 @@
             }
         };
 
+        // ─── SEND AI MESSAGE ───
         window.sendAIMessage = function () {
             const input = document.getElementById('ai-input');
             const msg = input.value.trim();
@@ -1818,35 +1807,13 @@
             } else {
                 members.forEach(u => {
                     const isAdmin = u.teacherId === instData.teacherId;
-                    const isPending = u.approvalStatus === 'pending';
-                    const isRejected = u.approvalStatus === 'rejected';
-                    let statusBadge = '';
-                    if (isPending) statusBadge =
-                        `<span class="pending-badge ml-2">Pending</span>`;
-                    if (isRejected) statusBadge =
-                        `<span class="rejected-badge ml-2">Rejected</span>`;
-                    if (!isPending && !isRejected && u.approvalStatus !== 'approved' && u.role === 'teacher') {
-                        statusBadge = `<span class="pending-badge ml-2">Pending</span>`;
-                    }
                     html += `
                             <div class="flex justify-between items-center bg-[var(--input-bg)] p-4 rounded-xl border border-[var(--border-color)] shadow-sm">
                                 <div class="flex items-center gap-3 min-w-0 flex-1">
                                     <img src="${u.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.name)}" class="w-8 h-8 rounded-full object-cover bg-black border border-[var(--border-color)] shrink-0">
-                                    <div class="min-w-0 flex-1"><p class="text-sm font-bold truncate">${u.name} ${statusBadge}</p><p class="text-[9px] opacity-50 font-mono truncate">${u.role} ${isAdmin ? '• Admin' : ''}</p></div>
+                                    <div class="min-w-0 flex-1"><p class="text-sm font-bold truncate">${u.name}</p><p class="text-[9px] opacity-50 font-mono truncate">${u.role} ${isAdmin ? '• Admin' : ''}</p></div>
                                 </div>
-                                ${!isAdmin && u.role === 'teacher' && u.approvalStatus === 'pending' ? `
-                                    <div class="flex gap-2 shrink-0">
-                                        <button onclick="window.approveTeacher('${u.id}','${instId}')" class="text-[9px] bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 font-black uppercase">Approve</button>
-                                        <button onclick="window.rejectTeacher('${u.id}','${instId}')" class="text-[9px] bg-red-500/20 text-red-500 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white font-black uppercase">Reject</button>
-                                    </div>
-                                ` : ''}
-                                ${!isAdmin && u.role === 'teacher' && u.approvalStatus === 'approved' ? `
-                                    <button onclick="window.kickFromInstitute('${u.id}','${instId}')" class="text-[9px] bg-red-500/10 text-red-500 border border-red-500/20 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white transition-all font-black uppercase">Remove</button>
-                                ` : ''}
-                                ${!isAdmin && u.role === 'teacher' && u.approvalStatus === 'rejected' ? `
-                                    <span class="rejected-badge">Rejected</span>
-                                ` : ''}
-                                ${u.role === 'student' ? `<span class="text-[9px] opacity-40 font-black uppercase">Student</span>` : ''}
+                                ${!isAdmin ? `<button onclick="window.kickFromInstitute('${u.id}','${instId}')" class="text-[9px] bg-red-500/10 text-red-500 border border-red-500/20 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white transition-all font-black uppercase">Remove</button>` : '<span class="text-[9px] text-brandOrange font-black uppercase">Admin</span>'}
                             </div>
                         `;
                 });
@@ -1855,42 +1822,9 @@
             content.innerHTML = html;
         };
 
-        // ─── APPROVE TEACHER ───
-        window.approveTeacher = async (uid, instId) => {
-            await Core.updateDoc(Core.doc(Core.db, "users", uid), {
-                approvalStatus: 'approved',
-                approvedAt: Core.serverTimestamp()
-            });
-            toast("Teacher approved successfully!");
-            window.showInstituteRosterManager(instId);
-            // Notify the teacher
-            await Core.addDoc(Core.collection(Core.db, "notifications"), {
-                uid: uid,
-                type: "APPROVAL",
-                text: "Your teacher account has been approved by the institute owner.",
-                createdAt: Core.serverTimestamp()
-            });
-        };
-
-        // ─── REJECT TEACHER ───
-        window.rejectTeacher = async (uid, instId) => {
-            await Core.updateDoc(Core.doc(Core.db, "users", uid), {
-                approvalStatus: 'rejected',
-                rejectedAt: Core.serverTimestamp()
-            });
-            toast("Teacher request rejected.");
-            window.showInstituteRosterManager(instId);
-            await Core.addDoc(Core.collection(Core.db, "notifications"), {
-                uid: uid,
-                type: "REJECTION",
-                text: "Your teacher account request was rejected by the institute owner.",
-                createdAt: Core.serverTimestamp()
-            });
-        };
-
         window.kickFromInstitute = async (uid, instId) => {
             if (!confirm("Remove this user from the institute?")) return;
-            await Core.updateDoc(Core.doc(Core.db, "users", uid), { instituteId: null, approvalStatus: null });
+            await Core.updateDoc(Core.doc(Core.db, "users", uid), { instituteId: null });
             toast("User removed from institute.");
             window.showInstituteRosterManager(instId);
         };
@@ -1918,51 +1852,6 @@
             if (sectionId === 'requests-section') window.loadAdminRequests();
             if (sectionId === 'plans-section') window.loadPlansUI();
             if (sectionId === 'teacher-approvals-section') window.loadTeacherApprovals();
-        };
-
-        // ─── LOAD TEACHER APPROVALS ───
-        window.loadTeacherApprovals = async function () {
-            const container = document.getElementById('teacher-approvals-list');
-            if (!container) return;
-            container.innerHTML = '<p class="text-xs opacity-50 py-4 text-center">Loading pending approvals...</p>';
-            try {
-                const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("role", "==",
-                    "teacher")));
-                let pending = [];
-                snap.forEach(d => {
-                    const u = d.data();
-                    // Show teachers that have an institute but are not yet approved
-                    if (u.instituteId && (u.approvalStatus === 'pending' || !u.approvalStatus)) {
-                        pending.push({ id: d.id, ...u });
-                    }
-                });
-                if (pending.length === 0) {
-                    container.innerHTML =
-                    '<p class="text-xs opacity-40 text-center py-4">No pending teacher approvals.</p>';
-                    return;
-                }
-                let html = '';
-                for (let t of pending) {
-                    const instData = await window.getInstBadgeData(t.instituteId);
-                    html += `
-                            <div class="glass p-5 rounded-2xl flex justify-between items-center border border-[var(--border-color)] shadow-sm hover:border-emerald-500/30 transition-all">
-                                <div>
-                                    <p class="font-bold text-sm text-[var(--text-main)]">${t.name}</p>
-                                    <p class="text-[10px] opacity-50 font-mono mt-1">${t.email}</p>
-                                    ${instData ? `<p class="text-[9px] text-emerald-400 font-black mt-1">Institute: ${instData.name}</p>` : ''}
-                                    <span class="pending-badge mt-1 inline-block">Pending Approval</span>
-                                </div>
-                                <div class="flex gap-2 shrink-0">
-                                    <button onclick="window.approveTeacher('${t.id}','${t.instituteId}')" class="bg-green-500 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-green-600 transition-all shadow-sm">Approve</button>
-                                    <button onclick="window.rejectTeacher('${t.id}','${t.instituteId}')" class="bg-red-500/20 text-red-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-red-500 hover:text-white transition-all shadow-sm">Reject</button>
-                                </div>
-                            </div>
-                        `;
-                }
-                container.innerHTML = html;
-            } catch (e) {
-                container.innerHTML = '<p class="text-red-500 text-xs py-2 text-center">Failed to load approvals.</p>';
-            }
         };
 
         // ─── LOAD PLANS UI ───
@@ -2293,6 +2182,119 @@
                     `;
         };
 
+        // ─── TEACHER APPROVALS ───
+        window.loadTeacherApprovals = async function () {
+            const container = document.getElementById('teacher-approvals-list');
+            if (!container) return;
+
+            // Only institute owner (teacher with institute) can see this
+            if (!profile || !profile.instituteId) {
+                container.innerHTML =
+                    '<p class="text-xs opacity-40 py-4 text-center">You need to be affiliated with an institute to manage teacher approvals.</p>';
+                return;
+            }
+
+            // Check if this user is the institute owner
+            const instData = await window.getInstBadgeData(profile.instituteId);
+            if (!instData || instData.teacherId !== profile.teacherId) {
+                container.innerHTML =
+                    '<p class="text-xs opacity-40 py-4 text-center">Only the institute owner can approve teachers.</p>';
+                return;
+            }
+
+            container.innerHTML = '<p class="text-xs opacity-50 py-4 text-center">Loading teacher requests...</p>';
+
+            try {
+                // Find all users in this institute with role 'teacher' and teacherStatus 'pending'
+                const usersSnap = await Core.getDocs(Core.query(
+                    Core.collection(Core.db, "users"),
+                    Core.where("instituteId", "==", profile.instituteId),
+                    Core.where("role", "==", "teacher")
+                ));
+
+                const pendingTeachers = [];
+                usersSnap.forEach(d => {
+                    const u = d.data();
+                    if (u.teacherStatus === 'pending' || !u.teacherStatus) {
+                        pendingTeachers.push({ id: d.id, ...u });
+                    }
+                });
+
+                if (pendingTeachers.length === 0) {
+                    container.innerHTML =
+                        '<p class="text-xs opacity-40 py-4 text-center">No pending teacher approval requests.</p>';
+                    return;
+                }
+
+                let html = '';
+                pendingTeachers.forEach(t => {
+                    html += `
+                            <div class="glass p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-[var(--border-color)] shadow-sm hover:border-emerald-500/30 transition-all">
+                                <div class="flex items-center gap-4 min-w-0 flex-1 w-full sm:w-auto">
+                                    <img src="${t.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(t.name)}" class="w-12 h-12 rounded-full object-cover bg-black border border-[var(--border-color)] shrink-0">
+                                    <div class="min-w-0 flex-1">
+                                        <p class="font-bold text-sm truncate text-[var(--text-main)]">${t.name}</p>
+                                        <p class="text-[10px] opacity-50 font-mono truncate">${t.email || 'No email'}</p>
+                                        <p class="text-[9px] font-bold text-yellow-500 mt-1"><span class="status-badge-pending">Pending Approval</span></p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2 w-full sm:w-auto shrink-0 justify-end flex-wrap">
+                                    <button onclick="window.approveTeacher('${t.id}','${t.name}')" class="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase rounded-lg hover:bg-emerald-500 hover:text-white transition-all shadow-sm">Approve</button>
+                                    <button onclick="window.rejectTeacher('${t.id}','${t.name}')" class="px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase rounded-lg hover:bg-red-500 hover:text-white transition-all shadow-sm">Reject</button>
+                                </div>
+                            </div>
+                        `;
+                });
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = '<p class="text-red-500 text-xs py-2 text-center">Failed to load teacher requests.</p>';
+                console.error(e);
+            }
+        };
+
+        window.approveTeacher = async (uid, name) => {
+            if (!confirm(`Approve ${name} as a teacher in this institute?`)) return;
+            try {
+                await Core.updateDoc(Core.doc(Core.db, "users", uid), {
+                    teacherStatus: 'approved'
+                });
+                toast(`${name} has been approved as a teacher.`);
+                window.loadTeacherApprovals();
+                // Send notification
+                await Core.addDoc(Core.collection(Core.db, "notifications"), {
+                    uid: uid,
+                    type: "TEACHER APPROVED",
+                    text: `Your teacher account has been approved by the institute owner.`,
+                    createdAt: Core.serverTimestamp()
+                });
+            } catch (e) {
+                toast("Failed to approve teacher.", "error");
+                console.error(e);
+            }
+        };
+
+        window.rejectTeacher = async (uid, name) => {
+            if (!confirm(`Reject ${name}'s teacher application?`)) return;
+            try {
+                await Core.updateDoc(Core.doc(Core.db, "users", uid), {
+                    teacherStatus: 'rejected',
+                    // Optionally remove from institute or keep as student
+                    role: 'student'
+                });
+                toast(`${name} has been rejected as a teacher.`);
+                window.loadTeacherApprovals();
+                await Core.addDoc(Core.collection(Core.db, "notifications"), {
+                    uid: uid,
+                    type: "TEACHER REJECTED",
+                    text: `Your teacher application was not approved by the institute owner.`,
+                    createdAt: Core.serverTimestamp()
+                });
+            } catch (e) {
+                toast("Failed to reject teacher.", "error");
+                console.error(e);
+            }
+        };
+
         // ─── APPLY LOCKED INSTITUTE BRANDING ───
         window.applyLockedInstituteBranding = async () => {
             if (window._lockedInstId) {
@@ -2455,21 +2457,13 @@
             const e = document.getElementById('auth-email').value,
                 p = document.getElementById('auth-pass').value;
             if (isSignup) {
-                const role = document.getElementById('reg-role').value;
-                const instId = window._lockedInstId || document.getElementById('reg-institute-id').value.trim() || null;
-                // If teacher and has institute, set approvalStatus to pending
-                let approvalStatus = null;
-                if (role === 'teacher' && instId) {
-                    approvalStatus = 'pending';
-                }
                 tempUser = {
                     e,
                     p,
                     n: document.getElementById('reg-name').value,
-                    r: role,
-                    instId: instId,
-                    privacy: document.getElementById('reg-privacy').value || 'public',
-                    approvalStatus: approvalStatus
+                    r: document.getElementById('reg-role').value,
+                    instId: window._lockedInstId || document.getElementById('reg-institute-id').value.trim() || null,
+                    privacy: document.getElementById('reg-privacy').value || 'public'
                 };
                 otpCode = Math.floor(100000 + Math.random() * 900000);
                 try {
@@ -2489,7 +2483,7 @@
         window.checkOTP = async () => {
             if (document.getElementById('otp-input').value == otpCode) {
                 try {
-                    const { e, p, n, r, instId, privacy, approvalStatus } = tempUser;
+                    const { e, p, n, r, instId, privacy } = tempUser;
                     const cred = await Core.createUserWithEmailAndPassword(Core.auth, e, p);
                     let userData = {
                         name: n,
@@ -2499,44 +2493,40 @@
                         pendingSubs: [],
                         photo: "",
                         joined: new Date().toISOString(),
-                        instituteId: instId || null,
-                        privacyMode: privacy || 'public',
+                        instituteId: instId,
+                        privacyMode: privacy,
                         hasPaid: false,
-                        approvalStatus: approvalStatus || null
+                        // TEACHER APPROVAL: if teacher, set status to 'pending' unless they are the owner
+                        teacherStatus: (r === 'teacher' && instId) ? 'pending' : (r === 'teacher' ? 'pending' : null)
                     };
                     if (r === 'teacher') {
                         userData.teacherId = "OC-" + n.split(' ')[0].toUpperCase() + Math.floor(100 + Math.random() *
                             899);
-                        // If teacher is joining an institute, set pending approval
-                        if (instId) {
-                            userData.approvalStatus = 'pending';
-                            // Notify institute owner
-                            const instSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"),
-                                Core.where("uniqueId", "==", instId)));
-                            if (!instSnap.empty) {
-                                const instData = instSnap.docs[0].data();
-                                const ownerId = instData.teacherId;
-                                // Find owner UID
-                                const ownerSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"),
-                                    Core.where("teacherId", "==", ownerId)));
-                                if (!ownerSnap.empty) {
-                                    await Core.addDoc(Core.collection(Core.db, "notifications"), {
-                                        uid: ownerSnap.docs[0].id,
-                                        type: "TEACHER REQUEST",
-                                        text: `${n} has requested to join your institute as a teacher.`,
-                                        createdAt: Core.serverTimestamp()
-                                    });
-                                }
-                            }
-                            toast("Your teacher request has been sent to the institute owner for approval.");
-                        }
                         let expiry = new Date();
                         expiry.setDate(expiry.getDate() + 14);
                         userData.plan = 'free_trial';
                         userData.planExpiresAt = expiry;
-                    } else {
-                        // Student: auto-approved
-                        userData.approvalStatus = 'approved';
+
+                        // If this is the first teacher in the institute, auto-approve
+                        if (instId) {
+                            const instSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"),
+                                Core.where("uniqueId", "==", instId)));
+                            if (!instSnap.empty) {
+                                const instData = instSnap.docs[0].data();
+                                // If no teacher is set as manager, this teacher becomes the owner
+                                if (!instData.teacherId) {
+                                    await Core.updateDoc(Core.doc(Core.db, "institutes", instSnap.docs[0].id), {
+                                        teacherId: userData.teacherId
+                                    });
+                                    userData.teacherStatus = 'approved';
+                                    toast("You are the first teacher and have been auto-approved as the institute owner.");
+                                } else {
+                                    toast("Your teacher account is pending approval from the institute owner.");
+                                }
+                            }
+                        } else {
+                            toast("Your teacher account is pending approval. Please contact your institute administrator.");
+                        }
                     }
                     await Core.setDoc(Core.doc(Core.db, "users", cred.user.uid), userData);
                     location.reload();
@@ -2550,6 +2540,14 @@
             if (role === 'super_admin') colors.push('#dc2626');
             if (role === 'teacher') {
                 colors.push('#004a80');
+                // Check if this teacher is approved
+                const uSnap = await Core.getDoc(Core.doc(Core.db, "users", uid));
+                if (uSnap.exists()) {
+                    const uData = uSnap.data();
+                    if (uData.teacherStatus === 'pending') colors.push('#eab308');
+                    else if (uData.teacherStatus === 'approved') colors.push('#22c55e');
+                    else if (uData.teacherStatus === 'rejected') colors.push('#ef4444');
+                }
                 const iSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"), Core.where("teacherId",
                     "==", teacherId || "")));
                 if (!iSnap.empty) colors.push('#a855f7');
@@ -2705,8 +2703,8 @@
                 if (notificationsMap.length === 0) window.showNotificationsHub();
                 const pill = document.getElementById('notify-pill');
                 if (pill) {
-                    pill.innerText = notificationsMap.length;
-                    if (notificationsMap.length === 0) pill.classList.add('hidden');
+                    pill.innerText = notificationsMap.length; if (notificationsMap.length === 0) pill.classList.add(
+                        'hidden');
                 }
             } catch (e) { toast("Failed to clear notification.", "error"); }
         };
@@ -2801,23 +2799,10 @@
                     ownerControlsHtml =
                         `<button onclick="window.showInstituteRosterManager('${profile.instituteId}')" class="w-full mt-3 py-3 bg-purple-600/10 text-purple-400 border border-purple-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-purple-600 hover:text-white transition-all shadow-sm">Manage Campus Directory</button>`;
                 }
-                const pendingStatus = profile.approvalStatus === 'pending';
-                const rejectedStatus = profile.approvalStatus === 'rejected';
-                let statusBadge = '';
-                if (pendingStatus) statusBadge =
-                    `<span class="pending-badge ml-2">Pending Approval</span>`;
-                if (rejectedStatus) statusBadge =
-                    `<span class="rejected-badge ml-2">Rejected</span>`;
-                if (!pendingStatus && !rejectedStatus && profile.role === 'teacher') statusBadge =
-                    `<span class="approved-badge ml-2">Approved</span>`;
-
                 joinHubSectionHtml = `
                             <div class="bg-brandBlue/10 border border-brandBlue/20 p-4 rounded-2xl flex flex-col gap-3">
                                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                    <div><p class="text-[10px] uppercase font-black tracking-widest text-brandBlue">Active Institute</p><p class="text-sm font-bold mt-1 text-[var(--text-main)]">${instNode ? instNode.name : profile.instituteId} ${statusBadge}</p>
-                                    ${pendingStatus ? `<p class="text-[9px] text-yellow-500 mt-1">Waiting for institute owner approval</p>` : ''}
-                                    ${rejectedStatus ? `<p class="text-[9px] text-red-500 mt-1">Your teacher request was rejected</p>` : ''}
-                                    </div>
+                                    <div><p class="text-[10px] uppercase font-black tracking-widest text-brandBlue">Active Institute</p><p class="text-sm font-bold mt-1 text-[var(--text-main)]">${instNode ? instNode.name : profile.instituteId}</p></div>
                                     <div class="flex gap-2 w-full md:w-auto">
                                         <button onclick="window.triggerInstAppInstall('${profile.instituteId}')" class="flex-1 bg-green-500/10 text-green-500 border border-green-500/20 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-green-500 hover:text-white transition-all shadow-sm">Download App</button>
                                         <button onclick="window.leaveInstituteFromProfile()" class="flex-1 bg-red-500/10 text-red-500 border border-red-500/20 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all shadow-sm">Leave</button>
@@ -2890,32 +2875,10 @@
                 const snap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"), Core.where("uniqueId",
                     "==", id)));
                 if (snap.empty) return toast("Institute ID not found.", "error");
-                const instData = snap.docs[0].data();
-                // If user is a teacher, set pending approval
-                let updatePayload = {
+                await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), {
                     instituteId: id,
                     joined: new Date().toISOString()
-                };
-                if (profile.role === 'teacher') {
-                    updatePayload.approvalStatus = 'pending';
-                    // Notify institute owner
-                    const ownerId = instData.teacherId;
-                    const ownerSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where(
-                        "teacherId", "==", ownerId)));
-                    if (!ownerSnap.empty) {
-                        await Core.addDoc(Core.collection(Core.db, "notifications"), {
-                            uid: ownerSnap.docs[0].id,
-                            type: "TEACHER REQUEST",
-                            text: `${profile.name} has requested to join your institute as a teacher.`,
-                            createdAt: Core.serverTimestamp()
-                        });
-                    }
-                    toast("Your teacher request has been sent to the institute owner for approval.");
-                } else {
-                    // Student: auto-approved
-                    updatePayload.approvalStatus = 'approved';
-                }
-                await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), updatePayload);
+                });
                 toast("Successfully connected to institute hub!");
                 setTimeout(() => location.reload(), 1500);
             } catch (e) { toast("Failed to join institute.", "error"); }
@@ -2925,10 +2888,7 @@
         window.leaveInstituteFromProfile = async () => {
             if (!confirm("Are you sure you want to leave your current institute?")) return;
             try {
-                await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), {
-                    instituteId: null,
-                    approvalStatus: null
-                });
+                await Core.updateDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), { instituteId: null });
                 toast("Successfully disconnected from institute.");
                 setTimeout(() => location.reload(), 1500);
             } catch (e) { toast("Failed to leave institute.", "error"); }
@@ -3326,8 +3286,8 @@
                 buttonClasses = 'bg-brandBlue/10 text-brandBlue border border-brandBlue/20 cursor-default opacity-80';
                 disableBtn = true;
             } else if (tD.privacyMode === 'private' && !isF) {
-                buttonText = 'Request Access';
-                if (isPendingF) {
+                buttonText = 'Request Access'; if (
+                    isPendingF) {
                     buttonText = 'Pending';
                     buttonClasses = 'bg-[var(--border-color)] text-zinc-400 cursor-not-allowed opacity-70';
                     disableBtn = true;
@@ -3341,19 +3301,17 @@
                             </div>
                             ${profile.teacherId !== tD.teacherId ? `<button onclick="window.handleSub('${tId}', ${isF}, '${tD.privacyMode}', ${isPendingF})" class="w-full md:w-auto px-8 py-3.5 ${buttonClasses} rounded-xl font-black text-xs uppercase tracking-widest shrink-0 transition-all" ${disableBtn ? 'disabled' : ''}>${buttonText}</button>` : ''}
                         </div>
-                        ${canViewContent ? `<h3 class="text-xl font-black mb-4 italic">Courses</h3><div id="courses-feed" class="content-grid mb-8"></div><h3 class="text-xl font-black mb-4 italic">Library</h3><div id="feed" class="content-grid"></div>` : `<div class="glass p-10 text-center rounded-2xl border border-[var(--border-color)]"><div class="text-3xl mb-2">🔒</div><h3 class="text-lg font-black italic text-red-500 mb-1">Private Channel</h3><p class="opacity-60 text-xs">Request access to view materials.</p></div>`}
+                        ${canViewContent ? `<h3 class="text-xl font-black mb-4 italic">Courses</h3><div id="courses-feed" class="unified-grid mb-8"></div><h3 class="text-xl font-black mb-4 italic">Library</h3><div id="feed" class="unified-grid"></div>` : `<div class="glass p-10 text-center rounded-2xl border border-[var(--border-color)]"><div class="text-3xl mb-2">🔒</div><h3 class="text-lg font-black italic text-red-500 mb-1">Private Channel</h3><p class="opacity-60 text-xs">Request access to view materials.</p></div>`}
                     </div>`;
             if (canViewContent) {
-                // Setup lazy loading for content
-                _lazyState.content.docs = contentSorted;
-                _lazyState.content.loaded = 0;
-                _lazyState.content.total = contentSorted.length;
-                await window.renderContentChunk('feed');
-
-                _lazyState.courses.docs = coursesSorted;
-                _lazyState.courses.loaded = 0;
-                _lazyState.courses.total = coursesSorted.length;
-                await window.renderCoursesChunk('courses-feed');
+                _chunkState.content.items = contentSorted;
+                _chunkState.content.loaded = 0;
+                _chunkState.content.allLoaded = false;
+                _chunkState.courses.items = coursesSorted;
+                _chunkState.courses.loaded = 0;
+                _chunkState.courses.allLoaded = false;
+                window.renderChunkedContent('feed', 'content');
+                window.renderChunkedContent('courses-feed', 'courses');
             }
         };
 
@@ -3391,234 +3349,249 @@
             }
         };
 
-        // ─── LAZY LOADING: CONTENT CHUNKS ───
-        window.renderContentChunk = async (targetId = 'feed', isTeacher = false) => {
-            const container = document.getElementById(targetId);
+        // ─── CHUNKED RENDER ───
+        function setupChunkObserver(containerId, chunkType) {
+            // Disconnect old observer
+            if (_chunkObserver) {
+                _chunkObserver.disconnect();
+                _chunkObserver = null;
+            }
+
+            const container = document.getElementById(containerId);
             if (!container) return;
-            const state = _lazyState.content;
-            const start = state.loaded;
-            const end = Math.min(start + state.chunkSize, state.total);
-            if (start >= state.total) {
-                // Remove load more trigger if all loaded
-                const trigger = document.getElementById('load-more-trigger');
-                if (trigger) trigger.remove();
-                return;
-            }
-            const chunk = state.docs.slice(start, end);
-            state.loaded = end;
 
-            const htmlPromises = chunk.map(d => window.renderResourceCardHtml(d, isTeacher));
-            const htmlArr = await Promise.all(htmlPromises);
-            const fragment = document.createElement('div');
-            fragment.innerHTML = htmlArr.join('');
-            // Append each card with fade-in
-            const children = fragment.children;
-            while (children.length) {
-                container.appendChild(children[0]);
-            }
+            // Remove old sentinel
+            const oldSentinel = document.getElementById('scroll-sentinel');
+            if (oldSentinel) oldSentinel.remove();
 
-            // Add/update load more trigger
-            let trigger = document.getElementById('load-more-trigger');
-            if (state.loaded < state.total) {
-                if (!trigger) {
-                    trigger = document.createElement('div');
-                    trigger.id = 'load-more-trigger';
-                    trigger.className = 'col-span-full text-center py-4 text-xs opacity-50 cursor-pointer hover:opacity-100 transition';
-                    trigger.innerText = 'Load More...';
-                    trigger.onclick = () => window.renderContentChunk(targetId, isTeacher);
-                    container.appendChild(trigger);
-                } else {
-                    trigger.innerText = 'Load More...';
-                    trigger.onclick = () => window.renderContentChunk(targetId, isTeacher);
-                    trigger.classList.remove('loading');
-                }
-            } else {
-                if (trigger) {
-                    trigger.innerText = 'All loaded ✓';
-                    trigger.onclick = null;
-                    trigger.style.cursor = 'default';
-                    setTimeout(() => { if (trigger) trigger.remove(); }, 3000);
-                }
-            }
+            // Create sentinel
+            const sentinel = document.createElement('div');
+            sentinel.id = 'scroll-sentinel';
+            sentinel.innerHTML = `<span class="spinner-sm"></span><span>Loading more...</span>`;
+            sentinel.style.display = 'none';
+            container.parentNode.insertBefore(sentinel, container.nextSibling);
 
-            // Setup intersection observer for auto-load
-            if (_lazyObserver) {
-                _lazyObserver.disconnect();
-            }
-            _lazyObserver = new IntersectionObserver((entries) => {
+            _chunkTargets[containerId] = { container, sentinel, chunkType };
+
+            _chunkObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
-                    if (entry.isIntersecting && state.loaded < state.total) {
-                        const triggerEl = document.getElementById('load-more-trigger');
-                        if (triggerEl) {
-                            triggerEl.innerText = 'Loading...';
-                            triggerEl.classList.add('loading');
-                            window.renderContentChunk(targetId, isTeacher);
+                    if (entry.isIntersecting && entry.target.id === 'scroll-sentinel') {
+                        const target = _chunkTargets[containerId];
+                        if (target) {
+                            window.loadNextChunk(containerId, target.chunkType);
                         }
                     }
                 });
-            }, { rootMargin: '0px 0px 100px 0px' });
-            const triggerEl = document.getElementById('load-more-trigger');
-            if (triggerEl && state.loaded < state.total) {
-                _lazyObserver.observe(triggerEl);
-            }
-        };
+            }, { root: null, rootMargin: '0px 0px 100px 0px', threshold: 0.1 });
 
-        // ─── LAZY LOADING: COURSE CHUNKS ───
-        window.renderCoursesChunk = async (targetId = 'courses-feed') => {
-            const container = document.getElementById(targetId);
+            _chunkObserver.observe(sentinel);
+        }
+
+        window.renderChunkedContent = function (containerId, chunkType) {
+            const container = document.getElementById(containerId);
             if (!container) return;
-            const state = _lazyState.courses;
-            const start = state.loaded;
-            const end = Math.min(start + state.chunkSize, state.total);
-            if (start >= state.total) {
-                const trigger = document.getElementById('load-more-trigger-courses');
-                if (trigger) trigger.remove();
+
+            const state = _chunkState[chunkType];
+            if (!state) return;
+
+            const items = state.items;
+            const loaded = state.loaded;
+            const perPage = state.perPage;
+
+            if (loaded === 0) {
+                container.innerHTML = '';
+            }
+
+            const end = Math.min(loaded + perPage, items.length);
+            const chunk = items.slice(loaded, end);
+
+            if (chunk.length === 0) {
+                state.allLoaded = true;
+                const sentinel = document.getElementById('scroll-sentinel');
+                if (sentinel) {
+                    sentinel.innerHTML = `<span style="opacity:0.3;font-size:10px;">— No more items —</span>`;
+                    sentinel.style.display = 'flex';
+                }
                 return;
             }
-            const chunk = state.docs.slice(start, end);
-            state.loaded = end;
 
-            // Render each course card
-            for (let doc of chunk) {
-                const c = doc.data();
-                let badgeStr = "";
-                const tSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId",
-                    "==", c.teacherId || "")));
-                if (!tSnap.empty && tSnap.docs[0].data().instituteId) {
-                    const instData = await window.getInstBadgeData(tSnap.docs[0].data().instituteId);
-                    if (instData) badgeStr = window.renderInstBadgeHtml(instData, 'w-8 h-8 border-2 right-2 bottom-2');
-                }
-                const hasDemo = c.playlist && c.playlist.some(v => v.isDemo === true);
-
-                const card = document.createElement('div');
-                card.className = 'course-card fade-in';
-                card.innerHTML = `
-                            <div class="course-thumb relative">
-                                <img src="${c.thumbnail}" class="course-tile border border-[var(--border-color)]">
-                                ${badgeStr}
-                                ${hasDemo ? `<div class="absolute top-2 left-2 demo-badge"><i class="fa-regular fa-circle-play"></i> Demo</div>` : ''}
-                            </div>
-                            <div class="course-content"><h2 class="course-title">${c.title}</h2><p class="course-meta">${c.teacherName || 'Instructor'}</p><div class="course-footer"><h3 class="course-price">${c.price === '0' ? 'FREE' : '₹' + c.price}</h3><button onclick="window.openCourse('${doc.id}')" class="btn-brand px-5 py-2.5 text-[10px]">Explore</button></div></div>
-                        `;
-                container.appendChild(card);
-            }
-
-            // Add/update load more trigger
-            let trigger = document.getElementById('load-more-trigger-courses');
-            if (state.loaded < state.total) {
-                if (!trigger) {
-                    trigger = document.createElement('div');
-                    trigger.id = 'load-more-trigger-courses';
-                    trigger.className = 'col-span-full text-center py-4 text-xs opacity-50 cursor-pointer hover:opacity-100 transition';
-                    trigger.innerText = 'Load More Courses...';
-                    trigger.onclick = () => window.renderCoursesChunk(targetId);
-                    container.appendChild(trigger);
+            // Render the chunk
+            const renderPromises = chunk.map(async (doc) => {
+                if (chunkType === 'courses' || chunkType === 'myCourses') {
+                    return await window.renderUnifiedCourseCard(doc);
                 } else {
-                    trigger.innerText = 'Load More Courses...';
-                    trigger.onclick = () => window.renderCoursesChunk(targetId);
-                    trigger.classList.remove('loading');
+                    return await window.renderUnifiedContentCard(doc);
                 }
-            } else {
-                if (trigger) {
-                    trigger.innerText = 'All courses loaded ✓';
-                    trigger.onclick = null;
-                    trigger.style.cursor = 'default';
-                    setTimeout(() => { if (trigger) trigger.remove(); }, 3000);
-                }
-            }
+            });
 
-            // Intersection observer for auto-load
-            if (_lazyObserver) {
-                _lazyObserver.disconnect();
-            }
-            _lazyObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting && state.loaded < state.total) {
-                        const triggerEl = document.getElementById('load-more-trigger-courses');
-                        if (triggerEl) {
-                            triggerEl.innerText = 'Loading...';
-                            triggerEl.classList.add('loading');
-                            window.renderCoursesChunk(targetId);
-                        }
+            Promise.all(renderPromises).then(htmls => {
+                container.insertAdjacentHTML('beforeend', htmls.join(''));
+
+                state.loaded = end;
+
+                const sentinel = document.getElementById('scroll-sentinel');
+                if (sentinel) {
+                    if (end >= items.length) {
+                        state.allLoaded = true;
+                        sentinel.innerHTML = `<span style="opacity:0.3;font-size:10px;">— No more items —</span>`;
+                        sentinel.style.display = 'flex';
+                    } else {
+                        sentinel.innerHTML = `<span class="spinner-sm"></span><span>Loading more...</span>`;
+                        sentinel.style.display = 'flex';
                     }
+                }
+
+                // Trigger fade-in for new items
+                container.querySelectorAll('.unified-card:not(.fade-in)').forEach(el => {
+                    el.classList.add('fade-in');
                 });
-            }, { rootMargin: '0px 0px 100px 0px' });
-            const triggerEl = document.getElementById('load-more-trigger-courses');
-            if (triggerEl && state.loaded < state.total) {
-                _lazyObserver.observe(triggerEl);
-            }
+            });
         };
 
-        // ─── RENDER RESOURCE CARD HTML ───
-        window.renderResourceCardHtml = async (d, isT) => {
+        window.loadNextChunk = function (containerId, chunkType) {
+            const state = _chunkState[chunkType];
+            if (!state || state.loading || state.allLoaded) return;
+
+            state.loading = true;
+            const sentinel = document.getElementById('scroll-sentinel');
+            if (sentinel) {
+                sentinel.innerHTML = `<span class="spinner-sm"></span><span>Loading more...</span>`;
+                sentinel.style.display = 'flex';
+            }
+
+            // Use requestAnimationFrame to avoid blocking
+            requestAnimationFrame(() => {
+                window.renderChunkedContent(containerId, chunkType);
+                state.loading = false;
+            });
+        };
+
+        // ─── UNIFIED CONTENT CARD ───
+        window.renderUnifiedContentCard = async (d) => {
             const i = d.data();
-            let liveStatusLabel = '';
-            if (i.type === 'live') {
-                const status = window.checkLiveStatus(i.liveDate, i.liveStartTime, i.liveEndTime);
-                if (status === 'scheduled') {
-                    liveStatusLabel =
-                        `<span class="inline-flex items-center gap-1 bg-blue-600/20 text-blue-500 text-[9px] font-black tracking-widest px-2 py-0.5 rounded border border-blue-500/20 shadow-sm mt-1.5 w-fit">SCHEDULED: ${i.liveStartTime}</span>`;
-                } else if (status === 'live') {
-                    liveStatusLabel =
-                        `<span class="inline-flex items-center gap-1 bg-red-600/20 text-red-600 text-[9px] font-black tracking-widest px-2 py-0.5 rounded border border-red-500/20 shadow-sm mt-1.5 w-fit"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_red]"></span>LIVE NOW</span>`;
-                } else {
-                    liveStatusLabel =
-                        `<span class="inline-flex items-center gap-1 bg-brandOrange/20 text-brandOrange text-[9px] font-black tracking-widest px-2 py-0.5 rounded border border-brandOrange/20 shadow-sm mt-1.5 w-fit">RECORDED</span>`;
-                }
+            const preview = window.getSmartPreview(i.url);
+            const badge = window.getFileBadge(i.url);
+            const liveStatus = i.type === 'live' ? window.checkLiveStatus(i.liveDate, i.liveStartTime, i.liveEndTime) :
+                null;
+            let liveLabel = '';
+            if (liveStatus === 'scheduled') {
+                liveLabel =
+                    `<span class="text-[8px] bg-blue-600/20 text-blue-500 px-2 py-0.5 rounded-full border border-blue-500/20 font-black uppercase">📅 ${i.liveStartTime}</span>`;
+            } else if (liveStatus === 'live') {
+                liveLabel =
+                    `<span class="text-[8px] bg-red-600/20 text-red-600 px-2 py-0.5 rounded-full border border-red-500/20 font-black uppercase flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_red]"></span> LIVE</span>`;
+            } else if (liveStatus === 'recorded' && i.type === 'live') {
+                liveLabel =
+                    `<span class="text-[8px] bg-brandOrange/20 text-brandOrange px-2 py-0.5 rounded-full border border-brandOrange/20 font-black uppercase">📼 Recorded</span>`;
             }
-            let avatarSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(i.tName)}&background=111&color=fff`;
+
+            let tAvatar =
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(i.tName || 'T')}&background=111&color=fff`;
             const tSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId", "==", i
                 .tId || "")));
-            if (!tSnap.empty) { const tData = tSnap.docs[0].data(); if (tData.photo) avatarSrc = tData.photo; }
+            if (!tSnap.empty && tSnap.docs[0].data().photo) {
+                tAvatar = tSnap.docs[0].data().photo;
+            }
 
-            const demoBadge = i.isDemo ? `<span class="demo-badge text-[8px] ml-1"><i class="fa-regular fa-circle-play"></i> Demo</span>` :
+            const demoBadge = i.isDemo ?
+                `<span class="text-[8px] bg-brandOrange/10 text-brandOrange px-2 py-0.5 rounded-full border border-brandOrange/20 font-black uppercase">🎬 Demo</span>` :
                 '';
 
-            return `<div class="content-card group cursor-pointer" onclick="window.openResource('${d.id}','${i.url}','${i.title}')">
-                        <div class="content-thumb relative">
-                            <img src="${window.getSmartPreview(i.url)}" class="content-tile">
-                            ${window.getFileBadge(i.url)}
-                            ${i.isDemo ? `<div class="absolute top-2 left-2 demo-badge"><i class="fa-regular fa-circle-play"></i> Demo</div>` : ''}
-                        </div>
-                        <div class="content-body">
-                            <h4 class="content-title">${i.title} ${demoBadge}</h4>
-                            ${liveStatusLabel}
-                            <div class="content-meta">
-                                <span>${i.tName}</span>
-                                <span>•</span>
-                                <span>${i.views || 0} views</span>
-                                <span>•</span>
-                                <span>${new Date(i.date?.seconds * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+            const dateStr = i.date?.seconds ? new Date(i.date.seconds * 1000).toLocaleDateString(undefined, { month: 'short',
+                day: 'numeric' }) : '';
+
+            return `
+                        <div class="unified-card" onclick="window.openResource('${d.id}','${i.url}','${i.title}')">
+                            <div class="thumb-wrap">
+                                <img src="${preview}" alt="${i.title}" loading="lazy">
+                                ${badge}
+                                ${i.isDemo ? `<div class="absolute top-2 left-2 demo-badge"><i class="fa-regular fa-circle-play"></i> Demo</div>` : ''}
                             </div>
-                            ${isT ? `<div class="flex gap-2 mt-3" onclick="event.stopPropagation()">
-                                <button onclick="window.editR('${d.id}','${i.title}','${i.url}')" class="flex-1 p-2 bg-[var(--input-bg)] text-[var(--text-main)] rounded-xl border border-[var(--border-color)] text-xs font-bold">Edit</button>
-                                <button onclick="window.delR('${d.id}')" class="flex-1 p-2 bg-red-500/10 text-red-500 rounded-xl border border-red-500/20 text-xs font-bold">Delete</button>
-                                <button onclick="window.toggleDemoContent('${d.id}')" class="flex-1 p-2 bg-brandOrange/10 text-brandOrange rounded-xl border border-brandOrange/20 text-xs font-bold">${i.isDemo ? 'Remove Demo' : 'Make Demo'}</button>
-                            </div>` : ''}
+                            <div class="card-body">
+                                <div class="title">${i.title}</div>
+                                <div class="meta">
+                                    <span class="teacher">${i.tName || 'Teacher'}</span>
+                                    <span>•</span>
+                                    <span>${dateStr || 'Just now'}</span>
+                                    <span>•</span>
+                                    <span>${i.views || 0} views</span>
+                                </div>
+                                <div class="badges">
+                                    ${liveLabel}
+                                    ${demoBadge}
+                                </div>
+                            </div>
                         </div>
-                    </div>`;
+                    `;
         };
 
-        // ─── RENDER COURSES (legacy, for full load) ───
-        window.renderCourses = async (docs, targetId = 'courses-feed') => {
-            const container = document.getElementById(targetId);
-            if (!container) return;
-            container.innerHTML = '';
-            _lazyState.courses.docs = docs;
-            _lazyState.courses.loaded = 0;
-            _lazyState.courses.total = docs.length;
-            await window.renderCoursesChunk(targetId);
+        // ─── UNIFIED COURSE CARD ───
+        window.renderUnifiedCourseCard = async (d) => {
+            const c = d.data();
+            const preview = c.thumbnail || window.getSmartPreview(c.playlist?.[0]?.url || '');
+            const priceLabel = c.price === '0' || !c.price ? 'FREE' : `₹${c.price}`;
+
+            let tAvatar =
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(c.teacherName || 'T')}&background=111&color=fff`;
+            const tSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where("teacherId", "==", c
+                .teacherId || "")));
+            if (!tSnap.empty && tSnap.docs[0].data().photo) {
+                tAvatar = tSnap.docs[0].data().photo;
+            }
+
+            const hasDemo = c.playlist && c.playlist.some(v => v.isDemo === true);
+            const demoBadge = hasDemo ?
+                `<span class="text-[8px] bg-brandOrange/10 text-brandOrange px-2 py-0.5 rounded-full border border-brandOrange/20 font-black uppercase">🎬 Demo</span>` :
+                '';
+
+            const moduleCount = (c.playlist || []).length;
+
+            return `
+                        <div class="unified-card" onclick="window.openCourse('${d.id}')">
+                            <div class="thumb-wrap">
+                                <img src="${preview}" alt="${c.title}" loading="lazy">
+                                ${hasDemo ? `<div class="absolute top-2 left-2 demo-badge"><i class="fa-regular fa-circle-play"></i> Demo</div>` : ''}
+                                <div class="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm text-white text-[9px] font-black px-2.5 py-1 rounded-lg border border-white/10">${moduleCount} modules</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="title">${c.title}</div>
+                                <div class="meta">
+                                    <span class="teacher">${c.teacherName || 'Instructor'}</span>
+                                    <span>•</span>
+                                    <span class="text-brandOrange font-bold">${priceLabel}</span>
+                                </div>
+                                <div class="badges">
+                                    ${demoBadge}
+                                </div>
+                            </div>
+                        </div>
+                    `;
         };
 
-        // ─── RENDER FEED (legacy, for full load) ───
+        // ─── RENDER FEED (legacy wrapper) ───
         window.renderFeed = async (docs, isT, target = 'feed') => {
             const container = document.getElementById(target);
             if (!container) return;
+
+            _chunkState.content.items = docs;
+            _chunkState.content.loaded = 0;
+            _chunkState.content.allLoaded = false;
             container.innerHTML = '';
-            _lazyState.content.docs = docs;
-            _lazyState.content.loaded = 0;
-            _lazyState.content.total = docs.length;
-            await window.renderContentChunk(target, isT);
+            window.renderChunkedContent(target, 'content');
+            setupChunkObserver(target, 'content');
+        };
+
+        // ─── RENDER COURSES (legacy wrapper) ───
+        window.renderCourses = async (docs, targetId = 'courses-feed') => {
+            const container = document.getElementById(targetId);
+            if (!container) return;
+
+            _chunkState.courses.items = docs;
+            _chunkState.courses.loaded = 0;
+            _chunkState.courses.allLoaded = false;
+            container.innerHTML = '';
+            window.renderChunkedContent(targetId, 'courses');
+            setupChunkObserver(targetId, 'courses');
         };
 
         // ─── OPEN RESOURCE ───
@@ -3669,8 +3642,7 @@
             if (!videoId && !isDirectFile) {
                 window.open(rawUrl, '_blank');
                 window.closeVault();
-                toast("Redirecting to external content.");
-                return;
+                toast("Redirecting to external content."); return;
             }
             if (isDirectFile && cleanUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)/)) {
                 container.innerHTML =
@@ -3910,11 +3882,13 @@
             }
             const hasDemo = c.playlist && c.playlist.some(v => v.isDemo === true);
 
+            // Fetch live sessions associated with this course
             const liveSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "content"), Core.where("courseId", "==",
                 id), Core.where("type", "==", "live")));
             const liveItems = [];
             liveSnap.forEach(d => liveItems.push({ id: d.id, ...d.data() }));
 
+            // Combine playlist and live sessions
             let allModules = [...c.playlist];
             liveItems.forEach(l => {
                 if (!allModules.some(m => m.url === l.url)) {
@@ -3987,6 +3961,7 @@
             window.loadDashboardView(currentNavTab);
         };
 
+        // ─── ENROLL COURSE ───
         window.enrollCourse = async (cid, gid) => {
             await Core.updateDoc(Core.doc(Core.db, "groups", gid), { members: Core.arrayUnion(Core.auth.currentUser.uid) });
             toast("Enrollment successful!");
@@ -4534,7 +4509,7 @@
             }, { passive: true });
         }
 
-        // ─── BOTTOM NAV BUILD ───
+        // ─── BOTTOM NAV BUILD (YouTube style) ───
         function buildBottomNav() {
             const navBar = document.getElementById('floating-bottom-nav-bar');
             if (!navBar) return;
@@ -4550,12 +4525,27 @@
                 _studentNavTab = currentNavTab;
                 navTabsOrder = ['home', 'groups', 'courses', 'mycourses'];
             } else {
-                tabs = [
-                    { id: 'dashboard', label: 'Dashboard', icon: 'fa-solid fa-gauge-high' },
-                    { id: 'groups', label: 'Groups', icon: 'fa-solid fa-users' },
-                    { id: 'analytics', label: 'Analytics', icon: 'fa-solid fa-chart-simple' }
-                ];
-                navTabsOrder = ['dashboard', 'groups', 'analytics'];
+                // Check if teacher is approved
+                const isApproved = profile.teacherStatus === 'approved' || profile.role === 'super_admin';
+                if (profile.role === 'teacher' && profile.teacherStatus === 'pending') {
+                    // Teacher with pending approval gets limited view
+                    tabs = [
+                        { id: 'pending', label: 'Pending', icon: 'fa-solid fa-clock' }
+                    ];
+                    navTabsOrder = ['pending'];
+                } else if (profile.role === 'teacher' && profile.teacherStatus === 'rejected') {
+                    tabs = [
+                        { id: 'rejected', label: 'Rejected', icon: 'fa-solid fa-xmark' }
+                    ];
+                    navTabsOrder = ['rejected'];
+                } else {
+                    tabs = [
+                        { id: 'dashboard', label: 'Dashboard', icon: 'fa-solid fa-gauge-high' },
+                        { id: 'groups', label: 'Groups', icon: 'fa-solid fa-users' },
+                        { id: 'analytics', label: 'Analytics', icon: 'fa-solid fa-chart-simple' }
+                    ];
+                    navTabsOrder = ['dashboard', 'groups', 'analytics'];
+                }
             }
 
             navBar.innerHTML = `
@@ -4572,39 +4562,6 @@
                     `;
         }
 
-        // ─── UPDATE INSTITUTE BRANDING IN NAV ───
-        window.updateInstituteBranding = async () => {
-            const brandingBlock = document.getElementById('nav-branding-block');
-            if (!brandingBlock) return;
-
-            let instName = 'OpenClase';
-            let instLogo = 'https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg';
-            let showBranding = true;
-
-            if (profile && profile.instituteId) {
-                const instData = await window.getInstBadgeData(profile.instituteId);
-                if (instData) {
-                    instName = instData.name;
-                    instLogo = instData.logo || instLogo;
-                    showBranding = true;
-                }
-            }
-
-            // Only apply if user is affiliated with an institute
-            if (profile && profile.instituteId) {
-                brandingBlock.innerHTML = `
-                            <img src="${instLogo}" class="h-8 w-8 md:h-10 md:w-10 rounded-xl object-cover group-hover:scale-110 transition-transform duration-300 inst-logo-sm">
-                            <h2 class="text-base md:text-2xl font-black italic tracking-tight whitespace-nowrap inst-name-sm">${instName}</h2>
-                        `;
-            } else {
-                // Fallback to OpenClase branding
-                brandingBlock.innerHTML = `
-                            <img src="${instLogo}" class="h-8 w-8 md:h-10 md:w-10 rounded-xl object-cover group-hover:scale-110 transition-transform duration-300 inst-logo-sm">
-                            <h2 class="text-base md:text-2xl font-black italic tracking-tight whitespace-nowrap inst-name-sm">Open<span class="text-brandOrange">Clase</span></h2>
-                        `;
-            }
-        };
-
         // ─── STUDENT VIEWS ───
         window.studentHome = async () => {
             const main = document.getElementById('main-content');
@@ -4612,23 +4569,13 @@
                         <div class="fade-in">
                             <div id="banner-ad-container" class="hidden mb-4"></div>
                             <h3 class="text-xl font-black italic mb-4">Suggested Syllabus</h3>
-                            <div id="suggested-feed" class="content-grid mb-8"></div>
+                            <div id="suggested-feed" class="unified-grid"></div>
                             <h3 class="text-xl font-black italic mb-4 border-t border-[var(--border-color)] pt-6">Subscribed Streams</h3>
-                            <div id="feed" class="content-grid"></div>
+                            <div id="feed" class="unified-grid"></div>
                         </div>
                     `;
-            const feedSkel = document.getElementById('suggested-feed');
-            if (feedSkel) {
-                feedSkel.innerHTML =
-                    `<div class="skeleton-pulse glass h-40 rounded-2xl"></div><div class="skeleton-pulse glass h-40 rounded-2xl"></div><div class="skeleton-pulse glass h-40 rounded-2xl"></div>`;
-            }
-            const feedSkel2 = document.getElementById('feed');
-            if (feedSkel2) {
-                feedSkel2.innerHTML =
-                    `<div class="skeleton-pulse glass h-40 rounded-2xl"></div><div class="skeleton-pulse glass h-40 rounded-2xl"></div><div class="skeleton-pulse glass h-40 rounded-2xl"></div>`;
-            }
 
-            let contentQueryArgs = [Core.collection(Core.db, "content"), Core.limit(40)];
+            let contentQueryArgs = [Core.collection(Core.db, "content"), Core.limit(100)];
             let autoFollowedTids = [];
             if (profile.instituteId) {
                 const tInstQuery = await Core.getDocs(Core.query(Core.collection(Core.db, "users"), Core.where(
@@ -4649,7 +4596,7 @@
                 const validTeacherIds = validTeachersSnap.docs.map(d => d.data().teacherId);
                 if (validTeacherIds.length > 0) {
                     contentQueryArgs = [Core.collection(Core.db, "content"), Core.where("tId", "in", validTeacherIds),
-                        Core.limit(40)
+                        Core.limit(100)
                     ];
                 } else { contentQueryArgs = [Core.collection(Core.db, "content"), Core.where("tId", "==", "BLOCK_ALL")]; }
             }
@@ -4676,19 +4623,22 @@
             const allContentSorted = validPublicDocs.sort((a, b) => (b.data().date?.seconds || 0) - (a.data().date
                 ?.seconds || 0));
 
-            // Load suggested feed with lazy loading
-            _lazyState.content.docs = allContentSorted.slice(0, 6);
-            _lazyState.content.loaded = 0;
-            _lazyState.content.total = _lazyState.content.docs.length;
-            await window.renderContentChunk('suggested-feed', false);
+            _chunkState.content.items = allContentSorted.slice(0, 18);
+            _chunkState.content.loaded = 0;
+            _chunkState.content.allLoaded = false;
+            document.getElementById('suggested-feed').innerHTML = '';
+            window.renderChunkedContent('suggested-feed', 'content');
+            setupChunkObserver('suggested-feed', 'content');
 
             const combinedSubs = [...new Set([...(profile.subs || []), ...autoFollowedTids])];
             if (combinedSubs.length > 0) {
                 const subContent = allContentSorted.filter(doc => combinedSubs.includes(doc.data().tId));
-                _lazyState.content.docs = subContent;
-                _lazyState.content.loaded = 0;
-                _lazyState.content.total = subContent.length;
-                await window.renderContentChunk('feed', false);
+                _chunkState.content.items = subContent;
+                _chunkState.content.loaded = 0;
+                _chunkState.content.allLoaded = false;
+                document.getElementById('feed').innerHTML = '';
+                window.renderChunkedContent('feed', 'content');
+                setupChunkObserver('feed', 'content');
             } else {
                 document.getElementById('feed').innerHTML =
                     `<div class="glass p-8 col-span-full rounded-2xl text-center border border-[var(--border-color)]"><p class="text-xs opacity-40 py-4">Follow instructors to customize your feed.</p></div>`;
@@ -4715,7 +4665,7 @@
             main.innerHTML = `
                         <div class="fade-in">
                             <h3 class="text-2xl font-black italic mb-4">All Courses</h3>
-                            <div id="courses-feed" class="content-grid"></div>
+                            <div id="courses-feed" class="unified-grid"></div>
                         </div>
                     `;
 
@@ -4754,10 +4704,12 @@
             const coSorted = validPublicCourses.sort((a, b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt
                 ?.seconds || 0));
 
-            _lazyState.courses.docs = coSorted;
-            _lazyState.courses.loaded = 0;
-            _lazyState.courses.total = coSorted.length;
-            await window.renderCoursesChunk('courses-feed');
+            _chunkState.courses.items = coSorted;
+            _chunkState.courses.loaded = 0;
+            _chunkState.courses.allLoaded = false;
+            document.getElementById('courses-feed').innerHTML = '';
+            window.renderChunkedContent('courses-feed', 'courses');
+            setupChunkObserver('courses-feed', 'courses');
         };
 
         window.studentMyCourses = async () => {
@@ -4765,7 +4717,7 @@
             main.innerHTML = `
                         <div class="fade-in">
                             <h3 class="text-2xl font-black italic mb-4">My Courses</h3>
-                            <div id="my-courses-feed" class="content-grid"></div>
+                            <div id="my-courses-feed" class="unified-grid"></div>
                         </div>
                     `;
 
@@ -4787,14 +4739,25 @@
                 return;
             }
 
-            _lazyState.courses.docs = myCourses;
-            _lazyState.courses.loaded = 0;
-            _lazyState.courses.total = myCourses.length;
-            await window.renderCoursesChunk('my-courses-feed');
+            _chunkState.myCourses.items = myCourses;
+            _chunkState.myCourses.loaded = 0;
+            _chunkState.myCourses.allLoaded = false;
+            document.getElementById('my-courses-feed').innerHTML = '';
+            window.renderChunkedContent('my-courses-feed', 'myCourses');
+            setupChunkObserver('my-courses-feed', 'myCourses');
         };
 
         // ─── NAVIGATION ───
         window.setNavTab = (tab) => {
+            // Handle pending/rejected states for teachers
+            if (profile && profile.role === 'teacher') {
+                if (profile.teacherStatus === 'pending' && tab !== 'pending') {
+                    tab = 'pending';
+                } else if (profile.teacherStatus === 'rejected' && tab !== 'rejected') {
+                    tab = 'rejected';
+                }
+            }
+
             currentNavTab = tab;
             document.querySelectorAll('.nav-island-btn').forEach(b => b.classList.remove('active'));
             const btn = document.querySelector(`.nav-island-btn[data-tab="${tab}"]`);
@@ -4807,7 +4770,13 @@
             if (profile.role === 'student') {
                 window.setNavTab('home');
             } else {
-                window.setNavTab('dashboard');
+                if (profile.teacherStatus === 'pending') {
+                    window.setNavTab('pending');
+                } else if (profile.teacherStatus === 'rejected') {
+                    window.setNavTab('rejected');
+                } else {
+                    window.setNavTab('dashboard');
+                }
             }
         };
 
@@ -4822,7 +4791,7 @@
             const main = document.getElementById('main-content');
             if (!q) return window.loadDashboardView(currentNavTab);
             main.innerHTML =
-                `<div class="skeleton-pulse glass h-20 rounded-2xl mb-4"></div><div class="grid grid-cols-3 gap-4"><div class="skeleton-pulse glass h-40 rounded-2xl"></div><div class="skeleton-pulse glass h-40 rounded-2xl"></div><div class="skeleton-pulse glass h-40 rounded-2xl"></div></div>`;
+                `<div class="skeleton-pulse glass h-20 rounded-2xl mb-4"></div><div class="unified-grid"><div class="skeleton-pulse glass h-40 rounded-2xl"></div><div class="skeleton-pulse glass h-40 rounded-2xl"></div><div class="skeleton-pulse glass h-40 rounded-2xl"></div></div>`;
             let isolatedInstId = null,
                 isolatedTids = [];
             if (profile.instituteId) {
@@ -4904,20 +4873,7 @@
             }
             if (content.length) {
                 html +=
-                    `<div><h3 class="text-[10px] font-black uppercase opacity-40 mb-3 ml-2 tracking-widest">Resources</h3><div class="content-grid">`;
-                _lazyState.content.docs = content;
-                _lazyState.content.loaded = 0;
-                _lazyState.content.total = content.length;
-                // Render first chunk inline
-                const firstChunk = content.slice(0, 3);
-                const htmlPromises = firstChunk.map(d => window.renderResourceCardHtml(d, false));
-                const htmlArr = await Promise.all(htmlPromises);
-                html += htmlArr.join('');
-                if (content.length > 3) {
-                    html +=
-                        `<div class="col-span-full text-center py-4 text-xs opacity-50 cursor-pointer hover:opacity-100 transition" onclick="window.loadMoreSearchResults('${q}')">Load More...</div>`;
-                }
-                html += `</div></div>`;
+                    `<div><h3 class="text-[10px] font-black uppercase opacity-40 mb-3 ml-2 tracking-widest">Resources</h3><div class="unified-grid" id="search-results-grid"></div></div>`;
             }
             if (!teachers.length && !groups.length && !content.length) {
                 html +=
@@ -4925,41 +4881,15 @@
             }
             html += `</div>`;
             main.innerHTML = html;
-            // Store search query for load more
-            window._lastSearchQuery = q;
-        };
 
-        window.loadMoreSearchResults = async (q) => {
-            // Simple load more: fetch more from the same query
-            const main = document.getElementById('main-content');
-            // We'll re-run search with a larger limit or use the existing state
-            // For simplicity, we'll just reload with more data
-            // In a real app, you'd use pagination tokens
-            const newQuery = q + ' '; // trigger re-fetch with more data
-            // Actually, let's just re-run the search with a larger offset - for now we'll just append more content
-            const cS = await Core.getDocs(Core.collection(Core.db, "content"));
-            const content = cS.docs.filter(d => d.data().title.toLowerCase().includes(q.toLowerCase()));
-            const sorted = content.sort((a, b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
-            // Get current count and load next chunk
-            const container = main.querySelector('.content-grid');
-            if (!container) return;
-            const currentCount = container.querySelectorAll('.content-card').length;
-            const nextChunk = sorted.slice(currentCount, currentCount + 3);
-            const htmlPromises = nextChunk.map(d => window.renderResourceCardHtml(d, false));
-            const htmlArr = await Promise.all(htmlPromises);
-            const fragment = document.createElement('div');
-            fragment.innerHTML = htmlArr.join('');
-            const children = fragment.children;
-            while (children.length) {
-                container.appendChild(children[0]);
-            }
-            // Update load more button
-            const loadMoreBtn = container.querySelector('.col-span-full');
-            if (loadMoreBtn) {
-                if (currentCount + 3 >= sorted.length) {
-                    loadMoreBtn.innerText = 'All loaded ✓';
-                    loadMoreBtn.onclick = null;
-                    loadMoreBtn.style.cursor = 'default';
+            if (content.length) {
+                _chunkState.search.items = content;
+                _chunkState.search.loaded = 0;
+                _chunkState.search.allLoaded = false;
+                const grid = document.getElementById('search-results-grid');
+                if (grid) {
+                    window.renderChunkedContent('search-results-grid', 'search');
+                    setupChunkObserver('search-results-grid', 'search');
                 }
             }
         };
@@ -5030,15 +4960,16 @@
                                 <h3 class="text-2xl font-black italic">My Courses</h3>
                                 <button onclick="window.openAddCourseModal()" class="btn-brand px-6 py-2.5 text-xs"><i class="fa-regular fa-plus"></i> Add Course</button>
                             </div>
-                            <div id="courses-feed" class="content-grid"></div>
+                            <div id="courses-feed" class="unified-grid"></div>
                         </div>
                     `;
             const sorted = [..._currentCourseList].sort((a, b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt
                 ?.seconds || 0));
-            _lazyState.courses.docs = sorted;
-            _lazyState.courses.loaded = 0;
-            _lazyState.courses.total = sorted.length;
-            window.renderCoursesChunk('courses-feed');
+            _chunkState.courses.items = sorted;
+            _chunkState.courses.loaded = 0;
+            _chunkState.courses.allLoaded = false;
+            window.renderChunkedContent('courses-feed', 'courses');
+            setupChunkObserver('courses-feed', 'courses');
         };
 
         window.showContentView = function () {
@@ -5049,15 +4980,16 @@
                                 <h3 class="text-2xl font-black italic">My Content</h3>
                                 <button onclick="window.openAddContentModal()" class="btn-brand px-6 py-2.5 text-xs"><i class="fa-regular fa-plus"></i> Add Content</button>
                             </div>
-                            <div id="feed" class="content-grid"></div>
+                            <div id="feed" class="unified-grid"></div>
                         </div>
                     `;
             const sorted = [..._currentContentList].sort((a, b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds ||
                 0));
-            _lazyState.content.docs = sorted;
-            _lazyState.content.loaded = 0;
-            _lazyState.content.total = sorted.length;
-            window.renderContentChunk('feed', true);
+            _chunkState.content.items = sorted;
+            _chunkState.content.loaded = 0;
+            _chunkState.content.allLoaded = false;
+            window.renderChunkedContent('feed', 'content');
+            setupChunkObserver('feed', 'content');
         };
 
         window.showLiveView = function () {
@@ -5068,15 +5000,16 @@
                                 <h3 class="text-2xl font-black italic">Live Sessions</h3>
                                 <button onclick="window.openAddContentModal()" class="btn-brand px-6 py-2.5 text-xs"><i class="fa-solid fa-circle-play"></i> Go Live</button>
                             </div>
-                            <div id="live-feed" class="content-grid"></div>
+                            <div id="live-feed" class="unified-grid"></div>
                         </div>
                     `;
             const liveDocs = _currentContentList.filter(d => d.data().type === 'live');
             const sorted = liveDocs.sort((a, b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
-            _lazyState.content.docs = sorted;
-            _lazyState.content.loaded = 0;
-            _lazyState.content.total = sorted.length;
-            window.renderContentChunk('live-feed', true);
+            _chunkState.content.items = sorted;
+            _chunkState.content.loaded = 0;
+            _chunkState.content.allLoaded = false;
+            window.renderChunkedContent('live-feed', 'content');
+            setupChunkObserver('live-feed', 'content');
         };
 
         window.showGroupsView = function () {
@@ -5101,15 +5034,16 @@
                                 <h3 class="text-2xl font-black italic">Demo Content</h3>
                                 <button onclick="window.openAddDemoModal()" class="btn-brand px-6 py-2.5 text-xs"><i class="fa-regular fa-plus"></i> Add Demo</button>
                             </div>
-                            <div id="demo-feed" class="content-grid"></div>
+                            <div id="demo-feed" class="unified-grid"></div>
                         </div>
                     `;
             const demoDocs = _currentContentList.filter(d => d.data().isDemo === true);
             const sorted = demoDocs.sort((a, b) => (b.data().date?.seconds || 0) - (a.data().date?.seconds || 0));
-            _lazyState.content.docs = sorted;
-            _lazyState.content.loaded = 0;
-            _lazyState.content.total = sorted.length;
-            window.renderContentChunk('demo-feed', true);
+            _chunkState.content.items = sorted;
+            _chunkState.content.loaded = 0;
+            _chunkState.content.allLoaded = false;
+            window.renderChunkedContent('demo-feed', 'content');
+            setupChunkObserver('demo-feed', 'content');
         };
 
         window.showNotificationView = function () {
@@ -5350,7 +5284,7 @@
             if (!n || !p) return toast("Please complete all fields.", "error");
             try {
                 await Core.updatePassword(Core.auth.currentUser, p);
-                await Core.setDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), {
+                let userData = {
                     name: n,
                     role: r,
                     teacherId: "OC-" + n.split(' ')[0].toUpperCase() + Math.floor(100 + Math.random() * 899),
@@ -5362,8 +5296,29 @@
                     instituteId: window._lockedInstId || null,
                     joined: new Date().toISOString(),
                     hasPaid: false,
-                    approvalStatus: null
-                });
+                    teacherStatus: (r === 'teacher' && window._lockedInstId) ? 'pending' : (r === 'teacher' ?
+                        'pending' : null)
+                };
+                // If teacher and has institute, check if they are the first/owner
+                if (r === 'teacher' && window._lockedInstId) {
+                    const instSnap = await Core.getDocs(Core.query(Core.collection(Core.db, "institutes"),
+                        Core.where("uniqueId", "==", window._lockedInstId)));
+                    if (!instSnap.empty) {
+                        const instData = instSnap.docs[0].data();
+                        if (!instData.teacherId) {
+                            await Core.updateDoc(Core.doc(Core.db, "institutes", instSnap.docs[0].id), {
+                                teacherId: userData.teacherId
+                            });
+                            userData.teacherStatus = 'approved';
+                            toast("You are the first teacher and have been auto-approved as the institute owner.");
+                        } else {
+                            toast("Your teacher account is pending approval from the institute owner.");
+                        }
+                    }
+                } else if (r === 'teacher') {
+                    toast("Your teacher account is pending approval. Please contact your institute administrator.");
+                }
+                await Core.setDoc(Core.doc(Core.db, "users", Core.auth.currentUser.uid), userData);
                 location.reload();
             } catch (e) { toast(e.message, "error"); }
         };
@@ -5374,8 +5329,30 @@
             if (!profile) return;
             updateCartPill();
 
-            // Update institute branding in nav
-            await window.updateInstituteBranding();
+            // ─── UPDATE NAV BRANDING WITH INSTITUTE LOGO ───
+            if (profile.instituteId) {
+                const instData = await window.getInstBadgeData(profile.instituteId);
+                if (instData) {
+                    const logoEl = document.getElementById('nav-brand-logo');
+                    const nameEl = document.getElementById('nav-brand-name');
+                    if (logoEl) logoEl.src = instData.logo || logoEl.src;
+                    if (nameEl) {
+                        // Keep the OpenClase brand but show institute name prominently
+                        nameEl.innerHTML = `${instData.name}`;
+                        // Style it with brand color
+                        nameEl.style.color = 'var(--text-main)';
+                    }
+                }
+            } else {
+                // Reset to default
+                const logoEl = document.getElementById('nav-brand-logo');
+                const nameEl = document.getElementById('nav-brand-name');
+                if (logoEl) logoEl.src = 'https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg';
+                if (nameEl) {
+                    nameEl.innerHTML = 'Open<span class="text-brandOrange">Clase</span>';
+                    nameEl.style.color = '';
+                }
+            }
 
             if (profile.role === 'student') {
                 buildBottomNav();
@@ -5402,6 +5379,35 @@
 
             // Teacher/owner
             const main = document.getElementById('main-content');
+
+            // Check teacher approval status
+            if (profile.role === 'teacher') {
+                if (profile.teacherStatus === 'pending') {
+                    buildBottomNav();
+                    main.innerHTML = `
+                                <div class="glass p-10 rounded-[3rem] text-center border border-yellow-500/30 fade-in shadow-2xl max-w-xl mx-auto">
+                                    <div class="text-5xl mb-4">⏳</div>
+                                    <h2 class="text-2xl md:text-3xl font-black text-yellow-500 mb-3 italic">Pending Approval</h2>
+                                    <p class="opacity-80 max-w-md mx-auto text-sm leading-relaxed">Your teacher account is waiting for approval from the institute owner. You will be notified once approved.</p>
+                                    <div class="mt-6 text-xs opacity-40">Contact your institute administrator for more information.</div>
+                                </div>
+                            `;
+                    return;
+                }
+                if (profile.teacherStatus === 'rejected') {
+                    buildBottomNav();
+                    main.innerHTML = `
+                                <div class="glass p-10 rounded-[3rem] text-center border border-red-500/30 fade-in shadow-2xl max-w-xl mx-auto">
+                                    <div class="text-5xl mb-4">🚫</div>
+                                    <h2 class="text-2xl md:text-3xl font-black text-red-500 mb-3 italic">Access Denied</h2>
+                                    <p class="opacity-80 max-w-md mx-auto text-sm leading-relaxed">Your teacher application was not approved by the institute owner.</p>
+                                    <div class="mt-6 text-xs opacity-40">Contact your institute administrator for assistance.</div>
+                                </div>
+                            `;
+                    return;
+                }
+            }
+
             if (profile.role === 'teacher' && profile.planExpiresAt) {
                 if (new Date() > new Date(profile.planExpiresAt.seconds * 1000)) {
                     main.innerHTML =
@@ -5417,6 +5423,14 @@
                 if (!iSnap.empty) {
                     targetInstitute = iSnap.docs[0].data();
                     currentInstituteMap[targetInstitute.uniqueId] = targetInstitute;
+                    // Update nav branding with institute logo
+                    const logoEl = document.getElementById('nav-brand-logo');
+                    const nameEl = document.getElementById('nav-brand-name');
+                    if (logoEl && targetInstitute.logo) logoEl.src = targetInstitute.logo;
+                    if (nameEl) {
+                        nameEl.innerHTML = `${targetInstitute.name}`;
+                        nameEl.style.color = 'var(--text-main)';
+                    }
                 }
             }
 
@@ -5459,15 +5473,13 @@
                         }
                     }
 
-                    const pendingStatus = profile.approvalStatus === 'pending';
-                    const rejectedStatus = profile.approvalStatus === 'rejected';
+                    // Show teacher status badge
                     let statusBadge = '';
-                    if (pendingStatus) statusBadge =
-                        `<span class="pending-badge ml-2">Pending Approval</span>`;
-                    if (rejectedStatus) statusBadge =
-                        `<span class="rejected-badge ml-2">Rejected</span>`;
-                    if (!pendingStatus && !rejectedStatus && profile.role === 'teacher' && profile.instituteId)
-                        statusBadge = `<span class="approved-badge ml-2">Approved</span>`;
+                    if (profile.teacherStatus === 'approved') {
+                        statusBadge = `<span class="status-badge-approved ml-2">✓ Approved</span>`;
+                    } else if (profile.teacherStatus === 'pending') {
+                        statusBadge = `<span class="status-badge-pending ml-2">⏳ Pending</span>`;
+                    }
 
                     main.innerHTML = `
                             <div class="fade-in space-y-6">
@@ -5476,8 +5488,6 @@
                                     <div class="info">
                                         <div class="name">${profile.name} ${statusBadge}</div>
                                         <div class="id">${profile.teacherId || 'ID: N/A'}</div>
-                                        ${pendingStatus ? `<p class="text-[9px] text-yellow-500 mt-1 font-bold">⏳ Waiting for institute owner approval</p>` : ''}
-                                        ${rejectedStatus ? `<p class="text-[9px] text-red-500 mt-1 font-bold">❌ Teacher request rejected</p>` : ''}
                                     </div>
                                     <div class="quick-actions">
                                         ${isInstituteOwner ? `<button class="qa-btn" onclick="window.showAdManagement()"><i class="fa-regular fa-rectangle-ad"></i> Add Ads</button>` : ''}
@@ -5485,19 +5495,6 @@
                                         <button class="qa-btn" onclick="window.showTimetable()"><i class="fa-regular fa-calendar"></i> Timetable</button>
                                     </div>
                                 </div>
-
-                                ${pendingStatus ? `
-                                    <div class="glass p-6 rounded-2xl border border-yellow-500/30 bg-yellow-500/5 text-center">
-                                        <p class="text-sm font-bold text-yellow-500"><i class="fa-solid fa-clock mr-2"></i> Your teacher account is pending approval from the institute owner.</p>
-                                        <p class="text-xs opacity-50 mt-2">You will get full access once approved.</p>
-                                    </div>
-                                ` : ''}
-                                ${rejectedStatus ? `
-                                    <div class="glass p-6 rounded-2xl border border-red-500/30 bg-red-500/5 text-center">
-                                        <p class="text-sm font-bold text-red-500"><i class="fa-solid fa-times-circle mr-2"></i> Your teacher request was rejected.</p>
-                                        <p class="text-xs opacity-50 mt-2">Contact your institute owner for more information.</p>
-                                    </div>
-                                ` : ''}
 
                                 <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
                                     <div class="dash-card" onclick="window.showCoursesView()">
@@ -5753,8 +5750,7 @@
                         if (dData.instituteId !== window._lockedInstId) {
                             await Core.updateDoc(Core.doc(Core.db, "users", user.uid), {
                                 instituteId: window
-                                    ._lockedInstId,
-                                approvalStatus: dData.role === 'teacher' ? 'pending' : 'approved'
+                                    ._lockedInstId
                             });
                         }
                     }
@@ -5770,12 +5766,16 @@
                         pic.innerHTML =
                             `<img src="${profile.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(profile.name)}" class="w-full h-full object-cover bg-black rounded-full" style="${ringStyle}">`;
                     }
-                    // Update institute branding
-                    await window.updateInstituteBranding();
                     fetchSystemNotifications();
                     window.showScreen('dashboard');
                     let initialTab = 'dashboard';
                     if (profile.role === 'student') initialTab = 'home';
+                    // For teachers, check approval status
+                    if (profile.role === 'teacher') {
+                        if (profile.teacherStatus === 'pending') initialTab = 'pending';
+                        else if (profile.teacherStatus === 'rejected') initialTab = 'rejected';
+                        else initialTab = 'dashboard';
+                    }
                     window.setNavTab(initialTab);
                     initializeSwipeGestures();
                 }
@@ -5791,7 +5791,7 @@
         window.toast = toast;
         window.loadDashboardView = window.loadDashboardView;
 
-        console.log('OpenClase v3.4 — Institute Branding, YouTube Nav, Teacher Approvals, Lazy Loading.');
+        console.log('OpenClase v3.4 — Institute branding, YouTube-style nav, teacher approval, chunk loading, unified tiles.');
     </script>
 
     <script src="https://unpkg.com/lucide@latest"></script>
