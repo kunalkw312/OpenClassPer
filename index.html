@@ -1308,11 +1308,7 @@
                 <div id="secure-watermark"></div>
                 <div id="player-container" class="w-full h-full"></div>
             </div>
-            <!-- AI button -->
-            <button id="vault-ai-btn" onclick="window.toggleAIChat()"
-                class="absolute bottom-24 right-4 z-50 w-12 h-12 rounded-full bg-brandOrange text-white flex items-center justify-center shadow-lg hover:scale-110 transition-all border border-white/20">
-                <i class="fa-solid fa-robot text-xl"></i>
-            </button>
+
             <!-- End Live Stream button (shown only for live streams) -->
             <button id="end-live-btn" onclick="window.endLiveStream()">End Live Stream</button>
         </div>
@@ -1557,7 +1553,7 @@
     <!-- ─── AI FLOATING BUTTON ─── -->
     <div id="ai-floating-btn" onclick="window.toggleAIChat()"
         class="fixed bottom-24 md:bottom-28 right-4 md:right-6 z-[5000] w-16 h-16 rounded-full btn-brand flex items-center justify-center cursor-pointer shadow-[0_10px_30px_rgba(247,148,29,.45)] border border-brandOrange/40 hover:scale-110 transition-all">
-        <img src="/Icons/chatbot.png" alt="AI Assistant" class="w-10 h-10 rounded-full object-contain">
+        <img src="Icons/chatbot.png" alt="AI Assistant" class="w-10 h-10 rounded-full object-contain">
     </div>
     <div id="ai-chat-window"
         class="ai-drawer-hidden flex fixed bottom-[100px] md:bottom-48 right-4 md:right-6 w-[calc(100vw-2rem)] md:w-[400px] h-[500px] md:h-[550px] max-h-[70vh] glass rounded-[2rem] md:rounded-[2.5rem] z-[5000] overflow-hidden flex-col border border-brandOrange/30 shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
@@ -1565,7 +1561,7 @@
             class="p-4 md:p-5 border-b border-[var(--border-color)] flex justify-between items-center bg-[var(--input-bg)]">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-full overflow-hidden shadow-md">
-                    <img src="/Icons/chatbot.png" alt="AI Assistant" class="w-full h-full object-cover rounded-full">
+                    <img src="Icons/chatbot.png" alt="AI Assistant" class="w-full h-full object-cover rounded-full">
                 </div>
                 <div>
                     <h2 class="font-black text-sm uppercase tracking-widest text-[var(--text-main)]">Class Assistant
