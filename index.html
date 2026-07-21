@@ -203,141 +203,140 @@
         }
 
         /* ─── BOTTOM NAV — YOUTUBE STYLE, FIXED AT VIEWPORT BOTTOM ─── */
-        #floating-bottom-nav-bar {
-            position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: var(--bottom-nav-height);
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            background: rgba(18, 18, 18, 0.96);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            z-index: 9999;
-            padding: 4px 0 env(safe-area-inset-bottom, 0) 0;
-            transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.35s ease;
-            box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.5);
-        }
+#bottom-nav-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: var(--bottom-nav-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background: rgba(18, 18, 18, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    z-index: 9999;
+    padding: 4px 0 env(safe-area-inset-bottom, 0) 0;
+    /* Removed heavy box-shadow and transform transitions to keep it firmly docked */
+}
 
-        .light #floating-bottom-nav-bar {
-            background: rgba(255, 255, 255, 0.96);
-            border-top: 1px solid rgba(0, 0, 0, 0.06);
-            box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.06);
-        }
+.light #bottom-nav-bar {
+    background: rgba(255, 255, 255, 0.96);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
 
-        #floating-bottom-nav-bar.nav-hidden {
-            transform: translateY(100%);
-            opacity: 0;
-            pointer-events: none;
-        }
+/* ─── NAV BUTTONS ─── */
+.nav-btn {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1px;
+    color: #8b8b8b;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+    font-family: inherit;
+    padding: 4px 0;
+    position: relative;
+    border-radius: 0;
+    min-height: 52px;
+}
 
-        /* ─── NAV BUTTONS ─── */
-        .nav-island-btn {
-            flex: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 1px;
-            color: #8b8b8b;
-            background: none;
-            border: none;
-            cursor: pointer;
-            transition: 0.2s ease;
-            font-family: inherit;
-            padding: 4px 0;
-            position: relative;
-            border-radius: 0;
-            min-height: 52px;
-        }
-        .nav-island-btn.active {
-            color: #ffffff;
-        }
-        .light .nav-island-btn.active {
-            color: #1a1a1a;
-        }
+.nav-btn.active {
+    color: #ffffff;
+}
 
-        .nav-island-btn .icon-box {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.25s ease;
-            font-size: 20px;
-        }
-        .nav-island-btn.active .icon-box {
-            color: #f59e0b;
-        }
-        .light .nav-island-btn.active .icon-box {
-            color: #004a80;
-        }
+.light .nav-btn.active {
+    color: #1a1a1a;
+}
 
-        .nav-island-btn i {
-            font-size: 22px;
-            transition: 0.2s;
-        }
-        .nav-island-btn span {
-            font-size: 9px;
-            letter-spacing: 0.02em;
-            font-weight: 600;
-            text-transform: none;
-            opacity: 0.6;
-            transition: opacity 0.2s;
-            margin-top: 1px;
-        }
-        .nav-island-btn.active span {
-            opacity: 1;
-            color: #f59e0b;
-        }
-        .light .nav-island-btn.active span {
-            color: #004a80;
-        }
+.nav-btn .icon-box {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.25s ease;
+    font-size: 20px;
+}
 
-        @media (max-width: 480px) {
-            #floating-bottom-nav-bar {
-                height: 56px;
-                padding: 2px 0 env(safe-area-inset-bottom, 0) 0;
-            }
-            .nav-island-btn {
-                min-height: 44px;
-                gap: 0px;
-            }
-            .nav-island-btn .icon-box {
-                width: 28px;
-                height: 28px;
-                font-size: 18px;
-            }
-            .nav-island-btn i {
-                font-size: 18px;
-            }
-            .nav-island-btn span {
-                font-size: 8px;
-            }
-        }
-        @media (min-width: 768px) {
-            #floating-bottom-nav-bar {
-                height: 68px;
-            }
-            .nav-island-btn .icon-box {
-                width: 36px;
-                height: 36px;
-                font-size: 24px;
-            }
-            .nav-island-btn i {
-                font-size: 24px;
-            }
-            .nav-island-btn span {
-                font-size: 10px;
-            }
-        }
+.nav-btn.active .icon-box {
+    color: #f59e0b;
+}
 
+.light .nav-btn.active .icon-box {
+    color: #004a80;
+}
+
+.nav-btn i {
+    font-size: 22px;
+    transition: 0.2s;
+}
+
+.nav-btn span {
+    font-size: 9px;
+    letter-spacing: 0.02em;
+    font-weight: 600;
+    text-transform: none;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    margin-top: 1px;
+}
+
+.nav-btn.active span {
+    opacity: 1;
+    color: #f59e0b;
+}
+
+.light .nav-btn.active span {
+    color: #004a80;
+}
+
+@media (max-width: 480px) {
+    #bottom-nav-bar {
+        height: 56px;
+        padding: 2px 0 env(safe-area-inset-bottom, 0) 0;
+    }
+    .nav-btn {
+        min-height: 44px;
+        gap: 0px;
+    }
+    .nav-btn .icon-box {
+        width: 28px;
+        height: 28px;
+        font-size: 18px;
+    }
+    .nav-btn i {
+        font-size: 18px;
+    }
+    .nav-btn span {
+        font-size: 8px;
+    }
+}
+
+@media (min-width: 768px) {
+    #bottom-nav-bar {
+        height: 68px;
+    }
+    .nav-btn .icon-box {
+        width: 36px;
+        height: 36px;
+        font-size: 24px;
+    }
+    .nav-btn i {
+        font-size: 24px;
+    }
+    .nav-btn span {
+        font-size: 10px;
+    }
+}
         /* ─── DASHBOARD CARDS ─── */
         .dash-card {
             background: var(--glass-bg);
