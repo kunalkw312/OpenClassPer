@@ -37,12 +37,7 @@
     </script>
     <style>
 
-        .nav-hidden {
-    transform: translateY(100%);
-    opacity: 0;
-    pointer-events: none;
-}
-        
+       
         /* ── BASE RESET & VARIABLES ── */
         :root {
             --text-main: #fdfbf7;
@@ -227,8 +222,6 @@
     z-index: 9999;
     padding: 4px 0 env(safe-area-inset-bottom, 0) 0;
     box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.5);
-    /* ADD THIS LINE for smooth hiding/showing: */
-    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
 
         .light #floating-bottom-nav-bar {
@@ -2815,12 +2808,10 @@
         };
 
         // ─── TOGGLE BOTTOM NAV ───
-        function toggleBottomNavBarVisibility(visible) {
-            const navBar = document.getElementById('floating-bottom-nav-bar');
-            if (!navBar) return;
-            if (visible) navBar.classList.remove('nav-hidden');
-            else navBar.classList.add('nav-hidden');
-        }
+       function toggleBottomNavBarVisibility(isVisible) {
+    // Left intentionally blank so the navigation bar never hides
+    return; 
+}
 
         // ─── NOTIFICATIONS ───
         async function fetchSystemNotifications() {
