@@ -36,6 +36,13 @@
         tailwind.config = { darkMode: 'class', theme: { extend: { colors: { brandBlue: '#004a80', brandOrange: '#f7941d' } } } }
     </script>
     <style>
+
+        .nav-hidden {
+    transform: translateY(100%);
+    opacity: 0;
+    pointer-events: none;
+}
+        
         /* ── BASE RESET & VARIABLES ── */
         :root {
             --text-main: #fdfbf7;
@@ -204,23 +211,25 @@
 
         /* ─── BOTTOM NAV — YOUTUBE STYLE, PERMANENTLY FIXED AT VIEWPORT BOTTOM ─── */
         #floating-bottom-nav-bar {
-            position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: var(--bottom-nav-height);
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            background: rgba(18, 18, 18, 0.96);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            z-index: 9999;
-            padding: 4px 0 env(safe-area-inset-bottom, 0) 0;
-            box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.5);
-        }
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: var(--bottom-nav-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background: rgba(18, 18, 18, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    z-index: 9999;
+    padding: 4px 0 env(safe-area-inset-bottom, 0) 0;
+    box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.5);
+    /* ADD THIS LINE for smooth hiding/showing: */
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
 
         .light #floating-bottom-nav-bar {
             background: rgba(255, 255, 255, 0.96);
@@ -1465,8 +1474,26 @@
             <main id="main-content" class="p-4 md:p-6 max-w-7xl mx-auto w-full"></main>
 
             <!-- ─── BOTTOM NAV — YOUTUBE STYLE, FIXED AT VIEWPORT BOTTOM ─── -->
-            <div id="floating-bottom-nav-bar"></div>
-        </div>
+            <!-- Replace your empty <div id="floating-bottom-nav-bar"></div> with this populated structure: -->
+
+<div id="floating-bottom-nav-bar">
+    <button class="nav-island-btn active" onclick="window.setNavTab('dashboard')">
+        <div class="icon-box"><i class="fa-solid fa-house"></i></div>
+        <span>Home</span>
+    </button>
+    <button class="nav-island-btn" onclick="window.setNavTab('search')">
+        <div class="icon-box"><i class="fa-solid fa-magnifying-glass"></i></div>
+        <span>Search</span>
+    </button>
+    <button class="nav-island-btn" onclick="window.setNavTab('groups')">
+        <div class="icon-box"><i class="fa-solid fa-users"></i></div>
+        <span>Groups</span>
+    </button>
+    <button class="nav-island-btn" onclick="window.setNavTab('profile')">
+        <div class="icon-box"><i class="fa-solid fa-user"></i></div>
+        <span>Profile</span>
+    </button>
+</div>
     </div>
 
     <!-- ─── AI FLOATING BUTTON ─── -->
