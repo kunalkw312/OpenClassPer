@@ -203,37 +203,45 @@
         }
 
         /* ─── BOTTOM NAV — FIXED AT VIEWPORT BOTTOM (YOUTUBE STYLE) ─── */
-#floating-bottom-nav-bar {
-    position: fixed !important; 
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    width: 100% !important;
-    height: var(--bottom-nav-height);
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    background: rgba(255, 255, 255, 0.96); /* Your original light mode color */
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-    z-index: 99999 !important; /* Ensures it stays on top of page content */
-    padding-bottom: env(safe-area-inset-bottom, 0); /* Notch support for mobile */
-    margin: 0 !important;
-    border-radius: 0 !important; /* Removes any rounded corners for a solid bar */
-    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.35s ease;
-}
+        #floating-bottom-nav-bar {
+            position: fixed !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100% !important;
+            height: var(--bottom-nav-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+            z-index: 99999 !important;
+            padding-bottom: env(safe-area-inset-bottom, 0);
+            margin: 0 !important;
+            border-radius: 0 !important;
+            transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.35s ease;
+        }
 
-.dark #floating-bottom-nav-bar {
-    background: rgba(18, 18, 18, 0.96); /* Your original dark mode color */
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
+        .dark #floating-bottom-nav-bar {
+            background: rgba(18, 18, 18, 0.96);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
 
-#floating-bottom-nav-bar.nav-hidden {
-    transform: translateY(100%);
-    opacity: 0;
-    pointer-events: none;
-}
+        #floating-bottom-nav-bar.nav-hidden {
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* ─── GROUP CHAT OVERRIDE ─── */
+        body.group-chat-open #floating-bottom-nav-bar {
+            transform: translateY(100%) !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
         .nav-island-btn {
             flex: 1;
             height: 100%;
@@ -591,121 +599,284 @@
                 opacity: 1;
             }
         }
-
-        /* ─── RESPONSIVE ─── */
-        @media (max-width: 640px) {
-            .dash-card {
-                min-height: 110px;
-                padding: 1rem 0.9rem;
-            }
-            .dash-card .card-icon {
-                font-size: 26px;
-            }
-            .dash-card .card-title {
-                font-size: 12px;
-            }
-            .profile-mini .avatar {
-                width: 40px;
-                height: 40px;
-            }
-            .profile-mini .info .name {
-                font-size: 14px;
-            }
-            .quick-actions .qa-btn {
-                font-size: 8px;
-                padding: 0.35rem 0.5rem;
-            }
-            .quick-actions .qa-btn i {
-                font-size: 12px;
-            }
-        }
-
-        .profile-ring-stacked {
-            border-radius: 50%;
-            padding: 2px;
-        }
-        .app-offline-active {
-            filter: grayscale(1) contrast(1.1) !important;
-            pointer-events: none !important;
-        }
-        .app-offline-active #toast-box,
-        .app-offline-active .toast-pill {
-            filter: none !important;
-            pointer-events: auto !important;
-        }
-
-        .social-icon {
-            font-size: 20px;
-            color: #6b7280;
-            transition: all 0.25s ease;
-        }
-        .social-icon:hover {
-            transform: scale(1.15);
-        }
-        .fa-whatsapp:hover {
-            color: #25D366;
-        }
-        .fa-instagram:hover {
-            color: #E4405F;
-        }
-        .fa-telegram:hover {
-            color: #229ED9;
-        }
-        .fa-youtube:hover {
-            color: #FF0000;
-        }
-
-        #nav-profile-pic {
-            aspect-ratio: 1;
+        .skeleton-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
             overflow: hidden;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
         }
-        #nav-profile-pic img {
+        .skeleton-card .skeleton-thumb {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: var(--border-color);
+            opacity: 0.3;
+        }
+        .skeleton-card .skeleton-body {
+            padding: 14px 16px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .skeleton-card .skeleton-line {
+            height: 14px;
+            background: var(--border-color);
+            border-radius: 6px;
+            opacity: 0.3;
+            width: 80%;
+        }
+        .skeleton-card .skeleton-line.short {
+            width: 50%;
+        }
+        .skeleton-card .skeleton-line.long {
+            width: 95%;
+        }
+
+        /* ─── BRAND NAME FIX ─── */
+        #nav-branding-block .inst-brand-name {
+            font-weight: 800;
+            font-style: italic;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: visible !important;
+            text-overflow: clip !important;
+            max-width: none !important;
+            flex-shrink: 0;
+            padding-right: 4px;
+        }
+        #nav-branding-block {
+            min-width: 0;
+            flex-shrink: 1;
+        }
+        @media (max-width: 480px) {
+            #nav-branding-block .inst-brand-name {
+                font-size: 13px;
+                max-width: 120px !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+            #nav-branding-block .inst-brand-logo {
+                width: 28px;
+                height: 28px;
+            }
+        }
+        @media (min-width: 768px) {
+            #nav-branding-block .inst-brand-name {
+                max-width: 280px !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+        }
+
+        /* ─── UNIFIED GRID ─── */
+        .unified-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            width: 100%;
+            padding: 4px 0;
+        }
+        @media (min-width: 640px) {
+            .unified-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 1024px) {
+            .unified-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .unified-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 220px;
+        }
+        .unified-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(247, 148, 29, 0.3);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+        }
+        .unified-card .thumb-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            background: #0a0a0a;
+            flex-shrink: 0;
+        }
+        .unified-card .thumb-wrap img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 50%;
-            display: block;
+            transition: transform 0.4s ease;
         }
-
-        .search-container {
-            width: 40px;
-            transition: width 0.3s ease;
-            flex-shrink: 0;
+        .unified-card:hover .thumb-wrap img {
+            transform: scale(1.03);
         }
-        .search-container.expanded {
-            width: min(240px, 45vw);
-        }
-        @media (max-width: 480px) {
-            .search-container.expanded {
-                width: 120px;
-            }
-            #nav-branding-block .inst-brand-name {
-                font-size: 13px;
-                max-width: 100px;
-            }
-        }
-
-        /* live chat */
-        #live-classroom-chat-container {
-            height: 100%;
-            max-height: 80vh;
+        .unified-card .card-body {
+            padding: 14px 16px 16px;
+            flex: 1;
             display: flex;
             flex-direction: column;
-            background: #0b0b0b;
-            border-left: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 1rem;
+            gap: 4px;
         }
-        #live-classroom-chat-container.hidden {
-            display: none !important;
+        .unified-card .card-body .title {
+            font-weight: 700;
+            font-size: 15px;
+            line-height: 1.3;
+            color: var(--text-main);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .unified-card .card-body .meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+            color: rgba(128, 128, 128, 0.7);
+            margin-top: 2px;
+            flex-wrap: wrap;
+        }
+        .unified-card .card-body .meta .teacher {
+            font-weight: 600;
+            color: var(--text-main);
+            opacity: 0.7;
+        }
+        .unified-card .card-body .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
         }
 
-        /* modals */
-        #custom-modal .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
+        /* ─── SCROLL SENTINEL ─── */
+        #scroll-sentinel {
+            height: 20px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 0;
+            color: rgba(128, 128, 128, 0.4);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
         }
-        #custom-modal .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: var(--brand-orange);
-            border-radius: 10px;
+        #scroll-sentinel .spinner-sm {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.06);
+            border-top-color: var(--brand-orange);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+            margin-right: 10px;
+        }
+        .dark #scroll-sentinel .spinner-sm {
+            border-color: rgba(255, 255, 255, 0.06);
+            border-top-color: var(--brand-orange);
+        }
+        .light #scroll-sentinel .spinner-sm {
+            border-color: rgba(0, 0, 0, 0.06);
+            border-top-color: var(--brand-orange);
+        }
+        #scroll-sentinel.done {
+            opacity: 0.3;
+            font-size: 10px;
+        }
+        #scroll-sentinel.done .spinner-sm {
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .demo-badge {
+            background: rgba(247, 148, 29, 0.15);
+            color: var(--brand-orange);
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 2px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(247, 148, 29, 0.2);
+            letter-spacing: 0.05em;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-badge-pending {
+            background: rgba(234, 179, 8, 0.15);
+            color: #eab308;
+            border: 1px solid rgba(234, 179, 8, 0.2);
+            padding: 2px 12px;
+            border-radius: 999px;
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .status-badge-approved {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            padding: 2px 12px;
+            border-radius: 999px;
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .status-badge-rejected {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 2px 12px;
+            border-radius: 999px;
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .icon-box {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s ease;
+        }
+        .icon-box i {
+            font-size: 22px;
+        }
+
+        .modal-back-btn {
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+        .modal-back-btn:hover {
+            transform: translateX(-6px);
+            color: var(--brand-orange);
         }
 
         #payment-overlay {
@@ -733,7 +904,14 @@
             animation: fadeIn 0.4s ease forwards;
         }
 
-        /* ad banner */
+        #custom-modal .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        #custom-modal .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--brand-orange);
+            border-radius: 10px;
+        }
+
         .ad-banner-container {
             position: relative;
             overflow: hidden;
@@ -866,21 +1044,6 @@
             transform: scaleX(1);
         }
 
-        .demo-badge {
-            background: rgba(247, 148, 29, 0.15);
-            color: var(--brand-orange);
-            font-size: 8px;
-            font-weight: 800;
-            text-transform: uppercase;
-            padding: 2px 10px;
-            border-radius: 999px;
-            border: 1px solid rgba(247, 148, 29, 0.2);
-            letter-spacing: 0.05em;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
         .teacher-grid-btn {
             padding: 0.75rem 0.5rem;
             border-radius: 12px;
@@ -939,11 +1102,6 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
 
         .custom-toast {
             background: var(--glass-bg);
@@ -957,203 +1115,12 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
-        /* ─── UNIFIED GRID ─── */
-        .unified-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-            width: 100%;
-            padding: 4px 0;
-        }
-        @media (min-width: 640px) {
-            .unified-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        @media (min-width: 1024px) {
-            .unified-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        .unified-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 18px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            min-height: 220px;
-        }
-        .unified-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(247, 148, 29, 0.3);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
-        }
-        .unified-card .thumb-wrap {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16/9;
-            overflow: hidden;
-            background: #0a0a0a;
-            flex-shrink: 0;
-        }
-        .unified-card .thumb-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-        .unified-card:hover .thumb-wrap img {
-            transform: scale(1.03);
-        }
-        .unified-card .card-body {
-            padding: 14px 16px 16px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .unified-card .card-body .title {
-            font-weight: 700;
-            font-size: 15px;
-            line-height: 1.3;
-            color: var(--text-main);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        .unified-card .card-body .meta {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 11px;
-            color: rgba(128, 128, 128, 0.7);
-            margin-top: 2px;
-            flex-wrap: wrap;
-        }
-        .unified-card .card-body .meta .teacher {
-            font-weight: 600;
-            color: var(--text-main);
-            opacity: 0.7;
-        }
-        .unified-card .card-body .badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 4px;
-        }
-
-        /* ─── LOADING SENTINEL ─── */
-        #scroll-sentinel {
-            height: 20px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 0;
-            color: rgba(128, 128, 128, 0.4);
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-        }
-        #scroll-sentinel .spinner-sm {
-            width: 24px;
-            height: 24px;
-            border: 3px solid rgba(255, 255, 255, 0.06);
-            border-top-color: var(--brand-orange);
-            border-radius: 50%;
-            animation: spin 0.9s linear infinite;
-            margin-right: 10px;
-        }
-        .dark #scroll-sentinel .spinner-sm {
-            border-color: rgba(255, 255, 255, 0.06);
-            border-top-color: var(--brand-orange);
-        }
-        .light #scroll-sentinel .spinner-sm {
-            border-color: rgba(0, 0, 0, 0.06);
-            border-top-color: var(--brand-orange);
-        }
-
-        /* ─── ADMIN INSTITUTE APPROVAL BADGE ─── */
-        .status-badge-pending {
-            background: rgba(234, 179, 8, 0.15);
-            color: #eab308;
-            border: 1px solid rgba(234, 179, 8, 0.2);
-            padding: 2px 12px;
-            border-radius: 999px;
-            font-size: 8px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .status-badge-approved {
-            background: rgba(34, 197, 94, 0.15);
-            color: #22c55e;
-            border: 1px solid rgba(34, 197, 94, 0.2);
-            padding: 2px 12px;
-            border-radius: 999px;
-            font-size: 8px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .status-badge-rejected {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            padding: 2px 12px;
-            border-radius: 999px;
-            font-size: 8px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .status-badge-none {
-            background: rgba(128, 128, 128, 0.1);
-            color: #8b8b8b;
-            border: 1px solid rgba(128, 128, 128, 0.1);
-            padding: 2px 12px;
-            border-radius: 999px;
-            font-size: 8px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .icon-box {
-            width: 46px;
-            height: 46px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.3s ease;
-        }
-        .icon-box i {
-            font-size: 22px;
-        }
-
         .admin-inst-item {
             transition: all 0.25s ease;
         }
         .admin-inst-item:hover {
             border-color: var(--brand-orange) !important;
             transform: translateY(-2px);
-        }
-        .modal-back-btn {
-            transition: all 0.25s ease;
-            cursor: pointer;
-        }
-        .modal-back-btn:hover {
-            transform: translateX(-6px);
-            color: var(--brand-orange);
         }
 
         #purchase-confirm-overlay {
@@ -1181,36 +1148,14 @@
             animation: fadeIn 0.4s ease forwards;
         }
 
-        /* nav branding with institute logo */
         #nav-branding-block .inst-brand-logo {
             border-radius: 10px;
             object-fit: cover;
             background: #111;
             border: 1px solid var(--border-color);
-        }
-        #nav-branding-block .inst-brand-name {
-            font-weight: 800;
-            font-style: italic;
-            letter-spacing: -0.02em;
-            color: var(--text-main);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 160px;
-        }
-        @media (max-width: 480px) {
-            #nav-branding-block .inst-brand-name {
-                font-size: 13px;
-                max-width: 100px;
-            }
-        }
-        @media (min-width: 768px) {
-            #nav-branding-block .inst-brand-name {
-                max-width: 240px;
-            }
+            flex-shrink: 0;
         }
 
-        /* ─── REQUEST BUTTON WITH DOT ─── */
         .qa-btn.request-btn {
             position: relative;
         }
@@ -1230,11 +1175,17 @@
             animation: pulse-dot 1.5s ease-in-out infinite;
         }
         @keyframes pulse-dot {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.7; }
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.3);
+                opacity: 0.7;
+            }
         }
 
-        /* ─── END LIVE STREAM BUTTON ─── */
         #end-live-btn {
             position: absolute;
             bottom: 80px;
@@ -1261,13 +1212,113 @@
             display: block;
         }
 
-        /* ─── MOVABLE VAULT CLOSE BUTTON ─── */
         #vault-close-btn {
             touch-action: none;
             cursor: grab;
         }
         #vault-close-btn:active {
             cursor: grabbing;
+        }
+
+        /* ─── LIVE CHAT ─── */
+        #live-classroom-chat-container {
+            height: 100%;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            background: #0b0b0b;
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+        }
+        #live-classroom-chat-container.hidden {
+            display: none !important;
+        }
+
+        /* ─── PROFILE RING ─── */
+        .profile-ring-stacked {
+            border-radius: 50%;
+            padding: 2px;
+        }
+
+        .social-icon {
+            font-size: 20px;
+            color: #6b7280;
+            transition: all 0.25s ease;
+        }
+        .social-icon:hover {
+            transform: scale(1.15);
+        }
+        .fa-whatsapp:hover {
+            color: #25D366;
+        }
+        .fa-instagram:hover {
+            color: #E4405F;
+        }
+        .fa-telegram:hover {
+            color: #229ED9;
+        }
+        .fa-youtube:hover {
+            color: #FF0000;
+        }
+
+        #nav-profile-pic {
+            aspect-ratio: 1;
+            overflow: hidden;
+        }
+        #nav-profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+        }
+
+        .search-container {
+            width: 40px;
+            transition: width 0.3s ease;
+            flex-shrink: 0;
+        }
+        .search-container.expanded {
+            width: min(240px, 45vw);
+        }
+        @media (max-width: 480px) {
+            .search-container.expanded {
+                width: 120px;
+            }
+        }
+
+        /* ─── RESPONSIVE TWEAKS ─── */
+        @media (max-width: 640px) {
+            .dash-card {
+                min-height: 110px;
+                padding: 1rem 0.9rem;
+            }
+            .dash-card .card-icon {
+                font-size: 26px;
+            }
+            .dash-card .card-title {
+                font-size: 12px;
+            }
+            .profile-mini .avatar {
+                width: 40px;
+                height: 40px;
+            }
+            .profile-mini .info .name {
+                font-size: 14px;
+            }
+            .quick-actions .qa-btn {
+                font-size: 8px;
+                padding: 0.35rem 0.5rem;
+            }
+            .quick-actions .qa-btn i {
+                font-size: 12px;
+            }
+            .unified-grid {
+                gap: 14px;
+            }
+            .unified-card {
+                min-height: 180px;
+            }
         }
     </style>
 </head>
@@ -1295,7 +1346,6 @@
     <!-- ─── MEDIA VAULT ─── -->
     <div id="media-vault"
         class="hidden fixed inset-0 z-[20000] bg-black flex flex-col md:flex-row items-center justify-center p-2 md:p-4 gap-4 transition-opacity duration-300">
-        <!-- Movable Close Button -->
         <button id="vault-close-btn"
             class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white/20 hover:bg-red-500 text-white w-14 h-14 rounded-full flex items-center justify-center font-black z-[2147483647] shadow-[0_0_20px_rgba(0,0,0,0.6)] backdrop-blur-md transition-colors border border-white/10">
             ✕
@@ -1309,7 +1359,6 @@
                 <div id="player-container" class="w-full h-full"></div>
             </div>
 
-            <!-- End Live Stream button (shown only for live streams) -->
             <button id="end-live-btn" onclick="window.endLiveStream()">End Live Stream</button>
         </div>
 
@@ -1497,12 +1546,12 @@
             <!-- TOP NAV -->
             <nav
                 class="p-3 md:p-5 glass border-b border-[var(--border-color)] sticky top-0 z-[1000] w-full flex items-center justify-between gap-2 md:gap-4 px-4 md:px-10 pt-[max(1rem,env(safe-area-inset-top))]">
-                <div class="flex items-center gap-2 md:gap-3 cursor-pointer select-none group shrink-0 min-w-0"
+                <div class="flex items-center gap-2 md:gap-3 cursor-pointer select-none group shrink-0"
                     onclick="window.navigateToDashboard()" id="nav-branding-block">
                     <img src="https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg"
                         class="h-8 w-8 md:h-10 md:w-10 rounded-xl object-cover group-hover:scale-110 transition-transform duration-300 inst-brand-logo"
                         id="nav-brand-logo">
-                    <h2 class="text-base md:text-2xl font-black italic tracking-tight whitespace-nowrap inst-brand-name"
+                    <h2 class="text-base md:text-2xl font-black italic tracking-tight inst-brand-name"
                         id="nav-brand-name">Open<span class="text-brandOrange">Clase</span></h2>
                 </div>
                 <div class="flex items-center gap-2 md:gap-4 ml-auto shrink-0">
@@ -1543,12 +1592,11 @@
 
             <!-- MAIN CONTENT -->
             <main id="main-content" class="p-4 md:p-6 max-w-7xl mx-auto w-full"></main>
-            </div>
-        </div>
-            <!-- ─── BOTTOM NAV ─── -->
-            <div id="floating-bottom-nav-bar"></div>
         </div>
     </div>
+
+    <!-- ─── BOTTOM NAV ─── -->
+    <div id="floating-bottom-nav-bar"></div>
 
     <!-- ─── AI FLOATING BUTTON ─── -->
     <div id="ai-floating-btn" onclick="window.toggleAIChat()"
@@ -1600,7 +1648,8 @@
                     onkeydown="if(event.key==='Enter') window.sendAIMessage()">
                 <button onclick="window.sendAIMessage()"
                     class="bg-brandOrange text-white font-black px-4 py-2.5 rounded-xl text-xs uppercase shadow-lg hover:shadow-brandOrange/50 hover:scale-105 transition-all">Send</button>
-
+            </div>
+        </div>
     </div>
 
     <!-- ─── ADMIN DASHBOARD ─── -->
@@ -1728,13 +1777,14 @@
         let _liveContentId = null;
 
         // ─── CHUNK LOADING STATE ───
+        const CHUNK_SIZE = 1; // Load 1 item at a time
         let _chunkState = {
-            content: { items: [], loaded: 0, perPage: 3, allLoaded: false, loading: false },
-            courses: { items: [], loaded: 0, perPage: 3, allLoaded: false, loading: false },
-            live: { items: [], loaded: 0, perPage: 3, allLoaded: false, loading: false },
-            demo: { items: [], loaded: 0, perPage: 3, allLoaded: false, loading: false },
-            search: { items: [], loaded: 0, perPage: 3, allLoaded: false, loading: false },
-            myCourses: { items: [], loaded: 0, perPage: 3, allLoaded: false, loading: false }
+            content: { items: [], loaded: 0, perPage: CHUNK_SIZE, allLoaded: false, loading: false },
+            courses: { items: [], loaded: 0, perPage: CHUNK_SIZE, allLoaded: false, loading: false },
+            live: { items: [], loaded: 0, perPage: CHUNK_SIZE, allLoaded: false, loading: false },
+            demo: { items: [], loaded: 0, perPage: CHUNK_SIZE, allLoaded: false, loading: false },
+            search: { items: [], loaded: 0, perPage: CHUNK_SIZE, allLoaded: false, loading: false },
+            myCourses: { items: [], loaded: 0, perPage: CHUNK_SIZE, allLoaded: false, loading: false }
         };
         let _chunkObserver = null;
         let _chunkTargets = {};
@@ -1767,7 +1817,6 @@
         function setupAntiTheft() {
             const warning = document.getElementById('screenshot-warning');
 
-            // Detect PrintScreen key
             document.addEventListener('keyup', (e) => {
                 if (e.key === 'PrintScreen' || e.keyCode === 44) {
                     warning.classList.add('active');
@@ -1776,7 +1825,6 @@
                 }
             });
 
-            // Detect context menu (right-click)
             document.addEventListener('contextmenu', (e) => {
                 if (document.getElementById('media-vault').classList.contains('hidden')) return;
                 e.preventDefault();
@@ -1785,7 +1833,6 @@
                 toast("Right-click is disabled for content protection.", "error");
             });
 
-            // Detect keyboard shortcuts for screenshot (Cmd+Shift+3/4, Ctrl+Shift+S, etc.)
             document.addEventListener('keydown', (e) => {
                 if ((e.metaKey && e.shiftKey && (e.key === '3' || e.key === '4')) ||
                     (e.ctrlKey && e.shiftKey && e.key === 's')) {
@@ -1795,7 +1842,6 @@
                 }
             });
 
-            // Block copy/paste within vault
             document.addEventListener('copy', (e) => {
                 if (!document.getElementById('media-vault').classList.contains('hidden')) {
                     e.preventDefault();
@@ -1827,7 +1873,6 @@
                 const touch = e.touches ? e.touches[0] : e;
                 let x = touch.clientX - offsetX;
                 let y = touch.clientY - offsetY;
-                // Constrain within viewport
                 const rect = btn.getBoundingClientRect();
                 const maxX = window.innerWidth - rect.width;
                 const maxY = window.innerHeight - rect.height;
@@ -1887,15 +1932,26 @@
             const instData = await window.getInstBadgeData(instId);
             if (!instData) { loading.classList.remove('active'); return toast("Institute not found", "error"); }
             window.setDynamicManifest(instData);
+            // Force a page reload with the inst parameter to ensure the app opens with the correct context
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('inst', instId);
             if (window.deferredPrompt) {
                 window.deferredPrompt.prompt();
                 window.deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') toast("Installing Institute App...");
+                    if (choiceResult.outcome === 'accepted') {
+                        toast("Installing Institute App...");
+                        // After installation, navigate to the inst-specific URL
+                        window.location.href = currentUrl.toString();
+                    }
                     window.deferredPrompt = null;
                     loading.classList.remove('active');
                 });
             } else {
-                toast("App setup generated! Click your browser's menu and select 'Install' or 'Add to Home Screen'.");
+                // If no prompt, redirect to the inst-specific URL
+                toast("App setup generated! Redirecting...");
+                setTimeout(() => {
+                    window.location.href = currentUrl.toString();
+                }, 1500);
                 loading.classList.remove('active');
             }
         };
@@ -1999,9 +2055,15 @@
         function toggleBottomNavBarVisibility(visible) {
             const navBar = document.getElementById('floating-bottom-nav-bar');
             if (!navBar) return;
-            if (visible) navBar.classList.remove('nav-hidden');
-            else navBar.classList.add('nav-hidden');
+            if (visible) {
+                navBar.classList.remove('nav-hidden');
+                document.body.classList.remove('group-chat-open');
+            } else {
+                navBar.classList.add('nav-hidden');
+                document.body.classList.add('group-chat-open');
+            }
         }
+        window.toggleBottomNavBarVisibility = toggleBottomNavBarVisibility;
 
         // ============================================================
         //  AUTH & USER MANAGEMENT
@@ -2816,7 +2878,7 @@
 
         window.openGroupChat = async (id, name) => {
             activeGroupId = id;
-            toggleBottomNavBarVisibility(false);
+            toggleBottomNavBarVisibility(false); // Hides bottom nav
             const w = document.getElementById('group-chat-window');
             w.classList.remove('hidden');
             w.classList.add('fade-in');
@@ -2861,7 +2923,7 @@
             w.classList.add('hidden');
             w.classList.remove('fade-in');
             activeGroupId = null;
-            toggleBottomNavBarVisibility(true);
+            toggleBottomNavBarVisibility(true); // Shows bottom nav
             window.loadGroups();
         };
 
@@ -2930,7 +2992,6 @@
         // ============================================================
         //  CONTENT & COURSE RENDERING (UNIFIED)
         // ============================================================
-        // ─── SMART PREVIEW & FILE BADGE ───
         window.getSmartPreview = (url) => {
             if (!url) return "https://res.cloudinary.com/dowhvdkjh/image/upload/v1777895769/IMG-20260504-WA0002_fucbjd.jpg";
             const cleanUrl = url.toLowerCase().trim();
@@ -2981,7 +3042,7 @@
             } catch (e) { return 'recorded'; }
         };
 
-        // ─── CHUNK RENDER ───
+        // ─── CHUNK RENDER WITH SKELETON ───
         function setupChunkObserver(containerId, chunkType) {
             if (_chunkObserver) {
                 _chunkObserver.disconnect();
@@ -3010,6 +3071,19 @@
             _chunkObserver.observe(sentinel);
         }
 
+        function renderSkeletonCard() {
+            return `
+                        <div class="skeleton-card skeleton-pulse">
+                            <div class="skeleton-thumb"></div>
+                            <div class="skeleton-body">
+                                <div class="skeleton-line long"></div>
+                                <div class="skeleton-line"></div>
+                                <div class="skeleton-line short"></div>
+                            </div>
+                        </div>
+                    `;
+        }
+
         window.renderChunkedContent = function (containerId, chunkType) {
             const container = document.getElementById(containerId);
             if (!container) return;
@@ -3018,20 +3092,32 @@
             const items = state.items;
             const loaded = state.loaded;
             const perPage = state.perPage;
+
             if (loaded === 0) {
                 container.innerHTML = '';
+                // Show skeleton for the first item
+                container.insertAdjacentHTML('beforeend', renderSkeletonCard());
             }
+
             const end = Math.min(loaded + perPage, items.length);
             const chunk = items.slice(loaded, end);
+
             if (chunk.length === 0) {
                 state.allLoaded = true;
                 const sentinel = document.getElementById('scroll-sentinel');
                 if (sentinel) {
                     sentinel.innerHTML = `<span style="opacity:0.3;font-size:10px;">— No more items —</span>`;
+                    sentinel.className = 'done';
                     sentinel.style.display = 'flex';
                 }
+                // Remove any skeleton cards that might be left
+                container.querySelectorAll('.skeleton-card').forEach(el => el.remove());
                 return;
             }
+
+            // Remove skeleton card before rendering actual content
+            container.querySelectorAll('.skeleton-card').forEach(el => el.remove());
+
             const renderPromises = chunk.map(async (doc) => {
                 if (chunkType === 'courses' || chunkType === 'myCourses') {
                     return await window.renderUnifiedCourseCard(doc);
@@ -3039,6 +3125,7 @@
                     return await window.renderUnifiedContentCard(doc);
                 }
             });
+
             Promise.all(renderPromises).then(htmls => {
                 container.insertAdjacentHTML('beforeend', htmls.join(''));
                 state.loaded = end;
@@ -3047,10 +3134,26 @@
                     if (end >= items.length) {
                         state.allLoaded = true;
                         sentinel.innerHTML = `<span style="opacity:0.3;font-size:10px;">— No more items —</span>`;
+                        sentinel.className = 'done';
                         sentinel.style.display = 'flex';
                     } else {
                         sentinel.innerHTML = `<span class="spinner-sm"></span><span>Loading more...</span>`;
+                        sentinel.className = '';
                         sentinel.style.display = 'flex';
+                        // Add a skeleton card after the sentinel for the next item
+                        // We'll add it after the sentinel so it shows up below
+                        const nextSkeleton = document.createElement('div');
+                        nextSkeleton.className = 'skeleton-card skeleton-pulse';
+                        nextSkeleton.innerHTML = `
+                                    <div class="skeleton-thumb"></div>
+                                    <div class="skeleton-body">
+                                        <div class="skeleton-line long"></div>
+                                        <div class="skeleton-line"></div>
+                                        <div class="skeleton-line short"></div>
+                                    </div>
+                                `;
+                        // Insert before the sentinel
+                        container.parentNode.insertBefore(nextSkeleton, sentinel);
                     }
                 }
                 container.querySelectorAll('.unified-card:not(.fade-in)').forEach(el => {
@@ -3066,7 +3169,13 @@
             const sentinel = document.getElementById('scroll-sentinel');
             if (sentinel) {
                 sentinel.innerHTML = `<span class="spinner-sm"></span><span>Loading more...</span>`;
+                sentinel.className = '';
                 sentinel.style.display = 'flex';
+            }
+            // Remove any existing skeleton cards before loading next chunk
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.querySelectorAll('.skeleton-card').forEach(el => el.remove());
             }
             requestAnimationFrame(() => {
                 window.renderChunkedContent(containerId, chunkType);
@@ -3299,13 +3408,11 @@
                 });
             }
 
-            // Show "End Live Stream" button if it's a live broadcast
             const endLiveBtn = document.getElementById('end-live-btn');
             if (metadata && metadata.isLiveBroadcast && contentId) {
                 _isLiveStreamActive = true;
                 _liveContentId = contentId;
                 endLiveBtn.classList.add('visible');
-                // Also update the button to reflect active live
                 endLiveBtn.textContent = '🔴 End Live Stream';
             } else {
                 _isLiveStreamActive = false;
@@ -3355,7 +3462,6 @@
             window.activateAntiTheftShields();
         };
 
-        // ─── END LIVE STREAM ───
         window.endLiveStream = async () => {
             if (!_liveContentId) return;
             if (!confirm("Are you sure you want to end this live stream? It will become a recorded video.")) return;
@@ -3363,18 +3469,15 @@
                 const ref = Core.doc(Core.db, "content", _liveContentId);
                 await Core.updateDoc(ref, { type: 'video', isLiveBroadcast: false });
                 toast("Live stream ended. It is now available as a recorded video.");
-                // Update UI
                 const endLiveBtn = document.getElementById('end-live-btn');
                 endLiveBtn.classList.remove('visible');
                 _isLiveStreamActive = false;
                 _liveContentId = null;
-                // Remove live chat listener
                 if (activeLiveChatListenerUnsub) {
                     activeLiveChatListenerUnsub();
                     activeLiveChatListenerUnsub = null;
                 }
                 document.getElementById('live-classroom-chat-container').classList.add('hidden');
-                // Reload the content to reflect changes
                 window.loadDashboardView(currentNavTab);
             } catch (e) {
                 toast("Failed to end live stream.", "error");
@@ -3382,7 +3485,6 @@
             }
         };
 
-        // ─── ANTI-THEFT SHIELDS ───
         window.activateAntiTheftShields = function () {
             const blankOverlay = document.getElementById('anti-theft-blank');
             const watermarkEl = document.getElementById('secure-watermark');
@@ -3513,7 +3615,6 @@
             }
             if (window._disengageShields) window._disengageShields();
             toggleBottomNavBarVisibility(true);
-            // Reset live button
             document.getElementById('end-live-btn').classList.remove('visible');
             _isLiveStreamActive = false;
             _liveContentId = null;
@@ -3786,7 +3887,6 @@
             window.loadDashboardView(currentNavTab);
         };
 
-        // ─── CONTENT CRUD ───
         window.delR = async (id) => {
             if (confirm("Delete this content?")) {
                 await Core.deleteDoc(Core.doc(Core.db, "content",
@@ -3983,7 +4083,6 @@
                     img.src = popups[0].imageUrl;
                     link.href = popups[0].link || '#';
                     popupContainer.classList.add('active');
-                    _adPopupData = popups[0];
                 }
             } catch (e) { console.error("Failed to load ads", e); }
         };
@@ -4261,8 +4360,14 @@
                             <div id="banner-ad-container" class="hidden mb-4"></div>
                             <h3 class="text-xl font-black italic mb-4">Suggested Syllabus</h3>
                             <div id="suggested-feed" class="unified-grid"></div>
-                            <h3 class="text-xl font-black italic mb-4 border-t border-[var(--border-color)] pt-6">Subscribed Streams</h3>
-                            <div id="feed" class="unified-grid"></div>
+                            ${!profile.instituteId ? `
+                                <h3 class="text-xl font-black italic mb-4 border-t border-[var(--border-color)] pt-6">Subscribed Streams</h3>
+                                <div id="feed" class="unified-grid"></div>
+                            ` : `
+                                <div class="glass p-6 rounded-2xl text-center border border-[var(--border-color)] mt-6">
+                                    <p class="text-xs opacity-60">You are affiliated with an institute. All content from your institute is shown above.</p>
+                                </div>
+                            `}
                         </div>
                     `;
 
@@ -4321,18 +4426,21 @@
             window.renderChunkedContent('suggested-feed', 'content');
             setupChunkObserver('suggested-feed', 'content');
 
-            const combinedSubs = [...new Set([...(profile.subs || []), ...autoFollowedTids])];
-            if (combinedSubs.length > 0) {
-                const subContent = allContentSorted.filter(doc => combinedSubs.includes(doc.data().tId));
-                _chunkState.content.items = subContent;
-                _chunkState.content.loaded = 0;
-                _chunkState.content.allLoaded = false;
-                document.getElementById('feed').innerHTML = '';
-                window.renderChunkedContent('feed', 'content');
-                setupChunkObserver('feed', 'content');
-            } else {
-                document.getElementById('feed').innerHTML =
-                    `<div class="glass p-8 col-span-full rounded-2xl text-center border border-[var(--border-color)]"><p class="text-xs opacity-40 py-4">Follow instructors to customize your feed.</p></div>`;
+            // Only show Subscribed Streams if no institute affiliation
+            if (!profile.instituteId) {
+                const combinedSubs = [...new Set([...(profile.subs || []), ...autoFollowedTids])];
+                if (combinedSubs.length > 0) {
+                    const subContent = allContentSorted.filter(doc => combinedSubs.includes(doc.data().tId));
+                    _chunkState.content.items = subContent;
+                    _chunkState.content.loaded = 0;
+                    _chunkState.content.allLoaded = false;
+                    document.getElementById('feed').innerHTML = '';
+                    window.renderChunkedContent('feed', 'content');
+                    setupChunkObserver('feed', 'content');
+                } else {
+                    document.getElementById('feed').innerHTML =
+                        `<div class="glass p-8 col-span-full rounded-2xl text-center border border-[var(--border-color)]"><p class="text-xs opacity-40 py-4">Follow instructors to customize your feed.</p></div>`;
+                }
             }
 
             window.loadStudentAds();
@@ -4914,9 +5022,21 @@
         // ============================================================
         window.openAdminPanel = function () {
             window.closeCustomModal();
-            document.getElementById('admin-dashboard').classList.remove('hidden');
-            window.showSection('plans-section');
+            const dashboard = document.getElementById('admin-dashboard');
+            if (!dashboard) return;
+            dashboard.classList.remove('hidden');
+            // Ensure sections are properly shown
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
+            const defaultSection = document.getElementById('plans-section');
+            if (defaultSection) defaultSection.classList.remove('hidden');
             toggleBottomNavBarVisibility(false);
+            // Load initial data
+            window.loadPlansUI();
+            window.loadAdminInstitutes();
+            window.loadPayments();
+            window.loadAdminRequests();
+            window.loadTeacherApprovals();
+            toast("Admin panel opened");
         };
 
         window.closeAdminDashboard = function () {
@@ -4926,7 +5046,8 @@
 
         window.showSection = function (sectionId) {
             document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(sectionId).classList.remove('hidden');
+            const target = document.getElementById(sectionId);
+            if (target) target.classList.remove('hidden');
             if (sectionId === 'institutes-section') window.loadAdminInstitutes();
             if (sectionId === 'payments-section') window.loadPayments();
             if (sectionId === 'requests-section') window.loadAdminRequests();
@@ -5740,6 +5861,7 @@
         }
 
         let navTabsOrder = [];
+
         function initializeSwipeGestures() {
             document.addEventListener('touchstart', (e) => {
                 touchStartX = e.changedTouches[0].screenX;
@@ -6101,23 +6223,25 @@
         // ============================================================
         //  INIT
         // ============================================================
-        // Set light theme as default (class="light" already on html)
-        // Override if user previously selected dark
         if (localStorage.getItem('oc_theme') === 'true') {
             document.documentElement.classList.add('dark');
             document.documentElement.classList.remove('light');
         }
 
-        // Cart from localStorage
         try {
             const preservedCart = localStorage.getItem('oc_cart_manifest');
             if (preservedCart) cart = JSON.parse(preservedCart);
         } catch (e) { cart = []; }
 
+        // Ensure bottom nav is visible by default
+        setTimeout(() => {
+            toggleBottomNavBarVisibility(true);
+        }, 100);
+
         window.toast = toast;
         window.loadDashboardView = window.loadDashboardView;
 
-        console.log('OpenClase v4.0 — All features implemented, code reorganized.');
+        console.log('OpenClase v5.0 — All features implemented, issues fixed.');
     </script>
 
     <script src="https://unpkg.com/lucide@latest"></script>
